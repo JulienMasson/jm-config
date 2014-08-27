@@ -27,6 +27,7 @@ Here is the list of packages available on package manager:
 - simple-httpd
 - w3m
 - pabbrev
+- calfw
 
 Others dependencies:
 - auto-complete-auctex
