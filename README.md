@@ -11,10 +11,6 @@ Here is the list of packages available on package manager:
 - auto-complete
 - browse-kill-ring
 - c-eldoc
-- cdlatex
-- elfeed
-- elfeed-web
-- erc-image
 - erc-nick-notify
 - git-commit-mode
 - git-rebase-mode
@@ -24,7 +20,6 @@ Here is the list of packages available on package manager:
 - magic-latex-buffer
 - magit
 - popup
-- simple-httpd
 - w3m
 - pabbrev
 - calfw
