@@ -5,6 +5,9 @@
 ;; load windows config
 (load "~/Documents/config/emacs/windows.el")
 
+;; load diary config
+(load "~/Documents/config/emacs/diary.el")
+
 ;; load mail config
 (load "~/Documents/config/emacs/mail.el")
 
