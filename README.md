@@ -4,7 +4,7 @@ config
 This folder contains the configuration for Emacs and the windows manager i3.
 
 With this configuration, Emacs need some packages to work.
-Here is the list:
+Here is the list of packages available on package manager:
 - ac-etags
 - ac-math
 - auctex
@@ -26,3 +26,8 @@ Here is the list:
 - popup
 - simple-httpd
 - w3m
+- pabbrev
+
+Others dependencies:
+- auto-complete-auctex
+- PredictiveMode

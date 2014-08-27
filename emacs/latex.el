@@ -2,17 +2,7 @@
 ;;;;               LATEX CONFIG                ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; (global-visual-line-mode 1); Proper line wrapping
-;; (global-hl-line-mode 1); Highlight current row
-;; (show-paren-mode 1); Matches parentheses and such in every mode
-;; (set-fringe-mode '(0 . 0)); Disable fringe because I use visual-line-mode
-;; (set-face-background hl-line-face "#f2f1f0"); Same color as greyness in gtk
-;; (setq inhibit-splash-screen t); Disable splash screen
-;; (setq visible-bell t); Flashes on error
-;; (setq calendar-week-start-day 1); Calender should start on Monday
-;; (add-to-list 'default-frame-alist '(height . 59)); Default frame height.
-
-;;; AUCTeX
+;; AUCTeX
 (require 'package)
 (package-initialize)
 
@@ -32,6 +22,29 @@
 (global-auto-complete-mode t)
 
 (setq ac-math-unicode-in-math-p t)
+
+
+;; auto completion auctex
+(load "~/.emacs.d/elpa/auto-complete-auctex/auto-complete-auctex.el")
+
+
+;; prediction
+(add-to-list 'load-path "~/.emacs.d/predictive/")
+;; dictionary locations
+(add-to-list 'load-path "~/.emacs.d/predictive/latex/")
+(add-to-list 'load-path "~/.emacs.d/predictive/texinfo/")
+(add-to-list 'load-path "~/.emacs.d/predictive/html/")
+;; load predictive package
+(require 'predictive)
+(autoload 'predictive-mode "predictive" "predictive" t)
+(set-default 'predictive-auto-add-to-dict t)
+(setq predictive-main-dict 'rpg-dictionary
+      predictive-auto-learn t
+      predictive-add-to-dict-ask nil
+      predictive-use-auto-learn-cache nil
+      predictive-which-dict t)
+
+;;(add-hook 'LaTeX-mode-hook 'predictive-mode)
 
 ;; Customary Customization, p. 1 and 16 in the manual, and http://www.emacswiki.org/emacs/AUCTeX#toc2
 (setq TeX-parse-self t); Enable parse on load.
