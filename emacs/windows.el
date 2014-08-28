@@ -123,3 +123,6 @@
 
 ;; change color background of selection
 ;;(set-face-attribute 'region nil :background "#555")
+
+;; remove scroll bar
+(scroll-bar-mode -1)
