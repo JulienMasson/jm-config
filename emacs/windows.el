@@ -116,3 +116,10 @@
 (add-hook 'focus-out-hook (lambda () (highlight-focus:app-focus nil)))
 
 (provide 'highlight-focus)
+
+;; enable hl-line-mode and set color background
+;;(global-hl-line-mode 1)
+;;(set-face-background 'hl-line "#aaa")
+
+;; change color background of selection
+;;(set-face-attribute 'region nil :background "#555")
