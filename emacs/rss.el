@@ -2,6 +2,11 @@
 ;;;;                RSS CONFIG                 ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; set default web browser
+(setq browse-url-browser-function 'browse-url-firefox
+      browse-url-new-window-flag  t
+      browse-url-firefox-new-window-is-tab t)
+
 ;; rss readers
 ;;(add-to-list 'load-path (expand-file-name "~/.emacs.d/elpa/"))
 ;;(require 'init-newsticker)
@@ -16,7 +21,7 @@
 
  newsticker-html-renderer 'w3m-region
 
- newsticker-frontend 'newsticker-plainview
+ newsticker-frontend 'newsticker-treeview
  newsticker-use-full-width nil
 
  newsticker-retrieval-interval 0   ;don't fetch when I'm not reading RSS
