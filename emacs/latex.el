@@ -168,3 +168,9 @@
         ("setlistdepth" "{")
         ("restartlist" "{")))
 
+;; evince default view
+(defun pdfevince ()
+   (add-to-list 'TeX-output-view-style
+                 '("^pdf$" "." "evince %o %(outpage)")))
+
+(add-hook  'LaTeX-mode-hook  'pdfevince  t) ; AUCTeX LaTeX mode
