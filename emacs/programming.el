@@ -23,7 +23,7 @@
   (require 'auto-complete-config)
   (add-to-list 'ac-dictionary-directories (expand-file-name "~/.emacs.d/site-lisp/ac-dict"))
   (ac-config-default)
-  (add-to-list 'ac-modes 'shell-mode)
+  ;; (add-to-list 'ac-modes 'shell-mode)
   (ac-etags-setup))
 
 ;; after-init
