@@ -61,6 +61,15 @@
 ;; virtual desktop
 (load "~/.emacs.d/elpa/virtual-desktops.el/virtual-desktops.el")
 (virtual-desktops-mode 1)
+(global-set-key (kbd "M-<kp-1>") (lambda () (interactive) (virtual-desktops-goto 1)))
+(global-set-key (kbd "M-<kp-2>") (lambda () (interactive) (virtual-desktops-goto 2)))
+(global-set-key (kbd "M-<kp-3>") (lambda () (interactive) (virtual-desktops-goto 3)))
+(global-set-key (kbd "M-<kp-4>") (lambda () (interactive) (virtual-desktops-goto 4)))
+(global-set-key (kbd "M-<kp-5>") (lambda () (interactive) (virtual-desktops-goto 5)))
+(global-set-key (kbd "M-<kp-6>") (lambda () (interactive) (virtual-desktops-goto 6)))
+(global-set-key (kbd "M-<kp-7>") (lambda () (interactive) (virtual-desktops-goto 7)))
+(global-set-key (kbd "M-<kp-8>") (lambda () (interactive) (virtual-desktops-goto 8)))
+(global-set-key (kbd "M-<kp-9>") (lambda () (interactive) (virtual-desktops-goto 9)))
 
 ;; clear shell screen
 (defun my-clear ()
