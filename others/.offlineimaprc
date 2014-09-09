@@ -1,0 +1,20 @@
+[general]
+accounts = Intel
+maxsyncaccounts = 3
+
+[Account Intel]
+localrepository = IntelLocal
+remoterepository = IntelRemote
+
+[Repository IntelLocal]
+type = Maildir
+localfolders = ~/Maildir/Intel
+
+[Repository IntelRemote]
+type = IMAP
+remotehost = irsmsx101.ger.corp.intel.com
+remoteuser = julienx.masson@intel.com
+remotepass = xxxxxxx
+ssl = yes
+cert_fingerprint = 13f749b876c6064bc722d0800ec9ffb7497d6589
+realdelete = yes

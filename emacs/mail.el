@@ -3,47 +3,45 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; wanderlust
-(autoload 'wl "wl" "Wanderlust" t)
-(autoload 'wl-other-frame "wl" "Wanderlust on new frame." t)
-(autoload 'wl-draft "wl-draft" "Write draft with Wanderlust." t)
+(setq
+  elmo-maildir-folder-path "~/Maildir/Intel"          ;; where i store my mail
 
-;; configuration window
-(setq wl-stay-folder-window t) ;; show the folder pane (left)
-(setq wl-folder-window-width 25) ;; toggle on/off with 'i'
+  wl-stay-folder-window t                       ;; show the folder pane (left)
+  wl-folder-window-width 25                     ;; toggle on/off with 'i'
 
-;; IMAP
-(setq elmo-imap4-default-server "imap.gmail.com")
-(setq elmo-imap4-default-user "massonju.eseo@gmail.com") 
-(setq elmo-imap4-default-authenticate-type 'clear) 
-(setq elmo-imap4-default-port '993)
-(setq elmo-imap4-default-stream-type 'ssl)
+  wl-smtp-posting-server "smtp.intel.com"            ;; put the smtp server here
+  wl-local-domain "julienx.masson@intel.com"          ;; put something here...
+  wl-message-id-domain "julienx.masson@intel.com"     ;; ...
 
-(setq elmo-imap4-use-modified-utf7 t) 
+  wl-from "Julien Masson <julienx.masson@intel.com>"                  ;; my From:
 
-;; SMTP
-(setq wl-smtp-connection-type 'starttls)
-(setq wl-smtp-posting-port 587)
-(setq wl-smtp-authenticate-type "plain")
-(setq wl-smtp-posting-user "JulienMasson")
-(setq wl-smtp-posting-server "smtp.gmail.com")
-(setq wl-local-domain "gmail.com")
+  ;; note: all below are dirs (Maildirs) under elmo-maildir-folder-path
+  ;; the '.'-prefix is for marking them as maildirs
+  wl-fcc ".Sent"                       ;; sent msgs go to the "sent"-folder
+  wl-fcc-force-as-read t               ;; mark sent messages as read
+  wl-default-folder ".INBOX"           ;; my main inbox
+  wl-draft-folder ".Drafts"            ;; store drafts in 'postponed'
+  wl-trash-folder ".Trash"             ;; put trash in 'trash'
 
-(setq wl-default-folder "%inbox")
-(setq wl-default-spec "%")
-(setq wl-draft-folder "%[Gmail]/Drafts") ; Gmail IMAP
-(setq wl-trash-folder "%[Gmail]/Trash")
+  ;; check this folder periodically, and update modeline
+  wl-biff-check-folder-list '(".INBOX") ;; check every 180 seconds
+                                       ;; (default: wl-biff-check-interval)
 
-(setq wl-folder-check-async t) 
-
-(setq elmo-imap4-use-modified-utf7 t)
-
-(autoload 'wl-user-agent-compose "wl-draft" nil t)
-(if (boundp 'mail-user-agent)
-    (setq mail-user-agent 'wl-user-agent))
-(if (fboundp 'define-mail-user-agent)
-    (define-mail-user-agent
-      'wl-user-agent
-      'wl-user-agent-compose
-      'wl-draft-send
-      'wl-draft-kill
-      'mail-send-hook))
+  ;; hide many fields from message buffers
+  wl-message-ignored-field-list '("^.*:")
+  wl-message-visible-field-list
+  '("^\\(To\\|Cc\\):"
+    "^Subject:"
+    "^\\(From\\|Reply-To\\):"
+    "^Organization:"
+    "^Message-Id:"
+    "^\\(Posted\\|Date\\):"
+    )
+  wl-message-sort-field-list
+  '("^From"
+    "^Organization:"
+    "^X-Attribution:"
+     "^Subject"
+     "^Date"
+     "^To"
+     "^Cc"))

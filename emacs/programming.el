@@ -31,3 +31,9 @@
   (init-auto-complete)
   )
 (add-hook 'after-init-hook 'after-init)
+
+;; cscope
+(require 'xcscope)
+(global-set-key (kbd "M-s") 'cscope-find-this-symbol)
+(global-set-key (kbd "M-f") 'cscope-find-functions-calling-this-function)
+(global-set-key (kbd "M-g") 'cscope-find-global-definition)
