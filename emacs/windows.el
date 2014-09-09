@@ -135,3 +135,6 @@
 
 ;; remove scroll bar
 (scroll-bar-mode -1)
+
+;; shortcut for goto-line
+(global-set-key (kbd "C-c C-l") 'goto-line)

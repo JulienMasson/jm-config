@@ -27,3 +27,4 @@ Here is the list of packages available on package manager:
 Others dependencies:
 - auto-complete-auctex
 - PredictiveMode
+- purple
