@@ -28,3 +28,4 @@ Others dependencies:
 - auto-complete-auctex
 - PredictiveMode
 - purple
+- dtrt-indent

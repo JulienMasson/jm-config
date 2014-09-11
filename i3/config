@@ -212,6 +212,10 @@ bar {
 	}
 }
 
+# control volume
+bindsym $mod+i exec pactl set-sink-volume 0 -- -5%
+bindsym $mod+o exec pactl set-sink-volume 0 -- +5%
+bindsym $mod+p exec pactl set-sink-mute 0 -- toggle
 
 # Startup applications
 #exec --no-startup-id i3-msg 'workspace Extra; exec /usr/bin/rhythmbox'

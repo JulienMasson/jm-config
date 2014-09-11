@@ -137,4 +137,7 @@
 (scroll-bar-mode -1)
 
 ;; shortcut for goto-line
-(global-set-key (kbd "C-c C-l") 'goto-line)
+(global-set-key (kbd "C-l") 'goto-line)
+
+;; shortcut for revert buffer
+(global-set-key (kbd "C-c r") 'revert-buffer)

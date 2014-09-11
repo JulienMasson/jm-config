@@ -37,3 +37,10 @@
 (global-set-key (kbd "M-s") 'cscope-find-this-symbol)
 (global-set-key (kbd "M-f") 'cscope-find-functions-calling-this-function)
 (global-set-key (kbd "M-g") 'cscope-find-global-definition)
+
+;; auto-detection indenting
+(load "~/.emacs.d/elpa/dtrt-indent/dtrt-indent.el")
+(add-hook 'c-mode-common-hook
+  (lambda()
+    (require 'dtrt-indent)
+    (dtrt-indent-mode t)))

@@ -43,7 +43,7 @@ TEXT
   {"full_text":"${if_running rhythmbox}${exec rhythmbox-client --print-playing}  ${exec rhythmbox-client --print-playing-format=%te}/${exec rhythmbox-client --print-playing-format=%td}${else}off $endif","color":"\#D78A0C"},
 
 #Shows mail
- {"full_text":" Mail","color":"\#9A9A9A","separator":false},
+ {"full_text":" Mail ","color":"\#9A9A9A","separator":false},
  {"full_text": "${exec ls -1 ~/Maildir/Intel/INBOX/new/ | wc -l} ", "color":"\#D78A0C"},
 
 #Shows uploadspeed
