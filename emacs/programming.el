@@ -4,13 +4,22 @@
 
 ;; ctags
 (setq path-to-ctags "/usr/bin/ctags")
-(defun create-tags (dir-name)
+(defun create-tags-ctags (dir-name)
   "Create tags file."
   (interactive "DDirectory: ")
   (shell-command
    (format "%s -f %s/TAGS -e -R %s" path-to-ctags dir-name (directory-file-name dir-name))))
 
-;; search with ctags
+;; cscope
+(require 'xcscope)
+(setq path-to-cscope "/usr/bin/cscope")
+(defun create-tags-cscope (dir-name)
+  "Create tags file."
+  (interactive "DDirectory: ")
+  (shell-command
+   (format "cd %s; %s -b -q -k -R" (directory-file-name dir-name) path-to-cscope)))
+
+;; search with ctags or cscope
 (global-set-key (kbd "M-;") 'find-tag)
 
 ;; el doc mode
@@ -31,12 +40,6 @@
   (init-auto-complete)
   )
 (add-hook 'after-init-hook 'after-init)
-
-;; cscope
-(require 'xcscope)
-(global-set-key (kbd "M-s") 'cscope-find-this-symbol)
-(global-set-key (kbd "M-f") 'cscope-find-functions-calling-this-function)
-(global-set-key (kbd "M-g") 'cscope-find-global-definition)
 
 ;; auto-detection indenting
 (load "~/.emacs.d/elpa/dtrt-indent/dtrt-indent.el")
