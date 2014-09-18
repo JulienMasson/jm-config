@@ -79,7 +79,7 @@ TEXT
 
 #Show volume
   {"full_text": " Volume ","color":"\#9A9A9A","separator":false},\
-  {"full_text": "${exec pactl list sinks | grep "Volume: 0"| tail -n 1 | awk '{print substr($3, 1, index($3, "%") - 1)}'}%", "color":"\#D78A0C"},
+  {"full_text": "${exec amixer get Master | awk -F'[]%[]' '/%/ {if ($7 == "off") { print "mute" } else { print $2"%" }}' }", "color":"\#D78A0C"},
 
 #Show date
   {"full_text": " ${time %a}, ${time %d %b %Y} ", "color":"\#9A9A9A"},    
