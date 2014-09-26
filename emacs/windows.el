@@ -71,15 +71,6 @@
 (global-set-key (kbd "M-<kp-8>") (lambda () (interactive) (virtual-desktops-goto 8)))
 (global-set-key (kbd "M-<kp-9>") (lambda () (interactive) (virtual-desktops-goto 9)))
 
-;; clear shell screen
-(defun my-clear ()
-      (interactive)
-      (erase-buffer)
-      (comint-send-input))
-(defun my-shell-hook ()
-  (local-set-key (kbd "C-c l") 'my-clear))
-  (add-hook 'shell-mode-hook 'my-shell-hook)
-
 ;; edit file root
 (defun sudo-edit (&optional arg)
   (interactive "P")
