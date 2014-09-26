@@ -17,7 +17,7 @@
   "Create tags file."
   (interactive "DDirectory: ")
   (shell-command
-   (format "cd %s; %s -b -q -k -R" (directory-file-name dir-name) path-to-cscope)))
+   (format "cd %s; find . -name \"*.c\" -o -name \"*.h\" > cscope.files; %s -q -R -b -i cscope.files" (directory-file-name dir-name) path-to-cscope)))
 
 ;; search with ctags or cscope
 (global-set-key (kbd "M-;") 'find-tag)
