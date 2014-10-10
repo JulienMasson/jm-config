@@ -132,3 +132,12 @@
 
 ;; shortcut for revert buffer
 (global-set-key (kbd "C-c r") 'revert-buffer)
+
+;; shortcut for highlight a line with regex
+(global-set-key (kbd "C-c h") 'highlight-lines-matching-regexp)
+
+;; shortcut for comment region
+(global-set-key (kbd "C-c m") 'comment-region)
+
+;; shortcut for uncomment region
+(global-set-key (kbd "C-c u") 'uncomment-region)
