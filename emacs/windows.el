@@ -144,3 +144,6 @@
 
 ;; kill buffer and current windows
 (global-set-key (kbd "C-c k") 'kill-buffer-and-window)
+
+;; find-name-dired
+(global-set-key (kbd "C-c f") 'find-name-dired)

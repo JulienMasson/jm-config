@@ -17,3 +17,11 @@
 (global-set-key (kbd "C-c g n") 'magit-create-branch)
 (global-set-key (kbd "C-c g d") 'magit-delete-branch)
 (global-set-key (kbd "C-c g m") 'magit-branch-manager)
+
+;; shortcut to know if branch is up to date
+(setq path-to-check-git-update "/home/lab/Documents/config/others/check_git_update.sh")
+(defun check-git-branch-update (dir-name)
+  (interactive "DDirectory: ")
+  (shell-command
+	   (format "%s %s" path-to-check-git-update (directory-file-name dir-name))))
+(global-set-key (kbd "C-c g u") 'check-git-branch-update)
