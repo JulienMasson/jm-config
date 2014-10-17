@@ -141,3 +141,6 @@
 
 ;; shortcut for uncomment region
 (global-set-key (kbd "C-c u") 'uncomment-region)
+
+;; kill buffer and current windows
+(global-set-key (kbd "C-c k") 'kill-buffer-and-window)
