@@ -56,10 +56,18 @@
  smtpmail-smtp-service 587
  ;; GNUS
  gnus-select-method '(nnimap "IMAP"
-			     (nnimap-address "irsmsx101.ger.corp.intel.com")
-			     (nnimap-server-port 993)
-			     (nnimap-stream ssl)
-			     (nnimap-inbox "INBOX"))
+ 			     (nnimap-address "irsmsx101.ger.corp.intel.com")
+ 			     (nnimap-server-port 993)
+ 			     (nnimap-stream ssl)
+ 			     (nnimap-inbox "INBOX"))
+
+ ;; Use Gnus to read gmail from the local directory to which offlineimap syncs
+ ;; gnus-select-method '(nnmaildir "Intel"
+ ;; 				(directory "~/Maildir/Intel/INBOX/")
+ ;; 				(expire-age never))
+ ;; mail-sources '((maildir :path "~/Maildir/Intel/INBOX/" :subdirs ("cur" "new")))
+ ;; mail-source-delete-incoming t
+
  gnus-use-scoring t
  gnus-use-adaptive-scoring t
  gnus-use-full-window nil
