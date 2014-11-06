@@ -19,7 +19,7 @@
 (global-set-key (kbd "C-c g m") 'magit-branch-manager)
 
 ;; shortcut to know if branch is up to date
-(setq path-to-check-git-update "/home/lab/Documents/config/others/check_git_update.sh")
+(setq path-to-check-git-update "~/Documents/config/others/check_git_update.sh")
 (defun check-git-branch-update (dir-name)
   (interactive "DDirectory: ")
   (shell-command
