@@ -220,6 +220,9 @@ bindsym $mod+p exec pactl set-sink-mute 0 -- toggle
 # Focus follows mouse disable
 focus_follows_mouse no
 
+# Set wallpaper background
+exec feh --bg-fill ~/Pictures/wallpaper.jpg
+
 # Startup applications
 #exec --no-startup-id i3-msg 'workspace Extra; exec /usr/bin/rhythmbox'
 #exec --no-startup-id i3-msg 'workspace Term; exec /usr/bin/gnome-terminal'
