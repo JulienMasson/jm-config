@@ -1,0 +1,20 @@
+[Eseo]
+julien.masson@reseau.eseo.fr
+Server settings: outlook.office365.com
+Port: 993
+Connection security: SSL/TLS
+SMTP: smtp.office365.com
+
+[OpenWide]
+julien.masson@openwide.fr
+Server settings: zimbra2.corp.accelance.fr
+Port: 143 
+Connection security: STARTTLS
+SMTP: zimbra3.corp.accelance.fr
+
+[Gmail]
+massonju.eseo@gmail.com
+Server settings: imap.googlemail.com
+Port: 993
+Connection security: SSL/TLS
+SMTP: smtp.googlemail.com
