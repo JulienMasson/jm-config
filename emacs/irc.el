@@ -20,7 +20,8 @@
 				:nick "jmasson")))
 
 ;; join the #pupdr whenever connecting to intel irc.
-(erc-autojoin-mode 1)
+(require 'erc-join)
+(erc-autojoin-enable)
 (setq erc-autojoin-channels-alist
       '(("otcirc.jf.intel.com" "#pupdr")
 	("irc.freenode.net" "#RoseTeam")))
