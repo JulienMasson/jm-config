@@ -1,5 +1,11 @@
-# WL folders (put the '#' always at the beginning of the line)
-.INBOX     "Inbox"
-.Drafts    "Drafts"
-.Sent      "Sent Mail"
-.Trash     "Junk"
+Gmail{
+.~/Maildir/Gmail/INBOX "Inbox"
+}
+
+Eseo{
+.~/Maildir/Eseo/INBOX "Inbox"
+}
+
+OpenWide{
+.~/Maildir/OpenWide/INBOX "Inbox"
+}
