@@ -2,6 +2,19 @@
 ;;;;                MAIL CONFIG                ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; config w3m
+(eval-after-load "w3m"
+  '(progn
+     (define-key w3m-mode-map [left] 'backward-char)
+     (define-key w3m-mode-map [right] 'forward-char)
+     (define-key w3m-mode-map [up] 'previous-line)
+     (define-key w3m-mode-map [down] 'next-line)
+     (define-key w3m-minor-mode-map [left] 'backward-char)
+     (define-key w3m-minor-mode-map [right] 'forward-char)
+     (define-key w3m-minor-mode-map [up] 'previous-line)
+     (define-key w3m-minor-mode-map [down] 'next-line)
+     ))
+
 ;; wanderlust
 (autoload 'wl "wl" "Wanderlust" t)
 (autoload 'wl-other-frame "wl" "Wanderlust on new frame." t)
