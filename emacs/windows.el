@@ -147,3 +147,8 @@
 
 ;; find-name-dired
 (global-set-key (kbd "C-c f") 'find-name-dired)
+
+;; org timer shortcuts
+(global-set-key (kbd "C-c t s") 'org-timer-start)
+(global-set-key (kbd "C-c t p") 'org-timer-pause-or-continue)
+(global-set-key (kbd "C-c t e") 'org-timer-stop)

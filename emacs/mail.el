@@ -2,6 +2,19 @@
 ;;;;                MAIL CONFIG                ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; w3m config
+(eval-after-load "w3m"
+  '(progn
+     (define-key w3m-mode-map [left] 'backward-char)
+     (define-key w3m-mode-map [right] 'forward-char)
+     (define-key w3m-mode-map [up] 'previous-line)
+     (define-key w3m-mode-map [down] 'next-line)
+     (define-key w3m-minor-mode-map [left] 'backward-char)
+     (define-key w3m-minor-mode-map [right] 'forward-char)
+     (define-key w3m-minor-mode-map [up] 'previous-line)
+     (define-key w3m-minor-mode-map [down] 'next-line)
+     ))
+
 ;; wanderlust
 (setq
   elmo-maildir-folder-path "~/Maildir/Intel"          ;; where i store my mail
@@ -26,6 +39,9 @@
   ;; check this folder periodically, and update modeline
   wl-biff-check-folder-list '(".INBOX") ;; check every 180 seconds
                                        ;; (default: wl-biff-check-interval)
+
+  ;; check interval every 30 seconds
+  wl-biff-check-interval 30
 
   ;; hide many fields from message buffers
   wl-message-ignored-field-list '("^.*:")
