@@ -47,3 +47,6 @@
   (lambda()
     (require 'dtrt-indent)
     (dtrt-indent-mode t)))
+
+;; change default grep
+(setq grep-command "grep -nrH -e")
