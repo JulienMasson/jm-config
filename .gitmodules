@@ -1,0 +1,54 @@
+[submodule "emacs/magit"]
+	path = emacs/magit
+	url = https://github.com/magit/magit
+[submodule "emacs/dtrt-indent"]
+	path = emacs/dtrt-indent
+	url = https://github.com/jscheid/dtrt-indent
+[submodule "emacs/virtual-desktops.el"]
+	path = emacs/virtual-desktops.el
+	url = https://github.com/chep/virtual-desktops.el
+[submodule "emacs/auto-complete"]
+	path = emacs/auto-complete
+	url = https://github.com/auto-complete/auto-complete
+[submodule "emacs/emacs-ac-etags"]
+	path = emacs/emacs-ac-etags
+	url = https://github.com/syohex/emacs-ac-etags
+[submodule "emacs/ac-math"]
+	path = emacs/ac-math
+	url = https://github.com/vspinu/ac-math.git
+[submodule "emacs/emacs-bash-completion"]
+	path = emacs/emacs-bash-completion
+	url = https://github.com/szermatt/emacs-bash-completion
+[submodule "emacs/c-eldoc"]
+	path = emacs/c-eldoc
+	url = https://github.com/mooz/c-eldoc
+[submodule "emacs/erc-nick-notify"]
+	path = emacs/erc-nick-notify
+	url = https://github.com/emacsmirror/erc-nick-notify
+[submodule "emacs/auto-complete-auctex"]
+	path = emacs/auto-complete-auctex
+	url = https://github.com/monsanto/auto-complete-auctex
+[submodule "emacs/predictive"]
+	path = emacs/predictive
+	url = http://www.dr-qubit.org/git/predictive.git
+[submodule "emacs/purple"]
+	path = emacs/purple
+	url = https://github.com/jeremy-compostella/purple
+[submodule "emacs/w3m"]
+	path = emacs/w3m
+	url = https://github.com/emacsmirror/w3m
+[submodule "emacs/xcscope.el"]
+	path = emacs/xcscope.el
+	url = https://github.com/dkogan/xcscope.el
+[submodule "emacs/popup-el"]
+	path = emacs/popup-el
+	url = https://github.com/auto-complete/popup-el
+[submodule "emacs/magit-filenotify"]
+	path = emacs/magit-filenotify
+	url = https://github.com/magit/magit-filenotify
+[submodule "emacs/git-modes"]
+	path = emacs/git-modes
+	url = https://github.com/magit/git-modes
+[submodule "emacs/ample-zen"]
+	path = emacs/ample-zen
+	url = https://github.com/mjwall/ample-zen

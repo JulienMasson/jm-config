@@ -49,4 +49,4 @@
     (dtrt-indent-mode t)))
 
 ;; change default grep
-(setq grep-command "grep -nrH -e")
+(setq grep-command "grep -nrH -e ")
