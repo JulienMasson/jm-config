@@ -19,6 +19,7 @@ git submodule update --init magit-filenotify
 git submodule update --init popup-el
 git submodule update --init predictive
 git submodule update --init purple
+git submodule update --init status
 git submodule update --init virtual-desktops.el
 git submodule update --init wanderlust
 git submodule update --init w3m

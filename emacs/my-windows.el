@@ -153,4 +153,8 @@
 (global-set-key (kbd "C-c t p") 'org-timer-pause-or-continue)
 (global-set-key (kbd "C-c t e") 'org-timer-stop)
 
+;; load status
+(require 'status)
+
+
 (provide 'my-windows)

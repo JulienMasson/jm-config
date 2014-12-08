@@ -55,3 +55,6 @@
 [submodule "emacs/wanderlust"]
 	path = emacs/wanderlust
 	url = https://github.com/wanderlust/wanderlust
+[submodule "emacs/status"]
+	path = emacs/status
+	url = https://github.com/JulienMasson/status
