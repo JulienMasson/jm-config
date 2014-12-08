@@ -28,3 +28,5 @@
 
 ;; shortcuts for magit
 (global-set-key (kbd "C-c i n") 'erc-channel-names)
+
+(provide 'my-irc)

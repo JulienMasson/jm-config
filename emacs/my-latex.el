@@ -25,15 +25,14 @@
 
 
 ;; auto completion auctex
-(load "~/.emacs.d/elpa/auto-complete-auctex/auto-complete-auctex.el")
-
+(require 'auto-complete-auctex)
 
 ;; prediction
-(add-to-list 'load-path "~/.emacs.d/predictive/")
+(add-to-list 'load-path "~/config/emacs/predictive/")
 ;; dictionary locations
-(add-to-list 'load-path "~/.emacs.d/predictive/latex/")
-(add-to-list 'load-path "~/.emacs.d/predictive/texinfo/")
-(add-to-list 'load-path "~/.emacs.d/predictive/html/")
+(add-to-list 'load-path "~/config/emacs/predictive/latex/")
+(add-to-list 'load-path "~/config/emacs/predictive/texinfo/")
+(add-to-list 'load-path "~/config/emacs/predictive/html/")
 ;; load predictive package
 (require 'predictive)
 (autoload 'predictive-mode "predictive" "predictive" t)
@@ -174,3 +173,5 @@
                  '("^pdf$" "." "evince %o %(outpage)")))
 
 (add-hook  'LaTeX-mode-hook  'pdfevince  t) ; AUCTeX LaTeX mode
+
+(provide 'my-latex)

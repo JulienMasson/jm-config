@@ -21,3 +21,5 @@
                    "*Messages*")
     (pop-to-buffer "*search-history-output*")))
 (global-set-key (kbd "C-c s") 'search-history)
+
+(provide 'my-shell)

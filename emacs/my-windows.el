@@ -29,7 +29,7 @@
 (set-face-attribute 'default nil :height 100)
 
 ;; load theme
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/ample-zen/")
+(add-to-list 'custom-theme-load-path "~/config/emacs/ample-zen")
 (load-theme 'ample-zen t)
 
 ;; enable ido-mode
@@ -59,7 +59,7 @@
 (global-set-key (kbd "C-M-y") (lambda () (interactive) (yank-pop -1)))
 
 ;; virtual desktop
-(load "~/.emacs.d/elpa/virtual-desktops.el/virtual-desktops.el")
+(load "~/config/emacs/virtual-desktops.el/virtual-desktops.el")
 (virtual-desktops-mode 1)
 (global-set-key (kbd "M-<kp-1>") (lambda () (interactive) (virtual-desktops-goto 1)))
 (global-set-key (kbd "M-<kp-2>") (lambda () (interactive) (virtual-desktops-goto 2)))
@@ -152,3 +152,5 @@
 (global-set-key (kbd "C-c t s") 'org-timer-start)
 (global-set-key (kbd "C-c t p") 'org-timer-pause-or-continue)
 (global-set-key (kbd "C-c t e") 'org-timer-stop)
+
+(provide 'my-windows)

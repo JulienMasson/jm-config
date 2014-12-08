@@ -25,3 +25,5 @@
   (shell-command
 	   (format "%s %s" path-to-check-git-update (directory-file-name dir-name))))
 (global-set-key (kbd "C-c g u") 'check-git-branch-update)
+
+(provide 'my-github)

@@ -44,9 +44,10 @@
 ;; auto-detection indenting
 (load "~/.emacs.d/elpa/dtrt-indent/dtrt-indent.el")
 (add-hook 'c-mode-common-hook
-  (lambda()
-    (require 'dtrt-indent)
-    (dtrt-indent-mode t)))
+	  (lambda() (require 'dtrt-indent)
+	    (dtrt-indent-mode t)))
 
 ;; change default grep
 (setq grep-command "grep -nrH -e ")
+
+(provide 'my-programming)
