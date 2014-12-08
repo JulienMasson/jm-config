@@ -52,3 +52,6 @@
 [submodule "emacs/ample-zen"]
 	path = emacs/ample-zen
 	url = https://github.com/mjwall/ample-zen
+[submodule "emacs/wanderlust"]
+	path = emacs/wanderlust
+	url = https://github.com/wanderlust/wanderlust
