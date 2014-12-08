@@ -32,9 +32,3 @@ git submodule update --init wanderlust
 git submodule update --init w3m
 git submodule update --init xcscope.el
 git submodule update --init yasnippet
-
-# get apt-utils
-wget https://stuff.mit.edu/afs/athena/system/i386_deb50/os/usr/share/emacs/site-lisp/debian-el/apt-utils.el
-
-# get shell-command.el
-wget http://www.namazu.org/~tsuchiya/elisp/shell-command.el
