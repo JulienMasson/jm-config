@@ -39,7 +39,7 @@
 (require 'my-multimedia)
 
 ;; intel config
-(require 'jmasson-intel)
+;;(require 'jmasson-intel)
 
 
 (provide 'my-config)

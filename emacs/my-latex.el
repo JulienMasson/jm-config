@@ -2,6 +2,14 @@
 ;;;;               LATEX CONFIG                ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; add extras packages
+(require 'latex-extra)
+(add-hook 'LaTeX-mode-hook #'latex-extra-mode)
+
+;; (require 'latex-pretty-symbols)
+(require 'magic-latex-buffer)
+(add-hook 'latex-mode-hook 'magic-latex-buffer)
+
 ;; AUCTeX
 (require 'package)
 (package-initialize)
@@ -173,5 +181,6 @@
                  '("^pdf$" "." "evince %o %(outpage)")))
 
 (add-hook  'LaTeX-mode-hook  'pdfevince  t) ; AUCTeX LaTeX mode
+
 
 (provide 'my-latex)

@@ -155,6 +155,14 @@
 
 ;; load status
 (require 'status)
+(toggle-status)
+
+;; browse kill ring
+(require 'browse-kill-ring)
+
+;; enable yasnippet
+(require 'yasnippet)
+(yas-global-mode 1)
 
 
 (provide 'my-windows)
