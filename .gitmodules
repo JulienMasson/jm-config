@@ -1,84 +1,84 @@
 [submodule "emacs/magit"]
-	path = emacs/magit
+	path = emacs/modules/magit
 	url = https://github.com/magit/magit
 [submodule "emacs/dtrt-indent"]
-	path = emacs/dtrt-indent
+	path = emacs/modules/dtrt-indent
 	url = https://github.com/jscheid/dtrt-indent
 [submodule "emacs/virtual-desktops.el"]
-	path = emacs/virtual-desktops.el
+	path = emacs/modules/virtual-desktops.el
 	url = https://github.com/chep/virtual-desktops.el
 [submodule "emacs/auto-complete"]
-	path = emacs/auto-complete
+	path = emacs/modules/auto-complete
 	url = https://github.com/auto-complete/auto-complete
 [submodule "emacs/emacs-ac-etags"]
-	path = emacs/emacs-ac-etags
+	path = emacs/modules/emacs-ac-etags
 	url = https://github.com/syohex/emacs-ac-etags
 [submodule "emacs/ac-math"]
-	path = emacs/ac-math
+	path = emacs/modules/ac-math
 	url = https://github.com/vspinu/ac-math.git
 [submodule "emacs/emacs-bash-completion"]
-	path = emacs/emacs-bash-completion
+	path = emacs/modules/emacs-bash-completion
 	url = https://github.com/szermatt/emacs-bash-completion
 [submodule "emacs/c-eldoc"]
-	path = emacs/c-eldoc
+	path = emacs/modules/c-eldoc
 	url = https://github.com/mooz/c-eldoc
 [submodule "emacs/erc-nick-notify"]
-	path = emacs/erc-nick-notify
+	path = emacs/modules/erc-nick-notify
 	url = https://github.com/emacsmirror/erc-nick-notify
 [submodule "emacs/auto-complete-auctex"]
-	path = emacs/auto-complete-auctex
+	path = emacs/modules/auto-complete-auctex
 	url = https://github.com/monsanto/auto-complete-auctex
 [submodule "emacs/predictive"]
-	path = emacs/predictive
+	path = emacs/modules/predictive
 	url = http://www.dr-qubit.org/git/predictive.git
 [submodule "emacs/purple"]
-	path = emacs/purple
+	path = emacs/modules/purple
 	url = https://github.com/jeremy-compostella/purple
 [submodule "emacs/w3m"]
-	path = emacs/w3m
+	path = emacs/modules/w3m
 	url = https://github.com/emacsmirror/w3m
 [submodule "emacs/xcscope.el"]
-	path = emacs/xcscope.el
+	path = emacs/modules/xcscope.el
 	url = https://github.com/dkogan/xcscope.el
 [submodule "emacs/popup-el"]
-	path = emacs/popup-el
+	path = emacs/modules/popup-el
 	url = https://github.com/auto-complete/popup-el
 [submodule "emacs/magit-filenotify"]
-	path = emacs/magit-filenotify
+	path = emacs/modules/magit-filenotify
 	url = https://github.com/magit/magit-filenotify
 [submodule "emacs/git-modes"]
-	path = emacs/git-modes
+	path = emacs/modules/git-modes
 	url = https://github.com/magit/git-modes
 [submodule "emacs/ample-zen"]
-	path = emacs/ample-zen
+	path = emacs/modules/ample-zen
 	url = https://github.com/mjwall/ample-zen
 [submodule "emacs/wanderlust"]
-	path = emacs/wanderlust
+	path = emacs/modules/wanderlust
 	url = https://github.com/wanderlust/wanderlust
 [submodule "emacs/status"]
-	path = emacs/status
+	path = emacs/modules/status
 	url = https://github.com/JulienMasson/status
 [submodule "emacs/apt-utils-ido"]
-	path = emacs/apt-utils-ido
+	path = emacs/modules/apt-utils-ido
 	url = https://github.com/vapniks/apt-utils-ido
 [submodule "emacs/ac-c-headers"]
-	path = emacs/ac-c-headers
+	path = emacs/modules/ac-c-headers
 	url = https://github.com/zk-phi/ac-c-headers
 [submodule "emacs/auctex"]
-	path = emacs/auctex
+	path = emacs/modules/auctex
 	url = https://github.com/emacsmirror/auctex
 [submodule "emacs/browse-kill-ring"]
-	path = emacs/browse-kill-ring
+	path = emacs/modules/browse-kill-ring
 	url = https://github.com/browse-kill-ring/browse-kill-ring
 [submodule "emacs/latex-extra"]
-	path = emacs/latex-extra
+	path = emacs/modules/latex-extra
 	url = https://github.com/Bruce-Connor/latex-extra/
 [submodule "emacs/magic-latex-buffer"]
-	path = emacs/magic-latex-buffer
+	path = emacs/modules/magic-latex-buffer
 	url = https://github.com/zk-phi/magic-latex-buffer
 [submodule "emacs/yasnippet"]
-	path = emacs/yasnippet
+	path = emacs/modules/yasnippet
 	url = https://github.com/capitaomorte/yasnippet
 [submodule "emacs/shell-history"]
-	path = emacs/shell-history
+	path = emacs/modules/shell-history
 	url = https://github.com/emacsmirror/shell-history
