@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # move emacs folder
-cd ~/config/emacs/
+cd ~/config/emacs/modules/
 
 # pull all git submodules
 git submodule update --init ac-c-headers
