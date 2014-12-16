@@ -36,11 +36,11 @@
 (require 'auto-complete-auctex)
 
 ;; prediction
-(add-to-list 'load-path "~/config/emacs/predictive/")
+(add-to-list 'load-path "~/jm-config/emacs/predictive/")
 ;; dictionary locations
-(add-to-list 'load-path "~/config/emacs/predictive/latex/")
-(add-to-list 'load-path "~/config/emacs/predictive/texinfo/")
-(add-to-list 'load-path "~/config/emacs/predictive/html/")
+(add-to-list 'load-path "~/jm-config/emacs/predictive/latex/")
+(add-to-list 'load-path "~/jm-config/emacs/predictive/texinfo/")
+(add-to-list 'load-path "~/jm-config/emacs/predictive/html/")
 ;; load predictive package
 (require 'predictive)
 (autoload 'predictive-mode "predictive" "predictive" t)

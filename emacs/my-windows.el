@@ -21,7 +21,7 @@
 (set-face-attribute 'default nil :height 100)
 
 ;; load theme
-(add-to-list 'custom-theme-load-path "~/config/emacs/modules/ample-zen")
+(add-to-list 'custom-theme-load-path "~/jm-config/emacs/modules/ample-zen")
 (load-theme 'ample-zen t)
 
 ;; enable ido-mode
@@ -42,7 +42,8 @@
             (function (lambda () (load "dired-x"))))
 
 ;; virtual desktop
-(require 'virtual-desktops)
+(load-file "~/jm-config/emacs/modules/virtual-desktops.el/virtual-desktops.el")
+;;(require 'virtual-desktops)
 (virtual-desktops-mode 1)
 
 ;; edit file root
@@ -101,6 +102,10 @@
 (require 'yasnippet)
 (yas-global-mode 1)
 
+;; add status bar
+(require 'status)
+
+;; move echo area on the top
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;        KEYS SHORTCUTS        ;;
