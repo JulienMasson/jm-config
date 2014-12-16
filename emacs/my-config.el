@@ -5,20 +5,23 @@
 ;; windows config
 (require 'my-windows)
 
-;; diary config
-(require 'my-diary)
+;; org config
+(require 'my-org)
 
-;; mail config
-(require 'my-mail)
+;; wanderlust config
+(require 'my-wl)
+
+;; gnus config
+(require 'my-gnus)
 
 ;; irc config
 (require 'my-irc)
 
 ;; pidgin config
-;;(require 'my-pidgin)
+(require 'my-pidgin)
 
 ;; latex config
-;;(require 'my-latex)
+(require 'my-latex)
 
 ;; programming config
 (require 'my-programming)
@@ -38,8 +41,8 @@
 ;; multimedia config
 (require 'my-multimedia)
 
-;; intel config
-;;(require 'jmasson-intel)
+;; ;; intel config
+;; (require 'jmasson-intel)
 
 
 (provide 'my-config)

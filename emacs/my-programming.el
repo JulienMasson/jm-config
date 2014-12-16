@@ -11,6 +11,7 @@
    (format "%s -f %s/TAGS -e -R %s" path-to-ctags dir-name (directory-file-name dir-name))))
 
 ;; cscope
+(load-file "~/jm-config/emacs/modules/xcscope.el/xcscope.el")
 (require 'xcscope)
 (setq path-to-cscope "/usr/bin/cscope")
 (defun create-tags-cscope (dir-name)
@@ -23,26 +24,26 @@
 (global-set-key (kbd "M-;") 'find-tag)
 
 ;; el doc mode
+(require 'c-eldoc)
 (setq c-eldoc-includes "`pkg-config gtk+-2.0 --cflags` -I./ -I../ ")
-(load "~/.emacs.d/elpa/c-eldoc-20140728.1452/c-eldoc.el")
 (add-hook 'c-mode-hook 'c-turn-on-eldoc-mode)
 
-;; auto-complete
-(defun init-auto-complete ()
-  (require 'auto-complete-config)
-  (add-to-list 'ac-dictionary-directories (expand-file-name "~/.emacs.d/site-lisp/ac-dict"))
-  (ac-config-default)
-  ;; (add-to-list 'ac-modes 'shell-mode)
-  (ac-etags-setup))
+;; ;; auto-complete
+;; (defun init-auto-complete ()
+;;   (require 'auto-complete-config)
+;;   (add-to-list 'ac-dictionary-directories (expand-file-name "~/jm-config/emacs/modules/auto-complete/dict"))
+;;   (ac-config-default)
+;;   ;; (add-to-list 'ac-modes 'shell-mode)
+;;   (ac-etags-setup))
 
-;; after-init
-(defun after-init ()
-  (init-auto-complete)
-  )
-(add-hook 'after-init-hook 'after-init)
+;; ;; after-init
+;; (defun after-init ()
+;;   (init-auto-complete)
+;;   )
+;; (add-hook 'after-init-hook 'after-init)
 
 ;; auto-detection indenting
-(load "~/.emacs.d/elpa/dtrt-indent/dtrt-indent.el")
+(require 'dtrt-indent)
 (add-hook 'c-mode-common-hook
 	  (lambda() (require 'dtrt-indent)
 	    (dtrt-indent-mode t)))
@@ -51,8 +52,8 @@
 (setq grep-command "grep -nrH -e ")
 
 ;; add apt-utils
-(require apt-utils)
-(require apt-utils-ido)
+(require 'apt-utils)
+(require 'apt-utils-ido)
 
 ;; add ac-c-headers
 (require 'ac-c-headers)

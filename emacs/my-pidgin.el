@@ -3,7 +3,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; load purple
-(require purple)
+(require 'purple)
 
 ;; shortcuts for pidgin using purple
 (global-set-key (kbd "C-c p i") 'purple-init)

@@ -299,4 +299,4 @@
 ;;      "^To"
 ;;      "^Cc"))
 
-(provide 'my-mail)
+(provide 'my-wl)

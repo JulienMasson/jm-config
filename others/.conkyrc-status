@@ -40,7 +40,7 @@ TEXT
 ${if_running rhythmbox}${exec rhythmbox-client --print-playing}  ${exec rhythmbox-client --print-playing-format=%te}/${exec rhythmbox-client --print-playing-format=%td}${else}off $endif
 
 #Shows mail
-${exec ls -1 ~/Maildir/Intel/INBOX/new/ | wc -l}
+${exec ls -1 ~/Maildir/Gmail/INBOX/new/ | wc -l} ${exec ls -1 ~/Maildir/Eseo/INBOX/new/ | wc -l} ${exec ls -1 ~/Maildir/OpenWide/INBOX/new/ | wc -l}
 
 #Shows uploadspeed
 ${upspeed eth0}

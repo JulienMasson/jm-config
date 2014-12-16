@@ -82,3 +82,6 @@
 [submodule "emacs/shell-history"]
 	path = emacs/modules/shell-history
 	url = https://github.com/emacsmirror/shell-history
+[submodule "emacs/modules/math-symbol-lists"]
+	path = emacs/modules/math-symbol-lists
+	url = https://github.com/vspinu/math-symbol-lists
