@@ -1,3 +1,6 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;               GNUS CONFIG                 ;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; gnus
 (require 'smtpmail)
@@ -73,3 +76,5 @@
 	gnus-sum-thread-tree-single-leaf "┗━━❯ "))
 
 (oxy-unicode-threads-heavy)
+
+(provide 'my-gnus)

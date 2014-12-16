@@ -2,34 +2,26 @@
 ;;;;              WINDOWS CONFIG               ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; packages
+;; add packages
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
 			 ("marmalade" . "http://marmalade-repo.org/packages/")
 			 ("melpa" . "http://melpa.milkbox.net/packages/")))
+
+;; disable erase-buffer
 (put 'erase-buffer 'disabled nil)
 
+;; set some variables
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(c-default-style (quote ((awk-mode . "awk") (other . "gnu"))))
  '(column-number-mode t)
- '(custom-enabled-themes (quote (tango-dark)))
  '(menu-bar-mode nil)
  '(tool-bar-mode nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 
 ;; set font size
 (set-face-attribute 'default nil :height 100)
 
 ;; load theme
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/ample-zen/")
+(add-to-list 'custom-theme-load-path "~/jm-config/emacs/modules/ample-zen")
 (load-theme 'ample-zen t)
 
 ;; enable ido-mode
@@ -37,12 +29,6 @@
 
 ;; hide welcome screen
 (setq inhibit-startup-message t)
-
-;; windows
-(global-set-key (kbd "C-c <left>")  'windmove-left)
-(global-set-key (kbd "C-c <right>") 'windmove-right)
-(global-set-key (kbd "C-c <up>")    'windmove-up)
-(global-set-key (kbd "C-c <down>")  'windmove-down)
 
 ;; uniquify
 (require 'uniquify)
@@ -55,21 +41,10 @@
 (add-hook 'dired-load-hook
             (function (lambda () (load "dired-x"))))
 
-;;
-(global-set-key (kbd "C-M-y") (lambda () (interactive) (yank-pop -1)))
-
 ;; virtual desktop
-(load "~/.emacs.d/elpa/virtual-desktops.el/virtual-desktops.el")
+(load-file "~/jm-config/emacs/modules/virtual-desktops.el/virtual-desktops.el")
+;;(require 'virtual-desktops)
 (virtual-desktops-mode 1)
-(global-set-key (kbd "M-<kp-1>") (lambda () (interactive) (virtual-desktops-goto 1)))
-(global-set-key (kbd "M-<kp-2>") (lambda () (interactive) (virtual-desktops-goto 2)))
-(global-set-key (kbd "M-<kp-3>") (lambda () (interactive) (virtual-desktops-goto 3)))
-(global-set-key (kbd "M-<kp-4>") (lambda () (interactive) (virtual-desktops-goto 4)))
-(global-set-key (kbd "M-<kp-5>") (lambda () (interactive) (virtual-desktops-goto 5)))
-(global-set-key (kbd "M-<kp-6>") (lambda () (interactive) (virtual-desktops-goto 6)))
-(global-set-key (kbd "M-<kp-7>") (lambda () (interactive) (virtual-desktops-goto 7)))
-(global-set-key (kbd "M-<kp-8>") (lambda () (interactive) (virtual-desktops-goto 8)))
-(global-set-key (kbd "M-<kp-9>") (lambda () (interactive) (virtual-desktops-goto 9)))
 
 ;; edit file root
 (defun sudo-edit (&optional arg)
@@ -78,10 +53,8 @@
       (find-file (concat "/sudo:root@localhost:"
                          (ido-read-file-name "Find file(as root): ")))
     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
-(global-set-key (kbd "C-x C-r") 'sudo-edit)
 
-
-;; highlight
+;; highlight focus
 (require 'face-remap)
 (defvar highlight-focus:last-buffer nil)
 (defvar highlight-focus:cookie nil)
@@ -115,17 +88,51 @@
 (add-hook 'focus-in-hook (lambda () (highlight-focus:app-focus t)))
 (add-hook 'focus-out-hook (lambda () (highlight-focus:app-focus nil)))
 
-(provide 'highlight-focus)
-
-;; enable hl-line-mode and set color background
-;;(global-hl-line-mode 1)
-;;(set-face-background 'hl-line "#aaa")
-
-;; change color background of selection
-;;(set-face-attribute 'region nil :background "#555")
-
 ;; remove scroll bar
 (scroll-bar-mode -1)
+
+;; load status
+(require 'status)
+(toggle-status)
+
+;; browse kill ring
+(require 'browse-kill-ring)
+
+;; enable yasnippet
+(require 'yasnippet)
+(yas-global-mode 1)
+
+;; add status bar
+(require 'status)
+
+;; move echo area on the top
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;        KEYS SHORTCUTS        ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; windows
+(global-set-key (kbd "C-c <left>")  'windmove-left)
+(global-set-key (kbd "C-c <right>") 'windmove-right)
+(global-set-key (kbd "C-c <up>")    'windmove-up)
+(global-set-key (kbd "C-c <down>")  'windmove-down)
+
+;;
+(global-set-key (kbd "C-M-y") (lambda () (interactive) (yank-pop -1)))
+
+;; goto virtual desktops
+(global-set-key (kbd "M-<kp-1>") (lambda () (interactive) (virtual-desktops-goto 1)))
+(global-set-key (kbd "M-<kp-2>") (lambda () (interactive) (virtual-desktops-goto 2)))
+(global-set-key (kbd "M-<kp-3>") (lambda () (interactive) (virtual-desktops-goto 3)))
+(global-set-key (kbd "M-<kp-4>") (lambda () (interactive) (virtual-desktops-goto 4)))
+(global-set-key (kbd "M-<kp-5>") (lambda () (interactive) (virtual-desktops-goto 5)))
+(global-set-key (kbd "M-<kp-6>") (lambda () (interactive) (virtual-desktops-goto 6)))
+(global-set-key (kbd "M-<kp-7>") (lambda () (interactive) (virtual-desktops-goto 7)))
+(global-set-key (kbd "M-<kp-8>") (lambda () (interactive) (virtual-desktops-goto 8)))
+(global-set-key (kbd "M-<kp-9>") (lambda () (interactive) (virtual-desktops-goto 9)))
+
+;; sudo-edit
+(global-set-key (kbd "C-x C-r") 'sudo-edit)
 
 ;; shortcut for goto-line
 (global-set-key (kbd "C-l") 'goto-line)
@@ -152,3 +159,6 @@
 (global-set-key (kbd "C-c t s") 'org-timer-start)
 (global-set-key (kbd "C-c t p") 'org-timer-pause-or-continue)
 (global-set-key (kbd "C-c t e") 'org-timer-stop)
+
+
+(provide 'my-windows)

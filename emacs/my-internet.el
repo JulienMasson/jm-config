@@ -49,3 +49,5 @@ search-term
 
 ;; display images
 (setq w3m-default-display-inline-images t)
+
+(provide 'my-internet)
