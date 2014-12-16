@@ -22,6 +22,7 @@ git submodule update --init latex-extra
 git submodule update --init magic-latex-buffer
 git submodule update --init magit
 git submodule update --init magit-filenotify
+git submodule update --init math-symbol-lists
 git submodule update --init popup-el
 git submodule update --init predictive
 git submodule update --init purple
