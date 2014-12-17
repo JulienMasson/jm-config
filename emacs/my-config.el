@@ -41,8 +41,5 @@
 ;; multimedia config
 (require 'my-multimedia)
 
-;; ;; intel config
-;; (require 'jmasson-intel)
-
 
 (provide 'my-config)
