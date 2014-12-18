@@ -13,6 +13,7 @@
 ;; cscope
 (load-file "~/jm-config/emacs/modules/xcscope.el/xcscope.el")
 (require 'xcscope)
+(cscope-setup)
 (setq path-to-cscope "/usr/bin/cscope")
 (defun create-tags-cscope (dir-name)
   "Create tags file."
