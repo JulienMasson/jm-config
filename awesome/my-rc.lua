@@ -8,7 +8,7 @@ require("beautiful")
 -- Notification library
 require("naughty")
 
--- require("blingbling")
+-- blingbling = require("blingbling")
 
 -- Load Debian menu entries
 require("debian.menu")
@@ -185,24 +185,6 @@ dnicon = widget({ type = "imagebox" })
 upicon = widget({ type = "imagebox" })
 dnicon.image = image(beautiful.widget_net)
 upicon.image = image(beautiful.widget_netup)
-
--- --First widget on the left (the configurations for the other widgets are the same)
--- my_fs=blingbling.value_text_box.new()
--- my_fs:set_height(18)
--- my_fs:set_width(40)
--- my_fs:set_v_margin(2)
--- my_fs:set_filled(true)
--- my_fs:set_filled_color("#00000099")
--- my_fs:set_values_text_color({{"#88aa00ff",0}, --all value > 0 will be displaying using this color
---                               {"#d4aa00ff", 0.75},
---                               {"#d45500ff",0.77}})
--- --There is no maximum number of color that users can set, just put the lower values at first. 
--- my_fs:set_default_text_color(beautiful.textbox_widget_as_label_font_color)
--- my_fs:set_rounded_size(0.4)
--- my_fs:set_background_color("#00000044")
--- my_fs:set_label("usage: $percent %")
--- vicious.register(my_fs, vicious.widgets.fs, "${/home used_p}", 120)
-
 
 -- use widget({ type = "textbox" }) for awesome < 3.5
 separator = widget({ type = "textbox" })
