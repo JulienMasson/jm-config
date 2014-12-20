@@ -189,6 +189,20 @@ separator = widget({ type = "textbox" })
 -- use separator.text  = " :: " for awesome < 3.5
 separator.text  = " :: "
 
+
+statwidget = widget({
+   type = 'textbox',
+   name = 'statwidget'
+})
+
+function run_script()
+    local filedescriptor = io.popen("/home/julien/jm-config/awesome/my-bar.sh")
+    local value = filedescriptor:read()
+    filedescriptor:close()
+    return {value}
+end
+vicious.register(statwidget, run_script, '$1')
+
 -- Create a textclock widget
 mytextclock = awful.widget.textclock({ align = "right" })
 
@@ -270,7 +284,7 @@ for s = 1, screen.count() do
             layout = awful.widget.layout.horizontal.leftright
         },
         mylayoutbox[s],
-        mytextclock,
+	statwidget,
 	separator,
 	memwidget,
 	separator,
