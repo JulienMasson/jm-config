@@ -8,8 +8,6 @@ require("beautiful")
 -- Notification library
 require("naughty")
 
--- blingbling = require("blingbling")
-
 -- Load Debian menu entries
 require("debian.menu")
 
@@ -76,7 +74,7 @@ layouts =
 -- Define a tag table which will hold all screen tags.
 tags = {
   names  = { "Emacs", "Firefox", "Term", "Extra" },
-  layout = { layouts[1], layouts[2], layouts[1], layouts[5]
+  layout = { layouts[2], layouts[10], layouts[1], layouts[1]
 }}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
@@ -271,7 +269,7 @@ for s = 1, screen.count() do
             mypromptbox[s],
             layout = awful.widget.layout.horizontal.leftright
         },
-        mylayoutbox[s],   
+        mylayoutbox[s],
         mytextclock,
 	separator,
 	memwidget,
@@ -279,7 +277,6 @@ for s = 1, screen.count() do
 	upicon, netwidget, dnicon,
 	separator,
 	cpuwidget.widget,
-	-- my_fs,
         s == 1 and mysystray or nil,
         mytasklist[s],
         layout = awful.widget.layout.horizontal.rightleft
@@ -371,6 +368,11 @@ clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
     awful.key({ modkey, "Shift"   }, "r",      function (c) c:redraw()                       end),
     awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end),
+
+    -- add in your .xinitrc
+    -- xscreensaver -nosplash &
+    awful.key({ modkey, "Control" }, "l", function () awful.util.spawn("xscreensaver-command -lock") end),
+
     awful.key({ modkey,           }, "n",
         function (c)
             -- The client currently has the input focus, so it cannot be
@@ -381,7 +383,7 @@ clientkeys = awful.util.table.join(
         function (c)
             c.maximized_horizontal = not c.maximized_horizontal
             c.maximized_vertical   = not c.maximized_vertical
-        end)
+	    end)
 )
 
 -- Compute the maximum number of digit we need, limited to 9
