@@ -20,3 +20,6 @@ sudo apt-get install dmenu -y
 
 # awesome
 sudo apt-get install awesome awesome-extra -y
+
+# pcmanfm
+sudo apt-get install pcmanfm -y
