@@ -33,3 +33,6 @@ git submodule update --init wanderlust
 git submodule update --init w3m
 git submodule update --init xcscope.el
 git submodule update --init yasnippet
+
+# copy .emacs
+cp ~/jm-config/emacs/.emacs ~/

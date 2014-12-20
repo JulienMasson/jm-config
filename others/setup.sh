@@ -9,5 +9,5 @@ cd ~/jm-config/others/
 # setup emacs
 ./setup_emacs.sh
 
-# copy .emacs
-cp ~/jm-config/emacs/.emacs ~/
+# setup awesome
+./setup_awesome.sh

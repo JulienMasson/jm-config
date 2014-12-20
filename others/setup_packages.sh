@@ -14,3 +14,9 @@ sudo apt-get install zsh -y
 
 # conky
 sudo apt-get install conky -y
+
+# dmenu
+sudo apt-get install dmenu -y
+
+# awesome
+sudo apt-get install awesome awesome-extra -y

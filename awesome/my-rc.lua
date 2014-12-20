@@ -36,9 +36,11 @@ do
 end
 -- }}}
 
+local home_dir   = os.getenv("HOME")
+
 -- {{{ Variable definitions
 -- Themes define colours, icons, and wallpapers
-beautiful.init("/home/julien/jm-config/awesome/theme.lua")
+beautiful.init(home_dir .. "/jm-config/awesome/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "x-terminal-emulator"
@@ -196,7 +198,7 @@ statwidget = widget({
 })
 
 function run_script()
-    local filedescriptor = io.popen("/home/julien/jm-config/awesome/my-bar.sh")
+    local filedescriptor = io.popen(home_dir .. "/jm-config/awesome/my-bar.sh")
     local value = filedescriptor:read()
     filedescriptor:close()
     return {value}

@@ -2,7 +2,8 @@
 --    jm awesome theme   --
 ---------------------------
 
-local theme_dir="/home/julien/jm-config/awesome/theme/"
+local home_dir   = os.getenv("HOME")
+local theme_dir = home_dir .. "/jm-config/awesome/theme/"
 
 local function rgb(red, green, blue)
   if type(red) == "number" or type(green) == "number" or type(blue) == "number" then
@@ -167,7 +168,7 @@ theme.awesome_icon = theme_dir .. "/awesome.png"
 
 -- Define the icon theme for application icons. If not set then the icons 
 -- from /usr/share/icons and /usr/share/icons/hicolor will be used.
-theme.icon_theme = "/home/julien/.icons/AwOkenDark" 
+theme.icon_theme = home_dir .. "/jm-config/awesome/icons/AwOkenDark" 
 theme.blingbling = {
     background_color = "#00000000",
     graph_background_color = widget_background,
