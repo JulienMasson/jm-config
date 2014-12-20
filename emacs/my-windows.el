@@ -93,7 +93,7 @@
 
 ;; load status
 (require 'status)
-(toggle-status)
+;; (toggle-status)
 
 ;; browse kill ring
 (require 'browse-kill-ring)
