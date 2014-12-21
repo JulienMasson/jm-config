@@ -155,6 +155,11 @@ cpu:set_background_color("#00000044")
 cpu:set_filled_color("#00000099")
 cpu:set_rounded_size(0.6)
 vicious.register(cpu, vicious.widgets.cpu, '$1',2)
+
+-- Initialize widget
+cpudegreewidget = widget({ type = "textbox" })
+-- Register widget
+vicious.register(cpudegreewidget, vicious.widgets.thermal, "$1 °C", 30, { "coretemp.0", "core"})
  
 --Cores Widgets
 corelabel=widget({ type = "textbox" })
@@ -201,6 +206,11 @@ memwidget:set_graph_color("#00ccff00")
 memwidget:set_graph_line_color("#00ccff88")
 memwidget:set_background_color("#00000044")
 vicious.register(memwidget, vicious.widgets.mem, "$1", 5)
+
+-- Initialize widget
+memtextwidget = widget({ type = "textbox" })
+-- Register widget
+vicious.register(memtextwidget, vicious.widgets.mem, "$2MB", 13)
 
 -- Calendar widget
 my_cal =blingbling.calendar.new({type = "imagebox", image = beautiful.calendar})
@@ -365,6 +375,8 @@ for s = 1, screen.count() do
 		space,
 		volume_label,
 	separator,
+		cpudegreewidget,
+		space,
 		cpu.widget,
 		space,
         	cpulabel,
@@ -373,6 +385,8 @@ for s = 1, screen.count() do
         -- 	mycore2.widget,
         -- 	corelabel,
 	separator,
+		memtextwidget,
+		space,
 		memwidget.widget,
 		space,
 		memlabel,
