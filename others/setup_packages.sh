@@ -23,3 +23,6 @@ sudo apt-get install awesome awesome-extra -y
 
 # pcmanfm
 sudo apt-get install pcmanfm -y
+
+# feh
+sudo apt-get install feh -y
