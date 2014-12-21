@@ -106,22 +106,161 @@ mylauncher = awful.widget.launcher({ image = image(beautiful.awesome_icon),
 
 -- {{{ Wibox
 
---First widget on the left (the configurations for the other widgets are the same)
-my_fs=blingbling.value_text_box.new()
-my_fs:set_height(18)
-my_fs:set_width(40)
-my_fs:set_v_margin(2)
-my_fs:set_filled(true)
-my_fs:set_filled_color("#00000099")
-my_fs:set_values_text_color({{"#88aa00ff",0}, --all value > 0 will be displaying using this color
-                             {"#d4aa00ff", 0.75},
-                             {"#d45500ff",0.77}})
--There is no maximum number of color that users can set, just put the lower values at first. 
-my_fs:set_default_text_color(beautiful.textbox_widget_as_label_font_color)
-my_fs:set_rounded_size(0.4)
-my_fs:set_background_color("#00000044")
-my_fs:set_label("usage: $percent %")
-vicious.register(my_fs, vicious.widgets.fs, "${/home used_p}", 120)
+--pango
+    pango_small="size=\"small\""
+    pango_x_small="size=\"x-small\""
+    pango_xx_small="size=\"xx-small\""
+    pango_bold="weight=\"bold\""
+
+-- --shutdown widget
+--     shutdown=blingbling.system.shutdownmenu(beautiful.shutdown, 
+--                                             beautiful.accept, 
+--                                             beautiful.cancel)
+--     shutdown.resize= false
+--     awful.widget.layout.margins[shutdown]={top=4}
+-- --reboot widget
+--     reboot=blingbling.system.rebootmenu(beautiful.reboot, 
+--                                         beautiful.accept, 
+--                                         beautiful.cancel)
+--     reboot.resize = false
+--     awful.widget.layout.margins[reboot]={top=4}
+--     -- Date
+--     datewidget = widget({ type = "textbox" })
+--     vicious.register(datewidget, vicious.widgets.date, "<span color=\""..beautiful.text_font_color_1.."\" "..pango_small..">%b %d, %R</span>", 60)
+
+--Cpu widget 
+cpulabel= widget({ type = "textbox" })
+cpulabel.text='<span color="#ff8700" '..pango_small..' '..pango_bold..'>CPU: </span>'
+cpu=blingbling.classical_graph.new()
+cpu:set_font_size(8)
+cpu:set_height(16)
+cpu:set_width(150)
+cpu:set_show_text(true)
+cpu:set_label("Load: $percent %")
+cpu:set_graph_color("#00ccff00")
+--Use transparency on graph line color to reduce the width of line with low resolution screen
+cpu:set_graph_line_color("#ff330088")
+cpu:set_filled(true)
+cpu:set_h_margin(2)
+cpu:set_background_color("#00000044")
+cpu:set_filled_color("#00000099")
+cpu:set_rounded_size(0.6)
+vicious.register(cpu, vicious.widgets.cpu, '$1',2)
+ 
+--Cores Widgets
+corelabel=widget({ type = "textbox" })
+corelabel.text='<span color="#ff8700" '..pango_small..'>Cores:</span>'
+mycore1 = blingbling.value_text_box.new()
+mycore1:set_width(25)
+mycore1:set_height(16)
+mycore1:set_filled(true)
+mycore1:set_filled_color("#00000099")
+mycore1:set_rounded_size(0.6)
+mycore1:set_values_text_color({{"#88aa00ff",0},{"#d4aa00ff", 0.5},{"#d45500ff",0.75}})
+mycore1:set_font_size(8)
+mycore1:set_background_color("#00000044")
+mycore1:set_label("$percent%")
+vicious.register(mycore1, vicious.widgets.cpu, "$2")
+
+mycore2 = blingbling.value_text_box.new()
+mycore2:set_width(25)
+mycore2:set_height(16)
+mycore2:set_filled(true)
+mycore2:set_filled_color("#00000099")
+mycore2:set_rounded_size(0.6)
+mycore2:set_values_text_color({{"#88aa00ff",0},{"#d4aa00ff", 0.5},{"#d45500ff",0.75}})
+mycore2:set_font_size(8)
+mycore2:set_background_color("#00000044")
+mycore2:set_label("$percent%")
+vicious.register(mycore2, vicious.widgets.cpu, "$3")
+
+-- Mem Widget
+memlabel= widget({ type = "textbox" })
+memlabel.text='<span color="#ff8700" '..pango_small..'>MEM: </span>'
+memwidget = blingbling.classical_graph.new()
+memwidget:set_font_size(8)
+memwidget:set_height(16)
+memwidget:set_h_margin(2)
+memwidget:set_width(150)
+memwidget:set_filled(true)
+memwidget:set_show_text(true)
+memwidget:set_filled_color("#00000099")
+memwidget:set_rounded_size(0.6)
+--We just want the line of the graph
+memwidget:set_graph_color("#00ccff00")
+--Use transparency on graph line color to reduce the width of line with low resolution screen
+memwidget:set_graph_line_color("#00ccff88")
+memwidget:set_background_color("#00000044")
+vicious.register(memwidget, vicious.widgets.mem, "$1", 5)
+
+-- Calendar widget
+my_cal =blingbling.calendar.new({type = "imagebox", image = beautiful.calendar})
+my_cal:set_cell_padding(2)
+my_cal:set_title_font_size(9)
+my_cal:set_font_size(8)
+my_cal:set_inter_margin(1)
+my_cal:set_columns_lines_titles_font_size(8)
+my_cal:set_columns_lines_titles_text_color("#d4aa00ff")
+
+-- Net Widget
+netwidget = widget({ type = "textbox", name = "netwidget" })
+netwidget.text='<span '..pango_small..'><span color="#ff8700">NET:</span></span>'
+my_net=blingbling.net.new()
+my_net:set_height(18)
+my_net:set_width(88)
+my_net:set_v_margin(3)
+my_net:set_graph_line_color("#00ccff00")
+my_net:set_graph_color("#ff8700")
+my_net:set_filled_color("#00000055")
+my_net:set_show_text(true)
+
+
+-- FS Widget
+fshomelabel= widget({ type = "textbox", name = "fshomelabel" })
+fshomelabel.text='<span color="#ff8700" '..pango_small..'>/home: </span>'
+fshome = blingbling.value_text_box.new()
+fshome:set_width(25)
+fshome:set_height(16)
+fshome:set_filled(true)
+fshome:set_filled_color("#00000099")
+fshome:set_rounded_size(0.6)
+fshome:set_values_text_color({{"#88aa00ff",0},{"#d4aa00ff", 0.5},{"#d45500ff",0.75}})
+fshome:set_font_size(8)
+fshome:set_background_color("#00000044")
+fshome:set_label("$percent%")
+vicious.register(fshome, vicious.widgets.fs, "${/home used_p}", 120 )
+
+fsrootlabel= widget({ type = "textbox", name = "fsrootlabel" })
+fsrootlabel.text='<span color="#ff8700" '..pango_small..'>root: </span>'
+fsroot = blingbling.value_text_box.new()
+fsroot:set_width(25)
+fsroot:set_height(16)
+fsroot:set_filled(true)
+fsroot:set_filled_color("#00000099")
+fsroot:set_rounded_size(0.6)
+fsroot:set_values_text_color({{"#88aa00ff",0},{"#d4aa00ff", 0.5},{"#d45500ff",0.75}})
+fsroot:set_font_size(8)
+fsroot:set_background_color("#00000044")
+fsroot:set_label("$percent%")
+vicious.register(fsroot, vicious.widgets.fs, "${/ used_p}", 120 )
+
+--Volume
+volume_label = widget({ type = "textbox"})
+volume_label.text='<span '..pango_small..'><span color="#ff8700">Vol.: </span></span>'
+my_volume=blingbling.volume.new()
+my_volume:set_height(16)
+my_volume:set_v_margin(3)
+my_volume:set_width(20)
+my_volume:update_master()
+my_volume:set_master_control()
+my_volume:set_bar(true)
+my_volume:set_background_graph_color("#00000099")
+my_volume:set_graph_color("#ff8700")
+
+-- use widget({ type = "textbox" }) for awesome < 3.5
+separator = widget({ type = "textbox" })
+-- use separator.text  = " :: " for awesome < 3.5
+separator.text  = " :: "
 
 -- Create a textclock widget
 mytextclock = awful.widget.textclock({ align = "right" })
@@ -210,7 +349,30 @@ for s = 1, screen.count() do
         },
         mylayoutbox[s],
 	mytextclock,
-	my_fs.widget,
+	separator,
+	my_net.widget,
+	netwidget,
+	separator,
+	fshome.widget,
+	fshomelabel,
+	separator,
+	fsroot.widget,
+	fsrootlabel,
+	separator,
+	my_volume.widget,
+	volume_label,
+	separator,
+	memwidget.widget,
+	memlabel,
+	separator,
+	my_cal.widget,
+	separator,
+        cpu.widget,
+        cpulabel,
+        separator,
+        mycore1.widget,
+        mycore2.widget,
+        corelabel,
         s == 1 and mysystray or nil,
         mytasklist[s],
         layout = awful.widget.layout.horizontal.rightleft

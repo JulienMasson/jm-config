@@ -309,5 +309,7 @@ theme.blingbling.calendar.weeks_number_widget_style.text_color = light_grey
         }
 --]]
 
+theme.calendar = home_dir .. "/jm-config/awesome/icons/calendar.png"
+
 return theme
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80
