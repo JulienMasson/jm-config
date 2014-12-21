@@ -107,33 +107,42 @@ mylauncher = awful.widget.launcher({ image = image(beautiful.awesome_icon),
 -- {{{ Wibox
 
 --pango
+    pango_xx_large="size=\"xx-large\""
+    pango_x_large="size=\"x-large\""
+    pango_large="size=\"large\""
     pango_small="size=\"small\""
     pango_x_small="size=\"x-small\""
     pango_xx_small="size=\"xx-small\""
     pango_bold="weight=\"bold\""
 
--- --shutdown widget
---     shutdown=blingbling.system.shutdownmenu(beautiful.shutdown, 
---                                             beautiful.accept, 
---                                             beautiful.cancel)
---     shutdown.resize= false
---     awful.widget.layout.margins[shutdown]={top=4}
--- --reboot widget
---     reboot=blingbling.system.rebootmenu(beautiful.reboot, 
---                                         beautiful.accept, 
---                                         beautiful.cancel)
---     reboot.resize = false
---     awful.widget.layout.margins[reboot]={top=4}
---     -- Date
---     datewidget = widget({ type = "textbox" })
---     vicious.register(datewidget, vicious.widgets.date, "<span color=\""..beautiful.text_font_color_1.."\" "..pango_small..">%b %d, %R</span>", 60)
+-- Create a textclock widget
+mytextclock = awful.widget.textclock({ align = "right" })
+
+
+--shutdown widget
+shutdown=blingbling.system.shutdownmenu(beautiful.shutdown, 
+                                        beautiful.accept, 
+                                        beautiful.cancel)
+shutdown.resize= false
+awful.widget.layout.margins[shutdown]={top=4}
+
+--reboot widget
+reboot=blingbling.system.rebootmenu(beautiful.reboot, 
+                                    beautiful.accept, 
+                                    beautiful.cancel)
+reboot.resize = false
+awful.widget.layout.margins[reboot]={top=4}
+
+-- Date
+datewidget = widget({ type = "textbox" })
+vicious.register(datewidget, vicious.widgets.date, '<span color="#ff8700" '..pango_small..'>%b %d, %R</span>', 60)
 
 --Cpu widget 
 cpulabel= widget({ type = "textbox" })
-cpulabel.text='<span color="#ff8700" '..pango_small..' '..pango_bold..'>CPU: </span>'
+cpulabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>CPU </span>'
 cpu=blingbling.classical_graph.new()
 cpu:set_font_size(8)
-cpu:set_height(16)
+cpu:set_height(20)
 cpu:set_width(150)
 cpu:set_show_text(true)
 cpu:set_label("Load: $percent %")
@@ -149,7 +158,7 @@ vicious.register(cpu, vicious.widgets.cpu, '$1',2)
  
 --Cores Widgets
 corelabel=widget({ type = "textbox" })
-corelabel.text='<span color="#ff8700" '..pango_small..'>Cores:</span>'
+corelabel.text='<span color="#ff8700" '..pango_large..'>Cores:</span>'
 mycore1 = blingbling.value_text_box.new()
 mycore1:set_width(25)
 mycore1:set_height(16)
@@ -176,10 +185,10 @@ vicious.register(mycore2, vicious.widgets.cpu, "$3")
 
 -- Mem Widget
 memlabel= widget({ type = "textbox" })
-memlabel.text='<span color="#ff8700" '..pango_small..'>MEM: </span>'
+memlabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>RAM </span>'
 memwidget = blingbling.classical_graph.new()
 memwidget:set_font_size(8)
-memwidget:set_height(16)
+memwidget:set_height(20)
 memwidget:set_h_margin(2)
 memwidget:set_width(150)
 memwidget:set_filled(true)
@@ -203,11 +212,9 @@ my_cal:set_columns_lines_titles_font_size(8)
 my_cal:set_columns_lines_titles_text_color("#d4aa00ff")
 
 -- Net Widget
-netwidget = widget({ type = "textbox", name = "netwidget" })
-netwidget.text='<span '..pango_small..'><span color="#ff8700">NET:</span></span>'
 my_net=blingbling.net.new()
-my_net:set_height(18)
-my_net:set_width(88)
+my_net:set_height(20)
+my_net:set_width(90)
 my_net:set_v_margin(3)
 my_net:set_graph_line_color("#00ccff00")
 my_net:set_graph_color("#ff8700")
@@ -217,7 +224,7 @@ my_net:set_show_text(true)
 
 -- FS Widget
 fshomelabel= widget({ type = "textbox", name = "fshomelabel" })
-fshomelabel.text='<span color="#ff8700" '..pango_small..'>/home: </span>'
+fshomelabel.text='<span color="#ff8700" '..pango_large..'>/home: </span>'
 fshome = blingbling.value_text_box.new()
 fshome:set_width(25)
 fshome:set_height(16)
@@ -231,26 +238,26 @@ fshome:set_label("$percent%")
 vicious.register(fshome, vicious.widgets.fs, "${/home used_p}", 120 )
 
 fsrootlabel= widget({ type = "textbox", name = "fsrootlabel" })
-fsrootlabel.text='<span color="#ff8700" '..pango_small..'>root: </span>'
+fsrootlabel.text='<span color="#ff8700" '..pango_large..' >Root </span>'
 fsroot = blingbling.value_text_box.new()
 fsroot:set_width(25)
-fsroot:set_height(16)
+fsroot:set_height(20)
 fsroot:set_filled(true)
 fsroot:set_filled_color("#00000099")
 fsroot:set_rounded_size(0.6)
 fsroot:set_values_text_color({{"#88aa00ff",0},{"#d4aa00ff", 0.5},{"#d45500ff",0.75}})
-fsroot:set_font_size(8)
+fsroot:set_font_size(12)
 fsroot:set_background_color("#00000044")
 fsroot:set_label("$percent%")
 vicious.register(fsroot, vicious.widgets.fs, "${/ used_p}", 120 )
 
 --Volume
 volume_label = widget({ type = "textbox"})
-volume_label.text='<span '..pango_small..'><span color="#ff8700">Vol.: </span></span>'
+volume_label.text='<span color="#ff8700" '..pango_large..' >Volume </span>'
 my_volume=blingbling.volume.new()
-my_volume:set_height(16)
+my_volume:set_height(20)
 my_volume:set_v_margin(3)
-my_volume:set_width(20)
+my_volume:set_width(25)
 my_volume:update_master()
 my_volume:set_master_control()
 my_volume:set_bar(true)
@@ -260,10 +267,11 @@ my_volume:set_graph_color("#ff8700")
 -- use widget({ type = "textbox" }) for awesome < 3.5
 separator = widget({ type = "textbox" })
 -- use separator.text  = " :: " for awesome < 3.5
-separator.text  = " :: "
+separator.text  = "    ::    "
 
--- Create a textclock widget
-mytextclock = awful.widget.textclock({ align = "right" })
+space = widget({ type = "textbox" })
+-- use separator.text  = " :: " for awesome < 3.5
+space.text  = "  "
 
 -- Calendar widget to attach to the textclock
 dofile(home_dir .. "/jm-config/awesome/modules/calendar2.lua")
@@ -348,31 +356,34 @@ for s = 1, screen.count() do
             layout = awful.widget.layout.horizontal.leftright
         },
         mylayoutbox[s],
-	mytextclock,
+		space,
+		mytextclock,
+		space,
+		my_cal.widget,
 	separator,
-	my_net.widget,
-	netwidget,
+		my_volume.widget,
+		space,
+		volume_label,
 	separator,
-	fshome.widget,
-	fshomelabel,
+		cpu.widget,
+		space,
+        	cpulabel,
+        -- separator,
+	-- 	mycore1.widget,
+        -- 	mycore2.widget,
+        -- 	corelabel,
 	separator,
-	fsroot.widget,
-	fsrootlabel,
+		memwidget.widget,
+		space,
+		memlabel,
 	separator,
-	my_volume.widget,
-	volume_label,
+		fsroot.widget,
+		space,
+		fsrootlabel,
+		-- fshome.widget,
+		-- fshomelabel,
 	separator,
-	memwidget.widget,
-	memlabel,
-	separator,
-	my_cal.widget,
-	separator,
-        cpu.widget,
-        cpulabel,
-        separator,
-        mycore1.widget,
-        mycore2.widget,
-        corelabel,
+		my_net.widget,
         s == 1 and mysystray or nil,
         mytasklist[s],
         layout = awful.widget.layout.horizontal.rightleft
