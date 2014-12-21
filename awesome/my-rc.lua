@@ -208,6 +208,11 @@ vicious.register(statwidget, run_script, '$1')
 -- Create a textclock widget
 mytextclock = awful.widget.textclock({ align = "right" })
 
+-- Calendar widget to attach to the textclock
+dofile(home_dir .. "/jm-config/awesome/modules/calendar2.lua")
+require('calendar2')
+calendar2.addCalendarToWidget(mytextclock)
+
 -- Create a systray
 mysystray = widget({ type = "systray" })
 
