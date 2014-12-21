@@ -26,3 +26,6 @@ sudo apt-get install pcmanfm -y
 
 # feh
 sudo apt-get install feh -y
+
+# numlockx
+sudo apt-get install numlockx -y
