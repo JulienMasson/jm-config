@@ -77,7 +77,7 @@ layouts =
 -- Define a tag table which will hold all screen tags.
 tags = {
   names  = { "Emacs", "Firefox", "Term", "Extra" },
-  layout = { layouts[2], layouts[10], layouts[1], layouts[1]
+  layout = { layouts[1], layouts[10], layouts[1], layouts[1]
 }}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
@@ -114,6 +114,23 @@ mylauncher = awful.widget.launcher({ image = image(beautiful.awesome_icon),
     pango_x_small="size=\"x-small\""
     pango_xx_small="size=\"xx-small\""
     pango_bold="weight=\"bold\""
+
+-- function to run script
+function run_script()
+    local filedescriptor = io.popen(home_dir .. "ls -1 ~/Maildir/Intel/INBOX/new/ | wc -l")
+    local value = filedescriptor:read()
+    filedescriptor:close()
+    return {value}
+end
+
+-- Mails
+maillabel= widget({ type = "textbox" })
+maillabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Mail </span>'
+mailwidget = widget({
+   type = 'textbox',
+   name = 'mailwidget'
+})
+vicious.register(mailwidget, run_script, '$1')
 
 -- Create a textclock widget
 mytextclock = awful.widget.textclock({ align = "right" })
@@ -286,7 +303,7 @@ space.text  = "  "
 -- Calendar widget to attach to the textclock
 dofile(home_dir .. "/jm-config/awesome/modules/calendar2.lua")
 require('calendar2')
-calendar2.addCalendarToWidget(mytextclock)
+-- calendar2.addCalendarToWidget(mytextclock)
 
 -- Create a systray
 mysystray = widget({ type = "systray" })
@@ -397,6 +414,10 @@ for s = 1, screen.count() do
 		-- fshome.widget,
 		-- fshomelabel,
 	separator,
+		mailwidget,
+		space,
+		maillabel,
+	separator,
 		my_net.widget,
         s == 1 and mysystray or nil,
         mytasklist[s],
@@ -415,8 +436,8 @@ root.buttons(awful.util.table.join(
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
-    awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
-    awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
+    -- awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
+    -- awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
 
     awful.key({ modkey,           }, "j",
@@ -468,7 +489,6 @@ globalkeys = awful.util.table.join(
     					    "' -sf '" .. beautiful.fg_focus .. "'") 
     end),
 
-
     -- Prompt
     awful.key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
 
@@ -502,9 +522,16 @@ clientkeys = awful.util.table.join(
         end),
     awful.key({ modkey,           }, "m",
         function (c)
-            c.maximized_horizontal = not c.maximized_horizontal
-            c.maximized_vertical   = not c.maximized_vertical
-	    end)
+            c.maximized_horizontal = false
+            c.maximized_vertical   = false
+	    awful.mouse.client.move(c)
+	    end),
+
+    awful.key({ modkey }, "Down",  function () awful.client.moveresize(  0,  0,   0,  10) end),
+    awful.key({ modkey }, "Up",    function () awful.client.moveresize(  0,  0,   0, -10) end),
+    awful.key({ modkey }, "Left",  function () awful.client.moveresize(  0,  0, -10,  0) end),
+    awful.key({ modkey }, "Right", function () awful.client.moveresize(  0,  0,  10,  0) end)
+
 )
 
 -- Compute the maximum number of digit we need, limited to 9
