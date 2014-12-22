@@ -489,6 +489,10 @@ globalkeys = awful.util.table.join(
     					    "' -sf '" .. beautiful.fg_focus .. "'") 
     end),
 
+   awful.key({ }, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer set Master 9%+") end),
+   awful.key({ }, "XF86AudioLowerVolume", function () awful.util.spawn("amixer set Master 9%-") end),
+   awful.key({ }, "XF86AudioMute", function () awful.util.spawn("amixer sset Master toggle") end),
+
     -- Prompt
     awful.key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
 
