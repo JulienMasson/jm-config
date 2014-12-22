@@ -132,6 +132,14 @@ mailwidget = widget({
 })
 vicious.register(mailwidget, run_script, '$1')
 
+-- mdir
+gmailwidget = widget({ type = "textbox" })
+vicious.register(gmailwidget, vicious.widgets.mdir, "$1/$2 ", 5, { '/home/julien/Maildir/Gmail/INBOX/' })
+eseowidget = widget({ type = "textbox" })
+vicious.register(eseowidget, vicious.widgets.mdir, "$1/$2 ", 5, { '/home/julien/Maildir/Eseo/INBOX/' })
+openwidewidget = widget({ type = "textbox" })
+vicious.register(openwidewidget, vicious.widgets.mdir, "$1/$2", 5, { '/home/julien/Maildir/OpenWide/INBOX/' })
+
 -- Create a textclock widget
 mytextclock = awful.widget.textclock({ align = "right" })
 
@@ -414,7 +422,9 @@ for s = 1, screen.count() do
 		-- fshome.widget,
 		-- fshomelabel,
 	separator,
-		mailwidget,
+		openwidewidget,
+		eseowidget,
+		gmailwidget,
 		space,
 		maillabel,
 	separator,
