@@ -531,10 +531,10 @@ clientkeys = awful.util.table.join(
 	    awful.mouse.client.move(c)
 	    end),
 
-    awful.key({ modkey }, "Down",  function () awful.client.moveresize(  0,  0,   0,  10) end),
-    awful.key({ modkey }, "Up",    function () awful.client.moveresize(  0,  0,   0, -10) end),
-    awful.key({ modkey }, "Left",  function () awful.client.moveresize(  0,  0, -10,  0) end),
-    awful.key({ modkey }, "Right", function () awful.client.moveresize(  0,  0,  10,  0) end)
+    awful.key({ modkey }, "Down",  function () awful.client.moveresize(  0,  0,   0,  20) end),
+    awful.key({ modkey }, "Up",    function () awful.client.moveresize(  0,  0,   0, -20) end),
+    awful.key({ modkey }, "Left",  function () awful.client.moveresize(  0,  0, -20,  0) end),
+    awful.key({ modkey }, "Right", function () awful.client.moveresize(  0,  0,  20,  0) end)
 
 )
 
