@@ -8,4 +8,4 @@ cp -r ~/jm-config/awesome/debian ~/.config/awesome/
 
 # get blingbling
 cd $AWESOME_HOME
-git clone -b v1.0 git://github.com/cedlemo/blingbling.git
+git clone -b v1.0 https://github.com/cedlemo/blingbling.git

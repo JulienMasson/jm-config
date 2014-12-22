@@ -32,5 +32,5 @@ sudo apt-get install numlockx -y
 
 # oocairo
 cd ~/jm-config/awesome/modules/
-dpkg -i liblua5.1-oocairo0_1.4-1.2_amd64.deb
-dpkg -i liblua5.1-oocairo-dev_1.4-1.2_amd64.deb
+sudo dpkg -i liblua5.1-oocairo0_1.4-1.2_amd64.deb
+sudo dpkg -i liblua5.1-oocairo-dev_1.4-1.2_amd64.deb
