@@ -4,12 +4,22 @@
 
 ;; gnus
 (require 'smtpmail)
-(setq ;; SMTP
- user-mail-address "massonju.eseo@intel.com"
- user-full-name "Julien Masson"
- message-send-mail-function 'smtpmail-send-it
- smtpmail-smtp-server "smtp.gmail.com"
- smtpmail-smtp-service 587
+
+(setq 
+;; Use Gnus to read gmail from the local directory to which offlineimap syncs 
+ gnus-select-method 
+ '(nnmaildir "OpenWide" 
+	     (directory "~/Maildir/OpenWide/INBOX/") 
+	     (expire-age never)) 
+ mail-sources '((maildir :path "~/Maildir/OpenWide/INBOX/" :subdirs ("cur" "new"))) 
+ mail-source-delete-incoming t
+
+;; (setq ;; SMTP
+;;  user-mail-address "massonju.eseo@intel.com"
+;;  user-full-name "Julien Masson"
+;;  message-send-mail-function 'smtpmail-send-it
+;;  smtpmail-smtp-server "smtp.gmail.com"
+;;  smtpmail-smtp-service 587
  ;; GNUS
  ;; gnus-select-method '(nnimap "IMAP"
  ;; 			     (nnimap-address "imap.gmail.com")
@@ -18,11 +28,11 @@
  ;; 			     (nnimap-inbox "INBOX"))
 
  ;; Use Gnus to read gmail from the local directory to which offlineimap syncs
- gnus-select-method '(nnmaildir "Gmail"
- 				(directory "~/Maildir/Gmail/INBOX/")
- 				(expire-age never))
- mail-sources '((maildir :path "~/Maildir/Gmail/INBOX/" :subdirs ("cur" "new")))
- mail-source-delete-incoming t
+ ;; gnus-select-method '(nnmaildir "Gmail"
+ ;; 				(directory "~/Maildir/Gmail/INBOX/")
+ ;; 				(expire-age never))
+ ;; mail-sources '((maildir :path "~/Maildir/Gmail/INBOX/" :subdirs ("cur" "new")))
+ ;; mail-source-delete-incoming t
 
  gnus-use-scoring t
  gnus-use-adaptive-scoring t

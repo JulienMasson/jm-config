@@ -1,5 +1,6 @@
 vicious = require("vicious")
 blingbling = require("blingbling")
+handTiler = require("hand-tiler")
 -- Standard awesome library
 require("awful")
 require("awful.autofocus")
@@ -134,14 +135,14 @@ maillabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Mail </
 -- vicious.register(mailwidget, run_script, '$1')
 
 -- mdir
--- gmailwidget = widget({ type = "textbox" })
--- vicious.register(gmailwidget, vicious.widgets.mdir, "$1/$2 ", 5, { '/home/julien/Maildir/Gmail/INBOX/' })
--- eseowidget = widget({ type = "textbox" })
--- vicious.register(eseowidget, vicious.widgets.mdir, "$1/$2 ", 5, { '/home/julien/Maildir/Eseo/INBOX/' })
--- openwidewidget = widget({ type = "textbox" })
--- vicious.register(openwidewidget, vicious.widgets.mdir, "$1/$2", 5, { '/home/julien/Maildir/OpenWide/INBOX/' })
+gmailwidget = widget({ type = "textbox" })
+vicious.register(gmailwidget, vicious.widgets.mdir, "$1/$2 ", 5, { home_dir ..'/Maildir/Gmail/INBOX/' })
+eseowidget = widget({ type = "textbox" })
+vicious.register(eseowidget, vicious.widgets.mdir, "$1/$2 ", 5, { home_dir ..'/Maildir/Eseo/INBOX/' })
+openwidewidget = widget({ type = "textbox" })
+vicious.register(openwidewidget, vicious.widgets.mdir, "$1/$2", 5, { home_dir ..'/Maildir/OpenWide/INBOX/' })
 intelwidget = widget({ type = "textbox" })
-vicious.register(intelwidget, vicious.widgets.mdir, "$1 / $2", 5, { '/home/lab/Maildir/Intel/INBOX/' })
+vicious.register(intelwidget, vicious.widgets.mdir, "$1 / $2", 5, { home_dir .. '/Maildir/Intel/INBOX/' })
 
 -- packages
 -- packageslabel= widget({ type = "textbox" })
@@ -153,7 +154,7 @@ vicious.register(intelwidget, vicious.widgets.mdir, "$1 / $2", 5, { '/home/lab/M
 orglabel= widget({ type = "textbox" })
 orglabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Org </span>'
 orgwidget = widget({ type = "textbox" })
-vicious.register(orgwidget, vicious.widgets.org, "$1 - $3 - $4 ", 300, { '/home/lab/org/todo.org' })
+vicious.register(orgwidget, vicious.widgets.org, "$1 - $3 - $4 ", 300, { home_dir ..'/org/todo.org' })
 
 -- weather
 -- weatherlabel= widget({ type = "textbox" })
@@ -167,7 +168,7 @@ mytextclock = awful.widget.textclock({ align = "right" })
 
 -- org calendar
 -- dofile(home_dir .. "/jm-config/awesome/modules/orglendar.lua")
--- orglendar.files = { "/home/lab/org/todo.org"}
+-- orglendar.files = { home_dir .. "/org/todo.org"}
 -- orglendar.register(mytextclock)
 
 
@@ -456,13 +457,13 @@ for s = 1, screen.count() do
 		space,
 		memlabel,
 	separator,
-		intelwidget,
+		openwidewidget,
+		space,
+		eseowidget,
+		space,
+		gmailwidget,
 		space,
 		maillabel,
-	separator,
-		orgwidget,
-		space,
-		orglabel,
 	separator,
 		my_net.widget,
         s == 1 and mysystray or nil,
@@ -486,12 +487,12 @@ globalkeys = awful.util.table.join(
     -- awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
 
-    awful.key({ modkey,           }, "j",
+    awful.key({ modkey,           }, "Right",
         function ()
             awful.client.focus.byidx( 1)
             if client.focus then client.focus:raise() end
         end),
-    awful.key({ modkey,           }, "k",
+    awful.key({ modkey,           }, "Left",
         function ()
             awful.client.focus.byidx(-1)
             if client.focus then client.focus:raise() end
@@ -499,8 +500,8 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "w", function () mymainmenu:show({keygrabber=true}) end),
 
     -- Layout manipulation
-    awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end),
-    awful.key({ modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end),
+    awful.key({ modkey, "Shift"   }, "Right", function () awful.client.swap.byidx(  1)    end),
+    awful.key({ modkey, "Shift"   }, "Left", function () awful.client.swap.byidx( -1)    end),
     awful.key({ modkey, "Control" }, "j", function () awful.screen.focus_relative( 1) end),
     awful.key({ modkey, "Control" }, "k", function () awful.screen.focus_relative(-1) end),
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
@@ -517,14 +518,14 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Control" }, "r", awesome.restart),
     awful.key({ modkey, "Shift"   }, "q", awesome.quit),
 
-    awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)    end),
-    awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)    end),
-    awful.key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1)      end),
-    awful.key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1)      end),
-    awful.key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1)         end),
-    awful.key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1)         end),
-    awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
-    awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
+    -- awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)    end),
+    -- awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)    end),
+    -- awful.key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1)      end),
+    -- awful.key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1)      end),
+    -- awful.key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1)         end),
+    -- awful.key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1)         end),
+    -- awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
+    -- awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
 
     awful.key({ modkey, "Control" }, "n", awful.client.restore),
 
@@ -552,13 +553,24 @@ globalkeys = awful.util.table.join(
 )
 
 clientkeys = awful.util.table.join(
+
+    -- Alt key for tiling
+    awful.key({ "Mod1",           },  "Left",     function (c) handTiler.tileTo(c, 'left')         end),
+    awful.key({ "Mod1",           },  "Right",     function (c) handTiler.tileTo(c, 'right')        end),
+    awful.key({ "Mod1",    "Shift" },  "Left",     function (c) handTiler.tileTo(c, 'left-top')     end),
+    awful.key({ "Mod1",    "Control" },  "Left",     function (c) handTiler.tileTo(c, 'left-bottom')  end),
+    awful.key({ "Mod1",    "Shift"},  "Right",     function (c) handTiler.tileTo(c, 'right-top')    end),
+    awful.key({ "Mod1",    "Control"},  "Right",     function (c) handTiler.tileTo(c, 'right-bottom') end),
+    awful.key({ "Mod1",           },  "Up",    function (c) handTiler.tileTo(c, 'top')    end),
+    awful.key({ "Mod1",           },  "Down",  function (c) handTiler.tileTo(c, 'bottom') end),
+
     awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
     awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end),
-    awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
-    awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
-    awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
-    awful.key({ modkey, "Shift"   }, "r",      function (c) c:redraw()                       end),
-    awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end),
+    -- awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
+    -- awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
+    -- awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
+    -- awful.key({ modkey, "Shift"   }, "r",      function (c) c:redraw()                       end),
+    -- awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end),
 
     -- add in your .xinitrc
     -- xscreensaver -nosplash &
@@ -577,10 +589,10 @@ clientkeys = awful.util.table.join(
 	    awful.mouse.client.move(c)
 	    end),
 
-    awful.key({ modkey }, "Down",  function () awful.client.moveresize(  0,  0,   0,  20) end),
-    awful.key({ modkey }, "Up",    function () awful.client.moveresize(  0,  0,   0, -20) end),
-    awful.key({ modkey }, "Left",  function () awful.client.moveresize(  0,  0, -20,  0) end),
-    awful.key({ modkey }, "Right", function () awful.client.moveresize(  0,  0,  20,  0) end)
+    awful.key({ modkey, "Control"  }, "Down",  function () awful.client.moveresize(  0,  0,   0,  20) end),
+    awful.key({ modkey, "Control"  }, "Up",    function () awful.client.moveresize(  0,  0,   0, -20) end),
+    awful.key({ modkey, "Control"  }, "Left",  function () awful.client.moveresize(  0,  0, -20,  0) end),
+    awful.key({ modkey, "Control"  }, "Right", function () awful.client.moveresize(  0,  0,  20,  0) end)
 
 )
 
