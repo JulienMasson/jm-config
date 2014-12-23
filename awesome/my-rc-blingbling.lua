@@ -12,6 +12,7 @@ require("naughty")
 -- Load Debian menu entries
 require("debian.menu")
 
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -126,37 +127,63 @@ end
 -- Mails
 maillabel= widget({ type = "textbox" })
 maillabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Mail </span>'
-mailwidget = widget({
-   type = 'textbox',
-   name = 'mailwidget'
-})
-vicious.register(mailwidget, run_script, '$1')
+-- mailwidget = widget({
+--    type = 'textbox',
+--    name = 'mailwidget'
+-- })
+-- vicious.register(mailwidget, run_script, '$1')
 
 -- mdir
-gmailwidget = widget({ type = "textbox" })
-vicious.register(gmailwidget, vicious.widgets.mdir, "$1/$2 ", 5, { '/home/julien/Maildir/Gmail/INBOX/' })
-eseowidget = widget({ type = "textbox" })
-vicious.register(eseowidget, vicious.widgets.mdir, "$1/$2 ", 5, { '/home/julien/Maildir/Eseo/INBOX/' })
-openwidewidget = widget({ type = "textbox" })
-vicious.register(openwidewidget, vicious.widgets.mdir, "$1/$2", 5, { '/home/julien/Maildir/OpenWide/INBOX/' })
+-- gmailwidget = widget({ type = "textbox" })
+-- vicious.register(gmailwidget, vicious.widgets.mdir, "$1/$2 ", 5, { '/home/julien/Maildir/Gmail/INBOX/' })
+-- eseowidget = widget({ type = "textbox" })
+-- vicious.register(eseowidget, vicious.widgets.mdir, "$1/$2 ", 5, { '/home/julien/Maildir/Eseo/INBOX/' })
+-- openwidewidget = widget({ type = "textbox" })
+-- vicious.register(openwidewidget, vicious.widgets.mdir, "$1/$2", 5, { '/home/julien/Maildir/OpenWide/INBOX/' })
+intelwidget = widget({ type = "textbox" })
+vicious.register(intelwidget, vicious.widgets.mdir, "$1 / $2", 5, { '/home/lab/Maildir/Intel/INBOX/' })
+
+-- packages
+-- packageslabel= widget({ type = "textbox" })
+-- packageslabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Packages </span>'
+-- packageswidget = widget({ type = "textbox" })
+-- vicious.register(packageswidget, vicious.widgets.pkg, "$1 ", 5, "Ubuntu")
+
+-- org
+orglabel= widget({ type = "textbox" })
+orglabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Org </span>'
+orgwidget = widget({ type = "textbox" })
+vicious.register(orgwidget, vicious.widgets.org, "$1 - $2 - $3 - $4 ", 300, { '/home/lab/org/todo.org' })
+
+-- weather
+-- weatherlabel= widget({ type = "textbox" })
+-- weatherlabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Weather </span>'
+-- weatherwidget = widget({ type = "textbox" })
+-- vicious.register(weatherwidget, vicious.widgets.weather, '${tempc}°C', 1200, "LFBF")
+-- vicious.register(weatherwidget, vicious.widgets.weather, '${city}, ${wind}, ${windmph}, ${windkmh}, ${sky}, ${weather}, ${tempf}, ${tempc}, ${humid}, ${dewf}, ${dewc}, ${press} ', 1200, "LFBF")
 
 -- Create a textclock widget
 mytextclock = awful.widget.textclock({ align = "right" })
 
+-- org calendar
+-- dofile(home_dir .. "/jm-config/awesome/modules/orglendar.lua")
+-- orglendar.files = { "/home/lab/org/todo.org"}
+-- orglendar.register(mytextclock)
+
 
 --shutdown widget
-shutdown=blingbling.system.shutdownmenu(beautiful.shutdown, 
-                                        beautiful.accept, 
-                                        beautiful.cancel)
-shutdown.resize= false
-awful.widget.layout.margins[shutdown]={top=4}
+-- shutdown=blingbling.system.shutdownmenu(beautiful.shutdown,
+--                                         beautiful.accept,
+--                                         beautiful.cancel)
+-- shutdown.resize= false
+-- awful.widget.layout.margins[shutdown]={top=4}
 
 --reboot widget
-reboot=blingbling.system.rebootmenu(beautiful.reboot, 
-                                    beautiful.accept, 
-                                    beautiful.cancel)
-reboot.resize = false
-awful.widget.layout.margins[reboot]={top=4}
+-- reboot=blingbling.system.rebootmenu(beautiful.reboot,
+--                                     beautiful.accept,
+--                                     beautiful.cancel)
+-- reboot.resize = false
+-- awful.widget.layout.margins[reboot]={top=4}
 
 -- Date
 datewidget = widget({ type = "textbox" })
@@ -168,9 +195,9 @@ cpulabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>CPU </sp
 cpu=blingbling.classical_graph.new()
 cpu:set_font_size(8)
 cpu:set_height(20)
-cpu:set_width(150)
+cpu:set_width(100)
 cpu:set_show_text(true)
-cpu:set_label("Load: $percent %")
+cpu:set_label("$percent %")
 cpu:set_graph_color("#00ccff00")
 --Use transparency on graph line color to reduce the width of line with low resolution screen
 cpu:set_graph_line_color("#ff330088")
@@ -187,31 +214,31 @@ cpudegreewidget = widget({ type = "textbox" })
 vicious.register(cpudegreewidget, vicious.widgets.thermal, "$1 °C", 30, { "coretemp.0", "core"})
  
 --Cores Widgets
-corelabel=widget({ type = "textbox" })
-corelabel.text='<span color="#ff8700" '..pango_large..'>Cores:</span>'
-mycore1 = blingbling.value_text_box.new()
-mycore1:set_width(25)
-mycore1:set_height(16)
-mycore1:set_filled(true)
-mycore1:set_filled_color("#00000099")
-mycore1:set_rounded_size(0.6)
-mycore1:set_values_text_color({{"#88aa00ff",0},{"#d4aa00ff", 0.5},{"#d45500ff",0.75}})
-mycore1:set_font_size(8)
-mycore1:set_background_color("#00000044")
-mycore1:set_label("$percent%")
-vicious.register(mycore1, vicious.widgets.cpu, "$2")
+-- corelabel=widget({ type = "textbox" })
+-- corelabel.text='<span color="#ff8700" '..pango_large..'>Cores:</span>'
+-- mycore1 = blingbling.value_text_box.new()
+-- mycore1:set_width(25)
+-- mycore1:set_height(16)
+-- mycore1:set_filled(true)
+-- mycore1:set_filled_color("#00000099")
+-- mycore1:set_rounded_size(0.6)
+-- mycore1:set_values_text_color({{"#88aa00ff",0},{"#d4aa00ff", 0.5},{"#d45500ff",0.75}})
+-- mycore1:set_font_size(8)
+-- mycore1:set_background_color("#00000044")
+-- mycore1:set_label("$percent%")
+-- vicious.register(mycore1, vicious.widgets.cpu, "$2")
 
-mycore2 = blingbling.value_text_box.new()
-mycore2:set_width(25)
-mycore2:set_height(16)
-mycore2:set_filled(true)
-mycore2:set_filled_color("#00000099")
-mycore2:set_rounded_size(0.6)
-mycore2:set_values_text_color({{"#88aa00ff",0},{"#d4aa00ff", 0.5},{"#d45500ff",0.75}})
-mycore2:set_font_size(8)
-mycore2:set_background_color("#00000044")
-mycore2:set_label("$percent%")
-vicious.register(mycore2, vicious.widgets.cpu, "$3")
+-- mycore2 = blingbling.value_text_box.new()
+-- mycore2:set_width(25)
+-- mycore2:set_height(16)
+-- mycore2:set_filled(true)
+-- mycore2:set_filled_color("#00000099")
+-- mycore2:set_rounded_size(0.6)
+-- mycore2:set_values_text_color({{"#88aa00ff",0},{"#d4aa00ff", 0.5},{"#d45500ff",0.75}})
+-- mycore2:set_font_size(8)
+-- mycore2:set_background_color("#00000044")
+-- mycore2:set_label("$percent%")
+-- vicious.register(mycore2, vicious.widgets.cpu, "$3")
 
 -- Mem Widget
 memlabel= widget({ type = "textbox" })
@@ -220,7 +247,7 @@ memwidget = blingbling.classical_graph.new()
 memwidget:set_font_size(8)
 memwidget:set_height(20)
 memwidget:set_h_margin(2)
-memwidget:set_width(150)
+memwidget:set_width(100)
 memwidget:set_filled(true)
 memwidget:set_show_text(true)
 memwidget:set_filled_color("#00000099")
@@ -231,6 +258,11 @@ memwidget:set_graph_color("#00ccff00")
 memwidget:set_graph_line_color("#00ccff88")
 memwidget:set_background_color("#00000044")
 vicious.register(memwidget, vicious.widgets.mem, "$1", 5)
+-- blingbling.popups.htop(memwidget.widget,
+--                        { title_color = "#66CC00",
+--                          user_color    = "#33CCFF",
+--                          root_color= "#FF6600",
+--                          terminal = "gnome-terminal"})
 
 -- Initialize widget
 memtextwidget = widget({ type = "textbox" })
@@ -258,37 +290,45 @@ my_net:set_show_text(true)
 
 
 -- FS Widget
-fshomelabel= widget({ type = "textbox", name = "fshomelabel" })
-fshomelabel.text='<span color="#ff8700" '..pango_large..'>/home: </span>'
-fshome = blingbling.value_text_box.new()
-fshome:set_width(25)
-fshome:set_height(16)
-fshome:set_filled(true)
-fshome:set_filled_color("#00000099")
-fshome:set_rounded_size(0.6)
-fshome:set_values_text_color({{"#88aa00ff",0},{"#d4aa00ff", 0.5},{"#d45500ff",0.75}})
-fshome:set_font_size(8)
-fshome:set_background_color("#00000044")
-fshome:set_label("$percent%")
-vicious.register(fshome, vicious.widgets.fs, "${/home used_p}", 120 )
+-- fshomelabel= widget({ type = "textbox", name = "fshomelabel" })
+-- fshomelabel.text='<span color="#ff8700" '..pango_large..'>/home: </span>'
+-- fshome = blingbling.value_text_box.new()
+-- fshome:set_width(25)
+-- fshome:set_height(16)
+-- fshome:set_filled(true)
+-- fshome:set_filled_color("#00000099")
+-- fshome:set_rounded_size(0.6)
+-- fshome:set_values_text_color({{"#88aa00ff",0},{"#d4aa00ff", 0.5},{"#d45500ff",0.75}})
+-- fshome:set_font_size(8)
+-- fshome:set_background_color("#00000044")
+-- fshome:set_label("$percent%")
+-- vicious.register(fshome, vicious.widgets.fs, "${/home used_p}", 120 )
 
-fsrootlabel= widget({ type = "textbox", name = "fsrootlabel" })
-fsrootlabel.text='<span color="#ff8700" '..pango_large..' >Root </span>'
-fsroot = blingbling.value_text_box.new()
-fsroot:set_width(25)
-fsroot:set_height(20)
-fsroot:set_filled(true)
-fsroot:set_filled_color("#00000099")
-fsroot:set_rounded_size(0.6)
-fsroot:set_values_text_color({{"#88aa00ff",0},{"#d4aa00ff", 0.5},{"#d45500ff",0.75}})
-fsroot:set_font_size(12)
-fsroot:set_background_color("#00000044")
-fsroot:set_label("$percent%")
-vicious.register(fsroot, vicious.widgets.fs, "${/ used_p}", 120 )
+-- fsrootlabel= widget({ type = "textbox", name = "fsrootlabel" })
+-- fsrootlabel.text='<span color="#ff8700" '..pango_large..' >Root </span>'
+-- fsroot = blingbling.value_text_box.new()
+-- fsroot:set_width(25)
+-- fsroot:set_height(20)
+-- fsroot:set_filled(true)
+-- fsroot:set_filled_color("#00000099")
+-- fsroot:set_rounded_size(0.6)
+-- fsroot:set_values_text_color({{"#88aa00ff",0},{"#d4aa00ff", 0.5},{"#d45500ff",0.75}})
+-- fsroot:set_font_size(12)
+-- fsroot:set_background_color("#00000044")
+-- fsroot:set_label("$percent%")
+-- vicious.register(fsroot, vicious.widgets.fs, "${/ used_p}", 120 )
+
+-- my_fs_data1=blingbling.progress_bar.new()
+-- my_fs_data1:set_height(18)
+-- my_fs_data1:set_width(40)
+-- my_fs_data1:set_graph_color("#ff8700")
+-- my_fs_data1:set_show_text(true)
+-- my_fs_data1:set_horizontal(true)
+-- vicious.register(my_fs_data1, vicious.widgets.fs, "${/ used_p}", 120 )
 
 --Volume
 volume_label = widget({ type = "textbox"})
-volume_label.text='<span color="#ff8700" '..pango_large..' >Volume </span>'
+volume_label.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Volume </span>'
 my_volume=blingbling.volume.new()
 my_volume:set_height(20)
 my_volume:set_v_margin(3)
@@ -309,8 +349,8 @@ space = widget({ type = "textbox" })
 space.text  = "  "
 
 -- Calendar widget to attach to the textclock
-dofile(home_dir .. "/jm-config/awesome/modules/calendar2.lua")
-require('calendar2')
+-- dofile(home_dir .. "/jm-config/awesome/modules/calendar2.lua")
+-- require('calendar2')
 -- calendar2.addCalendarToWidget(mytextclock)
 
 -- Create a systray
@@ -416,17 +456,13 @@ for s = 1, screen.count() do
 		space,
 		memlabel,
 	separator,
-		fsroot.widget,
-		space,
-		fsrootlabel,
-		-- fshome.widget,
-		-- fshomelabel,
-	separator,
-		openwidewidget,
-		eseowidget,
-		gmailwidget,
+		intelwidget,
 		space,
 		maillabel,
+	separator,
+		orgwidget,
+		space,
+		orglabel,
 	separator,
 		my_net.widget,
         s == 1 and mysystray or nil,
