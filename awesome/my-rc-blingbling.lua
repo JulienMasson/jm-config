@@ -153,7 +153,7 @@ vicious.register(intelwidget, vicious.widgets.mdir, "$1 / $2", 5, { '/home/lab/M
 orglabel= widget({ type = "textbox" })
 orglabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Org </span>'
 orgwidget = widget({ type = "textbox" })
-vicious.register(orgwidget, vicious.widgets.org, "$1 - $2 - $3 - $4 ", 300, { '/home/lab/org/todo.org' })
+vicious.register(orgwidget, vicious.widgets.org, "$1 - $3 - $4 ", 300, { '/home/lab/org/todo.org' })
 
 -- weather
 -- weatherlabel= widget({ type = "textbox" })
