@@ -2,6 +2,11 @@
 ;;;;            WANDERLUST CONFIG              ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; offlineimap
+(load-file "~/jm-config/emacs/modules/offlineimap.el/offlineimap.el")
+(require 'offlineimap)
+(run-with-timer 0 (* 1 60) 'offlineimap)
+
 ;; config w3m
 (eval-after-load "w3m"
   '(progn
