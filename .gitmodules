@@ -85,3 +85,6 @@
 [submodule "emacs/modules/math-symbol-lists"]
 	path = emacs/modules/math-symbol-lists
 	url = https://github.com/vspinu/math-symbol-lists
+[submodule "emacs/modules/offlineimap.el"]
+	path = emacs/modules/offlineimap.el
+	url = https://github.com/jd/offlineimap.el.git
