@@ -30,6 +30,12 @@ sudo apt-get install feh -y
 # numlockx
 sudo apt-get install numlockx -y
 
+# offlineimap
+sudo apt-get install offlineimap -y
+
+# lxappearance
+sudo apt-get install lxappearance -y
+
 # oocairo
 cd ~/jm-config/awesome/modules/
 sudo dpkg -i liblua5.1-oocairo0_1.4-1.2_amd64.deb

@@ -7,9 +7,8 @@ cp ~/jm-config/awesome/rc.lua ~/.config/awesome/
 cp -r ~/jm-config/awesome/debian ~/.config/awesome/
 
 # get blingbling
-cd $AWESOME_HOME
+cd ~/.config/awesome/
 git clone -b v1.0 https://github.com/cedlemo/blingbling.git
 
 # manual tiling
-cd ~/.config/awesome/
-git clone git@github.com:zarkone/hand-tiler.git
+git clone https://github.com/zarkone/hand-tiler.git
