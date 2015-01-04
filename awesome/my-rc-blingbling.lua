@@ -79,7 +79,7 @@ layouts =
 -- Define a tag table which will hold all screen tags.
 tags = {
   names  = { "Emacs", "Firefox", "Term", "Extra" },
-  layout = { layouts[1], layouts[10], layouts[1], layouts[1]
+  layout = { layouts[6], layouts[10], layouts[6], layouts[1]
 }}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
@@ -93,7 +93,8 @@ myawesomemenu = {
    { "manual", terminal .. " -e man awesome" },
    { "edit config", editor_cmd .. " " .. awesome.conffile },
    { "restart", awesome.restart },
-   { "quit", awesome.quit }
+   { "quit", awesome.quit },
+   { "dialog", '/home/julien/jm-config/awesome/shutdown_dialog.sh' },
 }
 
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
@@ -128,6 +129,8 @@ end
 -- Mails
 maillabel= widget({ type = "textbox" })
 maillabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Mail </span>'
+mailimage= widget({ type = "imagebox" })
+mailimage.image= image("/home/julien/jm-config/awesome/icons/email.png")
 -- mailwidget = widget({
 --    type = 'textbox',
 --    name = 'mailwidget'
@@ -143,6 +146,10 @@ openwidewidget = widget({ type = "textbox" })
 vicious.register(openwidewidget, vicious.widgets.mdir, "$1/$2", 5, { home_dir ..'/Maildir/OpenWide/INBOX/' })
 intelwidget = widget({ type = "textbox" })
 vicious.register(intelwidget, vicious.widgets.mdir, "$1 / $2", 5, { home_dir .. '/Maildir/Intel/INBOX/' })
+
+-- mpd
+-- mpdwidget = widget({ type = "textbox" })
+-- vicious.register(mpdwidget, vicious.widgets.mpd, " ${Title}, ${Album} ", 5)
 
 -- packages
 -- packageslabel= widget({ type = "textbox" })
@@ -196,7 +203,7 @@ cpulabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>CPU </sp
 cpu=blingbling.classical_graph.new()
 cpu:set_font_size(8)
 cpu:set_height(20)
-cpu:set_width(100)
+cpu:set_width(60)
 cpu:set_show_text(true)
 cpu:set_label("$percent %")
 cpu:set_graph_color("#00ccff00")
@@ -248,7 +255,7 @@ memwidget = blingbling.classical_graph.new()
 memwidget:set_font_size(8)
 memwidget:set_height(20)
 memwidget:set_h_margin(2)
-memwidget:set_width(100)
+memwidget:set_width(60)
 memwidget:set_filled(true)
 memwidget:set_show_text(true)
 memwidget:set_filled_color("#00000099")
@@ -258,7 +265,7 @@ memwidget:set_graph_color("#00ccff00")
 --Use transparency on graph line color to reduce the width of line with low resolution screen
 memwidget:set_graph_line_color("#00ccff88")
 memwidget:set_background_color("#00000044")
-vicious.register(memwidget, vicious.widgets.mem, "$1", 5)
+vicious.register(memwidget, vicious.widgets.mem, "$1", 2)
 -- blingbling.popups.htop(memwidget.widget,
 --                        { title_color = "#66CC00",
 --                          user_color    = "#33CCFF",
@@ -268,7 +275,7 @@ vicious.register(memwidget, vicious.widgets.mem, "$1", 5)
 -- Initialize widget
 memtextwidget = widget({ type = "textbox" })
 -- Register widget
-vicious.register(memtextwidget, vicious.widgets.mem, "$2MB", 13)
+vicious.register(memtextwidget, vicious.widgets.mem, "$2MB", 10)
 
 -- Calendar widget
 my_cal =blingbling.calendar.new({type = "imagebox", image = beautiful.calendar})
@@ -289,6 +296,11 @@ my_net:set_graph_color("#ff8700")
 my_net:set_filled_color("#00000055")
 my_net:set_show_text(true)
 
+-- wifi widget
+wifiwidget = widget({ type = "textbox" })
+vicious.register(wifiwidget, vicious.widgets.wifi, ' <span color="#ff8700" '..pango_large..' '..pango_bold..'> ${ssid} </span>', 1, "wlan0")
+wifispeedwidget = widget({ type = "textbox" })
+vicious.register(wifispeedwidget, vicious.widgets.net, '${wlan0 up_kb}Kb   ${wlan0 down_kb}Kb', 1)
 
 -- FS Widget
 -- fshomelabel= widget({ type = "textbox", name = "fshomelabel" })
@@ -327,18 +339,38 @@ my_net:set_show_text(true)
 -- my_fs_data1:set_horizontal(true)
 -- vicious.register(my_fs_data1, vicious.widgets.fs, "${/ used_p}", 120 )
 
---Volume
+-- Volume
 volume_label = widget({ type = "textbox"})
-volume_label.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Volume </span>'
-my_volume=blingbling.volume.new()
-my_volume:set_height(20)
-my_volume:set_v_margin(3)
-my_volume:set_width(25)
-my_volume:update_master()
-my_volume:set_master_control()
-my_volume:set_bar(true)
-my_volume:set_background_graph_color("#00000099")
-my_volume:set_graph_color("#ff8700")
+volume_label.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Vol </span>'
+volumewidget = widget({ type = "textbox" })
+vicious.register(volumewidget, vicious.widgets.volume, '$1', 1, "Master")
+-- my_volume=blingbling.volume.new()
+-- my_volume:set_height(20)
+-- my_volume:set_v_margin(3)
+-- my_volume:set_width(25)
+-- my_volume:update_master()
+-- my_volume:set_master_control()
+-- my_volume:set_bar(true)
+-- my_volume:set_background_graph_color("#00000099")
+-- my_volume:set_graph_color("#ff8700")
+
+-- Battery
+battery_label = widget({ type = "textbox"})
+battery_label.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Bat </span>'
+batwidget=blingbling.progress_graph.new()
+batwidget:set_height(18)
+batwidget:set_width(30)
+batwidget:set_show_text(true)
+batwidget:set_horizontal(true)
+batwidget:set_filled(true)
+-- batwidget = awful.widget.progressbar()
+-- batwidget:set_width(8)
+-- batwidget:set_height(14)
+-- batwidget:set_vertical(true)
+-- batwidget:set_background_color("#000000")
+-- batwidget:set_border_color(nil)
+-- batwidget:set_color("#00bfff")
+vicious.register(batwidget, vicious.widgets.bat, "$2", 30, "BAT1")
 
 -- use widget({ type = "textbox" }) for awesome < 3.5
 separator = widget({ type = "textbox" })
@@ -436,10 +468,11 @@ for s = 1, screen.count() do
 		mytextclock,
 		space,
 		my_cal.widget,
+        	s == 1 and mysystray or nil,
 	separator,
-		my_volume.widget,
+		batwidget.widget,
 		space,
-		volume_label,
+		battery_label,
 	separator,
 		cpudegreewidget,
 		space,
@@ -463,10 +496,12 @@ for s = 1, screen.count() do
 		space,
 		gmailwidget,
 		space,
-		maillabel,
+		mailimage,
 	separator,
-		my_net.widget,
-        s == 1 and mysystray or nil,
+		wifispeedwidget,
+		space,
+		wifiwidget,
+        -- s == 1 and mysystray or nil,
         mytasklist[s],
         layout = awful.widget.layout.horizontal.rightleft
     }
@@ -536,12 +571,30 @@ globalkeys = awful.util.table.join(
     					    "' -sf '" .. beautiful.fg_focus .. "'") 
     end),
 
-   awful.key({ }, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer set Master 9%+") end),
-   awful.key({ }, "XF86AudioLowerVolume", function () awful.util.spawn("amixer set Master 9%-") end),
-   awful.key({ }, "XF86AudioMute", function () awful.util.spawn("amixer sset Master toggle") end),
+    awful.key({ modkey }, "i", function () awful.util.spawn("amixer set Master 9%+") end),
+    awful.key({ modkey }, "o", function () awful.util.spawn("amixer set Master 9%-") end),
+    awful.key({ modkey }, "p", function () awful.util.spawn("amixer set Master toggle") end),
+
+
+    awful.key({ modkey, "Shift" }, "s", function () awful.util.spawn("cinnamon-settings") end),
+    awful.key({ modkey, "Shift" }, "e", function () awful.util.spawn("emacs") end),
+    awful.key({ modkey, "Shift" }, "f", function () awful.util.spawn("firefox") end),
+
+    awful.key({ modkey }, "h", function ()
+    		mywibox[mouse.screen].visible = not mywibox[mouse.screen].visible
+		end),
 
     -- Prompt
     awful.key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
+
+    awful.key({ modkey }, "s", function ()
+        awful.prompt.run({ prompt = "Web search: " }, mypromptbox[mouse.screen].widget,
+            function (command)
+                awful.util.spawn("firefox 'http://yubnub.org/parser/parse?command="..command.."'", false)
+                -- Switch to the web tag, where Firefox is, in this case tag 2
+                if tags[mouse.screen][2] then awful.tag.viewonly(tags[mouse.screen][2]) end
+            end)
+    end),
 
     awful.key({ modkey }, "x",
               function ()
