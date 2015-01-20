@@ -79,7 +79,7 @@ layouts =
 -- Define a tag table which will hold all screen tags.
 tags = {
   names  = { "Emacs", "Firefox", "Term", "Extra" },
-  layout = { layouts[6], layouts[10], layouts[6], layouts[1]
+  layout = { layouts[1], layouts[10], layouts[6], layouts[1]
 }}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
@@ -94,7 +94,7 @@ myawesomemenu = {
    { "edit config", editor_cmd .. " " .. awesome.conffile },
    { "restart", awesome.restart },
    { "quit", awesome.quit },
-   { "dialog", '/home/julien/jm-config/awesome/shutdown_dialog.sh' },
+   { "dialog", '/home/lab/jm-config/awesome/shutdown_dialog.sh' },
 }
 
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
@@ -130,7 +130,7 @@ end
 maillabel= widget({ type = "textbox" })
 maillabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Mail </span>'
 mailimage= widget({ type = "imagebox" })
-mailimage.image= image("/home/julien/jm-config/awesome/icons/email.png")
+mailimage.image= image("/home/lab/jm-config/awesome/icons/email.png")
 -- mailwidget = widget({
 --    type = 'textbox',
 --    name = 'mailwidget'
@@ -138,12 +138,12 @@ mailimage.image= image("/home/julien/jm-config/awesome/icons/email.png")
 -- vicious.register(mailwidget, run_script, '$1')
 
 -- mdir
-gmailwidget = widget({ type = "textbox" })
-vicious.register(gmailwidget, vicious.widgets.mdir, "$1/$2 ", 5, { home_dir ..'/Maildir/Gmail/INBOX/' })
-eseowidget = widget({ type = "textbox" })
-vicious.register(eseowidget, vicious.widgets.mdir, "$1/$2 ", 5, { home_dir ..'/Maildir/Eseo/INBOX/' })
-openwidewidget = widget({ type = "textbox" })
-vicious.register(openwidewidget, vicious.widgets.mdir, "$1/$2", 5, { home_dir ..'/Maildir/OpenWide/INBOX/' })
+-- gmailwidget = widget({ type = "textbox" })
+-- vicious.register(gmailwidget, vicious.widgets.mdir, "$1/$2 ", 5, { home_dir ..'/Maildir/Gmail/INBOX/' })
+-- eseowidget = widget({ type = "textbox" })
+-- vicious.register(eseowidget, vicious.widgets.mdir, "$1/$2 ", 5, { home_dir ..'/Maildir/Eseo/INBOX/' })
+-- openwidewidget = widget({ type = "textbox" })
+-- vicious.register(openwidewidget, vicious.widgets.mdir, "$1/$2", 5, { home_dir ..'/Maildir/OpenWide/INBOX/' })
 intelwidget = widget({ type = "textbox" })
 vicious.register(intelwidget, vicious.widgets.mdir, "$1 / $2", 5, { home_dir .. '/Maildir/Intel/INBOX/' })
 
@@ -152,6 +152,8 @@ vicious.register(intelwidget, vicious.widgets.mdir, "$1 / $2", 5, { home_dir .. 
 -- vicious.register(mpdwidget, vicious.widgets.mpd, " ${Title}, ${Album} ", 5)
 
 -- packages
+-- packagesimage= widget({ type = "imagebox" })
+-- packagesimage.image= image("/home/lab/jm-config/awesome/icons/update-2.png")
 -- packageslabel= widget({ type = "textbox" })
 -- packageslabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Packages </span>'
 -- packageswidget = widget({ type = "textbox" })
@@ -161,7 +163,7 @@ vicious.register(intelwidget, vicious.widgets.mdir, "$1 / $2", 5, { home_dir .. 
 orglabel= widget({ type = "textbox" })
 orglabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Org </span>'
 orgwidget = widget({ type = "textbox" })
-vicious.register(orgwidget, vicious.widgets.org, "$1 - $3 - $4 ", 300, { home_dir ..'/org/todo.org' })
+vicious.register(orgwidget, vicious.widgets.org, "$1 - $2 - $3 - $4 ", 300, { home_dir ..'/org/todo.org' })
 
 -- weather
 -- weatherlabel= widget({ type = "textbox" })
@@ -203,7 +205,7 @@ cpulabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>CPU </sp
 cpu=blingbling.classical_graph.new()
 cpu:set_font_size(8)
 cpu:set_height(20)
-cpu:set_width(60)
+cpu:set_width(100)
 cpu:set_show_text(true)
 cpu:set_label("$percent %")
 cpu:set_graph_color("#00ccff00")
@@ -255,7 +257,7 @@ memwidget = blingbling.classical_graph.new()
 memwidget:set_font_size(8)
 memwidget:set_height(20)
 memwidget:set_h_margin(2)
-memwidget:set_width(60)
+memwidget:set_width(100)
 memwidget:set_filled(true)
 memwidget:set_show_text(true)
 memwidget:set_filled_color("#00000099")
@@ -279,11 +281,11 @@ vicious.register(memtextwidget, vicious.widgets.mem, "$2MB", 10)
 
 -- Calendar widget
 my_cal =blingbling.calendar.new({type = "imagebox", image = beautiful.calendar})
-my_cal:set_cell_padding(2)
-my_cal:set_title_font_size(9)
-my_cal:set_font_size(8)
-my_cal:set_inter_margin(1)
-my_cal:set_columns_lines_titles_font_size(8)
+my_cal:set_cell_padding(4)
+my_cal:set_title_font_size(11)
+my_cal:set_font_size(10)
+my_cal:set_inter_margin(3)
+my_cal:set_columns_lines_titles_font_size(10)
 my_cal:set_columns_lines_titles_text_color("#d4aa00ff")
 
 -- Net Widget
@@ -294,13 +296,17 @@ my_net:set_v_margin(3)
 my_net:set_graph_line_color("#00ccff00")
 my_net:set_graph_color("#ff8700")
 my_net:set_filled_color("#00000055")
-my_net:set_show_text(true)
+my_net:set_show_text(false)
 
 -- wifi widget
 wifiwidget = widget({ type = "textbox" })
 vicious.register(wifiwidget, vicious.widgets.wifi, ' <span color="#ff8700" '..pango_large..' '..pango_bold..'> ${ssid} </span>', 1, "wlan0")
 wifispeedwidget = widget({ type = "textbox" })
 vicious.register(wifispeedwidget, vicious.widgets.net, '${wlan0 up_kb}Kb   ${wlan0 down_kb}Kb', 1)
+eth_up_speedwidget = widget({ type = "textbox" })
+vicious.register(eth_up_speedwidget, vicious.widgets.net, '${eth0 up_kb}Kb', 1)
+eth_down_speedwidget = widget({ type = "textbox" })
+vicious.register(eth_down_speedwidget, vicious.widgets.net, '${eth0 down_kb}Kb', 1)
 
 -- FS Widget
 -- fshomelabel= widget({ type = "textbox", name = "fshomelabel" })
@@ -342,17 +348,17 @@ vicious.register(wifispeedwidget, vicious.widgets.net, '${wlan0 up_kb}Kb   ${wla
 -- Volume
 volume_label = widget({ type = "textbox"})
 volume_label.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Vol </span>'
-volumewidget = widget({ type = "textbox" })
-vicious.register(volumewidget, vicious.widgets.volume, '$1', 1, "Master")
--- my_volume=blingbling.volume.new()
--- my_volume:set_height(20)
--- my_volume:set_v_margin(3)
--- my_volume:set_width(25)
--- my_volume:update_master()
--- my_volume:set_master_control()
--- my_volume:set_bar(true)
--- my_volume:set_background_graph_color("#00000099")
--- my_volume:set_graph_color("#ff8700")
+-- volumewidget = widget({ type = "textbox" })
+-- vicious.register(volumewidget, vicious.widgets.volume, '$1', 1, "Master")
+my_volume=blingbling.volume.new()
+my_volume:set_height(20)
+my_volume:set_v_margin(3)
+my_volume:set_width(25)
+my_volume:update_master()
+my_volume:set_master_control()
+my_volume:set_bar(true)
+my_volume:set_background_graph_color("#00000099")
+my_volume:set_graph_color("#ff8700")
 
 -- Battery
 battery_label = widget({ type = "textbox"})
@@ -470,19 +476,15 @@ for s = 1, screen.count() do
 		my_cal.widget,
         	s == 1 and mysystray or nil,
 	separator,
-		batwidget.widget,
+		my_volume.widget,
 		space,
-		battery_label,
+		volume_label,
 	separator,
 		cpudegreewidget,
 		space,
 		cpu.widget,
 		space,
         	cpulabel,
-        -- separator,
-	-- 	mycore1.widget,
-        -- 	mycore2.widget,
-        -- 	corelabel,
 	separator,
 		memtextwidget,
 		space,
@@ -490,17 +492,19 @@ for s = 1, screen.count() do
 		space,
 		memlabel,
 	separator,
-		openwidewidget,
+		orgwidget,
 		space,
-		eseowidget,
-		space,
-		gmailwidget,
+		orglabel,
+	separator,
+		intelwidget,
 		space,
 		mailimage,
 	separator,
-		wifispeedwidget,
+		eth_down_speedwidget,
 		space,
-		wifiwidget,
+		my_net.widget,
+		space,
+		eth_up_speedwidget,
         -- s == 1 and mysystray or nil,
         mytasklist[s],
         layout = awful.widget.layout.horizontal.rightleft
@@ -571,8 +575,8 @@ globalkeys = awful.util.table.join(
     					    "' -sf '" .. beautiful.fg_focus .. "'") 
     end),
 
-    awful.key({ modkey }, "i", function () awful.util.spawn("amixer set Master 9%+") end),
-    awful.key({ modkey }, "o", function () awful.util.spawn("amixer set Master 9%-") end),
+    awful.key({ modkey }, "o", function () awful.util.spawn("amixer set Master 9%+") end),
+    awful.key({ modkey }, "i", function () awful.util.spawn("amixer set Master 9%-") end),
     awful.key({ modkey }, "p", function () awful.util.spawn("amixer set Master toggle") end),
 
 
