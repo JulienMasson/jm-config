@@ -88,3 +88,6 @@
 [submodule "emacs/modules/offlineimap.el"]
 	path = emacs/modules/offlineimap.el
 	url = https://github.com/jd/offlineimap.el.git
+[submodule "emacs/modules/org-wl"]
+	path = emacs/modules/org-wl
+	url = https://github.com/JulienMasson/org-wl
