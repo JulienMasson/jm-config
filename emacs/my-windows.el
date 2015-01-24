@@ -42,8 +42,7 @@
             (function (lambda () (load "dired-x"))))
 
 ;; virtual desktop
-(load-file "~/jm-config/emacs/modules/virtual-desktops.el/virtual-desktops.el")
-;;(require 'virtual-desktops)
+(require 'virtual-desktops)
 (virtual-desktops-mode 1)
 
 ;; edit file root

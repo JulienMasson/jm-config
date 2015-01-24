@@ -11,7 +11,6 @@
    (format "%s -f %s/TAGS -e -R %s" path-to-ctags dir-name (directory-file-name dir-name))))
 
 ;; cscope
-(load-file "~/jm-config/emacs/modules/xcscope.el/xcscope.el")
 (require 'xcscope)
 (cscope-setup)
 (setq path-to-cscope "/usr/bin/cscope")

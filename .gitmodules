@@ -5,7 +5,7 @@
 	path = emacs/modules/dtrt-indent
 	url = https://github.com/jscheid/dtrt-indent
 [submodule "emacs/virtual-desktops.el"]
-	path = emacs/modules/virtual-desktops.el
+	path = emacs/modules/virtual-desktops
 	url = https://github.com/chep/virtual-desktops.el
 [submodule "emacs/auto-complete"]
 	path = emacs/modules/auto-complete
@@ -38,7 +38,7 @@
 	path = emacs/modules/w3m
 	url = https://github.com/emacsmirror/w3m
 [submodule "emacs/xcscope.el"]
-	path = emacs/modules/xcscope.el
+	path = emacs/modules/xcscope
 	url = https://github.com/dkogan/xcscope.el
 [submodule "emacs/popup-el"]
 	path = emacs/modules/popup-el
@@ -86,7 +86,7 @@
 	path = emacs/modules/math-symbol-lists
 	url = https://github.com/vspinu/math-symbol-lists
 [submodule "emacs/modules/offlineimap.el"]
-	path = emacs/modules/offlineimap.el
+	path = emacs/modules/offlineimap
 	url = https://github.com/jd/offlineimap.el.git
 [submodule "emacs/modules/org-wl"]
 	path = emacs/modules/org-wl
