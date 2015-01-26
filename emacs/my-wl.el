@@ -177,6 +177,60 @@
       'wl-draft-kill
       'mail-send-hook))
 
+;; search using mutt
+(defvar gmail-maildir  "--maildir=~/Maildir/Gmail")
+(defvar eseo-maildir  "--maildir=~/Maildir/Eseo")
+(defvar openwide-maildir  "--maildir=~/Maildir/OpenWide")
+(defvar mu-wl-mu-program     "/usr/bin/mu")
+(defvar mu-wl-search-folder  "search")
+(defun mu-wl-search ()
+  "search for messages with `mu', and jump to the results"
+   (let* ((muexpr (read-string "Find messages matching: "))
+          (sfldr  (concat elmo-maildir-folder-path "/"
+                    mu-wl-search-folder))
+          (cmdline (concat mu-wl-mu-program " find "
+                      "--clearlinks --format=links --linksdir='" sfldr "' "
+                     muexpr))
+          (rv (shell-command cmdline)))
+    (cond
+      ((= rv 0)  (message "Query succeeded"))
+      ((= rv 2)  (message "No matches found"))
+      (t (message "Error running query")))
+  (= rv 0)))
+
+(defun mu-wl-search-and-goto ()
+  "search and jump to the folder with the results"
+  (interactive)
+  (when (mu-wl-search)
+    (wl-summary-goto-folder-subr
+      (concat "." mu-wl-search-folder)
+      'force-update nil nil t)
+    (wl-summary-sort-by-date)))
+
+;; search by pressing 'Q'
+(eval-after-load "wl"
+    '(progn
+       (define-key wl-summary-mode-map (kbd "Q") ;; => query
+	 '(lambda()(interactive)(mu-wl-search-and-goto)))
+       (define-key wl-folder-mode-map (kbd "Q") ;; => query
+	 '(lambda()(interactive)(mu-wl-search-and-goto)))
+       )
+)
+
+(defun mu-wl-update-database ()
+  (interactive)
+  (shell-command
+	   (format "%s index %s" mu-wl-mu-program gmail-maildir))
+  (shell-command
+	   (format "%s index %s" mu-wl-mu-program eseo-maildir))
+  (shell-command
+	   (format "%s index %s" mu-wl-mu-program openwide-maildir)))
+(defun mu-wl-update-contacts ()
+  (interactive)
+  (shell-command
+	   (format "%s cfind --format=wl > ~/.addresses" mu-wl-mu-program)))
+(global-set-key (kbd "C-c w u") 'mu-wl-update-database)
+(global-set-key (kbd "C-c w c") 'mu-wl-update-contacts)
 
 ;; ;;filtres
 ;; ;; (setq wl-refile-rule-alist '( ("From"

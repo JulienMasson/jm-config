@@ -24,8 +24,8 @@
 			       (file+headline "~/org/todo.org" "Tasks")
 			       " TODO %^{Brief Description} %^g\n%?\nAdded: %U" :prepend t)
 			      ("j" "Journal" entry
-			       (file+headline "~/org/journal.org" "")
-			       "\n %^{topic} %T \n%i%?\n" :prepend t)
+			       (file+datetree "~/org/journal.org")
+			       "* %?\nEntered on %U\n  %i\n  %a")
 			      ("e" "Email Todo" entry
 			       (file+headline "~/org/todo.org" "Mails")
 			       "* TODO %^{Brief Description}\nEmail: %a\nFrom: %:from \nTo: %:to \n%?Added: %U\n" :prepend t)
