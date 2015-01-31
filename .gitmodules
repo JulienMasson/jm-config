@@ -49,9 +49,6 @@
 [submodule "emacs/git-modes"]
 	path = emacs/modules/git-modes
 	url = https://github.com/magit/git-modes
-[submodule "emacs/ample-zen"]
-	path = emacs/modules/ample-zen
-	url = https://github.com/mjwall/ample-zen
 [submodule "emacs/wanderlust"]
 	path = emacs/modules/wanderlust
 	url = https://github.com/wanderlust/wanderlust

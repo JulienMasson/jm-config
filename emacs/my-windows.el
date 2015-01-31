@@ -21,8 +21,8 @@
 (set-face-attribute 'default nil :height 80)
 
 ;; load theme
-(add-to-list 'custom-theme-load-path "~/jm-config/emacs/modules/ample-zen")
-(load-theme 'ample-zen t)
+(add-to-list 'custom-theme-load-path "~/jm-config/emacs")
+(load-theme 'jm t)
 
 ;; enable ido-mode
 (ido-mode 1)
