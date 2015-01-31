@@ -2,6 +2,15 @@
 ;;;;               SHELL CONFIG                ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; set default shell
+(setq explicit-shell-file-name "/bin/bash")
+
+;; ansi color
+(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on t)
+(set-face-attribute 'comint-highlight-prompt nil
+                    :inherit nil)
+
 ;; clear shell screen
 (defun my-clear ()
       (interactive)

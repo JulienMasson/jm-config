@@ -91,3 +91,6 @@
 [submodule "emacs/modules/org-wl"]
 	path = emacs/modules/org-wl
 	url = https://github.com/JulienMasson/org-wl
+[submodule "bash/bash-git-prompt"]
+	path = bash/bash-git-prompt
+	url = https://github.com/magicmonty/bash-git-prompt.git

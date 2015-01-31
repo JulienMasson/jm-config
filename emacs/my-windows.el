@@ -18,7 +18,7 @@
  '(tool-bar-mode nil))
 
 ;; set font size
-(set-face-attribute 'default nil :height 100)
+(set-face-attribute 'default nil :height 80)
 
 ;; load theme
 (add-to-list 'custom-theme-load-path "~/jm-config/emacs/modules/ample-zen")
@@ -40,6 +40,9 @@
 ;; dired Extra
 (add-hook 'dired-load-hook
             (function (lambda () (load "dired-x"))))
+
+;; default dired setting
+(put 'dired-find-alternate-file 'disabled nil)
 
 ;; virtual desktop
 (require 'virtual-desktops)
