@@ -20,9 +20,6 @@
   (shell-command
    (format "cd %s; find . -name \"*.c\" -o -name \"*.cpp\" -o -name \"*.h\" > cscope.files; %s -q -R -b -i cscope.files" (directory-file-name dir-name) path-to-cscope)))
 
-;; search with ctags or cscope
-(global-set-key (kbd "M-;") 'find-tag)
-
 ;; el doc mode
 (require 'c-eldoc)
 (setq c-eldoc-includes "`pkg-config gtk+-2.0 --cflags` -I./ -I../ ")

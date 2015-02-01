@@ -10,6 +10,11 @@
 ;; disable erase-buffer
 (put 'erase-buffer 'disabled nil)
 
+;; windows config
+(windmove-default-keybindings 'meta)
+(setq windmove-wrap-around t)
+(setq shift-select-mode t)
+
 ;; set some variables
 (custom-set-variables
  '(c-default-style (quote ((awk-mode . "awk") (other . "gnu"))))
@@ -18,7 +23,7 @@
  '(tool-bar-mode nil))
 
 ;; set font size
-(set-face-attribute 'default nil :height 80)
+(set-face-attribute 'default nil :height 90)
 
 ;; load theme
 (add-to-list 'custom-theme-load-path "~/jm-config/emacs")
@@ -107,61 +112,6 @@
 ;; add status bar
 (require 'status)
 
-;; move echo area on the top
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;        KEYS SHORTCUTS        ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; windows
-(global-set-key (kbd "C-c <left>")  'windmove-left)
-(global-set-key (kbd "C-c <right>") 'windmove-right)
-(global-set-key (kbd "C-c <up>")    'windmove-up)
-(global-set-key (kbd "C-c <down>")  'windmove-down)
-
-;;
-(global-set-key (kbd "C-M-y") (lambda () (interactive) (yank-pop -1)))
-
-;; goto virtual desktops
-(global-set-key (kbd "M-<kp-1>") (lambda () (interactive) (virtual-desktops-goto 1)))
-(global-set-key (kbd "M-<kp-2>") (lambda () (interactive) (virtual-desktops-goto 2)))
-(global-set-key (kbd "M-<kp-3>") (lambda () (interactive) (virtual-desktops-goto 3)))
-(global-set-key (kbd "M-<kp-4>") (lambda () (interactive) (virtual-desktops-goto 4)))
-(global-set-key (kbd "M-<kp-5>") (lambda () (interactive) (virtual-desktops-goto 5)))
-(global-set-key (kbd "M-<kp-6>") (lambda () (interactive) (virtual-desktops-goto 6)))
-(global-set-key (kbd "M-<kp-7>") (lambda () (interactive) (virtual-desktops-goto 7)))
-(global-set-key (kbd "M-<kp-8>") (lambda () (interactive) (virtual-desktops-goto 8)))
-(global-set-key (kbd "M-<kp-9>") (lambda () (interactive) (virtual-desktops-goto 9)))
-
-;; sudo-edit
-(global-set-key (kbd "C-x C-r") 'sudo-edit)
-
-;; shortcut for goto-line
-(global-set-key (kbd "C-l") 'goto-line)
-
-;; shortcut for revert buffer
-(global-set-key (kbd "C-c r") 'revert-buffer)
-
-;; shortcut for highlight a line with regex
-(global-set-key (kbd "C-c h") 'highlight-lines-matching-regexp)
-
-;; shortcut for comment region
-(global-set-key (kbd "C-c m") 'comment-region)
-
-;; shortcut for uncomment region
-(global-set-key (kbd "C-c u") 'uncomment-region)
-
-;; kill buffer and current windows
-(global-set-key (kbd "C-c k") 'kill-buffer-and-window)
-
-;; find-name-dired
-(global-set-key (kbd "C-c f") 'find-name-dired)
-
-;; org timer shortcuts
-(global-set-key (kbd "C-c t s") 'org-timer-start)
-(global-set-key (kbd "C-c t p") 'org-timer-pause-or-continue)
-(global-set-key (kbd "C-c t e") 'org-timer-stop)
 
 
 (provide 'my-windows)

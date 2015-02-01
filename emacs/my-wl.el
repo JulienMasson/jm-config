@@ -229,8 +229,6 @@
   (interactive)
   (shell-command
 	   (format "%s cfind --format=wl > ~/.addresses" mu-wl-mu-program)))
-(global-set-key (kbd "C-c w u") 'mu-wl-update-database)
-(global-set-key (kbd "C-c w c") 'mu-wl-update-contacts)
 
 ;; ;;filtres
 ;; ;; (setq wl-refile-rule-alist '( ("From"

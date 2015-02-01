@@ -41,5 +41,8 @@
 ;; multimedia config
 (require 'my-multimedia)
 
+;; keybindings config
+(require 'my-keybindings)
+
 
 (provide 'my-config)
