@@ -8,9 +8,6 @@
 ;; (global-set-key (kbd "C-M-'") 'windmove-down)
 ;; (global-set-key (kbd "C-M-;") 'windmove-right)
 
-;; undoing commands
-(global-set-key (kbd "C-u") 'undo)
-
 ;; controls commands
 (global-set-key (kbd "C-c <left>")  'windmove-left)
 (global-set-key (kbd "C-c <right>") 'windmove-right)
