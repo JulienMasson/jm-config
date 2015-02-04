@@ -15,17 +15,14 @@
 
 ;; org capture for wanderlust
 (setq org-capture-templates '(("n" "Notes" entry
-			       (file+headline "~/org/notes.org" "Notes")
-			       " TODO %^{Brief Description} %^g\n%?\nAdded: %U" :prepend t)
-			      ("t" "Todo" entry
-			       (file+headline "~/org/todo.org" "Tasks")
+			       (file+headline "~/org/notes.org" "Extra")
 			       " TODO %^{Brief Description} %^g\n%?\nAdded: %U" :prepend t)
 			      ("l" "Link" plain
 			       (file "~/org/notes.org" "Links")
 			       "- %?\n %x\n")
 			      ("t" "Todo" entry
 			       (file+headline "~/org/todo.org" "Tasks")
-			       "* TODO %?\n %i\n")
+			       " TODO %^{Brief Description} %^g\n%?\nAdded: %U" :prepend t)
 			      ("j" "Journal" entry
 			       (file+datetree "~/org/journal.org")
 			       "* %?\nEntered on %U\n  %i\n  %a")
