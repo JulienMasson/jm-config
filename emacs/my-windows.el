@@ -125,10 +125,6 @@
 ;; browse kill ring
 (require 'browse-kill-ring)
 
-;; enable yasnippet
-(require 'yasnippet)
-(yas-global-mode 1)
-
 ;; add status bar
 (require 'status)
 

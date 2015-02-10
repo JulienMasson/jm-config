@@ -10,15 +10,9 @@
 [submodule "emacs/auto-complete"]
 	path = emacs/modules/auto-complete
 	url = https://github.com/auto-complete/auto-complete
-[submodule "emacs/emacs-ac-etags"]
-	path = emacs/modules/emacs-ac-etags
-	url = https://github.com/syohex/emacs-ac-etags
 [submodule "emacs/ac-math"]
 	path = emacs/modules/ac-math
 	url = https://github.com/vspinu/ac-math.git
-[submodule "emacs/emacs-bash-completion"]
-	path = emacs/modules/emacs-bash-completion
-	url = https://github.com/szermatt/emacs-bash-completion
 [submodule "emacs/c-eldoc"]
 	path = emacs/modules/c-eldoc
 	url = https://github.com/mooz/c-eldoc
@@ -55,12 +49,6 @@
 [submodule "emacs/status"]
 	path = emacs/modules/status
 	url = https://github.com/JulienMasson/status
-[submodule "emacs/apt-utils-ido"]
-	path = emacs/modules/apt-utils-ido
-	url = https://github.com/vapniks/apt-utils-ido
-[submodule "emacs/ac-c-headers"]
-	path = emacs/modules/ac-c-headers
-	url = https://github.com/zk-phi/ac-c-headers
 [submodule "emacs/auctex"]
 	path = emacs/modules/auctex
 	url = https://github.com/emacsmirror/auctex
@@ -76,9 +64,6 @@
 [submodule "emacs/yasnippet"]
 	path = emacs/modules/yasnippet
 	url = https://github.com/capitaomorte/yasnippet
-[submodule "emacs/shell-history"]
-	path = emacs/modules/shell-history
-	url = https://github.com/emacsmirror/shell-history
 [submodule "emacs/modules/math-symbol-lists"]
 	path = emacs/modules/math-symbol-lists
 	url = https://github.com/vspinu/math-symbol-lists

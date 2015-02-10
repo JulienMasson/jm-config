@@ -20,25 +20,6 @@
   (shell-command
    (format "cd %s; find . -name \"*.c\" -o -name \"*.cpp\" -o -name \"*.h\" > cscope.files; %s -q -R -b -i cscope.files" (directory-file-name dir-name) path-to-cscope)))
 
-;; el doc mode
-(require 'c-eldoc)
-(setq c-eldoc-includes "`pkg-config gtk+-2.0 --cflags` -I./ -I../ ")
-(add-hook 'c-mode-hook 'c-turn-on-eldoc-mode)
-
-;; ;; auto-complete
-;; (defun init-auto-complete ()
-;;   (require 'auto-complete-config)
-;;   (add-to-list 'ac-dictionary-directories (expand-file-name "~/jm-config/emacs/modules/auto-complete/dict"))
-;;   (ac-config-default)
-;;   ;; (add-to-list 'ac-modes 'shell-mode)
-;;   (ac-etags-setup))
-
-;; ;; after-init
-;; (defun after-init ()
-;;   (init-auto-complete)
-;;   )
-;; (add-hook 'after-init-hook 'after-init)
-
 ;; auto-detection indenting
 (require 'dtrt-indent)
 (add-hook 'c-mode-common-hook
@@ -48,16 +29,14 @@
 ;; change default grep
 (setq grep-command "grep -nrH -e ")
 
-;; add apt-utils
-(require 'apt-utils)
-(require 'apt-utils-ido)
+;; el doc mode
+(require 'c-eldoc)
+(setq c-eldoc-includes "`pkg-config gtk+-2.0 --cflags` -I./ -I../ ")
+(add-hook 'c-mode-hook 'c-turn-on-eldoc-mode)
 
-;; add ac-c-headers
-(require 'ac-c-headers)
-(add-hook 'c-mode-hook
-          (lambda ()
-            (add-to-list 'ac-sources 'ac-source-c-headers)
-            (add-to-list 'ac-sources 'ac-source-c-header-symbols t)))
+;; enable yasnippet
+(require 'yasnippet)
+(yas-global-mode 1)
 
 
 (provide 'my-programming)
