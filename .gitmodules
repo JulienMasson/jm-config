@@ -76,3 +76,12 @@
 [submodule "bash/bash-git-prompt"]
 	path = bash/bash-git-prompt
 	url = https://github.com/magicmonty/bash-git-prompt.git
+[submodule "emacs/modules/apel"]
+	path = emacs/modules/apel
+	url = https://github.com/wanderlust/apel.git
+[submodule "emacs/modules/semi"]
+	path = emacs/modules/semi
+	url = https://github.com/wanderlust/semi.git
+[submodule "emacs/modules/flim"]
+	path = emacs/modules/flim
+	url = https://github.com/wanderlust/flim.git
