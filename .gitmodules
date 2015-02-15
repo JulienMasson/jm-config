@@ -85,3 +85,9 @@
 [submodule "emacs/modules/flim"]
 	path = emacs/modules/flim
 	url = https://github.com/wanderlust/flim.git
+[submodule "emacs/modules/auto-complete-clang"]
+	path = emacs/modules/auto-complete-clang
+	url = https://github.com/brianjcj/auto-complete-clang.git
+[submodule "emacs/modules/cedet"]
+	path = emacs/modules/cedet
+	url = https://github.com/emacsmirror/cedet.git

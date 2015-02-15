@@ -35,8 +35,41 @@
 (add-hook 'c-mode-hook 'c-turn-on-eldoc-mode)
 
 ;; enable yasnippet
-(require 'yasnippet)
-(yas-global-mode 1)
+;; (require 'yasnippet)
+;; (yas-global-mode 1)
+
+;; ;; auto complete config
+;; (require 'auto-complete-config)
+;; (add-to-list 'ac-dictionary-directories "~/jm-config/auto-complete/dict/")
+;; (ac-config-default)
+
+;; ;; auto complete clang
+;; (require 'auto-complete-clang)
+;; (global-set-key (kbd "C-ù") 'ac-complete-clang)
+
+;; cedet
+(require 'cedet)
+(require 'cedet-cscope)
+(require 'semantic)
+(require 'semantic/symref/cscope)
+(require 'semantic/db-cscope)
+;;(add-to-list 'semantic-default-submodes 'global-semantic-decoration-mode)
+(add-to-list 'semantic-default-submodes 'global-semantic-idle-local-symbol-highlight-mode)
+(add-to-list 'semantic-default-submodes 'global-semantic-idle-scheduler-mode)
+(add-to-list 'semantic-default-submodes 'global-semantic-idle-completions-mode)
+
+;; Enable Semantic
+(semantic-mode 1)
+
+;; Enable EDE (Project Management) features
+(global-ede-mode 1)
+
+;; enable cedet cscope
+(semanticdb-enable-cscope-databases)
+(setq ede-locate-setup-options
+      '(ede-locate-cscope
+	ede-locate-base))
+(ede-cpp-root-project "Robot" :file "/home/julien/Documents/Robot/Software/src/cscope.files")
 
 
 (provide 'my-programming)
