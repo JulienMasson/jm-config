@@ -91,3 +91,6 @@
 [submodule "emacs/modules/cedet"]
 	path = emacs/modules/cedet
 	url = https://github.com/emacsmirror/cedet.git
+[submodule "emacs/modules/mu"]
+	path = emacs/modules/mu
+	url = https://github.com/djcb/mu.git

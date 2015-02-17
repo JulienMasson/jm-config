@@ -182,7 +182,7 @@
 (defvar gmail-maildir  "--maildir=~/Maildir/Gmail")
 (defvar eseo-maildir  "--maildir=~/Maildir/Eseo")
 (defvar openwide-maildir  "--maildir=~/Maildir/OpenWide")
-(defvar mu-wl-mu-program     "/usr/bin/mu")
+(defvar mu-wl-mu-program     "/usr/local/bin/mu")
 (defvar mu-wl-search-folder  "search")
 (defun mu-wl-search ()
   "search for messages with `mu', and jump to the results"
