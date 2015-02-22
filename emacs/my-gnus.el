@@ -4,34 +4,24 @@
 
 ;; gnus
 (require 'smtpmail)
-
-(setq 
-;; Use Gnus to read gmail from the local directory to which offlineimap syncs 
- gnus-select-method 
- '(nnmaildir "OpenWide" 
-	     (directory "~/Maildir/OpenWide/INBOX/") 
-	     (expire-age never)) 
- mail-sources '((maildir :path "~/Maildir/OpenWide/INBOX/" :subdirs ("cur" "new"))) 
- mail-source-delete-incoming t
-
-;; (setq ;; SMTP
-;;  user-mail-address "massonju.eseo@intel.com"
-;;  user-full-name "Julien Masson"
-;;  message-send-mail-function 'smtpmail-send-it
-;;  smtpmail-smtp-server "smtp.gmail.com"
-;;  smtpmail-smtp-service 587
+(setq ;; SMTP
+ user-mail-address "julienx.masson@intel.com"
+ user-full-name "Julien Masson"
+ message-send-mail-function 'smtpmail-send-it
+ smtpmail-smtp-server "mail.intel.com"
+ smtpmail-smtp-service 25
  ;; GNUS
- ;; gnus-select-method '(nnimap "IMAP"
- ;; 			     (nnimap-address "imap.gmail.com")
- ;; 			     (nnimap-server-port 993)
- ;; 			     (nnimap-stream ssl)
- ;; 			     (nnimap-inbox "INBOX"))
+ gnus-select-method '(nnimap "IMAP"
+ 			     (nnimap-address "irsmsx101.ger.corp.intel.com")
+ 			     (nnimap-server-port 993)
+ 			     (nnimap-stream ssl)
+ 			     (nnimap-inbox "INBOX"))
 
  ;; Use Gnus to read gmail from the local directory to which offlineimap syncs
- ;; gnus-select-method '(nnmaildir "Gmail"
- ;; 				(directory "~/Maildir/Gmail/INBOX/")
+ ;; gnus-select-method '(nnmaildir "Intel"
+ ;; 				(directory "~/Maildir/Intel/INBOX/")
  ;; 				(expire-age never))
- ;; mail-sources '((maildir :path "~/Maildir/Gmail/INBOX/" :subdirs ("cur" "new")))
+ ;; mail-sources '((maildir :path "~/Maildir/Intel/INBOX/" :subdirs ("cur" "new")))
  ;; mail-source-delete-incoming t
 
  gnus-use-scoring t

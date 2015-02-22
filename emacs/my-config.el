@@ -44,5 +44,8 @@
 ;; keybindings config
 (require 'my-keybindings)
 
+;; intel config
+(require 'jmasson-intel)
+
 
 (provide 'my-config)
