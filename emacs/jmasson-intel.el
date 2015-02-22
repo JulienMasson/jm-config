@@ -15,6 +15,7 @@
 (require 'project-manager)
 (require 'pm-emacslisp)
 (require 'pm-android-intel)
+(require 'jm-projects)
 
 ;; Gerrit
 (require 'gerrit)
@@ -30,6 +31,10 @@
 (require 'device-control-android)
 (require 'device-control-intel)
 
+;; search tools
+(require 'search-engine)
+(require 'search-tools)
+
 ;; Ldap tool
 (require 'ldap-browser)
 (require 'ldap-browser-mail)
@@ -38,9 +43,6 @@
 		       ("amr.corp.intel.com"	.	"ou=Workers,dc=amr,dc=corp,dc=intel,dc=com")
 		       ("gar.corp.intel.com"	.	"ou=Workers,dc=gar,dc=corp,dc=intel,dc=com")
 		       ("ccr.corp.intel.com"	.	"ou=Workers,dc=ccr,dc=corp,dc=intel,dc=com")))
-
-;; Activity window manager
-;;(require 'activity)
 
 ;; Load desktop settings
 (require (intern (system-name)) nil t)

@@ -94,3 +94,24 @@
 [submodule "emacs/modules/mu"]
 	path = emacs/modules/mu
 	url = https://github.com/djcb/mu.git
+[submodule "emacs/modules/log-tools"]
+	path = emacs/modules/log-tools
+	url = https://github.com/jeremy-compostella/log-tools.git
+[submodule "emacs/modules/project-manager"]
+	path = emacs/modules/project-manager
+	url = https://github.com/jeremy-compostella/project-manager.git
+[submodule "emacs/modules/gerrit"]
+	path = emacs/modules/gerrit
+	url = https://github.com/jeremy-compostella/gerrit.git
+[submodule "emacs/modules/device-control"]
+	path = emacs/modules/device-control
+	url = https://github.com/jeremy-compostella/device-control.git
+[submodule "emacs/modules/search-tools"]
+	path = emacs/modules/search-tools
+	url = https://github.com/jeremy-compostella/search-tools.git
+[submodule "emacs/modules/org-jira"]
+	path = emacs/modules/org-jira
+	url = https://github.com/baohaojun/org-jira.git
+[submodule "emacs/modules/ldap-browser"]
+	path = emacs/modules/ldap-browser
+	url = https://github.com/schouleu/ldap-browser.git

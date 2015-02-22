@@ -14,7 +14,7 @@
 (global-set-key (kbd "C-c <up>")    'windmove-up)
 (global-set-key (kbd "C-c <down>")  'windmove-down)
 (global-set-key (kbd "C-c e") 'eval-region)
-(global-set-key (kbd "C-c s") 'sudo-edit)
+(global-set-key (kbd "C-c S") 'sudo-edit)
 (global-set-key (kbd "C-c l") 'goto-line)
 (global-set-key (kbd "C-c d") 'delete-rectangle)
 (global-set-key (kbd "C-c r") 'revert-buffer)
@@ -23,7 +23,6 @@
 (global-set-key (kbd "C-c u") 'uncomment-region)
 (global-set-key (kbd "C-c k") 'kill-buffer-and-window)
 (global-set-key (kbd "C-c f") 'find-name-dired)
-
 
 (global-set-key (kbd "C-M-y") (lambda () (interactive) (yank-pop -1)))
 
@@ -84,7 +83,15 @@
 ;; search with ctags or cscope
 (global-set-key (kbd "M-;") 'find-tag)
 
-
+;; intel
+(global-set-key (kbd "C-c i s") 'switch-project)
+(global-set-key (kbd "C-c i p") 'project-compile)
+(global-set-key (kbd "C-c i d") 'device-contol)
+(global-set-key (kbd "C-c i c") 'compile)
+(global-set-key (kbd "C-c i l") 'log-tools)
+(global-set-key (kbd "C-c i t") 'toggle-window-dedicated)
+(global-set-key (kbd "C-c i d") 'device-contol)
+(global-set-key (kbd "C-c i u") 'repo-upload)
 
 
 (provide 'my-keybindings)

@@ -43,7 +43,7 @@
  '(tool-bar-mode nil))
 
 ;; set font size
-(set-face-attribute 'default nil :height 90)
+(set-face-attribute 'default nil :height 100)
 
 ;; load theme
 (add-to-list 'custom-theme-load-path "~/jm-config/emacs")

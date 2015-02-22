@@ -2,6 +2,9 @@
 ;;;;             PROGRAMMING CONFIG            ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; jump only on error compilation
+(setq compilation-skip-threshold 2)
+
 ;; ctags
 (setq path-to-ctags "/usr/bin/ctags")
 (defun create-tags-ctags (dir-name)
