@@ -43,7 +43,7 @@
  '(tool-bar-mode nil))
 
 ;; set font size
-(set-face-attribute 'default nil :height 100)
+(set-face-attribute 'default nil :height 90)
 
 ;; load theme
 (add-to-list 'custom-theme-load-path "~/jm-config/emacs")
@@ -120,7 +120,7 @@
 
 ;; load status
 (require 'status)
-;; (toggle-status)
+(toggle-status)
 
 ;; browse kill ring
 (require 'browse-kill-ring)

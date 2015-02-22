@@ -2,9 +2,9 @@
 
 (defvar pm-intel-android-targets
   '(("droidboot"	.	"droidbootimage")
-    ("factoryscripts"	.	"factoryscripts")
-    ("mixins-update"	.	pm-intel-android-mixins-update)
-    ("kernelflinger"	.	pm-intel-android-kernelflinger)))
+    ("bootloader"	.	"bootloaderimage")
+    ("blankphone"	.	"blank_flashfiles")
+    ("flashfiles"	.	"flashfiles")))
 
 (defun pm-intel-android-compile ()
   (interactive)

@@ -20,6 +20,8 @@
      ))
 
 ;; wanderlust
+(require 'wl)
+(autoload 'wl "wl" "Wanderlust" t)
 (setq
   elmo-maildir-folder-path "~/Maildir/Intel"          ;; where i store my mail
 

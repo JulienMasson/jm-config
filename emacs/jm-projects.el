@@ -1,15 +1,8 @@
-(defvar my-usual-subprojects '(("iafw"		. "/vendor/intel/fw/PRIVATE/byt-iafw")
+(defvar my-usual-subprojects '(("droidboot"	. "/bootable/droidboot")
 			       ("libintelprov"	. "/vendor/intel/hardware/libintelprov")
 			       ("tasks"		. "/vendor/intel/build/tasks")
-			       ("kernelflinger" . "/hardware/intel/kernelflinger")
-                               ("gnu-efi"       . "/external/gnu-efi/gnu-efi-3.0")
-			       ("userfastboot"	. "/bootable/userfastboot")
-			       ("mixins"	. "/device/intel/mixins/groups")
-			       ("uefi"		. "/bootable/uefi/")
-			       ("droidboot"	. "/bootable/droidboot")
-			       ("recovery"	. "/bootable/recovery")
-			       ("init"		. "/system/core/init")
-			       ("fastboot"	. "/system/core/fastboot")
+			       ("fugu"		. "/vendor/intel/PRIVATE/fugu")
+			       ("sand"		. "/vendor/intel/PRIVATE/sand")
 			       ("linux"		. "/linux/kernel")))
 
 (setq http-proxy "http://proxy.ir.intel.com:911"
@@ -20,7 +13,7 @@
 		      ("https_proxy"	.	http-proxy)
 		      ("ftp_proxy"	.	http-proxy)
 		      ("no_proxy"	.	no-proxy)
-		      ("PATH"		.	(concat "$PATH:" jdk-path "/bin:$HOME/bin:/usr/sbin:/sbin:/opt/bin"))
+		      ("PATH"		.	(concat "$PATH:" jdk-path "/bin:/home/jmassonx/bin:/usr/sbin:/sbin:/opt/bin"))
 		      ("JAVA_HOME"	.	jdk-path)
 		      ("CLASSPATH"	.	".")
 		      ("EDITOR"		.	"emacsclient --socket-name /tmp/emacs1000/server")))
@@ -29,9 +22,9 @@
 
 
 (register-project
- (make-project :name "Imin_legacy - Sand"
+ (make-project :name "FULL - Sand"
 	       :pm-backend "intel-android"
-	       :root-path "/ssh:tllabX2:/build/jmassonx/imin-legacy-scr"
+	       :root-path "/ssh:jmassonx@tllabX2:/build/jmassonx/imin-legacy"
 	       :env-vars '((aosp-path		.	(project-root-path current-project))
 			   (aosp-board-name	.	"full_sand")
 			   (aosp-build-variant	.	"userdebug")
@@ -40,28 +33,43 @@
 
 
 (register-project
- (make-project :name "Imin_legacy - Fugu"
+ (make-project :name "FULL - Fugu"
 	       :pm-backend "intel-android"
-	       :root-path "/ssh:tllabX2:/build/jmassonx/imin-legacy"
+	       :root-path "/ssh:jmassonx@tllabX2:/build/jmassonx/imin-legacy"
 	       :env-vars '((aosp-path		.	(project-root-path current-project))
 			   (aosp-board-name	.	"full_fugu")
 			   (aosp-build-variant	.	"userdebug")
 			   (aosp-thread-number	.	32))
 	       :subprojects my-usual-subprojects))
 
+(register-project
+ (make-project :name "IMIN - Fugu"
+	       :pm-backend "intel-android"
+	       :root-path "/ssh:jmassonx@tllabX2:/build/jmassonx/imin-legacy"
+	       :env-vars '((aosp-path		.	(project-root-path current-project))
+			   (aosp-board-name	.	"imin_fugu")
+			   (aosp-build-variant	.	"userdebug")
+			   (aosp-thread-number	.	32))
+	       :subprojects my-usual-subprojects))
 
 (register-project
- (make-project :name "intel-lisp"
-	       :pm-backend "emacslisp"
-	       :root-path "/home/lab/Document/Intel/intel-lisp"
-	       :env-vars '()
-	       :subprojects '(("activity"		.	"/activity")
-			      ("device-control"		.	"/device-control")
-			      ("gerrit"			.	"/gerrit")
-			      ("log-tools"		.	"/log-tools")
-			      ("project-manager"	.	"/project-manager")
-			      ("purple"			.	"/purple")
-			      ("search-tools"		.	"/search-tools"))))
+ (make-project :name "MR1 - Fugu"
+	       :pm-backend "intel-android"
+	       :root-path "/ssh:jmassonx@tllabX2:/build/jmassonx/mr1"
+	       :env-vars '((aosp-path		.	(project-root-path current-project))
+			   (aosp-board-name	.	"full_fugu")
+			   (aosp-build-variant	.	"userdebug")
+			   (aosp-thread-number	.	32))
+	       :subprojects my-usual-subprojects))
 
+(register-project
+ (make-project :name "jm-config"
+	       :pm-backend "emacslisp"
+	       :root-path "/home/lab/jm-config"
+	       :env-vars '()
+	       :subprojects '(("emacs"          .       "/emacs")
+			      ("bash"	        .	"/bash")
+			      ("awesome"	.	"/awesome")
+			      ("others"		.	"/others"))))
 
 (provide 'jm-projects)
