@@ -16,9 +16,6 @@
 (require 'pm-emacslisp)
 (require 'pm-android-intel)
 
-;; Offlineimap
-(require 'offlineimap)
-
 ;; Gerrit
 (require 'gerrit)
 (require 'repo)
