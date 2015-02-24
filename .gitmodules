@@ -70,9 +70,6 @@
 [submodule "emacs/modules/offlineimap.el"]
 	path = emacs/modules/offlineimap
 	url = https://github.com/jd/offlineimap.el.git
-[submodule "emacs/modules/org-wl"]
-	path = emacs/modules/org-wl
-	url = https://github.com/JulienMasson/org-wl
 [submodule "bash/bash-git-prompt"]
 	path = bash/bash-git-prompt
 	url = https://github.com/magicmonty/bash-git-prompt.git
@@ -115,3 +112,6 @@
 [submodule "emacs/modules/ldap-browser"]
 	path = emacs/modules/ldap-browser
 	url = https://github.com/schouleu/ldap-browser.git
+[submodule "emacs/modules/org-mode"]
+	path = emacs/modules/org-mode
+	url = git://orgmode.org/org-mode.git
