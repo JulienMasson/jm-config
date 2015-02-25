@@ -118,16 +118,8 @@
 ;; remove scroll bar
 (scroll-bar-mode -1)
 
-;; load status
-(require 'status)
-(toggle-status)
-
 ;; browse kill ring
 (require 'browse-kill-ring)
-
-;; add status bar
-(require 'status)
-
 
 
 (provide 'my-windows)

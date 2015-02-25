@@ -5,6 +5,9 @@
 ;; mail
 (require 'work-wl)
 
+;; Status
+(require 'status)
+
 ;; latex config
 ;; (require 'my-latex)
 
