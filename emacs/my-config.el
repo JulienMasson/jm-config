@@ -30,7 +30,10 @@
 (require 'my-keybindings)
 
 ;; work config
-(require 'my-work)
+;; (require 'my-work)
+
+;; home config
+(require 'my-home)
 
 
 (provide 'my-config)

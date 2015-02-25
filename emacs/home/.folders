@@ -1,0 +1,11 @@
+Gmail{
+.~/Maildir/Gmail/INBOX "Inbox"
+}
+
+Eseo{
+.~/Maildir/Eseo/INBOX "Inbox"
+}
+
+OpenWide{
+.~/Maildir/OpenWide/INBOX "Inbox"
+}
