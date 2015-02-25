@@ -100,3 +100,5 @@ GIT_PROMPT_ONLY_IN_REPO=1
 GIT_PROMPT_THEME=Custom # use custom .git-prompt-colors.sh
 # GIT_PROMPT_THEME=Solarized # use theme optimized for solarized color scheme
 source ~/jm-config/bash/bash-git-prompt/gitprompt.sh
+
+alias jm-xrandr='xrandr --output DP-1 --mode 1920x1200 --right-of DP-3 --output DP-3 --mode 1920x1200'

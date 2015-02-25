@@ -94,7 +94,7 @@ myawesomemenu = {
    { "edit config", editor_cmd .. " " .. awesome.conffile },
    { "restart", awesome.restart },
    { "quit", awesome.quit },
-   { "dialog", '/home/julien/jm-config/awesome/shutdown_dialog.sh' },
+   { "dialog", '/home/jmassonx/jm-config/awesome/shutdown_dialog.sh' },
 }
 
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
@@ -130,7 +130,7 @@ end
 maillabel= widget({ type = "textbox" })
 maillabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Mail </span>'
 mailimage= widget({ type = "imagebox" })
-mailimage.image= image("/home/julien/jm-config/awesome/icons/email.png")
+mailimage.image= image("/home/jmassonx/jm-config/awesome/icons/email.png")
 -- mailwidget = widget({
 --    type = 'textbox',
 --    name = 'mailwidget'
@@ -138,12 +138,14 @@ mailimage.image= image("/home/julien/jm-config/awesome/icons/email.png")
 -- vicious.register(mailwidget, run_script, '$1')
 
 -- mdir
-gmailwidget = widget({ type = "textbox" })
-vicious.register(gmailwidget, vicious.widgets.mdir, "$1/$2 ", 5, { home_dir ..'/Maildir/Gmail/INBOX/' })
-eseowidget = widget({ type = "textbox" })
-vicious.register(eseowidget, vicious.widgets.mdir, "$1/$2 ", 5, { home_dir ..'/Maildir/Eseo/INBOX/' })
-openwidewidget = widget({ type = "textbox" })
-vicious.register(openwidewidget, vicious.widgets.mdir, "$1/$2", 5, { home_dir ..'/Maildir/OpenWide/INBOX/' })
+-- gmailwidget = widget({ type = "textbox" })
+-- vicious.register(gmailwidget, vicious.widgets.mdir, "$1/$2 ", 5, { home_dir ..'/Maildir/Gmail/INBOX/' })
+-- eseowidget = widget({ type = "textbox" })
+-- vicious.register(eseowidget, vicious.widgets.mdir, "$1/$2 ", 5, { home_dir ..'/Maildir/Eseo/INBOX/' })
+-- openwidewidget = widget({ type = "textbox" })
+-- vicious.register(openwidewidget, vicious.widgets.mdir, "$1/$2", 5, { home_dir ..'/Maildir/OpenWide/INBOX/' })
+intelwidget = widget({ type = "textbox" })
+vicious.register(intelwidget, vicious.widgets.mdir, "$1 / $2", 5, { home_dir .. '/Maildir/Intel/INBOX/' })
 
 -- mpd
 -- mpdwidget = widget({ type = "textbox" })
@@ -151,7 +153,7 @@ vicious.register(openwidewidget, vicious.widgets.mdir, "$1/$2", 5, { home_dir ..
 
 -- packages
 -- packagesimage= widget({ type = "imagebox" })
--- packagesimage.image= image("/home/julien/jm-config/awesome/icons/update-2.png")
+-- packagesimage.image= image("/home/jmassonx/jm-config/awesome/icons/update-2.png")
 -- packageslabel= widget({ type = "textbox" })
 -- packageslabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Packages </span>'
 -- packageswidget = widget({ type = "textbox" })
@@ -203,7 +205,7 @@ cpulabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>CPU </sp
 cpu=blingbling.classical_graph.new()
 cpu:set_font_size(8)
 cpu:set_height(20)
-cpu:set_width(60)
+cpu:set_width(100)
 cpu:set_show_text(true)
 cpu:set_label("$percent %")
 cpu:set_graph_color("#00ccff00")
@@ -255,7 +257,7 @@ memwidget = blingbling.classical_graph.new()
 memwidget:set_font_size(8)
 memwidget:set_height(20)
 memwidget:set_h_margin(2)
-memwidget:set_width(60)
+memwidget:set_width(100)
 memwidget:set_filled(true)
 memwidget:set_show_text(true)
 memwidget:set_filled_color("#00000099")
@@ -294,17 +296,17 @@ my_net:set_v_margin(3)
 my_net:set_graph_line_color("#00ccff00")
 my_net:set_graph_color("#ff8700")
 my_net:set_filled_color("#00000055")
-my_net:set_show_text(true)
+my_net:set_show_text(false)
 
 -- wifi widget
 wifiwidget = widget({ type = "textbox" })
 vicious.register(wifiwidget, vicious.widgets.wifi, ' <span color="#ff8700" '..pango_large..' '..pango_bold..'> ${ssid} </span>', 1, "wlan0")
 wifispeedwidget = widget({ type = "textbox" })
 vicious.register(wifispeedwidget, vicious.widgets.net, '${wlan0 up_kb}Kb   ${wlan0 down_kb}Kb', 1)
--- eth_up_speedwidget = widget({ type = "textbox" })
--- vicious.register(eth_up_speedwidget, vicious.widgets.net, '${eth0 up_kb}Kb', 1)
--- eth_down_speedwidget = widget({ type = "textbox" })
--- vicious.register(eth_down_speedwidget, vicious.widgets.net, '${eth0 down_kb}Kb', 1)
+eth_up_speedwidget = widget({ type = "textbox" })
+vicious.register(eth_up_speedwidget, vicious.widgets.net, '${eth0 up_kb}Kb', 1)
+eth_down_speedwidget = widget({ type = "textbox" })
+vicious.register(eth_down_speedwidget, vicious.widgets.net, '${eth0 down_kb}Kb', 1)
 
 -- FS Widget
 -- fshomelabel= widget({ type = "textbox", name = "fshomelabel" })
@@ -346,17 +348,17 @@ vicious.register(wifispeedwidget, vicious.widgets.net, '${wlan0 up_kb}Kb   ${wla
 -- Volume
 volume_label = widget({ type = "textbox"})
 volume_label.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Vol </span>'
-volumewidget = widget({ type = "textbox" })
-vicious.register(volumewidget, vicious.widgets.volume, '$1', 1, "Master")
--- my_volume=blingbling.volume.new()
--- my_volume:set_height(20)
--- my_volume:set_v_margin(3)
--- my_volume:set_width(25)
--- my_volume:update_master()
--- my_volume:set_master_control()
--- my_volume:set_bar(true)
--- my_volume:set_background_graph_color("#00000099")
--- my_volume:set_graph_color("#ff8700")
+-- volumewidget = widget({ type = "textbox" })
+-- vicious.register(volumewidget, vicious.widgets.volume, '$1', 1, "Master")
+my_volume=blingbling.volume.new()
+my_volume:set_height(20)
+my_volume:set_v_margin(3)
+my_volume:set_width(25)
+my_volume:update_master()
+my_volume:set_master_control()
+my_volume:set_bar(true)
+my_volume:set_background_graph_color("#00000099")
+my_volume:set_graph_color("#ff8700")
 
 -- Battery
 battery_label = widget({ type = "textbox"})
@@ -474,9 +476,9 @@ for s = 1, screen.count() do
 		my_cal.widget,
         	s == 1 and mysystray or nil,
 	separator,
-		batwidget.widget,
+		my_volume.widget,
 		space,
-		battery_label,
+		volume_label,
 	separator,
 		cpudegreewidget,
 		space,
@@ -490,17 +492,19 @@ for s = 1, screen.count() do
 		space,
 		memlabel,
 	separator,
-		openwidewidget,
+		orgwidget,
 		space,
-		eseowidget,
-		space,
-		gmailwidget,
+		orglabel,
+	separator,
+		intelwidget,
 		space,
 		mailimage,
 	separator,
-		wifispeedwidget,
+		eth_down_speedwidget,
 		space,
-		wifiwidget,
+		my_net.widget,
+		space,
+		eth_up_speedwidget,
         -- s == 1 and mysystray or nil,
         mytasklist[s],
         layout = awful.widget.layout.horizontal.rightleft
@@ -576,7 +580,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey }, "p", function () awful.util.spawn("amixer set Master toggle") end),
 
 
-    awful.key({ modkey, "Shift" }, "s", function () awful.util.spawn("cinnamon-settings") end),
+    awful.key({ modkey, "Shift" }, "s", function () awful.util.spawn("unity-control-center") end),
     awful.key({ modkey, "Shift" }, "e", function () awful.util.spawn("emacs") end),
     awful.key({ modkey, "Shift" }, "f", function () awful.util.spawn("firefox") end),
 

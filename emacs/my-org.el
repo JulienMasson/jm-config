@@ -5,6 +5,14 @@
 (require 'org)
 (setq org-log-done t)
 
+
+;; org todo keywords
+(setq org-todo-keywords
+       '((sequence "TODO" "WORKING" "|" "VERIFIED" "DONE")))
+(setq org-todo-keyword-faces
+      '(("TODO" . org-warning) ("WORKING" . "yellow")
+	("VERIFIED" . (:foreground "lightblue" :weight bold))))
+
 ;; add org agenda
 (setq org-agenda-files (list "~/org/notes.org"
 			     "~/org/journal.org"

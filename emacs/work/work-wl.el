@@ -127,4 +127,4 @@
 	   (format "%s cfind --format=wl > ~/.addresses" mu-wl-mu-program)))
 
 
-(provide 'my-wl)
+(provide 'work-wl)

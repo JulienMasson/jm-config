@@ -4,6 +4,7 @@
 
 ;; magit
 (require 'magit)
+(require 'magit-blame)
 
 ;; shortcut to know if branch is up to date
 (setq path-to-check-git-update "~/jm-config/others/check_git_update.sh")

@@ -24,7 +24,7 @@
 (register-project
  (make-project :name "FULL - Sand"
 	       :pm-backend "intel-android"
-	       :root-path "/ssh:jmassonx@tllabX2:/build/jmassonx/imin-legacy"
+	       :root-path "/ssh:jmassonx@10.102.162.144:/build/jmassonx/imin-legacy"
 	       :env-vars '((aosp-path		.	(project-root-path current-project))
 			   (aosp-board-name	.	"full_sand")
 			   (aosp-build-variant	.	"userdebug")
@@ -35,7 +35,7 @@
 (register-project
  (make-project :name "FULL - Fugu"
 	       :pm-backend "intel-android"
-	       :root-path "/ssh:jmassonx@tllabX2:/build/jmassonx/imin-legacy"
+	       :root-path "/ssh:jmassonx@10.102.162.144:/build/jmassonx/imin-legacy"
 	       :env-vars '((aosp-path		.	(project-root-path current-project))
 			   (aosp-board-name	.	"full_fugu")
 			   (aosp-build-variant	.	"userdebug")
@@ -45,7 +45,7 @@
 (register-project
  (make-project :name "IMIN - Fugu"
 	       :pm-backend "intel-android"
-	       :root-path "/ssh:jmassonx@tllabX2:/build/jmassonx/imin-legacy"
+	       :root-path "/ssh:jmassonx@10.102.162.144:/build/jmassonx/imin-legacy"
 	       :env-vars '((aosp-path		.	(project-root-path current-project))
 			   (aosp-board-name	.	"imin_fugu")
 			   (aosp-build-variant	.	"userdebug")
@@ -55,7 +55,7 @@
 (register-project
  (make-project :name "MR1 - Fugu"
 	       :pm-backend "intel-android"
-	       :root-path "/ssh:jmassonx@tllabX2:/build/jmassonx/mr1"
+	       :root-path "/ssh:jmassonx@10.102.162.144:/build/jmassonx/mr1"
 	       :env-vars '((aosp-path		.	(project-root-path current-project))
 			   (aosp-board-name	.	"full_fugu")
 			   (aosp-build-variant	.	"userdebug")
@@ -65,7 +65,7 @@
 (register-project
  (make-project :name "jm-config"
 	       :pm-backend "emacslisp"
-	       :root-path "/home/lab/jm-config"
+	       :root-path "/home/jmassonx/jm-config"
 	       :env-vars '()
 	       :subprojects '(("emacs"          .       "/emacs")
 			      ("bash"	        .	"/bash")
