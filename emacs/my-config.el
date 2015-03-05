@@ -11,9 +11,6 @@
 ;; irc config
 (require 'my-irc)
 
-;; pidgin config
-(require 'my-pidgin)
-
 ;; programming config
 (require 'my-programming)
 
@@ -26,14 +23,14 @@
 ;; rss config
 (require 'my-rss)
 
-;; keybindings config
-(require 'my-keybindings)
-
 ;; work config
 ;; (require 'my-work)
 
 ;; home config
 (require 'my-home)
+
+;; keybindings config
+(require 'my-keybindings)
 
 
 (provide 'my-config)
