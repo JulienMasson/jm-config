@@ -119,11 +119,11 @@
 
 (defun mu-wl-update-database ()
   (interactive)
-  (shell-command
+  (async-shell-command
 	   (format "%s index %s" mu-wl-mu-program intel-maildir)))
 (defun mu-wl-update-contacts ()
   (interactive)
-  (shell-command
+  (async-shell-command
 	   (format "%s cfind --format=wl > ~/.addresses" mu-wl-mu-program)))
 
 

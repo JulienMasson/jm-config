@@ -115,3 +115,12 @@
 [submodule "emacs/modules/org-mode"]
 	path = emacs/modules/org-mode
 	url = git://orgmode.org/org-mode.git
+[submodule "emacs/modules/gnus"]
+	path = emacs/modules/gnus
+	url = https://github.com/emacsmirror/gnus.git
+[submodule "emacs/modules/bbdb"]
+	path = emacs/modules/bbdb
+	url = git://git.savannah.nongnu.org/bbdb.git
+[submodule "emacs/modules/notmuch"]
+	path = emacs/modules/notmuch
+	url = git://notmuchmail.org/git/notmuch
