@@ -132,18 +132,20 @@ article."
 ;; 		       ("gar.corp.intel.com"	.	"ou=Workers,dc=gar,dc=corp,dc=intel,dc=com")
 ;; 		       ("ccr.corp.intel.com"	.	"ou=Workers,dc=ccr,dc=corp,dc=intel,dc=com")))
 
-;; addresses completion
+;; addresses completion default ~/.bbdb
+(require 'bbdb-loaddefs "/usr/local/share/emacs/site-lisp/bbdb-loaddefs.el")
+(add-hook 'message-mode-hook
+          '(lambda ()
+             (bbdb-initialize 'message)
+             (bbdb-initialize 'gnus)
+             (local-set-key "<TAB>" 'bbdb-complete-name)))
+
 ;; (require 'bbdb)
 ;; (setq bbdb-file "~/.bbdb")
 ;; (bbdb-initialize)
 ;; (add-hook 'gnus-startup-hook 'bbdb-insinuate-gnus)
 ;; (add-hook 'gnus-startup-hook 'bbdb-insinuate-message)
 ;; (add-hook 'message-setup-hook 'bbdb-define-all-aliases)
-;; (add-hook 'message-mode-hook
-;;           '(lambda ()
-;;              (bbdb-initialize 'message)
-;;              (bbdb-initialize 'gnus)
-;;              (local-set-key "<TAB>" 'bbdb-complete-name)))
 
 ;; (defvar intel-maildir  "--maildir=~/Maildir/Intel")
 ;; (defvar mu-program     "/usr/local/bin/mu")
