@@ -4,7 +4,7 @@
 
 ;; offlineimap
 (require 'offlineimap)
-(run-with-timer 0 (* 1 60) 'offlineimap)
+(offlineimap)
 
 ;; set maildir
 (require 'gnus)
@@ -145,6 +145,38 @@
              (bbdb-initialize 'message)
              (bbdb-initialize 'gnus)
              (local-set-key "<TAB>" 'bbdb-complete-name)))
+
+(defvar gmail-maildir  "--maildir=~/Maildir/Gmail")
+(defvar eseo-maildir  "--maildir=~/Maildir/Eseo")
+(defvar openwide-maildir  "--maildir=~/Maildir/OpenWide")
+(defvar mu-program     "/usr/local/bin/mu")
+
+(defun mu-update-database ()
+  (shell-command
+	   (format "%s index %s" mu-program gmail-maildir))
+  (shell-command
+	   (format "%s index %s" mu-program eseo-maildir))
+  (shell-command
+   (format "%s index %s" mu-program openwide-maildir)))
+
+(defun mu-gnus-update-contacts ()
+  (interactive)
+  (mu-update-database)
+  (shell-command
+   (format "%s cfind --format=bbdb > ~/.bbdb" mu-program)))
+
+;; search engines
+(require 'notmuch)
+(add-hook 'gnus-group-mode-hook 'lld-notmuch-shortcut)
+(require 'org-gnus)
+
+(defun lld-notmuch-shortcut ()
+  (define-key gnus-group-mode-map "GG" 'notmuch-search)
+  )
+
+(defun notmuch-update-database ()
+  (interactive)
+  (async-shell-command "notmuch new"))
 
 
 (provide 'home-gnus)

@@ -5,6 +5,7 @@ maxsyncaccounts = 3
 [Account Gmail]
 localrepository = GmailLocal
 remoterepository = GmailRemote
+autorefresh = 1
 
 [Repository GmailLocal]
 type = Maildir
@@ -22,6 +23,7 @@ realdelete = yes
 [Account Eseo]
 localrepository = EseoLocal
 remoterepository = EseoRemote
+autorefresh = 1
 
 [Repository EseoLocal]
 type = Maildir
@@ -40,6 +42,7 @@ realdelete = yes
 [Account OpenWide]
 localrepository = OpenWideLocal
 remoterepository = OpenWideRemote
+autorefresh = 1
 
 [Repository OpenWideLocal]
 type = Maildir
