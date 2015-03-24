@@ -5,6 +5,7 @@ maxsyncaccounts = 10
 [Account Intel]
 localrepository = IntelLocal
 remoterepository = IntelRemote
+autorefresh = 1
 
 [Repository IntelLocal]
 type = Maildir

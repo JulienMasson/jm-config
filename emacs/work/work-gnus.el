@@ -4,25 +4,83 @@
 
 ;; offlineimap
 (require 'offlineimap)
-(run-with-timer 0 (* 1 60) 'offlineimap)
-
-;; gnus-icalendar
-(require 'gnus-icalendar)
-(setq gnus-icalendar-org-capture-file (expand-file-name "~/org/agenda.org")
-      gnus-icalendar-org-capture-headline '("Calendar"))
-(gnus-icalendar-setup)
-(gnus-icalendar-org-setup)
+(offlineimap)
 
 ;; set maildir
-(setq gnus-select-method
-      '(nnmaildir "Intel"
+(require 'gnus)
+(setq gnus-select-method '(nnnil ""))
+(setq gnus-secondary-select-methods
+      '((nnmaildir "Intel"
                   (directory "~/Maildir/Intel")
                   (directory-files nnheader-directory-files-safe)
-                  (get-new-mail nil)))
+                  (get-new-mail nil))))
+
+;; view organisation (put this in .newsrc.eld)
+;; (setq gnus-topic-topology '(("Mails" visible) (("Intel" visible)) ))
+;; (setq gnus-topic-alist '(("Intel" "nnmaildir+Intel:INBOX" "nnmaildir+Intel:Sent") ("Mails")))
+
+;; rename groups name
+(setq gnus-group-line-format "%M%S%5y/%-5t: %uG %D\n")
+(defun gnus-user-format-function-G (arg)
+  (let ((mapped-name (assoc gnus-tmp-group group-name-map)))
+    (if (null mapped-name)
+        gnus-tmp-group
+      (cdr mapped-name))))
+(setq group-name-map '(("nnmaildir+Intel:INBOX" . "INBOX")
+		       ("nnmaildir+Intel:Sent" . "SENT")))
+
+(setq group-name-map-status '(("nnmaildir+Intel:INBOX" . "INBOX")
+			      ("nnmaildir+Intel:Sent" . "SENT")))
+
+;; authinfo
+(setq smtpmail-auth-credentials "~/.authinfo")
+
+;; w3m render
+(setq mm-text-html-renderer 'w3m)
+
+;; config w3m
+(eval-after-load "w3m"
+  '(progn
+     (define-key w3m-mode-map [left] 'backward-char)
+     (define-key w3m-mode-map [right] 'forward-char)
+     (define-key w3m-mode-map [up] 'previous-line)
+     (define-key w3m-mode-map [down] 'next-line)
+     (define-key w3m-minor-mode-map [left] 'backward-char)
+     (define-key w3m-minor-mode-map [right] 'forward-char)
+     (define-key w3m-minor-mode-map [up] 'previous-line)
+     (define-key w3m-minor-mode-map [down] 'next-line)
+     ))
+
+;; set verbose gnus message level
+(setq gnus-verbose 0)
+
+;; Tree view for groups.  I like the organisational feel this has.
+(add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
+
+;; Threads!  I hate reading un-threaded email -- especially mailing
+;; lists.  This helps a ton!
+(setq gnus-summary-thread-gathering-function
+      'gnus-gather-threads-by-subject)
+
+;; Also, I prefer to see only the top level message.  If a message has
+;; several replies or is part of a thread, only show the first
+;; message.  'gnus-thread-ignore-subject' will ignore the subject and
+;; look at 'In-Reply-To:' and 'References:' headers.
+(setq gnus-thread-hide-subtree t)
+(setq gnus-thread-ignore-subject t)
+
+;; maximum articles displayed
+(setq gnus-newsgroup-maximum-articles 200)
+
+;; where the mail and news I send
+(setq gnus-message-archive-group "nnmaildir+Intel:Sent")
 
 ;; scan news every minute
+(require 'gnus-demon)
 (gnus-demon-add-handler 'gnus-demon-scan-news 1 nil) ; this does a call to gnus-group-get-new-news
-(gnus-demon-init)
+
+;; gnus notifications
+(add-hook 'gnus-after-getting-new-news-hook 'gnus-notifications)
 
 ;; set some gnus features
 (setq
@@ -65,8 +123,8 @@
 
 (defun oxy-unicode-threads-heavy ()
   (interactive)
-  (setq gnus-summary-line-format "%8{%4k│%}%9{%U%R%z%}%8{│%}%*%(%-23,23f%)%7{║%} %6{%B%} %s\n"
-	gnus-summary-dummy-line-format "    %8{│%}   %(%8{│%}                       %7{║%}%) %6{┏○%}  %S\n"
+  (setq gnus-summary-line-format "%8{%-16,16&user-date;│%}%9{%U%R%z%}%8{│%}%*%(%-23,23f%)%7{║%} %6{%B%} %s\n"
+	gnus-summary-dummy-line-format "                %8{│%}   %(%8{│%}                       %7{║%}%) %6{┏○%}  %S\n"
 	gnus-sum-thread-tree-indent " "
 	gnus-sum-thread-tree-root "┏● "
 	gnus-sum-thread-tree-false-root " ○ "
@@ -76,6 +134,13 @@
 	gnus-sum-thread-tree-single-leaf "┗━━❯ "))
 
 (oxy-unicode-threads-heavy)
+
+;; gnus-icalendar
+(require 'gnus-icalendar)
+(setq gnus-icalendar-org-capture-file (expand-file-name "~/org/agenda.org")
+      gnus-icalendar-org-capture-headline '("Calendar"))
+(gnus-icalendar-setup)
+(gnus-icalendar-org-setup)
 
 ;; smtp
 (setq user-mail-address "julienx.masson@intel.com"
@@ -88,40 +153,26 @@
       smtpmail-debug-info nil
       mail-setup-hook nil)
 
-;; search engine
-(require 'notmuch)
-(add-hook 'gnus-group-mode-hook 'lld-notmuch-shortcut)
-(require 'org-gnus)
+;; addresses completion default ~/.bbdb
+(require 'bbdb-loaddefs "~/jm-config/emacs/modules/bbdb/lisp/bbdb-loaddefs.el")
+(add-hook 'message-mode-hook
+          '(lambda ()
+             (bbdb-initialize 'message)
+             (bbdb-initialize 'gnus)
+             (local-set-key "<TAB>" 'bbdb-complete-name)))
 
-(defun lld-notmuch-shortcut ()
-  (define-key gnus-group-mode-map "GG" 'notmuch-search)
-  )
+(defvar intel-maildir  "--maildir=~/Maildir/Intel")
+(defvar mu-program     "/usr/local/bin/mu")
 
-(defun lld-notmuch-file-to-group (file)
-  "Calculate the Gnus group name from the given file name.
-"
-  (let ((group (file-name-directory (directory-file-name (file-name-directory file)))))
-    (setq group (replace-regexp-in-string ".*/Maildir/Intel" "nnmaildir:" group))
-    (setq group (replace-regexp-in-string "/$" "" group))
-    (if (string-match ":$" group)
-        (concat group "INBOX")
-      (replace-regexp-in-string ":\\." ":" group))))
+(defun mu-update-database ()
+  (shell-command
+   (format "%s index %s" mu-program intel-maildir)))
 
-(defun lld-notmuch-goto-message-in-gnus ()
-  "Open a summary buffer containing the current notmuch
-article."
+(defun mu-gnus-update-contacts ()
   (interactive)
-  (let ((group (lld-notmuch-file-to-group (notmuch-show-get-filename)))
-        (message-id (replace-regexp-in-string
-                     "^id:" "" (notmuch-show-get-message-id))))
-    (setq message-id (replace-regexp-in-string "\"" "" message-id))
-    (if (and group message-id)
-        (progn
-	  (switch-to-buffer "*Group*")
-	  (org-gnus-follow-link group message-id))
-      (message "Couldn't get relevant infos for switching to Gnus."))))
-
-(define-key notmuch-show-mode-map (kbd "C-c C-c") 'lld-notmuch-goto-message-in-gnus)
+  (mu-update-database)
+  (shell-command
+   (format "%s cfind --format=bbdb > ~/.bbdb" mu-program)))
 
 ;; Ldap tool
 ;; (require 'ldap-browser)
@@ -132,27 +183,22 @@ article."
 ;; 		       ("gar.corp.intel.com"	.	"ou=Workers,dc=gar,dc=corp,dc=intel,dc=com")
 ;; 		       ("ccr.corp.intel.com"	.	"ou=Workers,dc=ccr,dc=corp,dc=intel,dc=com")))
 
-;; addresses completion default ~/.bbdb
-(require 'bbdb-loaddefs "/usr/local/share/emacs/site-lisp/bbdb-loaddefs.el")
-(add-hook 'message-mode-hook
-          '(lambda ()
-             (bbdb-initialize 'message)
-             (bbdb-initialize 'gnus)
-             (local-set-key "<TAB>" 'bbdb-complete-name)))
+;; search engines
+;; (require 'notmuch)
+;; (add-hook 'gnus-group-mode-hook 'lld-notmuch-shortcut)
+;; (require 'org-gnus)
 
-;; (require 'bbdb)
-;; (setq bbdb-file "~/.bbdb")
-;; (bbdb-initialize)
-;; (add-hook 'gnus-startup-hook 'bbdb-insinuate-gnus)
-;; (add-hook 'gnus-startup-hook 'bbdb-insinuate-message)
-;; (add-hook 'message-setup-hook 'bbdb-define-all-aliases)
+;; (defun lld-notmuch-shortcut ()
+;;   (define-key gnus-group-mode-map "GG" 'notmuch-search)
+;;   )
 
-;; (defvar intel-maildir  "--maildir=~/Maildir/Intel")
-;; (defvar mu-program     "/usr/local/bin/mu")
-;; (defun mu-gnus-update-contacts ()
-;;   (interactive)
-;;   (async-shell-command
-;;    (format "%s cfind --format=bbdb > ~/.bbdb" mu-program)))
+(defun notmuch-update-database ()
+  (interactive)
+  (async-shell-command "notmuch new"))
+
+;; Use gnus for default compose-mail
+(if (boundp 'mail-user-agent)
+    (setq mail-user-agent 'gnus-user-agent))
 
 
 (provide 'work-gnus)

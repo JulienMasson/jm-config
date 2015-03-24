@@ -3,10 +3,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; mail
-(require 'work-wl)
+(require 'work-gnus)
+;;(require 'work-wl)
+
+;; Chat interface for pidgin
+(require 'purple)
 
 ;; Status
 (require 'status)
+(status-add-to-left 'status-project-manager)
+(status-add-to-left 'status-virtual-desktops)
+(status-add-to-right 'status-date)
+(status-add-to-right 'status-mem)
+(status-add-to-right 'status-gnus)
+;;(status-add-to-right 'status-wl)
+(turn-on-status)
 
 ;; latex config
 ;; (require 'my-latex)
@@ -41,18 +52,6 @@
 (require 'search-engine)
 (require 'search-tools)
 
-;; Ldap tool
-(require 'ldap-browser)
-(require 'ldap-browser-mail)
-(require 'ldap-browser-purple)
-(defvar ldap-servers '(("ger.corp.intel.com"	.	"ou=Workers,dc=ger,dc=corp,dc=intel,dc=com")
-		       ("amr.corp.intel.com"	.	"ou=Workers,dc=amr,dc=corp,dc=intel,dc=com")
-		       ("gar.corp.intel.com"	.	"ou=Workers,dc=gar,dc=corp,dc=intel,dc=com")
-		       ("ccr.corp.intel.com"	.	"ou=Workers,dc=ccr,dc=corp,dc=intel,dc=com")))
-
-;; Load desktop settings
-(require (intern (system-name)) nil t)
-
 ;; org jira tools
 (require 'org-jira)
 (setq jiralib-host "jira01.devtools.intel.com"
@@ -73,16 +72,16 @@
 ;; (dolist (var '("EDITOR" "GIT_EDITOR" "SVN_EDITOR"))
 ;;   (add-to-list 'tramp-remote-process-environment (format "%s=%s" var emacsclient-path)))
 
-;; (defvar server-interface-priority-order '("vpn0" "eth0" "wlan0"))
-;; (defun reconfigure-server ()
-;;   (interactive)
-;;   (let ((interface (car (delq nil (mapcar (rcurry 'assoc (network-interface-list))
-;; 					  server-interface-priority-order)))))
-;;     (when interface
-;;       (setq server-use-tcp t
-;; 	    server-port 5001
-;; 	    server-host (format-network-address (cdr interface) t))
-;;       (server-start))))
+(defvar server-interface-priority-order '("vpn0" "eth0" "wlan0"))
+(defun reconfigure-server ()
+  (interactive)
+  (let ((interface (car (delq nil (mapcar (rcurry 'assoc (network-interface-list))
+					  server-interface-priority-order)))))
+    (when interface
+      (setq server-use-tcp t
+	    server-port 5001
+	    server-host (format-network-address (cdr interface) t))
+      (server-start))))
 
 ;; (defun setup-emacsclient (proc vec)
 ;;   (when (and (server-running-p) server-use-tcp)
@@ -99,6 +98,7 @@
 ;; (advice-add 'tramp-open-connection-setup-interactive-shell :after #'setup-emacsclient)
 ;; (reconfigure-server)
 
+;; work keybindings
 (require 'work-keybindings)
 
 
