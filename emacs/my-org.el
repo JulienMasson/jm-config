@@ -8,17 +8,21 @@
 
 ;; org todo keywords
 (setq org-todo-keywords
-       '((sequence "TODO" "WORKING" "|" "VERIFIED" "DONE")))
+       '((sequence "TODO" "WORKING" "UNMERGED" "|" "DONE")))
 (setq org-todo-keyword-faces
       '(("TODO" . org-warning) ("WORKING" . "yellow")
-	("VERIFIED" . (:foreground "lightblue" :weight bold))))
+	("UNMERGED" . (:foreground "lightblue" :weight bold))))
+
 
 ;; add org agenda
 (setq org-agenda-files (list "~/org/notes.org"
-			     "~/org/journal.org"
+			     "~/org/agenda.org"
 			     "~/org/todo.org"))
 
-;; org capture
+;; use current window
+(setq org-agenda-window-setup 'current-window)
+
+;; org capture wl
 (require 'org-wl)
 
 ;; org capture for wanderlust
@@ -36,7 +40,7 @@
 			       "* %?\nEntered on %U\n  %i\n  %a")
 			      ("e" "Email Todo" entry
 			       (file+headline "~/org/todo.org" "Mails")
-			       "* TODO %^{Brief Description}\nEmail: %a\nFrom: %:from \nTo: %:to \n%?Added: %U\n" :prepend t)
+			       "* %^{Brief Description}\nEmail: %a\nFrom: %:from \nTo: %:to \n%?Added: %U\n" :prepend t)
 			      ))
 
 (provide 'my-org)

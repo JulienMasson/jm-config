@@ -160,10 +160,19 @@ vicious.register(intelwidget, vicious.widgets.mdir, "$1 / $2", 5, { home_dir .. 
 -- vicious.register(packageswidget, vicious.widgets.pkg, "$1 ", 5, "Ubuntu")
 
 -- org
-orglabel= widget({ type = "textbox" })
-orglabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Org </span>'
-orgwidget = widget({ type = "textbox" })
-vicious.register(orgwidget, vicious.widgets.org, "$1 - $2 - $3 - $4 ", 300, { home_dir ..'/org/todo.org' })
+todolabel= widget({ type = "textbox" })
+todolabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Todo </span>'
+workinglabel= widget({ type = "textbox" })
+workinglabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Working </span>'
+unmergedlabel= widget({ type = "textbox" })
+unmergedlabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Unmerged </span>'
+
+todowidget = widget({ type = "textbox" })
+vicious.register(todowidget, vicious.widgets.org, "$1", 300, { home_dir ..'/org/todo.org' })
+workingwidget = widget({ type = "textbox" })
+vicious.register(workingwidget, vicious.widgets.org, "$2", 300, { home_dir ..'/org/todo.org' })
+unmergedwidget = widget({ type = "textbox" })
+vicious.register(unmergedwidget, vicious.widgets.org, "$3", 300, { home_dir ..'/org/todo.org' })
 
 -- weather
 -- weatherlabel= widget({ type = "textbox" })
@@ -376,7 +385,7 @@ batwidget:set_filled(true)
 -- batwidget:set_background_color("#000000")
 -- batwidget:set_border_color(nil)
 -- batwidget:set_color("#00bfff")
-vicious.register(batwidget, vicious.widgets.bat, "$2", 30, "BAT1")
+vicious.register(batwidget, vicious.widgets.bat, "$2", 30, "BAT0")
 
 -- use widget({ type = "textbox" }) for awesome < 3.5
 separator = widget({ type = "textbox" })
@@ -479,6 +488,10 @@ for s = 1, screen.count() do
 		my_volume.widget,
 		space,
 		volume_label,
+	-- separator,
+	-- 	batwidget.widget,
+	-- 	space,
+	-- 	battery_label,
 	separator,
 		cpudegreewidget,
 		space,
@@ -492,9 +505,17 @@ for s = 1, screen.count() do
 		space,
 		memlabel,
 	separator,
-		orgwidget,
+		unmergedwidget,
 		space,
-		orglabel,
+		unmergedlabel,
+	separator,
+		workingwidget,
+		space,
+		workinglabel,
+	separator,
+		todowidget,
+		space,
+		todolabel,
 	separator,
 		intelwidget,
 		space,
@@ -505,7 +526,11 @@ for s = 1, screen.count() do
 		my_net.widget,
 		space,
 		eth_up_speedwidget,
-        -- s == 1 and mysystray or nil,
+	-- separator,
+	-- 	wifispeedwidget,
+	-- 	space,
+	-- 	wifiwidget,
+	s == 1 and mysystray or nil,
         mytasklist[s],
         layout = awful.widget.layout.horizontal.rightleft
     }
