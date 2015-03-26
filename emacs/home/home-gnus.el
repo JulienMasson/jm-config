@@ -47,6 +47,22 @@
 ;; authinfo
 (setq smtpmail-auth-credentials "~/.authinfo")
 
+;; config w3m
+(eval-after-load "w3m"
+  '(progn
+     (define-key w3m-mode-map [left] 'backward-char)
+     (define-key w3m-mode-map [right] 'forward-char)
+     (define-key w3m-mode-map [up] 'previous-line)
+     (define-key w3m-mode-map [down] 'next-line)
+     (define-key w3m-minor-mode-map [left] 'backward-char)
+     (define-key w3m-minor-mode-map [right] 'forward-char)
+     (define-key w3m-minor-mode-map [up] 'previous-line)
+     (define-key w3m-minor-mode-map [down] 'next-line)
+     ))
+
+;; set verbose gnus message level
+(setq gnus-verbose 0)
+
 ;; w3m render
 (setq mm-text-html-renderer 'w3m)
 
@@ -69,6 +85,7 @@
 (setq gnus-newsgroup-maximum-articles 200)
 
 ;; scan news every minute
+(require 'gnus-demon)
 (gnus-demon-add-handler 'gnus-demon-scan-news 1 nil) ; this does a call to gnus-group-get-new-news
 
 ;; gnus notifications
@@ -115,8 +132,8 @@
 
 (defun oxy-unicode-threads-heavy ()
   (interactive)
-  (setq gnus-summary-line-format "%8{%-16,16&user-date;│%}%9{%U%R%z%}%8{│%}%*%(%-23,23f%)%7{║%} %6{%B%} %s\n"
-	gnus-summary-dummy-line-format "                %8{│%}   %(%8{│%}                       %7{║%}%) %6{┏○%}  %S\n"
+  (setq gnus-summary-line-format "%8{%-16,16&user-date;│%}%*%(%-23,23f%)%7{║%} %6{%B%} %s\n"
+	gnus-summary-dummy-line-format "                %8{│%}%(                       %7{║%}%) %6{┏○%}  %S\n"
 	gnus-sum-thread-tree-indent " "
 	gnus-sum-thread-tree-root "┏● "
 	gnus-sum-thread-tree-false-root " ○ "
@@ -126,6 +143,17 @@
 	gnus-sum-thread-tree-single-leaf "┗━━❯ "))
 
 (oxy-unicode-threads-heavy)
+
+;; gnus-icalendar
+(require 'gnus-icalendar)
+(setq gnus-icalendar-org-capture-file (expand-file-name "~/org/agenda.org")
+      gnus-icalendar-org-capture-headline '("Calendar"))
+(gnus-icalendar-setup)
+(gnus-icalendar-org-setup)
+
+(setq org-agenda-archives-mode nil)
+(setq org-agenda-skip-comment-trees nil)
+(setq org-agenda-skip-function nil)
 
 ;; smtp
 (setq user-mail-address "massonju.eseo@gmail.com"
@@ -166,17 +194,35 @@
    (format "%s cfind --format=bbdb > ~/.bbdb" mu-program)))
 
 ;; search engines
-(require 'notmuch)
-(add-hook 'gnus-group-mode-hook 'lld-notmuch-shortcut)
-(require 'org-gnus)
+;; (require 'notmuch)
+;; (add-hook 'gnus-group-mode-hook 'lld-notmuch-shortcut)
+;; (require 'org-gnus)
 
-(defun lld-notmuch-shortcut ()
-  (define-key gnus-group-mode-map "GG" 'notmuch-search)
-  )
+;; (defun lld-notmuch-shortcut ()
+;;   (define-key gnus-group-mode-map "GG" 'notmuch-search)
+;;   )
 
 (defun notmuch-update-database ()
   (interactive)
   (async-shell-command "notmuch new"))
 
+;; Use gnus for default compose-mail
+(if (boundp 'mail-user-agent)
+    (setq mail-user-agent 'gnus-user-agent))
+
+;; windows split
+(gnus-add-configuration
+ '(article
+   (horizontal 1.0
+	       (vertical 25 (group 1.0))
+	       (vertical 1.0
+			 (summary 0.16 point)
+			 (article 1.0)))))
+
+(gnus-add-configuration
+ '(summary
+   (horizontal 1.0
+	       (vertical 25 (group 1.0))
+	       (vertical 1.0 (summary 1.0 point)))))
 
 (provide 'home-gnus)
