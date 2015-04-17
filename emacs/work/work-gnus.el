@@ -123,8 +123,8 @@
 
 (defun oxy-unicode-threads-heavy ()
   (interactive)
-  (setq gnus-summary-line-format "%8{%-16,16&user-date;│%}%9{%U%R%z%}%8{│%}%*%(%-23,23f%)%7{║%} %6{%B%} %s\n"
-	gnus-summary-dummy-line-format "                %8{│%}   %(%8{│%}                       %7{║%}%) %6{┏○%}  %S\n"
+  (setq gnus-summary-line-format "%8{%-16,16&user-date;│%}%*%(%-23,23f%)%7{║%} %6{%B%} %s\n"
+	gnus-summary-dummy-line-format "                %8{│%}%(                       %7{║%}%) %6{┏○%}  %S\n"
 	gnus-sum-thread-tree-indent " "
 	gnus-sum-thread-tree-root "┏● "
 	gnus-sum-thread-tree-false-root " ○ "
@@ -141,6 +141,21 @@
       gnus-icalendar-org-capture-headline '("Calendar"))
 (gnus-icalendar-setup)
 (gnus-icalendar-org-setup)
+
+;; Scoring
+(setq gnus-use-adaptive-scoring t)
+(setq gnus-default-adaptive-score-alist
+       '((gnus-unread-mark)
+         (gnus-ticked-mark (from 4))
+         (gnus-dormant-mark (from 5))
+         (gnus-del-mark (from -4) (subject -1))
+         (gnus-read-mark (from 4) (subject 2))
+         (gnus-expirable-mark (from -1) (subject -1))
+         (gnus-killed-mark (from -1) (subject -3))
+         (gnus-kill-file-mark)
+         (gnus-ancient-mark)
+         (gnus-low-score-mark)
+         (gnus-catchup-mark (from -1) (subject -1))))
 
 ;; smtp
 (setq user-mail-address "julienx.masson@intel.com"
@@ -161,36 +176,15 @@
              (bbdb-initialize 'gnus)
              (local-set-key "<TAB>" 'bbdb-complete-name)))
 
-(defvar intel-maildir  "--maildir=~/Maildir/Intel")
-(defvar mu-program     "/usr/local/bin/mu")
-
-(defun mu-update-database ()
-  (shell-command
-   (format "%s index %s" mu-program intel-maildir)))
-
-(defun mu-gnus-update-contacts ()
-  (interactive)
-  (mu-update-database)
-  (shell-command
-   (format "%s cfind --format=bbdb > ~/.bbdb" mu-program)))
-
-;; Ldap tool
-;; (require 'ldap-browser)
-;; (require 'ldap-browser-mail)
-;; (require 'ldap-browser-purple)
-;; (defvar ldap-servers '(("ger.corp.intel.com"	.	"ou=Workers,dc=ger,dc=corp,dc=intel,dc=com")
-;; 		       ("amr.corp.intel.com"	.	"ou=Workers,dc=amr,dc=corp,dc=intel,dc=com")
-;; 		       ("gar.corp.intel.com"	.	"ou=Workers,dc=gar,dc=corp,dc=intel,dc=com")
-;; 		       ("ccr.corp.intel.com"	.	"ou=Workers,dc=ccr,dc=corp,dc=intel,dc=com")))
-
 ;; search engines
-;; (require 'notmuch)
-;; (add-hook 'gnus-group-mode-hook 'lld-notmuch-shortcut)
-;; (require 'org-gnus)
+(require 'notmuch)
+(add-hook 'gnus-group-mode-hook 'lld-notmuch-shortcut)
+(require 'org-gnus)
+(setq notmuch-fcc-dirs "Sent")
 
-;; (defun lld-notmuch-shortcut ()
-;;   (define-key gnus-group-mode-map "GG" 'notmuch-search)
-;;   )
+(defun lld-notmuch-shortcut ()
+  (define-key gnus-group-mode-map "GG" 'notmuch-search)
+  )
 
 (defun notmuch-update-database ()
   (interactive)
