@@ -71,6 +71,7 @@
 
 ;; virtual desktop
 (require 'virtual-desktops)
+(setq virtual-desktops-display-mode-line nil)
 (virtual-desktops-mode 1)
 
 ;; edit file root

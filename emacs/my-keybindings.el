@@ -22,8 +22,9 @@
 (global-set-key (kbd "C-c m") 'comment-region)
 (global-set-key (kbd "C-c u") 'uncomment-region)
 (global-set-key (kbd "C-c k") 'kill-buffer-and-window)
-(global-set-key (kbd "C-c f") 'find-name-dired)
-
+(global-set-key (kbd "C-c M-f") 'find-name-dired)
+(global-set-key (kbd "C-h C-f") 'find-function)
+(global-set-key (kbd "C-h C-v") 'find-variable)
 (global-set-key (kbd "C-M-y") (lambda () (interactive) (yank-pop -1)))
 
 ;; goto virtual desktops
@@ -43,12 +44,9 @@
 (global-set-key (kbd "C-c t p") 'org-timer-pause-or-continue)
 (global-set-key (kbd "C-c t e") 'org-timer-stop)
 (global-set-key (kbd "C-c o l") 'org-store-link)
-(global-set-key (kbd "C-c o a") 'org-agenda)
+(global-set-key (kbd "C-c o a") 'org-agenda-list)
+(global-set-key (kbd "C-c o t") 'org-todo-list)
 (global-set-key (kbd "C-c o c") 'org-capture)
-
-;; wl
-(global-set-key (kbd "C-c w u") 'mu-wl-update-database)
-(global-set-key (kbd "C-c w c") 'mu-wl-update-contacts)
 
 ;; erc
 (global-set-key (kbd "C-c i n") 'erc-channel-names)
@@ -79,9 +77,6 @@
 (global-set-key (kbd "C-c g d") 'magit-delete-branch)
 (global-set-key (kbd "C-c g m") 'magit-branch-manager)
 (global-set-key (kbd "C-c g u") 'check-git-branch-update)
-
-;; search with ctags or cscope
-(global-set-key (kbd "M-;") 'find-tag)
 
 
 (provide 'my-keybindings)

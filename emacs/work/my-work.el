@@ -11,12 +11,16 @@
 
 ;; Status
 (require 'status)
+(status-add-to-left 'status-purple)
+(status-add-to-left 'status-gnus)
 (status-add-to-left 'status-project-manager)
 (status-add-to-left 'status-virtual-desktops)
 (status-add-to-right 'status-date)
+(status-add-to-right 'status-volume)
+(status-add-to-right 'status-battery)
+(status-add-to-right 'status-cpu)
 (status-add-to-right 'status-mem)
-(status-add-to-right 'status-gnus)
-;;(status-add-to-right 'status-wl)
+(status-add-to-right 'status-net)
 (turn-on-status)
 
 ;; latex config
