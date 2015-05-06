@@ -10,6 +10,7 @@ autorefresh = 1
 [Repository IntelLocal]
 type = Maildir
 localfolders = ~/Maildir/Intel
+postsynchook = notmuch new
 
 [Repository IntelRemote]
 type = IMAP

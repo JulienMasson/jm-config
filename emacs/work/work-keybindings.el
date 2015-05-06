@@ -11,10 +11,14 @@
 (global-set-key (kbd "C-c i l") 'log-tools)
 (global-set-key (kbd "C-c i t") 'toggle-window-dedicated)
 (global-set-key (kbd "C-c i d") 'device-contol)
-(global-set-key (kbd "C-c i u") 'repo-upload)
-(global-set-key (kbd "C-c i b") 'repo-start)
-
 (global-set-key (kbd "C-c C-o") 'browse-url)
+
+;; repo
+(global-set-key (kbd "C-c r u") 'repo-upload)
+(global-set-key (kbd "C-c r b") 'repo-start)
+(global-set-key (kbd "C-c r s") 'repo-status)
+(global-set-key (kbd "C-c r g") 'repo-sync-local)
+(global-set-key (kbd "C-c r G") 'repo-sync)
 
 
 (provide 'work-keybindings)

@@ -17,7 +17,7 @@
 (global-set-key (kbd "C-c S") 'sudo-edit)
 (global-set-key (kbd "C-c l") 'goto-line)
 (global-set-key (kbd "C-c d") 'delete-rectangle)
-(global-set-key (kbd "C-c r") 'revert-buffer)
+(global-set-key (kbd "C-c M-r") 'revert-buffer)
 (global-set-key (kbd "C-c h") 'highlight-lines-matching-regexp)
 (global-set-key (kbd "C-c m") 'comment-region)
 (global-set-key (kbd "C-c u") 'uncomment-region)
@@ -63,6 +63,7 @@
 (global-set-key (kbd "C-c p s") 'purple-status-set)
 (global-set-key (kbd "C-c p m") 'purple-mail-to)
 (global-set-key (kbd "C-c p a") 'purple-buddy-add)
+(global-set-key (kbd "C-c p j") 'purple-chat-jump)
 
 ;; magit
 (global-set-key (kbd "C-c g s") 'magit-status)

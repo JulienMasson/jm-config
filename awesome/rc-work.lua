@@ -488,10 +488,10 @@ for s = 1, screen.count() do
 		my_volume.widget,
 		space,
 		volume_label,
-	-- separator,
-	-- 	batwidget.widget,
-	-- 	space,
-	-- 	battery_label,
+	separator,
+		batwidget.widget,
+		space,
+		battery_label,
 	separator,
 		cpudegreewidget,
 		space,
@@ -600,12 +600,13 @@ globalkeys = awful.util.table.join(
     					    "' -sf '" .. beautiful.fg_focus .. "'") 
     end),
 
-    awful.key({ modkey }, "o", function () awful.util.spawn("amixer set Master 9%+") end),
-    awful.key({ modkey }, "i", function () awful.util.spawn("amixer set Master 9%-") end),
+    awful.key({ modkey }, "o", function () awful.util.spawn("amixer set Master 4%+") end),
+    awful.key({ modkey }, "i", function () awful.util.spawn("amixer set Master 4%-") end),
     awful.key({ modkey }, "p", function () awful.util.spawn("amixer set Master toggle") end),
 
 
     awful.key({ modkey, "Shift" }, "s", function () awful.util.spawn("unity-control-center") end),
+    awful.key({ modkey, "Shift" }, "p", function () awful.util.spawn("evince") end),
     awful.key({ modkey, "Shift" }, "e", function () awful.util.spawn("emacs") end),
     awful.key({ modkey, "Shift" }, "f", function () awful.util.spawn("firefox") end),
 
@@ -671,10 +672,10 @@ clientkeys = awful.util.table.join(
 	    awful.mouse.client.move(c)
 	    end),
 
-    awful.key({ modkey, "Control"  }, "Down",  function () awful.client.moveresize(  0,  0,   0,  20) end),
-    awful.key({ modkey, "Control"  }, "Up",    function () awful.client.moveresize(  0,  0,   0, -20) end),
-    awful.key({ modkey, "Control"  }, "Left",  function () awful.client.moveresize(  0,  0, -20,  0) end),
-    awful.key({ modkey, "Control"  }, "Right", function () awful.client.moveresize(  0,  0,  20,  0) end)
+    awful.key({ modkey, "Control"  }, "Down",  function () awful.client.moveresize(  0,  0,   0,  10) end),
+    awful.key({ modkey, "Control"  }, "Up",    function () awful.client.moveresize(  0,  0,   0, -10) end),
+    awful.key({ modkey, "Control"  }, "Left",  function () awful.client.moveresize(  0,  0, -10,  0) end),
+    awful.key({ modkey, "Control"  }, "Right", function () awful.client.moveresize(  0,  0,  10,  0) end)
 
 )
 

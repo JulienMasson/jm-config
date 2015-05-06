@@ -8,6 +8,7 @@
 
 ;; Chat interface for pidgin
 (require 'purple)
+(purple-init)
 
 ;; Status
 (require 'status)
