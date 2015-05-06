@@ -124,3 +124,6 @@
 [submodule "emacs/modules/notmuch"]
 	path = emacs/modules/notmuch
 	url = git://notmuchmail.org/git/notmuch
+[submodule "emacs/modules/ggtags"]
+	path = emacs/modules/ggtags
+	url = https://github.com/leoliu/ggtags.git

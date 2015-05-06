@@ -29,9 +29,10 @@
 (add-to-list 'ac-dictionary-directories "~/jm-config/auto-complete/dict/")
 (ac-config-default)
 
-;; auto complete clang
-(require 'auto-complete-clang)
-(global-set-key (kbd "C-#") 'ac-complete-clang)
+;; auto complete based on ggtags
+(require 'setup-ggtags)
+(set-face-foreground 'ac-gtags-candidate-face "coral3")
+(set-face-background 'ac-gtags-selection-face nil)
 
 
 (provide 'my-programming)
