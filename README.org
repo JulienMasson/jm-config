@@ -1,0 +1,11 @@
+#+TITLE:	This is my personal config
+#+AUTHOR:	Julien Masson
+#+EMAIL:	massonju.eseo@gmail.com
+#+DATE:		2015-05-12
+#+UPDATE:	18:05:00
+#+STARTUP:	content
+
+* This config include:
+- Awesome setup for work and home
+- Emacs setup for work and home
+- Tools config
