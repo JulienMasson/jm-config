@@ -210,6 +210,9 @@ article."
 
 (define-key notmuch-show-mode-map (kbd "C-c C-c") 'lld-notmuch-goto-message-in-gnus)
 
+;; order newest to older
+(setq notmuch-search-oldest-first nil)
+
 (defun notmuch-update-database ()
   (interactive)
   (async-shell-command "notmuch new"))

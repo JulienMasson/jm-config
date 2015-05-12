@@ -105,3 +105,5 @@ alias jm-xrandr='xrandr --output DP-3 --mode 1920x1200 --right-of DP-1 --output 
 alias jm-update='sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get dist-upgrade -y && sudo apt-get autoremove -y && sudo apt-get autoclean -y'
 alias jm-install='sudo apt-get install'
 alias jm-search='sudo apt-cache search'
+alias jm-ps='ps aux | grep'
+alias jm-env='env | grep'

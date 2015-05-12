@@ -33,6 +33,6 @@
 		       ("Embedded" "http://www.embedded.com/rss/all" nil nil nil)
 		       ("Linux" "http://www.linux.com/feeds/all-content" nil nil nil)
 		       ("Econoclastes" "http://leseconoclastes.fr/feed/" nil nil nil)
-		       ("RoseTeam" "https://github.com/organizations/RoseTeam/JulienMasson.private.atom?token=AFZOeze9l2GuChz0NyKYDNpdDnpKwPReks6yaHC-wA==")))
+		       ("Fubiz" "http://feeds.feedburner.com/fubiz" nil nil nil)))
 
 (provide 'my-rss)
