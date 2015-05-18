@@ -169,6 +169,7 @@
 
 ;; addresses completion default ~/.bbdb
 (require 'bbdb-loaddefs "~/jm-config/emacs/modules/bbdb/lisp/bbdb-loaddefs.el")
+(setq bbdb-completion-display-record nil)
 (add-hook 'message-mode-hook
           '(lambda ()
              (bbdb-initialize 'message)
