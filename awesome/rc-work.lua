@@ -602,7 +602,7 @@ globalkeys = awful.util.table.join(
 
     awful.key({ modkey }, "o", function () awful.util.spawn("amixer set Master 4%+") end),
     awful.key({ modkey }, "i", function () awful.util.spawn("amixer set Master 4%-") end),
-    awful.key({ modkey }, "p", function () awful.util.spawn("amixer set Master toggle") end),
+    awful.key({ modkey }, "p", function () awful.util.spawn("amixer -D pulse set Master toggle") end),
 
 
     awful.key({ modkey, "Shift" }, "s", function () awful.util.spawn("unity-control-center") end),
