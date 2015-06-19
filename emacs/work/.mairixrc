@@ -1,0 +1,6 @@
+# Your Maildir/MH base folder
+base=~/Maildir/Intel
+maildir=INBOX:Sent
+mformat=maildir
+omit = zz_mairix-*
+database=~/.mairixdatabase

@@ -16,7 +16,7 @@
 
 ;; view organisation (put this in .newsrc.eld)
 ;; (setq gnus-topic-topology '(("Mails" visible) (("Intel" visible)) ))
-;; (setq gnus-topic-alist '(("Intel" "nnmaildir+Intel:INBOX" "nnmaildir+Intel:Sent") ("Mails")))
+;; (setq gnus-topic-alist '(("Intel" "nnmaildir+Intel:INBOX" "nnmaildir+Intel:Sent" "nnmairix+mysearch:") ("Mails")))
 
 ;; rename groups name
 (setq gnus-group-line-format "%M%S%5y/%-5t: %uG %D\n")
@@ -26,6 +26,7 @@
         gnus-tmp-group
       (cdr mapped-name))))
 (setq group-name-map '(("nnmaildir+Intel:INBOX" . "INBOX")
+		       ("nnmairix+mysearch:" . "SEARCH")
 		       ("nnmaildir+Intel:Sent" . "SENT")))
 
 (setq group-name-map-status '(("nnmaildir+Intel:INBOX" . "INBOX")
@@ -176,47 +177,8 @@
              (bbdb-initialize 'gnus)
              (local-set-key "<TAB>" 'bbdb-complete-name)))
 
-;; search engines
-(require 'notmuch)
-(add-hook 'gnus-group-mode-hook 'lld-notmuch-shortcut)
-(require 'org-gnus)
-(setq notmuch-fcc-dirs "Sent")
-
-(defun lld-notmuch-shortcut ()
-  (define-key gnus-group-mode-map "GG" 'notmuch-search)
-  )
-
-(defun lld-notmuch-file-to-group (file)
-  "Calculate the Gnus group name from the given file name."
-  (let ((group (file-name-directory (directory-file-name (file-name-directory file)))))
-    (setq group (replace-regexp-in-string ".*/Maildir/Intel/" "nnmaildir+Intel:" group))
-    (setq group (replace-regexp-in-string "/$" "" group))
-    (if (string-match ":$" group)
-        (concat group "INBOX")
-      (replace-regexp-in-string ":\\." ":" group))))
-
-(defun lld-notmuch-goto-message-in-gnus ()
-  "Open a summary buffer containing the current notmuch
-article."
-  (interactive)
-  (let ((group (lld-notmuch-file-to-group (notmuch-show-get-filename)))
-        (message-id (replace-regexp-in-string
-                     "^id:" "" (notmuch-show-get-message-id))))
-    (setq message-id (replace-regexp-in-string "\"" "" message-id))
-    (if (and group message-id)
-        (progn
-    (switch-to-buffer "*Group*")
-    (org-gnus-follow-link group message-id))
-      (message "Couldn't get relevant infos for switching to Gnus."))))
-
-(define-key notmuch-show-mode-map (kbd "C-c C-c") 'lld-notmuch-goto-message-in-gnus)
-
-;; order newest to older
-(setq notmuch-search-oldest-first nil)
-
-(defun notmuch-update-database ()
-  (interactive)
-  (async-shell-command "notmuch new"))
+;; search engine
+(require 'nnmairix)
 
 ;; Use gnus for default compose-mail
 (if (boundp 'mail-user-agent)
@@ -225,7 +187,6 @@ article."
 ;; eval after load gnus-group
 (eval-after-load "gnus-group"
   '(progn
-     (offlineimap)
      (gnus-demon-init)))
 
 (provide 'work-gnus)

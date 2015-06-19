@@ -10,7 +10,7 @@ autorefresh = 1
 [Repository IntelLocal]
 type = Maildir
 localfolders = ~/Maildir/Intel
-postsynchook = notmuch new
+postsynchook = mairix
 
 [Repository IntelRemote]
 type = IMAP
@@ -20,3 +20,4 @@ remotepass = xxxxxxxx
 ssl = yes
 cert_fingerprint = 13f749b876c6064bc722d0800ec9ffb7497d6589
 realdelete = yes
+folderfilter = lambda folder: folder not in ['zz_mairix--1', 'zz_mairix--2', 'zz_mairix-mymail-1']
