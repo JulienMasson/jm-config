@@ -15,6 +15,84 @@
   (shell-command
    (format "cd %s; find . -name \"*.c\" -o -name \"*.cpp\" -o -name \"*.h\" > cscope.files; %s -q -R -b -i cscope.files" (directory-file-name dir-name) path-to-cscope)))
 
+;; cscope database management
+(defvar cscope-database-cmds
+  '(("add"			.       jm-add-cscope-database)
+    ("clean"			.       jm-clean-cscope-database)
+    ("update"			.       jm-update-cscope-database)
+    ("update-all"		.       jm-update-all-cscope-database)
+    ("current"			.       jm-current-cscope-database)
+    ("switch"		        .	jm-switch-cscope-database)))
+
+(defvar list-cscope-database '())
+(defvar current-cscope-database nil)
+
+(defun jm-add-cscope-database (dir)
+  (interactive "DFrom: ")
+  (let ((default-directory dir)
+	(cscope-database (split-string
+				(shell-command-to-string "find . -name cscope.files")
+				"\n" t)))
+    (dolist (index cscope-database)
+      (setq element-path (replace-regexp-in-string "cscope.files" "" index))
+      (if (string= element-path "./")
+	  (setq element-path dir)
+	(setq element-path (concat dir element-path)))
+      (setq element (car (last (split-string element-path "/" t))))
+      (add-to-list 'list-cscope-database `( ,element . ,element-path )))))
+
+(defun jm-clean-cscope-database ()
+  (interactive)
+  (dolist (index list-cscope-database)
+    (setq list-cscope-database (delete index list-cscope-database)))
+  (setq current-cscope-database nil)
+  (cscope-unset-initial-directory)
+  (message (propertize "Clean done" 'face 'success)))
+
+(defun jm-update-cscope-database (database)
+  (interactive (list (ido-completing-read "Update database: "
+					  (mapcar 'car list-cscope-database)
+					  nil nil nil nil)))
+  (if (mapcar 'car list-cscope-database)
+      (progn
+	(cscope-index-files (assoc-default database list-cscope-database))
+    	(message (concat "Update database: " (propertize (format "%s" database) 'face 'success))))
+    (message (propertize "No database" 'face 'error))))
+
+(defun jm-update-all-cscope-database ()
+  (interactive)
+  (if (mapcar 'car list-cscope-database)
+      (progn
+	(dolist (index list-cscope-database)
+	  (cscope-index-files (assoc-default index list-cscope-database)))
+	(message (propertize "Update all database" 'face 'success)))
+    (message (propertize "No database" 'face 'error))))
+
+(defun jm-current-cscope-database ()
+  (interactive)
+  (if current-cscope-database
+      (message (concat "Current database: " (propertize (format "%s" current-cscope-database) 'face 'success)))
+    (message (propertize "No database selected" 'face 'error))))
+
+(defun jm-switch-cscope-database (database)
+  (interactive (list (ido-completing-read "Switch to database: "
+					  (mapcar 'car list-cscope-database)
+					  nil nil nil nil)))
+  (if (mapcar 'car list-cscope-database)
+      (progn
+	(cscope-set-initial-directory (assoc-default database list-cscope-database))
+	(setq current-cscope-database database)
+	(message (concat "Switch to: " (propertize (format "%s" current-cscope-database) 'face 'success))))
+    (message (propertize "No database" 'face 'error))))
+
+(defun jm-cscope-database (cmds)
+    (interactive (list (ido-completing-read "Cscope database: "
+					  (mapcar 'car cscope-database-cmds)
+					  nil t nil nil)))
+      (let ((t-or-f (assoc-default cmds cscope-database-cmds)))
+	(if (functionp t-or-f)
+	    (call-interactively t-or-f))))
+
 ;; auto-detection indenting
 (require 'dtrt-indent)
 (add-hook 'c-mode-common-hook
