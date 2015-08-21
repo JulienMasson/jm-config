@@ -38,7 +38,6 @@
 (global-set-key (kbd "M-8") (lambda () (interactive) (virtual-desktops-goto 8)))
 (global-set-key (kbd "M-9") (lambda () (interactive) (virtual-desktops-goto 9)))
 
-
 ;; org timer shortcuts
 (global-set-key (kbd "C-c t s") 'org-timer-start)
 (global-set-key (kbd "C-c t p") 'org-timer-pause-or-continue)
@@ -78,6 +77,13 @@
 (global-set-key (kbd "C-c g d") 'magit-delete-branch)
 (global-set-key (kbd "C-c g m") 'magit-branch-manager)
 (global-set-key (kbd "C-c g u") 'check-git-branch-update)
+
+;; xcsope
+(global-set-key (kbd "C-c c d") 'jm-cscope-database)
+(global-set-key (kbd "C-c c s") 'jm-switch-cscope-database)
+
+;; locate
+(global-set-key (kbd "C-c C-l") 'jm-search-locate-database)
 
 
 (provide 'my-keybindings)

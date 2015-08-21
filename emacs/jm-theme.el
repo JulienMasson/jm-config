@@ -382,10 +382,10 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(hl-sexp-face ((,class (:background ,jm-bg+1))
                    (t :weight bold)))
 ;;;;; ido-mode
-   `(ido-first-match ((t (:foreground ,jm-yellow :weight bold))))
-   `(ido-only-match ((t (:foreground ,jm-orange :weight bold))))
+   `(ido-first-match ((t (:foreground ,jm-orange :weight bold))))
+   `(ido-only-match ((t (:foreground ,jm-green :weight bold))))
    `(ido-incomplete-regex ((t (:foreground ,jm-red-4))))
-   `(ido-subdir ((t (:foreground ,jm-yellow))))
+   `(ido-subdir ((t (:foreground ,jm-blue))))
 ;;;;; jabber-mode
    `(jabber-roster-user-away ((t (:foreground ,jm-green+2))))
    `(jabber-roster-user-online ((t (:foreground ,jm-blue-1))))
