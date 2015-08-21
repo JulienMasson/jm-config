@@ -21,7 +21,9 @@
 ;; cscope database management
 (defvar cscope-database-cmds
   '(("add"			.       jm-add-cscope-database)
-    ("clean"			.       jm-clean-cscope-database)
+    ("create"			.       jm-create-cscope-database)
+    ("remove"			.       jm-remove-cscope-database)
+    ("remove-all"		.       jm-remove-all-cscope-database)
     ("update"			.       jm-update-cscope-database)
     ("update-all"		.       jm-update-all-cscope-database)
     ("current"			.       jm-current-cscope-database)
@@ -44,13 +46,33 @@
       (setq element (car (last (split-string element-path "/" t))))
       (add-to-list 'list-cscope-database `( ,element . ,element-path )))))
 
-(defun jm-clean-cscope-database ()
+(defun jm-create-cscope-database (dir)
+  (interactive "DFrom: ")
+  (cscope-index-files dir)
+  (setq element (car (last (split-string dir "/" t))))
+  (add-to-list 'list-cscope-database `( ,element . ,dir )))
+
+(defun jm-remove-cscope-database (database)
+  (interactive (list (ido-completing-read "Remove database: "
+					  (mapcar 'car list-cscope-database)
+					  nil nil nil nil)))
+  (if (mapcar 'car list-cscope-database)
+      (progn
+	(setq list-cscope-database (remove* database list-cscope-database :test 'equal :key 'car))
+	(if (string-match current-cscope-database database)
+	    (progn
+	      (setq current-cscope-database nil)
+	      (cscope-unset-initial-directory)))
+	(message (concat "Remove database: " (propertize database 'face 'success))))
+    (message (propertize "No database" 'face 'error))))
+
+(defun jm-remove-all-cscope-database ()
   (interactive)
   (dolist (index list-cscope-database)
     (setq list-cscope-database (delete index list-cscope-database)))
   (setq current-cscope-database nil)
   (cscope-unset-initial-directory)
-  (message (propertize "Clean done" 'face 'success)))
+  (message (propertize "Remove all done" 'face 'success)))
 
 (defun jm-update-cscope-database (database)
   (interactive (list (ido-completing-read "Update database: "
@@ -74,7 +96,9 @@
 (defun jm-current-cscope-database ()
   (interactive)
   (if current-cscope-database
-      (message (concat "Current database: " (propertize (format "%s" current-cscope-database) 'face 'success)))
+      (message (concat "Current database: "
+		       (propertize (format "%s" current-cscope-database) 'face 'success)
+		       (propertize (format " %s" (assoc-default current-cscope-database list-cscope-database)) 'face 'italic)))
     (message (propertize "No database selected" 'face 'error))))
 
 (defun jm-switch-cscope-database (database)
