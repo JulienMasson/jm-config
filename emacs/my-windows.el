@@ -37,7 +37,6 @@
 
 ;; set some variables
 (custom-set-variables
- '(c-default-style (quote ((awk-mode . "awk") (other . "gnu"))))
  '(column-number-mode t)
  '(menu-bar-mode nil)
  '(tool-bar-mode nil))
