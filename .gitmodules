@@ -127,3 +127,6 @@
 [submodule "emacs/modules/ggtags"]
 	path = emacs/modules/ggtags
 	url = https://github.com/leoliu/ggtags.git
+[submodule "emacs/modules/dash"]
+	path = emacs/modules/dash
+	url = https://github.com/magnars/dash.el.git
