@@ -8,6 +8,24 @@
 ;; default indentation
 (setq c-default-style (quote ((awk-mode . "awk") (c-mode . "linux") (other . "gnu"))))
 
+;; use uncrustify with dired mode
+(setq uncrustify-config-path "~/bin/uncrustify/etc/linux.cfg")
+(setq uncrustify-bin "~/bin/uncrustify/src/uncrustify")
+(setq uncrustify-args "--no-backup")
+
+(defun uncrustify-dired ()
+  (interactive)
+  (setq uncrustify-files (mapconcat 'identity
+				    (mapcar 'untramp-path (dired-get-marked-files))
+				    " "))
+  (if (not (string= uncrustify-files ""))
+      (shell-command (format "%s -c %s %s %s"
+			     uncrustify-bin
+			     uncrustify-config-path
+			     uncrustify-args
+			     uncrustify-files))
+    (message (propertize "No files selected" 'face 'error))))
+
 ;; cscope
 (require 'xcscope)
 (cscope-setup)
