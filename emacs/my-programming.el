@@ -8,6 +8,9 @@
 ;; default indentation
 (setq c-default-style (quote ((awk-mode . "awk") (c-mode . "linux") (other . "gnu"))))
 
+;; save backup files
+(setq backup-directory-alist `(("." . "~/.saves")))
+
 ;; use uncrustify with dired mode
 (setq uncrustify-config-path "~/bin/uncrustify/etc/linux.cfg")
 (setq uncrustify-bin "~/bin/uncrustify/src/uncrustify")
