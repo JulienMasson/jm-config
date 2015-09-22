@@ -150,26 +150,22 @@
 ;; change default grep
 (setq grep-command "grep --color -nrH -e ")
 
-;; auto complete config
+;; auto complete config with cscope rtags
+(require 'rtags)
+(setq rtags-reindex-on-save t)
+(require 'auto-complete)
 (require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories "~/jm-config/auto-complete/dict/")
-(ac-config-default)
-
-;; auto complete based on ggtags
-(require 'ggtags)
-(add-hook 'c-mode-common-hook
-          (lambda ()
-            (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'asm-mode)
-              (ggtags-mode 1))))
-(set-face-foreground 'ac-gtags-candidate-face "coral3")
-(set-face-background 'ac-gtags-selection-face nil)
-(define-key ggtags-mode-map (kbd "C-c t s") 'ggtags-find-other-symbol)
-(define-key ggtags-mode-map (kbd "C-c t h") 'ggtags-view-tag-history)
-(define-key ggtags-mode-map (kbd "C-c t r") 'ggtags-find-reference)
-(define-key ggtags-mode-map (kbd "C-c t f") 'ggtags-find-file)
-(define-key ggtags-mode-map (kbd "C-c t c") 'ggtags-create-tags)
-(define-key ggtags-mode-map (kbd "C-c t u") 'ggtags-update-tags)
-(define-key ggtags-mode-map (kbd "M-,") 'pop-tag-mark)
+(require 'auto-complete-cscope)
+(require 'rtags-ac)
+(setq default-cscope-mirror-path "~/.emacs.d/cscope-mirrors/")
+(defun my-ac-cc-mode-setup ()
+  (setq ac-sources (remove 'ac-source-words-in-same-mode-buffers ac-sources))
+  (setq ac-sources (append '(ac-source-cscope ac-source-rtags) ac-sources)))
+(setq-default ac-sources '(ac-source-abbrev ac-source-dictionary ac-source-words-in-same-mode-buffers))
+(add-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)
+(add-hook 'c-mode-common-hook 'my-ac-cc-mode-setup)
+(add-hook 'auto-complete-mode-hook 'ac-common-setup)
+(global-auto-complete-mode t)
 
 ;; locate database
 (defvar jm-cmd-locate-database
