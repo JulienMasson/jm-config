@@ -4,105 +4,139 @@
 [submodule "emacs/dtrt-indent"]
 	path = emacs/modules/dtrt-indent
 	url = https://github.com/jscheid/dtrt-indent
+	ignore = dirty
 [submodule "emacs/virtual-desktops.el"]
 	path = emacs/modules/virtual-desktops
 	url = https://github.com/chep/virtual-desktops.el
+	ignore = dirty
 [submodule "emacs/auto-complete"]
 	path = emacs/modules/auto-complete
 	url = https://github.com/auto-complete/auto-complete
+	ignore = dirty
 [submodule "emacs/ac-math"]
 	path = emacs/modules/ac-math
 	url = https://github.com/vspinu/ac-math.git
+	ignore = dirty
 [submodule "emacs/c-eldoc"]
 	path = emacs/modules/c-eldoc
 	url = https://github.com/mooz/c-eldoc
+	ignore = dirty
 [submodule "emacs/erc-nick-notify"]
 	path = emacs/modules/erc-nick-notify
 	url = https://github.com/emacsmirror/erc-nick-notify
+	ignore = dirty
 [submodule "emacs/auto-complete-auctex"]
 	path = emacs/modules/auto-complete-auctex
 	url = https://github.com/monsanto/auto-complete-auctex
+	ignore = dirty
 [submodule "emacs/predictive"]
 	path = emacs/modules/predictive
 	url = http://www.dr-qubit.org/git/predictive.git
+	ignore = dirty
 [submodule "emacs/purple"]
 	path = emacs/modules/purple
 	url = https://github.com/jeremy-compostella/purple
+	ignore = dirty
 [submodule "emacs/w3m"]
 	path = emacs/modules/w3m
 	url = https://github.com/emacsmirror/w3m
+	ignore = dirty
 [submodule "emacs/xcscope.el"]
 	path = emacs/modules/xcscope
 	url = https://github.com/dkogan/xcscope.el
+	ignore = dirty
 [submodule "emacs/popup-el"]
 	path = emacs/modules/popup-el
 	url = https://github.com/auto-complete/popup-el
+	ignore = dirty
 [submodule "emacs/git-modes"]
 	path = emacs/modules/git-modes
 	url = https://github.com/magit/git-modes
+	ignore = dirty
 [submodule "emacs/status"]
 	path = emacs/modules/status
 	url = https://github.com/JulienMasson/status
+	ignore = dirty
 [submodule "emacs/auctex"]
 	path = emacs/modules/auctex
 	url = https://github.com/emacsmirror/auctex
+	ignore = dirty
 [submodule "emacs/browse-kill-ring"]
 	path = emacs/modules/browse-kill-ring
 	url = https://github.com/browse-kill-ring/browse-kill-ring
+	ignore = dirty
 [submodule "emacs/latex-extra"]
 	path = emacs/modules/latex-extra
 	url = https://github.com/Bruce-Connor/latex-extra/
+	ignore = dirty
 [submodule "emacs/magic-latex-buffer"]
 	path = emacs/modules/magic-latex-buffer
 	url = https://github.com/zk-phi/magic-latex-buffer
+	ignore = dirty
 [submodule "emacs/yasnippet"]
 	path = emacs/modules/yasnippet
 	url = https://github.com/capitaomorte/yasnippet
+	ignore = dirty
 [submodule "emacs/modules/math-symbol-lists"]
 	path = emacs/modules/math-symbol-lists
 	url = https://github.com/vspinu/math-symbol-lists
+	ignore = dirty
 [submodule "emacs/modules/offlineimap.el"]
 	path = emacs/modules/offlineimap
 	url = https://github.com/jd/offlineimap.el.git
+	ignore = dirty
 [submodule "bash/bash-git-prompt"]
 	path = bash/bash-git-prompt
 	url = https://github.com/magicmonty/bash-git-prompt.git
 [submodule "emacs/modules/apel"]
 	path = emacs/modules/apel
 	url = https://github.com/wanderlust/apel.git
+	ignore = dirty
 [submodule "emacs/modules/log-tools"]
 	path = emacs/modules/log-tools
 	url = https://github.com/jeremy-compostella/log-tools.git
+	ignore = dirty
 [submodule "emacs/modules/project-manager"]
 	path = emacs/modules/project-manager
 	url = https://github.com/jeremy-compostella/project-manager.git
+	ignore = dirty
 [submodule "emacs/modules/gerrit"]
 	path = emacs/modules/gerrit
 	url = https://github.com/jeremy-compostella/gerrit.git
+	ignore = dirty
 [submodule "emacs/modules/device-control"]
 	path = emacs/modules/device-control
 	url = https://github.com/jeremy-compostella/device-control.git
+	ignore = dirty
 [submodule "emacs/modules/search-tools"]
 	path = emacs/modules/search-tools
 	url = https://github.com/jeremy-compostella/search-tools.git
+	ignore = dirty
 [submodule "emacs/modules/org-jira"]
 	path = emacs/modules/org-jira
 	url = https://github.com/baohaojun/org-jira.git
+	ignore = dirty
 [submodule "emacs/modules/ldap-browser"]
 	path = emacs/modules/ldap-browser
 	url = https://github.com/schouleu/ldap-browser.git
+	ignore = dirty
 [submodule "emacs/modules/org-mode"]
 	path = emacs/modules/org-mode
 	url = git://orgmode.org/org-mode.git
+	ignore = dirty
 [submodule "emacs/modules/gnus"]
 	path = emacs/modules/gnus
 	url = https://github.com/emacsmirror/gnus.git
+	ignore = dirty
 [submodule "emacs/modules/bbdb"]
 	path = emacs/modules/bbdb
 	url = git://git.savannah.nongnu.org/bbdb.git
+	ignore = dirty
 [submodule "emacs/modules/dash"]
 	path = emacs/modules/dash
 	url = https://github.com/magnars/dash.el.git
+	ignore = dirty
 [submodule "emacs/modules/auto-complete-cscope"]
 	path = emacs/modules/auto-complete-cscope
 	url = https://github.com/JulienMasson/auto-complete-cscope.git
+	ignore = dirty
