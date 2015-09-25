@@ -37,15 +37,9 @@
 [submodule "emacs/popup-el"]
 	path = emacs/modules/popup-el
 	url = https://github.com/auto-complete/popup-el
-[submodule "emacs/magit-filenotify"]
-	path = emacs/modules/magit-filenotify
-	url = https://github.com/magit/magit-filenotify
 [submodule "emacs/git-modes"]
 	path = emacs/modules/git-modes
 	url = https://github.com/magit/git-modes
-[submodule "emacs/wanderlust"]
-	path = emacs/modules/wanderlust
-	url = https://github.com/wanderlust/wanderlust
 [submodule "emacs/status"]
 	path = emacs/modules/status
 	url = https://github.com/JulienMasson/status
@@ -76,21 +70,6 @@
 [submodule "emacs/modules/apel"]
 	path = emacs/modules/apel
 	url = https://github.com/wanderlust/apel.git
-[submodule "emacs/modules/semi"]
-	path = emacs/modules/semi
-	url = https://github.com/wanderlust/semi.git
-[submodule "emacs/modules/flim"]
-	path = emacs/modules/flim
-	url = https://github.com/wanderlust/flim.git
-[submodule "emacs/modules/auto-complete-clang"]
-	path = emacs/modules/auto-complete-clang
-	url = https://github.com/brianjcj/auto-complete-clang.git
-[submodule "emacs/modules/cedet"]
-	path = emacs/modules/cedet
-	url = https://github.com/emacsmirror/cedet.git
-[submodule "emacs/modules/mu"]
-	path = emacs/modules/mu
-	url = https://github.com/djcb/mu.git
 [submodule "emacs/modules/log-tools"]
 	path = emacs/modules/log-tools
 	url = https://github.com/jeremy-compostella/log-tools.git
@@ -121,12 +100,6 @@
 [submodule "emacs/modules/bbdb"]
 	path = emacs/modules/bbdb
 	url = git://git.savannah.nongnu.org/bbdb.git
-[submodule "emacs/modules/notmuch"]
-	path = emacs/modules/notmuch
-	url = git://notmuchmail.org/git/notmuch
-[submodule "emacs/modules/ggtags"]
-	path = emacs/modules/ggtags
-	url = https://github.com/leoliu/ggtags.git
 [submodule "emacs/modules/dash"]
 	path = emacs/modules/dash
 	url = https://github.com/magnars/dash.el.git
