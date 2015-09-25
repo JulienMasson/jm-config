@@ -180,6 +180,17 @@
 ;; flyspell when composing gnus message
 (add-hook 'message-mode-hook 'git-commit-turn-on-flyspell)
 
+;; start functions after load gnus
+(add-hook 'gnus-started-hook
+	  '(lambda ()
+	     (gnus-demon-init)
+	     (offlineimap)))
+
+;; start functions after quit gnus
+(add-hook 'gnus-after-exiting-gnus-hook
+	  '(lambda ()
+	     (offlineimap-quit)))
+
 ;; search engine
 (require 'nnmairix)
 
@@ -187,9 +198,5 @@
 (if (boundp 'mail-user-agent)
     (setq mail-user-agent 'gnus-user-agent))
 
-;; eval after load gnus-group
-(eval-after-load "gnus-group"
-  '(progn
-     (gnus-demon-init)))
 
 (provide 'work-gnus)
