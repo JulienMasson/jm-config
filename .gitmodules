@@ -7,8 +7,9 @@
 	ignore = dirty
 [submodule "emacs/virtual-desktops.el"]
 	path = emacs/modules/virtual-desktops
-	url = https://github.com/chep/virtual-desktops.el
+	url = https://github.com/JulienMasson/virtual-desktops.el
 	ignore = dirty
+	branch = master
 [submodule "emacs/auto-complete"]
 	path = emacs/modules/auto-complete
 	url = https://github.com/auto-complete/auto-complete
@@ -35,8 +36,9 @@
 	ignore = dirty
 [submodule "emacs/purple"]
 	path = emacs/modules/purple
-	url = https://github.com/jeremy-compostella/purple
+	url = https://github.com/JulienMasson/purple
 	ignore = dirty
+	branch = master
 [submodule "emacs/w3m"]
 	path = emacs/modules/w3m
 	url = https://github.com/emacsmirror/w3m
@@ -57,6 +59,7 @@
 	path = emacs/modules/status
 	url = https://github.com/JulienMasson/status
 	ignore = dirty
+	branch = master
 [submodule "emacs/auctex"]
 	path = emacs/modules/auctex
 	url = https://github.com/emacsmirror/auctex
@@ -94,20 +97,23 @@
 	ignore = dirty
 [submodule "emacs/modules/log-tools"]
 	path = emacs/modules/log-tools
-	url = https://github.com/jeremy-compostella/log-tools.git
+	url = https://github.com/JulienMasson/log-tools.git
 	ignore = dirty
+	branch = master
 [submodule "emacs/modules/project-manager"]
 	path = emacs/modules/project-manager
-	url = https://github.com/jeremy-compostella/project-manager.git
+	url = https://github.com/JulienMasson/project-manager.git
 	ignore = dirty
+	branch = master
 [submodule "emacs/modules/gerrit"]
 	path = emacs/modules/gerrit
 	url = https://github.com/jeremy-compostella/gerrit.git
 	ignore = dirty
 [submodule "emacs/modules/device-control"]
 	path = emacs/modules/device-control
-	url = https://github.com/jeremy-compostella/device-control.git
+	url = https://github.com/JulienMasson/device-control.git
 	ignore = dirty
+	branch = master
 [submodule "emacs/modules/search-tools"]
 	path = emacs/modules/search-tools
 	url = https://github.com/jeremy-compostella/search-tools.git
@@ -140,3 +146,4 @@
 	path = emacs/modules/auto-complete-cscope
 	url = https://github.com/JulienMasson/auto-complete-cscope.git
 	ignore = dirty
+	branch = master
