@@ -1,6 +1,0 @@
-# WL folders (put the '#' always at the beginning of the line)
-.INBOX       	      	  "Inbox"
-.Drafts      	      	  "Drafts"
-.Conversation History	  "Lync History"
-.Sent          		  "Sent Mail"
-.Trash     		  "Junk"
