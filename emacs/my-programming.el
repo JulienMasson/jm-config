@@ -153,6 +153,8 @@
 ;; auto complete config with cscope rtags
 (require 'rtags)
 (setq rtags-reindex-on-save t)
+(setq rtags-jump-to-first-match nil)
+(custom-set-faces '(rtags-fixitline ((t))))
 (require 'auto-complete)
 (require 'auto-complete-config)
 (require 'auto-complete-cscope)
