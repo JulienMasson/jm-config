@@ -3,7 +3,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; set default web browser
-(setq browse-url-browser-function 'browse-url-firefox
+(setq browse-url-browser-function 'browse-url-chromium
       browse-url-new-window-flag  t
       browse-url-firefox-new-window-is-tab t)
 

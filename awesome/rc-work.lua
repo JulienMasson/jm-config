@@ -78,7 +78,7 @@ layouts =
 -- {{{ Tags
 -- Define a tag table which will hold all screen tags.
 tags = {
-  names  = { "Emacs", "Firefox", "Term", "Extra" },
+  names  = { "Emacs", "Chromium", "Term", "Extra" },
   layout = { layouts[1], layouts[10], layouts[6], layouts[1]
 }}
 for s = 1, screen.count() do
@@ -608,7 +608,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift" }, "s", function () awful.util.spawn("unity-control-center") end),
     awful.key({ modkey, "Shift" }, "p", function () awful.util.spawn("evince") end),
     awful.key({ modkey, "Shift" }, "e", function () awful.util.spawn("emacs") end),
-    awful.key({ modkey, "Shift" }, "f", function () awful.util.spawn("firefox") end),
+    awful.key({ modkey, "Shift" }, "w", function () awful.util.spawn("chromium-browser") end),
 
     awful.key({ modkey }, "h", function ()
     		mywibox[mouse.screen].visible = not mywibox[mouse.screen].visible
