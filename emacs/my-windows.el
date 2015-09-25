@@ -41,6 +41,9 @@
  '(menu-bar-mode nil)
  '(tool-bar-mode nil))
 
+;; windows size
+(setq default-frame-alist '((width . 80) (height . 40)))
+
 ;; set font size
 (set-face-attribute 'default nil :height 90)
 

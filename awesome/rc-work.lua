@@ -672,6 +672,7 @@ clientkeys = awful.util.table.join(
 	    awful.mouse.client.move(c)
 	    end),
 
+    awful.key({ modkey, "Control"  }, "t", function () awful.client.moveresize(  0,  0,  1920 + 1920 - 80 -415,  1200 - 40 - 480) end),
     awful.key({ modkey, "Control"  }, "Down",  function () awful.client.moveresize(  0,  0,   0,  10) end),
     awful.key({ modkey, "Control"  }, "Up",    function () awful.client.moveresize(  0,  0,   0, -10) end),
     awful.key({ modkey, "Control"  }, "Left",  function () awful.client.moveresize(  0,  0, -10,  0) end),
