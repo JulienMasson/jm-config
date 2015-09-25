@@ -13,10 +13,8 @@ cd ~/jm-config/emacs/modules/bbdb/
 ./configure
 make -j
 
-# compile all emacs modules
-cd emacs
-emacs -batch -f batch-byte-compile *.el
-emacs --batch --eval '(byte-recompile-directory "~/jm-config/emacs")'
+# compile all emacs modules lisp code
+emacs --batch --eval '(byte-recompile-directory "~/jm-config/emacs/modules/" 0 t)'
 
 # copy .emacs
 cp ~/jm-config/emacs/.emacs ~/
