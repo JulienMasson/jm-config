@@ -1,11 +1,15 @@
 (defvar my-usual-subprojects '(("droidboot"	. "/bootable/droidboot")
 			       ("droidboot"	. "/vendor/intel/droidboot")
+			       ("recovery"	. "/bootable/recovery")
 			       ("libintelprov"	. "/vendor/intel/hardware/libintelprov")
 			       ("tasks"		. "/vendor/intel/build/tasks")
 			       ("kernel"	. "/linux/kernel")
 			       ("fugu"		. "/vendor/intel/PRIVATE/fugu")
 			       ("mvn"		. "/vendor/intel/PRIVATE/mvn")
-			       ("marvin"	. "/device/intel/marvin")
+			       ("init"		. "/system/core/init")
+			       ("glacier"	. "/device/intel/glacier")
+			       ("grant "	. "/device/intel/grant")
+			       ("robby "	. "/device/intel/robby")
 			       ("sand"		. "/vendor/intel/PRIVATE/sand")))
 
 (setq http-proxy "http://proxy.ir.intel.com:911"
@@ -46,11 +50,31 @@
 	       :subprojects my-usual-subprojects))
 
 (register-project
- (make-project :name "Marvin"
+ (make-project :name "Robby"
 	       :pm-backend "intel-android"
 	       :root-path "/ssh:tllabx2:/build/jmassonx/r44b_mvn"
 	       :env-vars '((aosp-path		.	(project-root-path current-project))
-			   (aosp-board-name	.	"marvin")
+			   (aosp-board-name	.	"robby")
+			   (aosp-build-variant	.	"userdebug")
+			   (aosp-thread-number	.	32))
+	       :subprojects my-usual-subprojects))
+
+(register-project
+ (make-project :name "Grant"
+	       :pm-backend "intel-android"
+	       :root-path "/ssh:tllabx2:/build/jmassonx/r44b_mvn"
+	       :env-vars '((aosp-path		.	(project-root-path current-project))
+			   (aosp-board-name	.	"grant")
+			   (aosp-build-variant	.	"userdebug")
+			   (aosp-thread-number	.	32))
+	       :subprojects my-usual-subprojects))
+
+(register-project
+ (make-project :name "Glacier"
+	       :pm-backend "intel-android"
+	       :root-path "/ssh:tllabx2:/build/jmassonx/r44b_mvn"
+	       :env-vars '((aosp-path		.	(project-root-path current-project))
+			   (aosp-board-name	.	"glacier")
 			   (aosp-build-variant	.	"userdebug")
 			   (aosp-thread-number	.	32))
 	       :subprojects my-usual-subprojects))

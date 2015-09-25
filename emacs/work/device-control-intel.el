@@ -8,6 +8,8 @@
 (add-to-list 'dctrl-adb-reboot-target "dnx" t 'string=)
 
 (dolist (image '(("fastboot"	.	"droidboot.img")
+		 ("manufacturing".	"manufacturing.img")
+		 ("oem"         .	"oem.img")
 		 ("ESP"		.	"ESP.img")
 		 ("osloader"	.       "efilinux-eng.efi")
 		 ("capsule"	.	"capsule.bin")))
@@ -38,7 +40,7 @@
   (dctrl-fastboot-run "oem" "fastboot2adb"))
 
 (defun dctrl-intel-action-intel-phoneflashtool (&optional file)
-  (let* ((path (concat aosp-path "/pub/" (upcase aosp-board-name) "/flash_files/"))
+  (let* ((path (concat aosp-path "/pub/" aosp-board-name "/flash_files/"))
 	 (file (expand-file-name (or file (ido-read-file-name "FlashFile: " path))))
 	 tramp-cmd ctrlhost-filename)
     (multiple-value-setq (tramp-cmd ctrlhost-filename)

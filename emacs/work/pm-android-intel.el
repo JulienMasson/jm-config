@@ -1,10 +1,16 @@
 (require 'pm-android)
 
 (defvar pm-intel-android-targets
-  '(("droidboot"	.	"droidbootimage")
-    ("bootloader"	.	"bootloaderimage")
-    ("blankphone"	.	"blank_flashfiles")
-    ("flashfiles"	.	"flashfiles")))
+  '(("droidboot"        .	"droidbootimage")
+    ("bootloader"       .	"bootloaderimage")
+    ("blankphone"       .	"blank_flashfiles")
+    ("ota"              .	"ota_flashfile")
+    ("full-ota"         .	"full_ota")
+    ("prebuilts"        .       "publish_prebuilts")
+    ("test"             .       "testimage")
+    ("custom"           .       "custom_images")
+    ("manufacturing"    .       "manufacturingimage")
+    ("flashfiles"       .	"flashfiles")))
 
 (defun pm-intel-android-compile ()
   (interactive)
@@ -39,6 +45,7 @@
 		  :open-hook 'pm-android-open-hook
 		  :find-file 'pm-android-find-file
 		  :find-file-hook 'pm-intel-android-find-file-hook
+		  :search 'pm-android-search
 		  :compile 'pm-intel-android-compile))
 
 (provide 'pm-android-intel)

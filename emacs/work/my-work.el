@@ -4,28 +4,12 @@
 
 ;; mail
 (require 'work-gnus)
-;;(require 'work-wl)
 
 ;; Chat interface for pidgin
 (require 'purple)
-(purple-init)
 
 ;; Status
 (require 'status)
-(status-add-to-left 'status-purple)
-(status-add-to-left 'status-gnus)
-(status-add-to-left 'status-project-manager)
-(status-add-to-left 'status-virtual-desktops)
-(status-add-to-right 'status-date)
-(status-add-to-right 'status-volume)
-(status-add-to-right 'status-battery)
-(status-add-to-right 'status-cpu)
-(status-add-to-right 'status-mem)
-(status-add-to-right 'status-net)
-(turn-on-status)
-
-;; latex config
-;; (require 'my-latex)
 
 ;; Log management
 (require 'log-tools)
@@ -59,52 +43,63 @@
 
 ;; org jira tools
 (require 'org-jira)
-(setq jiralib-host "jira01.devtools.intel.com"
-      jiralib-url "https://jira01.devtools.intel.com")
+(setq jiralib-host "jira.ndg.intel.com"
+      jiralib-url "https://jira.ndg.intel.com")
 
-;; Automatic emacsclient
-;; (add-to-list 'load-path "~/jm-config/emacs/modules/tramp/lisp")
-;; (require 'tramp)
-;; (require 'tramp-sh)
-;; (defvar emacsserver-file-path "~/emacs-server")
-;; (defvar emacsclient-path "~/emacsclient.sh")
-;; (defvar emacsclient-script (format "#!/bin/sh\n\
-;; \n\
-;; emacsclient --server-file %s \\\n\
-;;             /ssh:jmassonx@$(hostname):`readlink --canonicalize-missing $*`\n"
-;; 				   emacsserver-file-path))
+;; magit push gerrit
+(defun magit-push-gerrit (branch remote &optional remote-branch args)
+  "Push a branch to gerrit"
+  (interactive (magit-push-read-args t))
+  (magit-run-git-async-no-revert
+   "push" "-v" args remote
+   (if remote-branch
+       (format "%s:refs/for/%s" branch remote-branch)
+     branch)))
 
-;; (dolist (var '("EDITOR" "GIT_EDITOR" "SVN_EDITOR"))
-;;   (add-to-list 'tramp-remote-process-environment (format "%s=%s" var emacsclient-path)))
-
-(defvar server-interface-priority-order '("vpn0" "eth0" "wlan0"))
-(defun reconfigure-server ()
-  (interactive)
-  (let ((interface (car (delq nil (mapcar (rcurry 'assoc (network-interface-list))
-					  server-interface-priority-order)))))
-    (when interface
-      (setq server-use-tcp t
-	    server-port 5001
-	    server-host (format-network-address (cdr interface) t))
-      (server-start))))
-
-;; (defun setup-emacsclient (proc vec)
-;;   (when (and (server-running-p) server-use-tcp)
-;;     (with-temp-buffer
-;;       (insert-file (format "%s/server" server-auth-dir))
-;;       (dolist (cur '(("\"" . "\\\"") ("$" . "\\$") ("\`" . "\\`")))
-;; 	(save-excursion
-;; 	  (while (search-forward (car cur) nil t)
-;; 	    (replace-match (cdr cur) nil t))))
-;;       (shell-command (format "echo -n \"%s\" > %s" (buffer-string) emacsserver-file-path)))
-;;     (tramp-send-command vec (format "echo '%s' > %s" emacsclient-script emacsclient-path))
-;;     (tramp-send-command vec (format "chmod +x %s" emacsclient-path))))
-
-;; (advice-add 'tramp-open-connection-setup-interactive-shell :after #'setup-emacsclient)
-;; (reconfigure-server)
+(magit-define-popup-action 'magit-push-popup
+  ?g "Gerrit" 'magit-push-gerrit)
 
 ;; work keybindings
 (require 'work-keybindings)
+
+;; expand tramp remote path
+(add-to-list 'tramp-remote-path "/home/jmassonx/bin")
+
+;; startup work stuff
+(defun start-work ()
+  (interactive)
+
+  ;; status widgets
+  (status-add-to-left 'status-purple)
+  (status-add-to-left 'status-gnus)
+  (status-add-to-left 'status-cscope)
+  (status-add-to-left 'status-project-manager)
+  (status-add-to-left 'status-virtual-desktops)
+  (status-add-to-right 'status-date)
+  (status-add-to-right 'status-volume)
+  (status-add-to-right 'status-battery)
+  (status-add-to-right 'status-cpu)
+  (status-add-to-right 'status-mem)
+  (status-add-to-right 'status-net)
+  (turn-on-status)
+
+  ;; open files for work at startup
+  (find-file "~/org/notes.org")
+  (find-file "~/org/todo.org")
+
+  ;; switch to scratch buffer
+  (switch-to-buffer "*scratch*")
+
+  ;; add 4 virtual desktop
+  (dotimes (i 4)
+    (virtual-desktops-add 1))
+  (virtual-desktops-goto 1)
+
+  ;; purple init
+  (purple-init)
+
+  ;; start rdm
+  (rtags-start-process-maybe))
 
 
 (provide 'my-work)
