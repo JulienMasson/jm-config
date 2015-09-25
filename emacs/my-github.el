@@ -8,6 +8,8 @@
 (setq magit-last-seen-setup-instructions "1.4.0")
 (setq magit-git-executable "~/bin/git-install/bin/git")
 (setq vc-handled-backends nil)
+;; (setq magit-revert-buffers nil)
+(add-hook 'git-commit-setup-hook 'git-commit-turn-on-flyspell)
 
 (define-key magit-mode-map [remap magit-copy-buffer-thing-as-kill] 'kill-ring-save)
 

@@ -177,6 +177,9 @@
              (bbdb-initialize 'gnus)
              (local-set-key "<TAB>" 'bbdb-complete-name)))
 
+;; flyspell when composing gnus message
+(add-hook 'message-mode-hook 'git-commit-turn-on-flyspell)
+
 ;; search engine
 (require 'nnmairix)
 
