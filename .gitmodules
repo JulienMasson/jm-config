@@ -130,3 +130,6 @@
 [submodule "emacs/modules/dash"]
 	path = emacs/modules/dash
 	url = https://github.com/magnars/dash.el.git
+[submodule "emacs/modules/auto-complete-cscope"]
+	path = emacs/modules/auto-complete-cscope
+	url = https://github.com/JulienMasson/auto-complete-cscope.git
