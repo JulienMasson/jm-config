@@ -4,7 +4,6 @@
 
 ;; offlineimap
 (require 'offlineimap)
-(offlineimap)
 
 ;; set maildir
 (require 'gnus)
@@ -174,55 +173,26 @@
              (bbdb-initialize 'gnus)
              (local-set-key "<TAB>" 'bbdb-complete-name)))
 
-(defvar gmail-maildir  "--maildir=~/Maildir/Gmail")
-(defvar eseo-maildir  "--maildir=~/Maildir/Eseo")
-(defvar openwide-maildir  "--maildir=~/Maildir/OpenWide")
-(defvar mu-program     "/usr/local/bin/mu")
+;; flyspell when composing gnus message
+(add-hook 'message-mode-hook 'git-commit-turn-on-flyspell)
 
-(defun mu-update-database ()
-  (shell-command
-	   (format "%s index %s" mu-program gmail-maildir))
-  (shell-command
-	   (format "%s index %s" mu-program eseo-maildir))
-  (shell-command
-   (format "%s index %s" mu-program openwide-maildir)))
+;; start functions after load gnus
+(add-hook 'gnus-started-hook
+	  '(lambda ()
+	     (gnus-demon-init)
+	     (offlineimap)))
 
-(defun mu-gnus-update-contacts ()
-  (interactive)
-  (mu-update-database)
-  (shell-command
-   (format "%s cfind --format=bbdb > ~/.bbdb" mu-program)))
+;; start functions after quit gnus
+(add-hook 'gnus-after-exiting-gnus-hook
+	  '(lambda ()
+	     (offlineimap-quit)))
 
-;; search engines
-;; (require 'notmuch)
-;; (add-hook 'gnus-group-mode-hook 'lld-notmuch-shortcut)
-;; (require 'org-gnus)
-
-;; (defun lld-notmuch-shortcut ()
-;;   (define-key gnus-group-mode-map "GG" 'notmuch-search)
-;;   )
-
-(defun notmuch-update-database ()
-  (interactive)
-  (async-shell-command "notmuch new"))
+;; search engine
+(require 'nnmairix)
 
 ;; Use gnus for default compose-mail
 (if (boundp 'mail-user-agent)
     (setq mail-user-agent 'gnus-user-agent))
 
-;; windows split
-(gnus-add-configuration
- '(article
-   (horizontal 1.0
-	       (vertical 25 (group 1.0))
-	       (vertical 1.0
-			 (summary 0.16 point)
-			 (article 1.0)))))
-
-(gnus-add-configuration
- '(summary
-   (horizontal 1.0
-	       (vertical 25 (group 1.0))
-	       (vertical 1.0 (summary 1.0 point)))))
 
 (provide 'home-gnus)
