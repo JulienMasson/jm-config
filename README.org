@@ -44,6 +44,16 @@
       #+BEGIN_SRC sh
       cp ~/jm-config/emacs/.emacs ~/
       #+END_SRC
+   4. OPTIONAL set emacs config in ~/.emacs
+
+      For home:
+      #+BEGIN_SRC emacs-lisp
+      (setq jm-config-emacs "home")
+      #+END_SRC
+      For work:
+      #+BEGIN_SRC emacs-lisp
+      (setq jm-config-emacs "work")
+      #+END_SRC
 
    These steps are in the script tools/setup_emacs.sh
 
