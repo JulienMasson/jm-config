@@ -75,6 +75,11 @@
 (defvar rtags-diagnostics-process nil)
 (defvar rtags-diagnostics-starting nil)
 
+(defconst rtags-result-separator
+  "===============================================================================\n"
+  "Line of text to use as a visual separator.
+Must end with a newline. Must work as a regex without quoting")
+
 (defun rtags-is-indexable-default (buffer)
   (let ((filename (buffer-file-name buffer)))
     (when filename
@@ -2128,10 +2133,12 @@ is true. References to references will be treated as references to the reference
 (defun rtags-has-filemanager (&optional buffer)
   (rtags-buffer-status buffer))
 
-(defun rtags-handle-results-buffer (&optional noautojump quiet path)
+(defun rtags-handle-results-buffer (&optional noautojump quiet path marker)
   (setq rtags-last-request-not-indexed nil)
+  (if (not marker)
+      (setq marker (point-min)))
   (rtags-reset-bookmarks)
-  (set-text-properties (point-min) (point-max) nil)
+  (set-text-properties marker (point-max) nil)
   (cond ((= (point-min) (point-max))
          (unless quiet
            (message "RTags: No results"))
@@ -2150,7 +2157,7 @@ is true. References to references will be treated as references to the reference
          (goto-char (point-max))
          (when (= (point-at-bol) (point-max))
            (delete-char -1))
-         (goto-char (point-min))
+         (goto-char marker)
          (while (not (eobp))
            (when (looking-at "^\\(.*?\\):\\([0-9]+\\):\\([0-9]+\\):?[ \t]*\\(.*\\)$")
              (incf rtags-buffer-bookmarks)
@@ -2620,25 +2627,60 @@ definition."
         (recenter-top-bottom (when (not center-window) 0))
         (select-window win)))))
 
+(defun rtags-insert-header (query pattern)
+  (goto-char (point-max))
+  (insert "\n\n")
+  ;; display separator
+  (insert rtags-result-separator)
+  ;; display current query and pattern
+  (insert (concat query ": "
+		  (propertize pattern 'face 'bold)))
+  ;; display current project
+  (let ((current ""))
+    (with-temp-buffer
+      (rtags-call-rc :path t "-w")
+      (goto-char (point-min))
+      (while (not (eobp))
+	(let ((line (buffer-substring-no-properties (point-at-bol) (point-at-eol))))
+	  (cond ((string-match "^\\([^ ]+\\)[^<]*<=$" line)
+		 (let ((name (match-string-no-properties 1 line)))
+		   (setq current name)))
+		(t)))
+	(forward-line)))
+    (insert (concat "\nDatabase directory: "
+		    (propertize current 'face 'bold))))
+  ;; jump to match results
+  (insert "\n"))
+
 (defun rtags-find-symbols-by-name-internal (prompt switch &optional filter regexp-filter)
   (rtags-location-stack-push)
   (let ((tagname (rtags-current-symbol))
         (path (buffer-file-name))
+        rtags-marker
+        rtags-query
+        rtags-pattern
         input)
+    (setq rtags-query prompt)
     (if (> (length tagname) 0)
         (setq prompt (concat prompt ": (default " tagname ") "))
       (setq prompt (concat prompt ": ")))
+    (setq rtags-pattern tagname)
     (setq input (completing-read-default prompt (function rtags-symbolname-complete) nil nil nil 'rtags-symbol-history))
     (setq rtags-symbol-history (cl-remove-duplicates rtags-symbol-history :from-end t :test 'equal))
     (when (not (equal "" input))
       (setq tagname input))
-    (with-current-buffer (rtags-get-buffer)
+    (with-current-buffer (get-buffer-create rtags-buffer-name)
+      (setq buffer-read-only nil)
+      (rtags-insert-header rtags-query rtags-pattern)
+      (setq rtags-marker (point-marker))
       (rtags-call-rc :path path switch tagname :path-filter filter
                      :path-filter-regex regexp-filter
                      (when rtags-wildcard-symbol-names "--wildcard-symbol-names")
                      (when rtags-symbolnames-case-insensitive "-I"))
       ;; (setq-local rtags-current-file (or path default-directory))
-      (rtags-handle-results-buffer nil nil path))))
+      (rtags-handle-results-buffer nil nil path rtags-marker)
+      (goto-char rtags-marker)
+      (setq buffer-read-only t))))
 
 (defun rtags-symbolname-completion-get (string)
   (with-temp-buffer
