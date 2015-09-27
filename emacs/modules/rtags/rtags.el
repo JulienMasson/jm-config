@@ -2175,7 +2175,6 @@ is true. References to references will be treated as references to the reference
                  (incf end 5))
                (set-text-properties start end (list 'rtags-result-index (cons rtags-buffer-bookmarks start)))))
            (forward-line))
-         (shrink-window-if-larger-than-buffer)
          (rtags-mode)
          (when path
            (setq rtags-current-file path))
@@ -2464,7 +2463,6 @@ is true. References to references will be treated as references to the reference
       (cond ((= (point-min) (point-max)) t)
             ((= (count-lines (point-min) (point-max)) 1) (rtags-goto-location (buffer-substring-no-properties (point-at-bol) (point-at-eol))))
             (t (switch-to-buffer-other-window rtags-buffer-name)
-               (shrink-window-if-larger-than-buffer)
                (rtags-mode))))))
 
 ;;;###autoload
