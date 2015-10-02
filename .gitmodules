@@ -30,11 +30,6 @@
 	path = emacs/modules/auto-complete-auctex
 	url = https://github.com/monsanto/auto-complete-auctex
 	ignore = dirty
-[submodule "emacs/predictive"]
-	path = emacs/modules/predictive
-	url = http://www.dr-qubit.org/git/predictive.git
-	ignore = dirty
-	ignore = untracked
 [submodule "emacs/purple"]
 	path = emacs/modules/purple
 	url = https://github.com/JulienMasson/purple
@@ -148,3 +143,8 @@
 	url = https://github.com/JulienMasson/auto-complete-cscope.git
 	ignore = untracked
 	branch = master
+[submodule "emacs/predictive"]
+	path = emacs/modules/predictive
+	url = http://www.dr-qubit.org/git/predictive.git
+	ignore = dirty
+	ignore = untracked
