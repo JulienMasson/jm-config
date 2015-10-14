@@ -14,6 +14,9 @@
 ;; programming config
 (require 'my-programming)
 
+;; perl config
+(require 'my-perl)
+
 ;; shell config
 (require 'my-shell)
 
