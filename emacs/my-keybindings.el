@@ -87,8 +87,8 @@
 
 ;; rtags
 (global-set-key (kbd "<C-tab>") 'ac-complete-rtags)
-(global-set-key (kbd "C-c r s") 'rtags-find-symbol)
-(global-set-key (kbd "C-c r r") 'rtags-find-references)
+(global-set-key (kbd "C-c r s") 'rtags-find-symbol-at-point)
+(global-set-key (kbd "C-c r r") 'rtags-find-all-references-at-point)
 (global-set-key (kbd "C-c r f") 'rtags-find-file)
 (global-set-key (kbd "C-c r c") 'rtags-compile-file)
 (global-set-key (kbd "C-c r w") 'rtags-set-current-project)
