@@ -963,6 +963,11 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(wl-highlight-summary-displaying-face ((t (:underline t :weight bold))))
 ;;;;; which-func-mode
    `(which-func ((t (:foreground ,aurora-green+4))))
+;;;;; xcscope
+   `(cscope-file-face ((t :inherit font-lock-keyword-face)))
+   `(cscope-function-face ((t :foreground ,aurora-blue)))
+   `(cscope-line-number-face ((t :foreground ,aurora-green+4)))
+   `(cscope-separator-face ((t :bold t :overline t :underline t :foreground ,aurora-green+5)))
 ;;;;; yascroll
    `(yascroll:thumb-text-area ((t (:background ,aurora-bg-1))))
    `(yascroll:thumb-fringe ((t (:background ,aurora-bg-1 :foreground ,aurora-bg-1))))
