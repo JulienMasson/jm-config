@@ -47,10 +47,6 @@
 ;; set font size
 (set-face-attribute 'default nil :height 90)
 
-;; load theme
-(add-to-list 'custom-theme-load-path "~/jm-config/emacs")
-(load-theme 'aurora t)
-
 ;; enable ido-mode
 (ido-mode 1)
 
@@ -84,8 +80,47 @@
                          (ido-read-file-name "Find file(as root): ")))
     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 
-;; one line highlight
-(global-hl-line-mode 1)
+;; highlight focus
+(require 'face-remap)
+(defvar highlight-focus:last-buffer nil)
+(defvar highlight-focus:cookie nil)
+(defvar highlight-focus:background "#303030")
+(defvar highlight-focus:app-has-focus t)
+
+(defun highlight-focus:check ()
+  "Check if focus has changed, and if so, update remapping."
+  (let ((current-buffer (and highlight-focus:app-has-focus (current-buffer))))
+    (unless (eq highlight-focus:last-buffer current-buffer)
+      (when (and highlight-focus:last-buffer highlight-focus:cookie)
+        (with-current-buffer highlight-focus:last-buffer
+          (face-remap-remove-relative highlight-focus:cookie)))
+      (setq highlight-focus:last-buffer current-buffer)
+      (when current-buffer
+        (setq highlight-focus:cookie
+              (face-remap-add-relative 'default :background highlight-focus:background))))))
+
+(defun highlight-focus:app-focus (state)
+  (setq highlight-focus:app-has-focus state)
+  (highlight-focus:check))
+
+;; home - work theme
+(add-to-list 'custom-theme-load-path "~/jm-config/emacs")
+(if (string= jm-config-emacs "home")
+    (progn
+      (load-theme 'aurora t)
+      (global-hl-line-mode 1))
+  (if (string= jm-config-emacs "work")
+      (progn
+	(load-theme 'jm t)
+	(defadvice other-window (after highlight-focus activate)
+	  (highlight-focus:check))
+	(defadvice select-window (after highlight-focus activate)
+	  (highlight-focus:check))
+	(defadvice select-frame (after highlight-focus activate)
+	  (highlight-focus:check))
+	(add-hook 'window-configuration-change-hook 'highlight-focus:check)
+	(add-hook 'focus-in-hook (lambda () (highlight-focus:app-focus t)))
+	(add-hook 'focus-out-hook (lambda () (highlight-focus:app-focus nil))))))
 
 ;; remove scroll bar
 (scroll-bar-mode -1)

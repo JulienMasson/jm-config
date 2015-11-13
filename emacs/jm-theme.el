@@ -406,6 +406,16 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(magit-branch ((t (:foreground ,jm-orange :weight bold))))
    `(magit-item-highlight ((t (:background ,jm-bg+1 :bold nil))))
    `(magit-log-sha1 ((t (:foreground ,jm-blue-5))))
+   `(magit-section-highlight ((t)))
+   `(magit-section-heading ((t :inherit font-lock-keyword-face)))
+   `(magit-diff-file-heading ((t)))
+   `(magit-diff-added ((t :inherit diff-added)))
+   `(magit-diff-added-highlight ((t :inherit diff-added)))
+   `(magit-diff-removed ((t :inherit diff-removed)))
+   `(magit-diff-removed-highlight ((t :inherit diff-removed)))
+   `(magit-diff-file-heading-highlight ((t)))
+   `(magit-diff-hunk-heading-highlight ((t)))
+   `(magit-diff-context-highlight ((t)))
 ;;;;; message-mode
    `(message-cited-text ((t (:inherit font-lock-comment))))
    `(message-header-name ((t (:foreground ,jm-green+1))))
@@ -626,6 +636,12 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(whitespace-space-after-tab ((t (:background ,jm-yellow :foreground ,jm-red))))
 ;;;;; which-func-mode
    `(which-func ((t (:foreground ,jm-green+4))))
+;;;;; xcscope
+   `(cscope-file-face ((t (:foreground ,jm-green+4))))
+   `(cscope-function-face ((t :foreground ,jm-blue)))
+   `(cscope-line-number-face ((t :foreground ,jm-red)))
+   `(cscope-mouse-face ((t :foreground "white" :background "blue")))
+   `(cscope-separator-face ((t :bold t :overline t :underline t :foreground ,jm-orange)))
 ))
 
 ;;; Theme Variables
