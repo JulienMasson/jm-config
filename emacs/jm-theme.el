@@ -416,6 +416,7 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(magit-diff-file-heading-highlight ((t)))
    `(magit-diff-hunk-heading-highlight ((t)))
    `(magit-diff-context-highlight ((t)))
+   `(magit-log-date ((t :foreground "DarkSlateGrey")))
 ;;;;; message-mode
    `(message-cited-text ((t (:inherit font-lock-comment))))
    `(message-header-name ((t (:foreground ,jm-green+1))))
