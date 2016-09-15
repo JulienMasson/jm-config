@@ -70,22 +70,6 @@
 	url = https://github.com/JulienMasson/device-control.git
 	ignore = untracked
 	branch = master
-[submodule "emacs/modules/search-tools"]
-	path = emacs/modules/search-tools
-	url = https://github.com/jeremy-compostella/search-tools.git
-	ignore = untracked
-[submodule "emacs/modules/org-jira"]
-	path = emacs/modules/org-jira
-	url = https://github.com/baohaojun/org-jira.git
-	ignore = untracked
-[submodule "emacs/modules/ldap-browser"]
-	path = emacs/modules/ldap-browser
-	url = https://github.com/schouleu/ldap-browser.git
-	ignore = untracked
-[submodule "emacs/modules/org-mode"]
-	path = emacs/modules/org-mode
-	url = git://orgmode.org/org-mode.git
-	ignore = untracked
 [submodule "emacs/modules/dash"]
 	path = emacs/modules/dash
 	url = https://github.com/magnars/dash.el.git
