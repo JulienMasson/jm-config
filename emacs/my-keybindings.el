@@ -2,21 +2,21 @@
 ;;;;            KEY BINDINGS DEFAULT           ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; windows
-;; (global-set-key (kbd "C-M-k") 'windmove-left)
-;; (global-set-key (kbd "C-M-l") 'windmove-up)
-;; (global-set-key (kbd "C-M-'") 'windmove-down)
-;; (global-set-key (kbd "C-M-;") 'windmove-right)
-
 ;; controls commands
 (global-set-key (kbd "C-c <left>")  'windmove-left)
 (global-set-key (kbd "C-c <right>") 'windmove-right)
 (global-set-key (kbd "C-c <up>")    'windmove-up)
 (global-set-key (kbd "C-c <down>")  'windmove-down)
+;; (global-set-key (kbd "C-M-j") 'windmove-down)
+;; (global-set-key (kbd "C-M-k") 'windmove-up)
+;; (global-set-key (kbd "C-M-l") 'windmove-left)
+;; (global-set-key (kbd "C-M-;") 'windmove-right)
 (global-set-key (kbd "C-c e") 'eval-region)
 (global-set-key (kbd "C-c S") 'sudo-edit)
 (global-set-key (kbd "C-c l") 'goto-line)
 (global-set-key (kbd "C-c d") 'delete-rectangle)
+(global-set-key (kbd "C-c M-i") 'string-insert-rectangle)
+(global-set-key (kbd "C-c M-d") 'delete-matching-lines)
 (global-set-key (kbd "C-c M-r") 'revert-buffer)
 (global-set-key (kbd "C-c h") 'highlight-lines-matching-regexp)
 (global-set-key (kbd "C-c m") 'comment-region)
@@ -64,6 +64,9 @@
 (global-set-key (kbd "C-c p a") 'purple-buddy-add)
 (global-set-key (kbd "C-c p j") 'purple-chat-jump)
 
+;; perl
+(global-set-key (kbd "C-c p d") 'perldoc)
+
 ;; magit
 (global-set-key (kbd "C-c g s") 'magit-status)
 (global-set-key (kbd "C-c g l") 'magit-log-current)
@@ -84,14 +87,6 @@
 
 ;; locate
 (global-set-key (kbd "C-c C-l") 'jm-search-locate-database)
-
-;; rtags
-(global-set-key (kbd "<C-tab>") 'ac-complete-rtags)
-(global-set-key (kbd "C-c r s") 'rtags-find-symbol-at-point)
-(global-set-key (kbd "C-c r r") 'rtags-find-all-references-at-point)
-(global-set-key (kbd "C-c r f") 'rtags-find-file)
-(global-set-key (kbd "C-c r c") 'rtags-compile-file)
-(global-set-key (kbd "C-c r w") 'rtags-set-current-project)
 
 
 (provide 'my-keybindings)
