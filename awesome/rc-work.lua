@@ -61,25 +61,16 @@ modkey = "Mod4"
 layouts =
 {
     awful.layout.suit.floating,
-    awful.layout.suit.tile,
-    awful.layout.suit.tile.left,
-    awful.layout.suit.tile.bottom,
-    awful.layout.suit.tile.top,
     awful.layout.suit.fair,
-    awful.layout.suit.fair.horizontal,
-    awful.layout.suit.spiral,
-    awful.layout.suit.spiral.dwindle,
     awful.layout.suit.max,
-    awful.layout.suit.max.fullscreen,
-    awful.layout.suit.magnifier
 }
 -- }}}
 
 -- {{{ Tags
 -- Define a tag table which will hold all screen tags.
 tags = {
-  names  = { "Emacs", "Chromium", "Term", "Extra" },
-  layout = { layouts[1], layouts[10], layouts[6], layouts[1]
+  names  = { "Emacs", "Web", "Term", "Extra" },
+  layout = { layouts[2], layouts[3], layouts[2], layouts[2]
 }}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
@@ -94,7 +85,7 @@ myawesomemenu = {
    { "edit config", editor_cmd .. " " .. awesome.conffile },
    { "restart", awesome.restart },
    { "quit", awesome.quit },
-   { "dialog", '/home/jmassonx/jm-config/awesome/shutdown_dialog.sh' },
+   { "dialog", '/home/lab/jm-config/awesome/shutdown_dialog.sh' },
 }
 
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
@@ -130,79 +121,14 @@ end
 maillabel= widget({ type = "textbox" })
 maillabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Mail </span>'
 mailimage= widget({ type = "imagebox" })
-mailimage.image= image("/home/jmassonx/jm-config/awesome/icons/email.png")
--- mailwidget = widget({
---    type = 'textbox',
---    name = 'mailwidget'
--- })
--- vicious.register(mailwidget, run_script, '$1')
+mailimage.image= image("/home/lab/jm-config/awesome/icons/email.png")
 
 -- mdir
--- gmailwidget = widget({ type = "textbox" })
--- vicious.register(gmailwidget, vicious.widgets.mdir, "$1/$2 ", 5, { home_dir ..'/Maildir/Gmail/INBOX/' })
--- eseowidget = widget({ type = "textbox" })
--- vicious.register(eseowidget, vicious.widgets.mdir, "$1/$2 ", 5, { home_dir ..'/Maildir/Eseo/INBOX/' })
--- openwidewidget = widget({ type = "textbox" })
--- vicious.register(openwidewidget, vicious.widgets.mdir, "$1/$2", 5, { home_dir ..'/Maildir/OpenWide/INBOX/' })
 intelwidget = widget({ type = "textbox" })
 vicious.register(intelwidget, vicious.widgets.mdir, "$1 / $2", 5, { home_dir .. '/Maildir/Intel/INBOX/' })
 
--- mpd
--- mpdwidget = widget({ type = "textbox" })
--- vicious.register(mpdwidget, vicious.widgets.mpd, " ${Title}, ${Album} ", 5)
-
--- packages
--- packagesimage= widget({ type = "imagebox" })
--- packagesimage.image= image("/home/jmassonx/jm-config/awesome/icons/update-2.png")
--- packageslabel= widget({ type = "textbox" })
--- packageslabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Packages </span>'
--- packageswidget = widget({ type = "textbox" })
--- vicious.register(packageswidget, vicious.widgets.pkg, "$1 ", 5, "Ubuntu")
-
--- org
-todolabel= widget({ type = "textbox" })
-todolabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Todo </span>'
-workinglabel= widget({ type = "textbox" })
-workinglabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Working </span>'
-unmergedlabel= widget({ type = "textbox" })
-unmergedlabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Unmerged </span>'
-
-todowidget = widget({ type = "textbox" })
-vicious.register(todowidget, vicious.widgets.org, "$1", 300, { home_dir ..'/org/todo.org' })
-workingwidget = widget({ type = "textbox" })
-vicious.register(workingwidget, vicious.widgets.org, "$2", 300, { home_dir ..'/org/todo.org' })
-unmergedwidget = widget({ type = "textbox" })
-vicious.register(unmergedwidget, vicious.widgets.org, "$3", 300, { home_dir ..'/org/todo.org' })
-
--- weather
--- weatherlabel= widget({ type = "textbox" })
--- weatherlabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Weather </span>'
--- weatherwidget = widget({ type = "textbox" })
--- vicious.register(weatherwidget, vicious.widgets.weather, '${tempc}°C', 1200, "LFBF")
--- vicious.register(weatherwidget, vicious.widgets.weather, '${city}, ${wind}, ${windmph}, ${windkmh}, ${sky}, ${weather}, ${tempf}, ${tempc}, ${humid}, ${dewf}, ${dewc}, ${press} ', 1200, "LFBF")
-
 -- Create a textclock widget
 mytextclock = awful.widget.textclock({ align = "right" })
-
--- org calendar
--- dofile(home_dir .. "/jm-config/awesome/modules/orglendar.lua")
--- orglendar.files = { home_dir .. "/org/todo.org"}
--- orglendar.register(mytextclock)
-
-
---shutdown widget
--- shutdown=blingbling.system.shutdownmenu(beautiful.shutdown,
---                                         beautiful.accept,
---                                         beautiful.cancel)
--- shutdown.resize= false
--- awful.widget.layout.margins[shutdown]={top=4}
-
---reboot widget
--- reboot=blingbling.system.rebootmenu(beautiful.reboot,
---                                     beautiful.accept,
---                                     beautiful.cancel)
--- reboot.resize = false
--- awful.widget.layout.margins[reboot]={top=4}
 
 -- Date
 datewidget = widget({ type = "textbox" })
@@ -214,7 +140,7 @@ cpulabel.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>CPU </sp
 cpu=blingbling.classical_graph.new()
 cpu:set_font_size(8)
 cpu:set_height(20)
-cpu:set_width(100)
+cpu:set_width(75)
 cpu:set_show_text(true)
 cpu:set_label("$percent %")
 cpu:set_graph_color("#00ccff00")
@@ -230,34 +156,7 @@ vicious.register(cpu, vicious.widgets.cpu, '$1',2)
 -- Initialize widget
 cpudegreewidget = widget({ type = "textbox" })
 -- Register widget
-vicious.register(cpudegreewidget, vicious.widgets.thermal, "$1 °C", 30, { "coretemp.0", "core"})
- 
---Cores Widgets
--- corelabel=widget({ type = "textbox" })
--- corelabel.text='<span color="#ff8700" '..pango_large..'>Cores:</span>'
--- mycore1 = blingbling.value_text_box.new()
--- mycore1:set_width(25)
--- mycore1:set_height(16)
--- mycore1:set_filled(true)
--- mycore1:set_filled_color("#00000099")
--- mycore1:set_rounded_size(0.6)
--- mycore1:set_values_text_color({{"#88aa00ff",0},{"#d4aa00ff", 0.5},{"#d45500ff",0.75}})
--- mycore1:set_font_size(8)
--- mycore1:set_background_color("#00000044")
--- mycore1:set_label("$percent%")
--- vicious.register(mycore1, vicious.widgets.cpu, "$2")
-
--- mycore2 = blingbling.value_text_box.new()
--- mycore2:set_width(25)
--- mycore2:set_height(16)
--- mycore2:set_filled(true)
--- mycore2:set_filled_color("#00000099")
--- mycore2:set_rounded_size(0.6)
--- mycore2:set_values_text_color({{"#88aa00ff",0},{"#d4aa00ff", 0.5},{"#d45500ff",0.75}})
--- mycore2:set_font_size(8)
--- mycore2:set_background_color("#00000044")
--- mycore2:set_label("$percent%")
--- vicious.register(mycore2, vicious.widgets.cpu, "$3")
+vicious.register(cpudegreewidget, vicious.widgets.thermal, "$1 °C", 30, { "thermal_zone0", "sys"})
 
 -- Mem Widget
 memlabel= widget({ type = "textbox" })
@@ -266,7 +165,7 @@ memwidget = blingbling.classical_graph.new()
 memwidget:set_font_size(8)
 memwidget:set_height(20)
 memwidget:set_h_margin(2)
-memwidget:set_width(100)
+memwidget:set_width(75)
 memwidget:set_filled(true)
 memwidget:set_show_text(true)
 memwidget:set_filled_color("#00000099")
@@ -317,43 +216,6 @@ vicious.register(eth_up_speedwidget, vicious.widgets.net, '${eth0 up_kb}Kb', 1)
 eth_down_speedwidget = widget({ type = "textbox" })
 vicious.register(eth_down_speedwidget, vicious.widgets.net, '${eth0 down_kb}Kb', 1)
 
--- FS Widget
--- fshomelabel= widget({ type = "textbox", name = "fshomelabel" })
--- fshomelabel.text='<span color="#ff8700" '..pango_large..'>/home: </span>'
--- fshome = blingbling.value_text_box.new()
--- fshome:set_width(25)
--- fshome:set_height(16)
--- fshome:set_filled(true)
--- fshome:set_filled_color("#00000099")
--- fshome:set_rounded_size(0.6)
--- fshome:set_values_text_color({{"#88aa00ff",0},{"#d4aa00ff", 0.5},{"#d45500ff",0.75}})
--- fshome:set_font_size(8)
--- fshome:set_background_color("#00000044")
--- fshome:set_label("$percent%")
--- vicious.register(fshome, vicious.widgets.fs, "${/home used_p}", 120 )
-
--- fsrootlabel= widget({ type = "textbox", name = "fsrootlabel" })
--- fsrootlabel.text='<span color="#ff8700" '..pango_large..' >Root </span>'
--- fsroot = blingbling.value_text_box.new()
--- fsroot:set_width(25)
--- fsroot:set_height(20)
--- fsroot:set_filled(true)
--- fsroot:set_filled_color("#00000099")
--- fsroot:set_rounded_size(0.6)
--- fsroot:set_values_text_color({{"#88aa00ff",0},{"#d4aa00ff", 0.5},{"#d45500ff",0.75}})
--- fsroot:set_font_size(12)
--- fsroot:set_background_color("#00000044")
--- fsroot:set_label("$percent%")
--- vicious.register(fsroot, vicious.widgets.fs, "${/ used_p}", 120 )
-
--- my_fs_data1=blingbling.progress_bar.new()
--- my_fs_data1:set_height(18)
--- my_fs_data1:set_width(40)
--- my_fs_data1:set_graph_color("#ff8700")
--- my_fs_data1:set_show_text(true)
--- my_fs_data1:set_horizontal(true)
--- vicious.register(my_fs_data1, vicious.widgets.fs, "${/ used_p}", 120 )
-
 -- Volume
 volume_label = widget({ type = "textbox"})
 volume_label.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Vol </span>'
@@ -378,14 +240,12 @@ batwidget:set_width(30)
 batwidget:set_show_text(true)
 batwidget:set_horizontal(true)
 batwidget:set_filled(true)
--- batwidget = awful.widget.progressbar()
--- batwidget:set_width(8)
--- batwidget:set_height(14)
--- batwidget:set_vertical(true)
--- batwidget:set_background_color("#000000")
--- batwidget:set_border_color(nil)
--- batwidget:set_color("#00bfff")
 vicious.register(batwidget, vicious.widgets.bat, "$2", 30, "BAT0")
+
+battimewidget = widget({ type = "textbox" })
+-- Register widget
+vicious.register(battimewidget, vicious.widgets.bat, "$3", 5, "BAT0")
+
 
 -- use widget({ type = "textbox" }) for awesome < 3.5
 separator = widget({ type = "textbox" })
@@ -488,7 +348,9 @@ for s = 1, screen.count() do
 		my_volume.widget,
 		space,
 		volume_label,
-	separator,
+ 	separator,
+		battimewidget,
+		space,
 		batwidget.widget,
 		space,
 		battery_label,
@@ -505,27 +367,15 @@ for s = 1, screen.count() do
 		space,
 		memlabel,
 	separator,
-		unmergedwidget,
-		space,
-		unmergedlabel,
-	separator,
-		workingwidget,
-		space,
-		workinglabel,
-	separator,
-		todowidget,
-		space,
-		todolabel,
-	separator,
 		intelwidget,
 		space,
 		mailimage,
-	separator,
-		eth_down_speedwidget,
-		space,
-		my_net.widget,
-		space,
-		eth_up_speedwidget,
+	-- separator,
+	-- 	eth_down_speedwidget,
+	-- 	space,
+	-- 	my_net.widget,
+	-- 	space,
+	-- 	eth_up_speedwidget,
 	-- separator,
 	-- 	wifispeedwidget,
 	-- 	space,
@@ -784,6 +634,6 @@ client.add_signal("unfocus", function(c) c.border_color = beautiful.border_norma
 
 -- Autostart
 awful.util.spawn_with_shell("numlockx on")
-awful.util.spawn_with_shell("setxkbmap gb")
+awful.util.spawn_with_shell("setxkbmap us")
 awful.util.spawn_with_shell("setxkbmap -option ctrl:swapcaps")
 awful.util.spawn_with_shell("setxkbmap -option ctrl:nocaps")
