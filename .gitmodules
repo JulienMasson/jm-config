@@ -126,10 +126,6 @@
 	path = emacs/modules/org-mode
 	url = git://orgmode.org/org-mode.git
 	ignore = untracked
-[submodule "emacs/modules/gnus"]
-	path = emacs/modules/gnus
-	url = https://github.com/emacsmirror/gnus.git
-	ignore = untracked
 [submodule "emacs/modules/dash"]
 	path = emacs/modules/dash
 	url = https://github.com/magnars/dash.el.git
