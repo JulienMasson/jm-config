@@ -31,10 +31,6 @@
 	path = emacs/modules/popup-el
 	url = https://github.com/auto-complete/popup-el
 	ignore = untracked
-[submodule "emacs/git-modes"]
-	path = emacs/modules/git-modes
-	url = https://github.com/magit/git-modes
-	ignore = untracked
 [submodule "emacs/status"]
 	path = emacs/modules/status
 	url = https://github.com/JulienMasson/status
@@ -82,3 +78,6 @@
 [submodule "emacs/modules/bbdb"]
 	path = emacs/modules/bbdb
 	url = https://github.com/emacsmirror/bbdb.git
+[submodule "emacs/modules/with-editor"]
+	path = emacs/modules/with-editor
+	url = https://github.com/magit/with-editor.git

@@ -6,6 +6,7 @@ cd ~/jm-config/
 # pull all git submodules
 git submodule update --init --recursive
 git submodule foreach git checkout master
+git submodule foreach git pull --rebase
 
 # compile bbdb submodule
 cd ~/jm-config/emacs/modules/bbdb/
