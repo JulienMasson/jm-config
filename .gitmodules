@@ -35,10 +35,6 @@
 	url = https://github.com/JulienMasson/purple
 	ignore = untracked
 	branch = master
-[submodule "emacs/w3m"]
-	path = emacs/modules/w3m
-	url = https://github.com/emacsmirror/w3m
-	ignore = untracked
 [submodule "emacs/xcscope.el"]
 	path = emacs/modules/xcscope
 	url = https://github.com/dkogan/xcscope.el
@@ -87,10 +83,6 @@
 [submodule "bash/bash-git-prompt"]
 	path = bash/bash-git-prompt
 	url = https://github.com/magicmonty/bash-git-prompt.git
-[submodule "emacs/modules/apel"]
-	path = emacs/modules/apel
-	url = https://github.com/wanderlust/apel.git
-	ignore = untracked
 [submodule "emacs/modules/log-tools"]
 	path = emacs/modules/log-tools
 	url = https://github.com/JulienMasson/log-tools.git

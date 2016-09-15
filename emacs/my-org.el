@@ -22,9 +22,6 @@
 ;; use current window
 (setq org-agenda-window-setup 'current-window)
 
-;; org capture wl
-(require 'org-wl)
-
 ;; org capture for wanderlust
 (setq org-capture-templates '(("n" "Notes" entry
 			       (file+headline "~/org/notes.org" "Extra")
