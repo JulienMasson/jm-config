@@ -62,7 +62,7 @@
 	    (dtrt-indent-mode t)))
 
 ;; change default grep
-(setq grep-command "grep --color -nrH -e ")
+(setq grep-command "grep --color -nsrH -e ")
 
 ;; auto complete config with cscope rtags
 (require 'rtags)
