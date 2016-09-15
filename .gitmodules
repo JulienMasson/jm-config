@@ -14,10 +14,6 @@
 	path = emacs/modules/auto-complete
 	url = https://github.com/auto-complete/auto-complete
 	ignore = untracked
-[submodule "emacs/c-eldoc"]
-	path = emacs/modules/c-eldoc
-	url = https://github.com/mooz/c-eldoc
-	ignore = untracked
 [submodule "emacs/erc-nick-notify"]
 	path = emacs/modules/erc-nick-notify
 	url = https://github.com/emacsmirror/erc-nick-notify
@@ -48,10 +44,6 @@
 	path = emacs/modules/browse-kill-ring
 	url = https://github.com/browse-kill-ring/browse-kill-ring
 	ignore = untracked
-[submodule "emacs/yasnippet"]
-	path = emacs/modules/yasnippet
-	url = https://github.com/capitaomorte/yasnippet
-	ignore = dirty
 [submodule "emacs/modules/offlineimap.el"]
 	path = emacs/modules/offlineimap
 	url = https://github.com/jd/offlineimap.el.git
@@ -98,11 +90,6 @@
 	path = emacs/modules/dash
 	url = https://github.com/magnars/dash.el.git
 	ignore = untracked
-[submodule "emacs/modules/auto-complete-cscope"]
-	path = emacs/modules/auto-complete-cscope
-	url = https://github.com/JulienMasson/auto-complete-cscope.git
-	ignore = untracked
-	branch = master
 [submodule "emacs/predictive"]
 	path = emacs/modules/predictive
 	url = http://www.dr-qubit.org/git/predictive.git

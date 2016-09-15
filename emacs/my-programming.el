@@ -64,26 +64,9 @@
 ;; change default grep
 (setq grep-command "grep --color -nsrH -e ")
 
-;; auto complete config with cscope rtags
-(require 'rtags)
-(setq rtags-reindex-on-save t)
-(setq rtags-jump-to-first-match nil)
-(custom-set-faces '(rtags-fixitline ((t))))
-(require 'auto-complete)
+;; minimum setup for autocomplete
 (require 'auto-complete-config)
-(require 'auto-complete-cscope)
-(require 'rtags-ac)
-(setq default-cscope-mirror-path "~/.emacs.d/cscope-mirrors/")
-(defun my-ac-cc-mode-setup ()
-  (if (not (tramp-tramp-file-p default-directory))
-      (progn
-	(setq ac-sources (remove 'ac-source-words-in-same-mode-buffers ac-sources))
-	(setq ac-sources (append '(ac-source-cscope ac-source-rtags) ac-sources)))))
-(setq-default ac-sources '(ac-source-abbrev ac-source-dictionary ac-source-words-in-same-mode-buffers))
-(add-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)
-(add-hook 'c-mode-common-hook 'my-ac-cc-mode-setup)
-(add-hook 'auto-complete-mode-hook 'ac-common-setup)
-(global-auto-complete-mode t)
+(ac-config-default)
 
 ;; locate database
 (defvar jm-cmd-locate-database
