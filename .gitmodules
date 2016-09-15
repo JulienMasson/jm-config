@@ -14,10 +14,6 @@
 	path = emacs/modules/auto-complete
 	url = https://github.com/auto-complete/auto-complete
 	ignore = untracked
-[submodule "emacs/ac-math"]
-	path = emacs/modules/ac-math
-	url = https://github.com/vspinu/ac-math.git
-	ignore = untracked
 [submodule "emacs/c-eldoc"]
 	path = emacs/modules/c-eldoc
 	url = https://github.com/mooz/c-eldoc
@@ -26,10 +22,6 @@
 	path = emacs/modules/erc-nick-notify
 	url = https://github.com/emacsmirror/erc-nick-notify
 	ignore = untracked
-[submodule "emacs/auto-complete-auctex"]
-	path = emacs/modules/auto-complete-auctex
-	url = https://github.com/monsanto/auto-complete-auctex
-	ignore = dirty
 [submodule "emacs/purple"]
 	path = emacs/modules/purple
 	url = https://github.com/JulienMasson/purple
@@ -52,30 +44,14 @@
 	url = https://github.com/JulienMasson/status
 	ignore = untracked
 	branch = master
-[submodule "emacs/auctex"]
-	path = emacs/modules/auctex
-	url = https://github.com/emacsmirror/auctex
-	ignore = untracked
 [submodule "emacs/browse-kill-ring"]
 	path = emacs/modules/browse-kill-ring
 	url = https://github.com/browse-kill-ring/browse-kill-ring
-	ignore = untracked
-[submodule "emacs/latex-extra"]
-	path = emacs/modules/latex-extra
-	url = https://github.com/Bruce-Connor/latex-extra/
-	ignore = untracked
-[submodule "emacs/magic-latex-buffer"]
-	path = emacs/modules/magic-latex-buffer
-	url = https://github.com/zk-phi/magic-latex-buffer
 	ignore = untracked
 [submodule "emacs/yasnippet"]
 	path = emacs/modules/yasnippet
 	url = https://github.com/capitaomorte/yasnippet
 	ignore = dirty
-[submodule "emacs/modules/math-symbol-lists"]
-	path = emacs/modules/math-symbol-lists
-	url = https://github.com/vspinu/math-symbol-lists
-	ignore = untracked
 [submodule "emacs/modules/offlineimap.el"]
 	path = emacs/modules/offlineimap
 	url = https://github.com/jd/offlineimap.el.git
