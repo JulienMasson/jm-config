@@ -10,6 +10,9 @@
 ;; disable erase-buffer
 (put 'erase-buffer 'disabled nil)
 
+;; delete recursively without asking
+(setq dired-recursive-deletes 'always)
+
 ;; windows config
 (windmove-default-keybindings 'meta)
 (setq windmove-wrap-around t)
