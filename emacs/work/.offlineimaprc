@@ -5,12 +5,12 @@ maxsyncaccounts = 10
 [Account Intel]
 localrepository = IntelLocal
 remoterepository = IntelRemote
+postsynchook = mairix
 autorefresh = 1
 
 [Repository IntelLocal]
 type = Maildir
 localfolders = ~/Maildir/Intel
-postsynchook = mairix
 
 [Repository IntelRemote]
 type = IMAP
