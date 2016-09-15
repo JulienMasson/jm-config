@@ -3,7 +3,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; set default web browser
-(setq browse-url-browser-function 'browse-url-chromium
+(setq browse-url-browser-function 'browse-url-firefox
       browse-url-new-window-flag  t
       browse-url-firefox-new-window-is-tab t)
 
@@ -32,7 +32,9 @@
 		       ("RT" "http://rt.com/rss/" nil nil nil)
 		       ("Embedded" "http://www.embedded.com/rss/all" nil nil nil)
 		       ("Linux" "http://www.linux.com/feeds/all-content" nil nil nil)
+		       ("LWN" "http://lwn.net/headlines/Features" nil nil nil)
 		       ("Econoclastes" "http://leseconoclastes.fr/feed/" nil nil nil)
+		       ("ycombinator" "http://news.ycombinator.com/rss" nil nil nil)
 		       ("Fubiz" "http://feeds.feedburner.com/fubiz" nil nil nil)))
 
 (provide 'my-rss)
