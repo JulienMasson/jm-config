@@ -14,9 +14,37 @@
                   (directory-files nnheader-directory-files-safe)
                   (get-new-mail nil))))
 
-;; view organisation (put this in .newsrc.eld)
-;; (setq gnus-topic-topology '(("Mails" visible) (("Intel" visible)) ))
-;; (setq gnus-topic-alist '(("Intel" "nnmaildir+Intel:INBOX" "nnmaildir+Intel:Sent" "nnmairix+mysearch:") ("Mails")))
+;; move gerrit, jira and confluence mails to corresponding groups
+(setq nnmail-split-fancy-match-partial-words t
+      nnmail-split-methods 'nnmail-split-fancy
+      nnmail-split-fancy
+      '(|
+	;; Gerrit
+	(from ,(concat ".*"
+			 (regexp-opt '("IT Gerrit"))
+			 ".*")
+		"nnmaildir+Intel:Gerrit")
+	;; Jira
+	(from ,(concat ".*"
+			 (regexp-opt '("JIRA"))
+			 ".*")
+		"nnmaildir+Intel:Jira")
+	;; Confluence
+	(from ,(concat ".*"
+			 (regexp-opt '("Confluence"))
+			 ".*")
+		"nnmaildir+Intel:Confluence")))
+
+;; (setq nnmail-split-methods
+;;       '(("nnmaildir+Intel:Gerrit" "^From:.*IT Gerrit")
+;; 	("nnmaildir+Intel:Jira" "^From:.*(JIRA)")
+;; 	("nnmaildir+Intel:Confluence" "^From:.*(Confluence)")
+;; 	("mail.misc" ""))
+
+(setq gnus-move-split-methods
+      '(("^From:.*IT Gerrit" "nnmaildir+Intel:Gerrit")
+        ("^From:.*(JIRA)" "nnmaildir+Intel:Jira")
+        ("^From:.*(Confluence)" "nnmaildir+Intel:Confluence")))
 
 ;; rename groups name
 (setq gnus-group-line-format "%M%S%5y/%-5t: %uG %D\n")
@@ -25,18 +53,27 @@
     (if (null mapped-name)
         gnus-tmp-group
       (cdr mapped-name))))
+
 (setq group-name-map '(("nnmaildir+Intel:INBOX" . "INBOX")
+		       ("nnmaildir+Intel:My Folders.Inbox" . "SAVED")
 		       ("nnmairix+mysearch:" . "SEARCH")
+		       ("nnmaildir+Intel:Gerrit" . "GERRIT")
+		       ("nnmaildir+Intel:Jira" . "JIRA")
+		       ("nnmaildir+Intel:Confluence" . "CONFLUENCE")
 		       ("nnmaildir+Intel:Sent" . "SENT")))
 
 (setq group-name-map-status '(("nnmaildir+Intel:INBOX" . "INBOX")
+			      ("nnmaildir+Intel:Gerrit" . "GERRIT")
+			      ("nnmaildir+Intel:Jira" . "JIRA")
+			      ("nnmaildir+Intel:Confluence" . "CONFLUENCE")
 			      ("nnmaildir+Intel:Sent" . "SENT")))
 
 ;; authinfo
 (setq smtpmail-auth-credentials "~/.authinfo")
 
 ;; w3m render
-(setq mm-text-html-renderer 'w3m)
+;; (setq mm-text-html-renderer 'w3m)
+(setq mm-text-html-renderer 'shr) ;; For displaying images
 
 ;; config w3m
 (eval-after-load "w3m"
@@ -189,6 +226,7 @@
 ;; start functions after quit gnus
 (add-hook 'gnus-after-exiting-gnus-hook
 	  '(lambda ()
+	     (offlineimap-kill)
 	     (offlineimap-quit)))
 
 ;; search engine
@@ -198,5 +236,10 @@
 (if (boundp 'mail-user-agent)
     (setq mail-user-agent 'gnus-user-agent))
 
+;; increase lenght of lines
+(add-hook 'message-mode-hook
+	  (lambda ()
+	    (setq fill-column 100)
+	    (turn-on-auto-fill)))
 
 (provide 'work-gnus)
