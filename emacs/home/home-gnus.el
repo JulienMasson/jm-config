@@ -12,14 +12,6 @@
       '((nnmaildir "Gmail"
                   (directory "~/Maildir/Gmail")
                   (directory-files nnheader-directory-files-safe)
-                  (get-new-mail nil))
-	(nnmaildir "Eseo"
-                  (directory "~/Maildir/Eseo")
-                  (directory-files nnheader-directory-files-safe)
-                  (get-new-mail nil))
-	(nnmaildir "OpenWide"
-                  (directory "~/Maildir/OpenWide")
-                  (directory-files nnheader-directory-files-safe)
                   (get-new-mail nil))))
 
 ;; view organisation (put this in .newsrc.eld)
@@ -33,15 +25,7 @@
     (if (null mapped-name)
         gnus-tmp-group
       (cdr mapped-name))))
-(setq group-name-map '(("nnmaildir+Eseo:INBOX" . "INBOX")
-		       ("nnmaildir+Eseo:&AMk-l&AOk-ments envoy&AOk-s" . "SENT")
-		       ("nnmaildir+Gmail:INBOX" . "INBOX")
-		       ("nnmaildir+OpenWide:INBOX" . "INBOX")
-		       ("nnmaildir+OpenWide:Sent" . "SENT")))
-
-(setq group-name-map-status '(("nnmaildir+Eseo:INBOX" . "Eseo")
-			      ("nnmaildir+Gmail:INBOX" . "Gmail")
-			      ("nnmaildir+OpenWide:INBOX" . "OpenWide")))
+(setq group-name-map '(("nnmaildir+Gmail:INBOX" . "INBOX")))
 
 ;; authinfo
 (setq smtpmail-auth-credentials "~/.authinfo")
