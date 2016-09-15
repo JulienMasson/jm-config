@@ -1,0 +1,53 @@
+diff --git a/lisp/progmodes/gdb-mi.el b/lisp/progmodes/gdb-mi.el
+index 4bee7c1..57d182e 100644
+--- a/lisp/progmodes/gdb-mi.el
++++ b/lisp/progmodes/gdb-mi.el
+@@ -656,6 +656,7 @@ NOARG must be t when this macro is used outside `gud-def'"
+ 
+ (defun gdb--check-interpreter (filter proc string)
+   (unless (zerop (length string))
++    (setq string "=thread-group-added,id=\"i1\"")
+     (remove-function (process-filter proc) #'gdb--check-interpreter)
+     (unless (memq (aref string 0) '(?^ ?~ ?@ ?& ?* ?=))
+       ;; Apparently we're not running with -i=mi.
+@@ -672,7 +673,7 @@ NOARG must be t when this macro is used outside `gud-def'"
+ (defvar gdb-control-level 0)
+ 
+ ;;;###autoload
+-(defun gdb (command-line)
++(defun gdb (command-line program-args)
+   "Run gdb on program FILE in buffer *gud-FILE*.
+ The directory containing FILE becomes the initial working directory
+ and source-file directory for your debugger.
+@@ -726,8 +727,6 @@ detailed description of this mode.
+ |                                   | D      gdb-delete-breakpoint     |
+ +-----------------------------------+----------------------------------+"
+   ;;
+-  (interactive (list (gud-query-cmdline 'gdb)))
+-
+   (when (and gud-comint-buffer
+              (buffer-name gud-comint-buffer)
+              (get-buffer-process gud-comint-buffer)
+@@ -736,7 +735,7 @@ detailed description of this mode.
+     (error
+      "Multiple debugging requires restarting in text command mode"))
+   ;;
+-  (gud-common-init command-line nil 'gud-gdbmi-marker-filter)
++  (gud-common-init command-line program-args 'gud-gdbmi-marker-filter)
+ 
+   ;; Setup a temporary process filter to warn when GDB was not started
+   ;; with -i=mi.
+diff --git a/lisp/progmodes/gud.el b/lisp/progmodes/gud.el
+index 1284ef2..ea773a3 100644
+--- a/lisp/progmodes/gud.el
++++ b/lisp/progmodes/gud.el
+@@ -2630,8 +2630,7 @@ comint mode, which see."
+ 		      (setq file (tramp-file-name-localname
+ 				  (tramp-dissect-file-name file)))
+  		    file))))
+-    (apply 'make-comint (concat "gud" filepart) program nil
+-	   (if massage-args (funcall massage-args file args) args))
++    (apply 'make-comint (concat "gud" filepart) program nil (split-string massage-args))
+     ;; Since comint clobbered the mode, we don't set it until now.
+     (gud-mode)
+     (set (make-local-variable 'gud-target-name)

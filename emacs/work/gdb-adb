@@ -1,0 +1,6 @@
+#!/bin/bash
+
+export ANDROID_BUILD_TOP=/home/jmassonx/Documents/Intel/ndg-android
+
+$1 -i=mi -x $2 $3
+# /home/jmassonx/Documents/Intel/emerald-dev/prebuilts/gcc/linux-x86/x86/x86_64-linux-android-4.9/bin/x86_64-linux-android-gdb -i=mi -x /home/jmassonx/Documents/Intel/emerald-dev/out/target/product/grant/gdbclient.cmds /home/jmassonx/Documents/Intel/emerald-dev/out/target/product/grant/symbols/system/bin/tos_ui

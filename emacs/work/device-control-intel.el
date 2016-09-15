@@ -9,6 +9,7 @@
 
 (dolist (image '(("fastboot"	.	"droidboot.img")
 		 ("manufacturing".	"manufacturing.img")
+		 ("mfg_sys"     .	"mfg_sys.img")
 		 ("oem"         .	"oem.img")
 		 ("ESP"		.	"ESP.img")
 		 ("osloader"	.       "efilinux-eng.efi")
@@ -16,11 +17,30 @@
   (add-to-list 'dctrl-fastboot-flash-alist image t
 	       (lambda (x y) (string= (car x) (car y)))))
 
+(defvar dctrl-intel-custom-boot-targets
+  '(("MOS" . "1")
+    ("TOS" . "2")
+    ("POS" . "3")))
+
+(defun dctrl-fastboot-action-custom-boot (&optional target)
+  (let* ((target (or target (ido-completing-read "Target: " (mapcar 'car dctrl-intel-custom-boot-targets) nil t))))
+    (dctrl-fastboot-run "oem" "custom_boot" (assoc-default target dctrl-intel-custom-boot-targets))))
+
 (defun dctrl-intel-action-adb-kill-wizard ()
   (dctrl-adb-run "shell" "pm" "disable" "com.google.android.setupwizard"))
 
 (defun dctrl-intel-action-adb-adb2fastboot ()
   (dctrl-adb-run "shell" "setprop" "sys.adb.config" "fastboot"))
+
+(defun dctrl-intel-action-adb-install (&optional file)
+  (let* ((file file)
+	 tramp-cmd ctrlhost-filename)
+    (unless (and file (file-exists-p file))
+      (setq file (ido-read-file-name "APK install: " (concat (dctrl-fastboot-aosp-out-dir) "system/priv-app/httpget-release/") "httpget-release.apk" t)))
+    (multiple-value-setq (tramp-cmd ctrlhost-filename)
+      (dctrl-untramp-file file))
+    (append tramp-cmd
+	    (dctrl-adb-run "install -r " (expand-file-name ctrlhost-filename)))))
 
 (defvar dctrl-intel-fastboot-type-history '())
 
@@ -39,6 +59,16 @@
 (defun dctrl-intel-action-fastboot-fastboot2adb ()
   (dctrl-fastboot-run "oem" "fastboot2adb"))
 
+(defun dctrl-intel-action-fastboot-ifwi (&optional file)
+    (let* ((file file)
+	 tramp-cmd ctrlhost-filename)
+    (unless (and file (file-exists-p file))
+      (setq file (ido-read-file-name "Flash ifwi: " (concat aosp-path "/vendor/intel/PRIVATE/mvn/fw/" aosp-board-name "/") "marvin_ifwi.bin" t)))
+    (multiple-value-setq (tramp-cmd ctrlhost-filename)
+      (dctrl-untramp-file file))
+    (append tramp-cmd
+	    (dctrl-fastboot-run "flash" "ifwi" (expand-file-name ctrlhost-filename)))))
+
 (defun dctrl-intel-action-intel-phoneflashtool (&optional file)
   (let* ((path (concat aosp-path "/pub/" aosp-board-name "/flash_files/"))
 	 (file (expand-file-name (or file (ido-read-file-name "FlashFile: " path))))
@@ -46,7 +76,7 @@
     (multiple-value-setq (tramp-cmd ctrlhost-filename)
       (dctrl-untramp-file file))
     (append tramp-cmd
-	    (dctrl-run-process (list "phoneflashtool-cli-launcher.sh" "--always-unzip" "-f" ctrlhost-filename)))))
+	    (dctrl-run-process (list "platformflashtool-cli-launcher.sh" "--always-unzip" "-f" ctrlhost-filename)))))
 
 (defun dctrl-intel-action-intel-adb-to-efi-shell ()
   (dctrl-adb-run "shell" "uefivar" "-g" "8be4df61-93ca-11d2-aa0d-00e098032b8c" "-n" "BootNext" "-t" "int16" "-s" "1"))

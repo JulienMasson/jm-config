@@ -6,10 +6,14 @@
 			       ("kernel"	. "/linux/kernel")
 			       ("fugu"		. "/vendor/intel/PRIVATE/fugu")
 			       ("mvn"		. "/vendor/intel/PRIVATE/mvn")
+			       ("manufacturing"	. "/vendor/intel/PRIVATE/manufacturing")
 			       ("init"		. "/system/core/init")
 			       ("glacier"	. "/device/intel/glacier")
-			       ("grant "	. "/device/intel/grant")
-			       ("robby "	. "/device/intel/robby")
+			       ("grant" 	. "/device/intel/grant")
+			       ("robby"	        . "/device/intel/robby")
+			       ("anthracite"    . "/device/intel/anthracite")
+			       ("shasta"	. "/device/intel/shasta")
+			       ("ohrm"  	. "/vendor/intel/hardware/PRIVATE/ohrm")
 			       ("sand"		. "/vendor/intel/PRIVATE/sand")))
 
 (setq http-proxy "http://proxy.ir.intel.com:911"
@@ -20,7 +24,7 @@
 		      ("https_proxy"	.	http-proxy)
 		      ("ftp_proxy"	.	http-proxy)
 		      ("no_proxy"	.	no-proxy)
-		      ("PATH"		.	(concat "$PATH:" jdk-path "/bin:/home/jmassonx/bin:/usr/sbin:/sbin:/opt/bin"))
+		      ("PATH"		.	(concat "$PATH:" jdk-path "/bin:/home/lab/bin:/usr/sbin:/sbin:/opt/bin"))
 		      ("JAVA_HOME"	.	jdk-path)
 		      ("CLASSPATH"	.	".")
 		      ("EDITOR"		.	"emacsclient --socket-name /tmp/emacs1000/server")))
@@ -29,30 +33,9 @@
 
 
 (register-project
- (make-project :name "Sand"
-	       :pm-backend "intel-android"
-	       :root-path "/ssh:tllabx2:/build/jmassonx/r51-stable"
-	       :env-vars '((aosp-path		.	(project-root-path current-project))
-			   (aosp-board-name	.	"full_sand")
-			   (aosp-build-variant	.	"userdebug")
-			   (aosp-thread-number	.	32))
-	       :subprojects my-usual-subprojects))
-
-
-(register-project
- (make-project :name "Fugu"
-	       :pm-backend "intel-android"
-	       :root-path "/ssh:tllabx2:/build/jmassonx/r51-stable"
-	       :env-vars '((aosp-path		.	(project-root-path current-project))
-			   (aosp-board-name	.	"full_fugu")
-			   (aosp-build-variant	.	"userdebug")
-			   (aosp-thread-number	.	32))
-	       :subprojects my-usual-subprojects))
-
-(register-project
  (make-project :name "Robby"
 	       :pm-backend "intel-android"
-	       :root-path "/ssh:tllabx2:/build/jmassonx/r44b_mvn"
+	       :root-path "/ssh:tllabx2:/build/jmassonx/ndg-android"
 	       :env-vars '((aosp-path		.	(project-root-path current-project))
 			   (aosp-board-name	.	"robby")
 			   (aosp-build-variant	.	"userdebug")
@@ -62,7 +45,7 @@
 (register-project
  (make-project :name "Grant"
 	       :pm-backend "intel-android"
-	       :root-path "/ssh:tllabx2:/build/jmassonx/r44b_mvn"
+	       :root-path "/ssh:tllabx2:/build/jmassonx/ndg-android"
 	       :env-vars '((aosp-path		.	(project-root-path current-project))
 			   (aosp-board-name	.	"grant")
 			   (aosp-build-variant	.	"userdebug")
@@ -72,7 +55,7 @@
 (register-project
  (make-project :name "Glacier"
 	       :pm-backend "intel-android"
-	       :root-path "/ssh:tllabx2:/build/jmassonx/r44b_mvn"
+	       :root-path "/ssh:tllabx2:/build/jmassonx/ndg-android"
 	       :env-vars '((aosp-path		.	(project-root-path current-project))
 			   (aosp-board-name	.	"glacier")
 			   (aosp-build-variant	.	"userdebug")
@@ -80,9 +63,39 @@
 	       :subprojects my-usual-subprojects))
 
 (register-project
+ (make-project :name "Shasta"
+	       :pm-backend "intel-android"
+	       :root-path "/ssh:tllabx2:/build/jmassonx/ndg-android"
+	       :env-vars '((aosp-path		.	(project-root-path current-project))
+			   (aosp-board-name	.	"shasta")
+			   (aosp-build-variant	.	"userdebug")
+			   (aosp-thread-number	.	32))
+	       :subprojects my-usual-subprojects))
+
+(register-project
+ (make-project :name "Anthracite"
+	       :pm-backend "intel-android"
+	       :root-path "/ssh:tllabx2:/build/jmassonx/ndg-android"
+	       :env-vars '((aosp-path		.	(project-root-path current-project))
+			   (aosp-board-name	.	"anthracite")
+			   (aosp-build-variant	.	"userdebug")
+			   (aosp-thread-number	.	32))
+	       :subprojects my-usual-subprojects))
+
+(register-project
+ (make-project :name "Mars"
+	       :pm-backend "intel-android"
+	       :root-path "/ssh:tllabx2:/build/jmassonx/ndg-android"
+	       :env-vars '((aosp-path		.	(project-root-path current-project))
+			   (aosp-board-name	.	"mars_aosp")
+			   (aosp-build-variant	.	"userdebug")
+			   (aosp-thread-number	.	32))
+	       :subprojects my-usual-subprojects))
+
+(register-project
  (make-project :name "jm-config"
 	       :pm-backend "emacslisp"
-	       :root-path "/home/jmassonx/jm-config"
+	       :root-path "/home/lab/jm-config"
 	       :env-vars '()
 	       :subprojects '(("work"          .       "/emacs/work")
 			      ("home"          .       "/emacs/home")
@@ -90,5 +103,38 @@
 			      ("bash"	       .	"/bash")
 			      ("awesome"       .	"/awesome")
 			      ("tools"	       .	"/tools"))))
+
+(register-project
+ (make-project :name "IFWI"
+	       :pm-backend "ifwi-intel"
+	       :root-path "/home/lab/Documents/Intel/ndg_ifwi-marvin/"
+	       :env-vars '()
+	       :subprojects '(("patchs"          .       "/marvin/ia/patches"))))
+
+(register-project
+ (make-project :name "IAFW"
+	       :pm-backend "ifwi-intel"
+	       :root-path "/home/lab/Documents/Intel/mcg_umfdk-umfdk/"
+	       :env-vars '()
+	       :subprojects '(("splash"          .       "/cs_tangier_src/nc"))))
+
+(register-project
+ (make-project :name "SCU"
+	       :pm-backend "ifwi-intel"
+	       :root-path "/home/lab/Documents/Intel/SCU/"
+	       :env-vars '()
+	       :subprojects '(("Bootstrap"          .       "/Bootstrap")
+			      ("Runtime"            .       "/Runtime"))))
+
+(register-project
+ (make-project :name "local"
+	       :pm-backend "intel-android"
+	       :root-path "/home/lab/Documents/Intel/ndg-android"
+	       :env-vars '((aosp-path		.	(project-root-path current-project))
+			   (aosp-board-name	.	"shasta")
+			   (aosp-build-variant	.	"userdebug")
+			   (aosp-thread-number	.	4))
+	       :subprojects my-usual-subprojects))
+
 
 (provide 'jm-projects)
