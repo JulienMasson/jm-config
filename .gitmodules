@@ -130,10 +130,6 @@
 	path = emacs/modules/gnus
 	url = https://github.com/emacsmirror/gnus.git
 	ignore = untracked
-[submodule "emacs/modules/bbdb"]
-	path = emacs/modules/bbdb
-	url = git://git.savannah.nongnu.org/bbdb.git
-	ignore = untracked
 [submodule "emacs/modules/dash"]
 	path = emacs/modules/dash
 	url = https://github.com/magnars/dash.el.git
@@ -148,3 +144,6 @@
 	url = http://www.dr-qubit.org/git/predictive.git
 	ignore = dirty
 	ignore = untracked
+[submodule "emacs/modules/bbdb"]
+	path = emacs/modules/bbdb
+	url = https://github.com/emacsmirror/bbdb.git
