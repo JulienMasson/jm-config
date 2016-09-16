@@ -23,10 +23,6 @@
 	url = https://github.com/JulienMasson/purple
 	ignore = untracked
 	branch = master
-[submodule "emacs/xcscope.el"]
-	path = emacs/modules/xcscope
-	url = https://github.com/dkogan/xcscope.el
-	ignore = untracked
 [submodule "emacs/popup-el"]
 	path = emacs/modules/popup-el
 	url = https://github.com/auto-complete/popup-el
@@ -81,3 +77,6 @@
 [submodule "emacs/modules/with-editor"]
 	path = emacs/modules/with-editor
 	url = https://github.com/magit/with-editor.git
+[submodule "emacs/modules/xcscope"]
+	path = emacs/modules/xcscope
+	url = https://github.com/JulienMasson/xcscope.el.git
