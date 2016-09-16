@@ -21,3 +21,8 @@ emacs --batch --eval '(byte-recompile-directory "~/jm-config/emacs/" 0 t)'
 
 # copy .emacs
 cp ~/jm-config/emacs/.emacs ~/
+
+# compile/clean emacs repo
+# cd ~/bin/emacs/
+# make distclean
+# make all
