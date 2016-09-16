@@ -205,14 +205,13 @@
       smtpmail-debug-info nil
       mail-setup-hook nil)
 
-;; addresses completion default ~/.bbdb
-(require 'bbdb-loaddefs "~/jm-config/emacs/modules/bbdb/lisp/bbdb-loaddefs.el")
+;; bbdb config
+(require 'bbdb)
+(require 'bbdb-loaddefs)
 (setq bbdb-completion-display-record nil)
-(add-hook 'message-mode-hook
-          '(lambda ()
-             (bbdb-initialize 'message)
-             (bbdb-initialize 'gnus)
-             (local-set-key "<TAB>" 'bbdb-complete-name)))
+(defun bbdb-update-addresses ()
+  (interactive)
+  (async-shell-command "mu index --maildir=~/Maildir/Intel && mu cfind --format=bbdb > ~/.bbdb"))
 
 ;; flyspell when composing gnus message
 (add-hook 'message-mode-hook 'git-commit-turn-on-flyspell)
