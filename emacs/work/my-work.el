@@ -10,6 +10,16 @@
 
 ;; Status
 (require 'status)
+(setq status-separator  " | ")
+(setq status-battery-discharging-fmt " %p%% %t")
+(setq status-gnus-groups '("nnmaildir+Intel:INBOX"
+                           "nnmaildir+Intel:Gerrit"
+                           "nnmaildir+Intel:Jira"
+                           "nnmaildir+Intel:Confluence"))
+(setq status-gnus-separator " - ")
+(setq status-gnus-medium-threshold 5)
+(setq status-gnus-high-threshold 10)
+(setq net-interfaces '("wlan0"))
 
 ;; Log management
 (require 'log-tools)
@@ -90,10 +100,7 @@ Both the source and the target are read in the minibuffer."
 
   ;; status widgets
   (status-add-to-left 'status-purple-conversation)
-  (status-add-to-left 'status-gnus-intel-inbox)
-  (status-add-to-left 'status-gnus-intel-gerrit)
-  (status-add-to-left 'status-gnus-intel-jira)
-  (status-add-to-left 'status-gnus-intel-confluence)
+  (status-add-to-left 'status-gnus)
   (status-add-to-left 'status-cscope)
   (status-add-to-left 'status-purple-user)
   (status-add-to-left 'status-project-manager)
@@ -101,6 +108,9 @@ Both the source and the target are read in the minibuffer."
   (status-add-to-right 'status-date)
   (status-add-to-right 'status-volume)
   (status-add-to-right 'status-battery)
+  (status-add-to-right 'status-cpu)
+  (status-add-to-right 'status-mem)
+  (status-add-to-right 'status-net)
   (turn-on-status)
 
   ;; open files for work at startup
