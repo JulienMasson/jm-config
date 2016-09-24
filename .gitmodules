@@ -80,3 +80,9 @@
 [submodule "emacs/modules/xcscope"]
 	path = emacs/modules/xcscope
 	url = https://github.com/JulienMasson/xcscope.el.git
+[submodule "awesome/blingbling"]
+	path = awesome/blingbling
+	url = https://github.com/JulienMasson/blingbling.git
+[submodule "awesome/vicious"]
+	path = awesome/vicious
+	url = http://git.sysphere.org/vicious

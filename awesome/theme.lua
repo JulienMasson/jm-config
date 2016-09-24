@@ -148,7 +148,7 @@ theme.titlebar_maximized_button_focus_inactive  = theme_dir.."/titlebar/maximize
 theme.titlebar_maximized_button_normal_active = theme_dir.."/titlebar/maximize.png"
 theme.titlebar_maximized_button_focus_active  = theme_dir.."/titlebar/maximize.png"
 
-theme.wallpaper_cmd = { 'awsetbg -f ' .. home_dir .. '/jm-config/awesome/theme/wallpaper-awesome.png' }
+theme.wallpaper = theme_dir.."wallpaper-awesome.png"
 
 -- You can use your own layout icons like this:
 theme.layout_fairh = theme_dir.."/layouts/fairh.png"

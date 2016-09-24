@@ -221,15 +221,15 @@ volume_label = widget({ type = "textbox"})
 volume_label.text='<span color="#ff8700" '..pango_large..' '..pango_bold..'>Vol </span>'
 -- volumewidget = widget({ type = "textbox" })
 -- vicious.register(volumewidget, vicious.widgets.volume, '$1', 1, "Master")
-my_volume=blingbling.volume.new()
-my_volume:set_height(20)
-my_volume:set_v_margin(3)
-my_volume:set_width(25)
-my_volume:update_master()
-my_volume:set_master_control()
-my_volume:set_bar(true)
-my_volume:set_background_graph_color("#00000099")
-my_volume:set_graph_color("#ff8700")
+-- my_volume=blingbling.volume.new()
+-- my_volume:set_height(20)
+-- my_volume:set_v_margin(3)
+-- my_volume:set_width(25)
+-- my_volume:update_master()
+-- my_volume:set_master_control()
+-- my_volume:set_bar(true)
+-- my_volume:set_background_graph_color("#00000099")
+-- my_volume:set_graph_color("#ff8700")
 
 -- Battery
 battery_label = widget({ type = "textbox"})
@@ -344,10 +344,10 @@ for s = 1, screen.count() do
 		space,
 		my_cal.widget,
         	s == 1 and mysystray or nil,
-	separator,
-		my_volume.widget,
-		space,
-		volume_label,
+	-- separator,
+	-- 	my_volume.widget,
+	-- 	space,
+	-- 	volume_label,
  	separator,
 		battimewidget,
 		space,
@@ -507,7 +507,7 @@ clientkeys = awful.util.table.join(
 
     -- add in your .xinitrc
     -- xscreensaver -nosplash &
-    awful.key({ modkey, "Control" }, "l", function () awful.util.spawn("xscreensaver-command -lock") end),
+    awful.key({ modkey, "Control" }, "l", function () awful.util.spawn("slock") end),
 
     awful.key({ modkey,           }, "n",
         function (c)
