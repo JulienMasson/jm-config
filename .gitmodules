@@ -86,3 +86,6 @@
 [submodule "awesome/vicious"]
 	path = awesome/vicious
 	url = http://git.sysphere.org/vicious
+[submodule "emacs/modules/lua-mode"]
+	path = emacs/modules/lua-mode
+	url = https://github.com/immerrr/lua-mode.git
