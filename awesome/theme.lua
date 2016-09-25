@@ -6,19 +6,19 @@ local home_dir   = os.getenv("HOME")
 local theme_dir = home_dir .. "/jm-config/awesome/theme/"
 
 local function rgb(red, green, blue)
-  if type(red) == "number" or type(green) == "number" or type(blue) == "number" then
-    return "#"..string.format("%02x",red)..string.format("%02x",green)..string.format("%02x",blue)
-  else    
-    return nil
-  end
+   if type(red) == "number" or type(green) == "number" or type(blue) == "number" then
+      return "#"..string.format("%02x",red)..string.format("%02x",green)..string.format("%02x",blue)
+   else
+      return nil
+   end
 end
 
-local function rgba(red, green, blue, alpha) 
-  if type(red) == "number" or type(green) == "number" or type(blue) == "number" or type(alpha) == "number" then
-    return "#"..string.format("%02x",red)..string.format("%02x",green)..string.format("%02x",blue)..string.format("%02x",alpha * 255)
-  else
-    return nil
-  end
+local function rgba(red, green, blue, alpha)
+   if type(red) == "number" or type(green) == "number" or type(blue) == "number" or type(alpha) == "number" then
+      return "#"..string.format("%02x",red)..string.format("%02x",green)..string.format("%02x",blue)..string.format("%02x",alpha * 255)
+   else
+      return nil
+   end
 end
 
 --colors
@@ -75,18 +75,18 @@ theme.widget_background = widget_background
 theme.transparent = transparent
 theme.font          = "Droid Sans 8"
 
-theme.bg_normal     = light_black 
+theme.bg_normal     = light_black
 theme.bg_focus      = yellow
 theme.bg_urgent     = bright_red
 theme.bg_minimize   = light_black
-theme.bg_systray    = theme.bg_normal 
+theme.bg_systray    = theme.bg_normal
 
 theme.fg_normal     = light_white
-theme.fg_focus      = white 
+theme.fg_focus      = white
 theme.fg_urgent     = white
 theme.fg_minimize   = black
 
-theme.border_width  = 0 
+theme.border_width  = 0
 theme.border_normal = "#232323"
 theme.border_focus  = "#999999"
 theme.border_marked = theme.bg_normal
@@ -99,10 +99,10 @@ theme.border_marked = theme.bg_normal
 -- tooltip_[font|opacity|fg_color|bg_color|border_width|border_color]
 -- mouse_finder_[color|timeout|animate_timeout|radius|factor]
 -- Example:
-theme.tasklist_bg_focus = light_black 
-theme.tasklist_fg_focus = yellow 
+theme.tasklist_bg_focus = light_black
+theme.tasklist_fg_focus = yellow
 theme.titlebar_bg_normal = light_black
-theme.titlebar_bg_focus  = light_black 
+theme.titlebar_bg_focus  = light_black
 
 --theme.taglist_bg_normal= "#333333"
 --theme.titlebar_bg_normal =
@@ -166,24 +166,24 @@ theme.layout_dwindle = theme_dir.."/layouts/dwindle.png"
 
 theme.awesome_icon = theme_dir .. "/awesome.png"
 
--- Define the icon theme for application icons. If not set then the icons 
+-- Define the icon theme for application icons. If not set then the icons
 -- from /usr/share/icons and /usr/share/icons/hicolor will be used.
-theme.icon_theme = home_dir .. "/jm-config/awesome/icons/AwOkenDark" 
+theme.icon_theme = home_dir .. "/jm-config/awesome/icons/AwOkenDark"
 theme.blingbling = {
-    background_color = "#00000000",
-    graph_background_color = widget_background,
-    graph_color = bright_magenta,
-    graph_line_color = magenta,
-    rounded_size = 0.3,        
-    text_color = light_white,
-    reboot = theme_dir .. "/reboot.png",
-    shutdown = theme_dir .. "/shutdown.png",
-    logout = theme_dir .. "/logout.png",
-    accept = theme_dir .. "/ok.png",
-    cancel = theme_dir .. "/cancel.png",
-    lock = theme_dir .. "/lock.png",
-    font = "Droid Sans Mono",
-    font_size = 9 
+   background_color = "#00000000",
+   graph_background_color = widget_background,
+   graph_color = bright_magenta,
+   graph_line_color = magenta,
+   rounded_size = 0.3,
+   text_color = light_white,
+   reboot = theme_dir .. "/reboot.png",
+   shutdown = theme_dir .. "/shutdown.png",
+   logout = theme_dir .. "/logout.png",
+   accept = theme_dir .. "/ok.png",
+   cancel = theme_dir .. "/cancel.png",
+   lock = theme_dir .. "/lock.png",
+   font = "Droid Sans Mono",
+   font_size = 9
 }
 theme.blingbling.tagslist = {}
 theme.blingbling.tagslist.normal ={ background_color = widget_background,--rgb(26,26,26),
@@ -191,47 +191,47 @@ theme.blingbling.tagslist.normal ={ background_color = widget_background,--rgb(2
                                     rounded_size = { 0, 0.4,0,0.4 },
                                     text_color = theme.fg_normal,
                                     font = "Droid Sans",
-                                    font_size = 7 
-                                  }
+                                    font_size = 7
+}
 theme.blingbling.tagslist.focus = { h_margin = 1,
                                     v_margin = 1,
-                                    background_color = red, 
+                                    background_color = red,
                                     text_background_color = widget_background,
                                     text_color = theme.fg_normal,
                                     rounded_size = { 0, 0.4,0,0.4 },
                                     font = "Droid Sans italic",
                                     font_size = 8
-                                  }
+}
 
 theme.blingbling.tagslist.urgent = theme.blingbling.tagslist.focus
 theme.blingbling.tagslist.occupied = theme.blingbling.tagslist.normal
 
-local cal_common_style = {  h_margin = 0, 
-                            v_margin = 0, 
-                            rounded_size = 0.3, 
-                            background_color = widget_background, 
+local cal_common_style = {  h_margin = 0,
+                            v_margin = 0,
+                            rounded_size = 0.3,
+                            background_color = widget_background,
                             text_background_color = "#00000000",
-                            text_color = white, 
+                            text_color = white,
                             font ="Droid Sans"
-                          }
+}
 theme.blingbling.calendar = {}
 local util = require('awful.util')
 theme.blingbling.calendar.prev_next_widget_style =
-util.table.clone(cal_common_style)    
+   util.table.clone(cal_common_style)
 theme.blingbling.calendar.current_date_widget_style =
-util.table.clone(cal_common_style)
+   util.table.clone(cal_common_style)
 theme.blingbling.calendar.days_of_week_widget_style =
-util.table.clone(cal_common_style)
+   util.table.clone(cal_common_style)
 theme.blingbling.calendar.days_of_month_widget_style =
-util.table.clone(cal_common_style)
+   util.table.clone(cal_common_style)
 theme.blingbling.calendar.weeks_number_widget_style =
-util.table.clone(cal_common_style)
+   util.table.clone(cal_common_style)
 theme.blingbling.calendar.corner_widget_style =
-util.table.clone(cal_common_style)
+   util.table.clone(cal_common_style)
 theme.blingbling.calendar.current_day_widget_style =
-util.table.clone(cal_common_style)
+   util.table.clone(cal_common_style)
 theme.blingbling.calendar.focus_widget_style =
-util.table.clone(cal_common_style)
+   util.table.clone(cal_common_style)
 theme.blingbling.calendar.info_cell_style = util.table.clone(cal_common_style)
 theme.blingbling.calendar.info_cell_style.background_color = transparent
 theme.blingbling.calendar.current_day_widget_style.background_color = green
@@ -241,72 +241,72 @@ theme.blingbling.calendar.focus_widget_style.background_color = yellow
 theme.blingbling.calendar.focus_widget_style.rounded_size = {0,0.5,0,0.5}
 theme.blingbling.calendar.days_of_week_widget_style.text_color = light_grey
 theme.blingbling.calendar.corner_widget_style.text_color = light_grey
-theme.blingbling.calendar.weeks_number_widget_style.text_color = light_grey 
+theme.blingbling.calendar.weeks_number_widget_style.text_color = light_grey
 --[[theme.blingbling.calendar = {
-        prev_next_widget_style = {  h_margin = 0, 
-                                    v_margin = 0, 
-                                    rounded_size = 0.4, 
-                                    background_color = red, --"#330033", 
-                                    text_background_color = "#00000000",
-                                    text_color = "#ffffff", 
-                                    font ="Droid Sans"},
-	current_date_widget_style = { h_margin = 0, 
-                                    v_margin = 0,
-                                    rounded_size = 0.4,  
-                                    background_color = red, --"#330033", 
-                                    text_background_color = "#00000000",
-                                    text_color = "#ffffff", 
-                                    font ="Droid Sans"},
-	days_of_week_widget_style = { h_margin = 0, 
-                                    v_margin = 0,
-                                    rounded_size = 0.4,  
-                                    background_color = "#666666", 
-                                    text_background_color = "#00000000",
-                                    text_color = "#333333", 
-                                    font ="Droid Sans"},
-	days_of_month_widget_style = { h_margin = 0, 
-                                    v_margin = 0, 
-                                    rounded_size = 0.4, 
-                                    background_color = red,--"#330033", 
-                                    text_background_color = "#00000000",
-                                    text_color = "#ffffff", 
-                                    font ="Droid Sans"},
-	weeks_number_widget_style = { h_margin = 0, 
-                                    v_margin = 0, 
-                                    rounded_size = 0.4, 
-                                    background_color = "#111111", 
-                                    text_background_color = "#00000000",
-                                    text_color = "#ffffff", 
-                                    font ="Droid Sans"},
-	corner_widget_style =       { h_margin = 0, 
-                                    v_margin = 0, 
-                                    rounded_size = 0.4, 
-                                    text_background_color = "#00000000",
-                                    background_color = "#111111", 
-                                    text_color = "#ffffff", 
-                                    font ="Droid Sans"},
-	current_day_widget_style =  { h_margin = 0, 
-                                    v_margin = 0,
-                                    rounded_size = {0.5,0,0.5,0},  
-                                    background_color = "#338833", 
-                                    text_background_color = "#00000000",
-                                    text_color = "#999999", 
-                                    font ="Droid Sans"},
-	focus_widget_style =        { h_margin = 0, 
-                                    v_margin = 0, 
-                                    rounded_size = 0, 
-                                    background_color = "#999999", 
-                                    text_background_color = "#00000000",
-                                    text_color = "#330033", 
-                                    font ="Droid Sans"},
-	info_cell_style =           { h_margin = 0, 
-                                    v_margin = 0, 
-                                    rounded_size = 0, 
-                                    background_color = "#66666600", 
-                                    text_background_color = "#00000000",
-                                    text_color = "#888888", 
-                                    font ="Droid Sans"},
-        }
+   prev_next_widget_style = {  h_margin = 0,
+   v_margin = 0,
+   rounded_size = 0.4,
+   background_color = red, --"#330033",
+   text_background_color = "#00000000",
+   text_color = "#ffffff",
+   font ="Droid Sans"},
+   current_date_widget_style = { h_margin = 0,
+   v_margin = 0,
+   rounded_size = 0.4,
+   background_color = red, --"#330033",
+   text_background_color = "#00000000",
+   text_color = "#ffffff",
+   font ="Droid Sans"},
+   days_of_week_widget_style = { h_margin = 0,
+   v_margin = 0,
+   rounded_size = 0.4,
+   background_color = "#666666",
+   text_background_color = "#00000000",
+   text_color = "#333333",
+   font ="Droid Sans"},
+   days_of_month_widget_style = { h_margin = 0,
+   v_margin = 0,
+   rounded_size = 0.4,
+   background_color = red,--"#330033",
+   text_background_color = "#00000000",
+   text_color = "#ffffff",
+   font ="Droid Sans"},
+   weeks_number_widget_style = { h_margin = 0,
+   v_margin = 0,
+   rounded_size = 0.4,
+   background_color = "#111111",
+   text_background_color = "#00000000",
+   text_color = "#ffffff",
+   font ="Droid Sans"},
+   corner_widget_style =       { h_margin = 0,
+   v_margin = 0,
+   rounded_size = 0.4,
+   text_background_color = "#00000000",
+   background_color = "#111111",
+   text_color = "#ffffff",
+   font ="Droid Sans"},
+   current_day_widget_style =  { h_margin = 0,
+   v_margin = 0,
+   rounded_size = {0.5,0,0.5,0},
+   background_color = "#338833",
+   text_background_color = "#00000000",
+   text_color = "#999999",
+   font ="Droid Sans"},
+   focus_widget_style =        { h_margin = 0,
+   v_margin = 0,
+   rounded_size = 0,
+   background_color = "#999999",
+   text_background_color = "#00000000",
+   text_color = "#330033",
+   font ="Droid Sans"},
+   info_cell_style =           { h_margin = 0,
+   v_margin = 0,
+   rounded_size = 0,
+   background_color = "#66666600",
+   text_background_color = "#00000000",
+   text_color = "#888888",
+   font ="Droid Sans"},
+   }
 --]]
 
 theme.calendar = home_dir .. "/jm-config/awesome/icons/calendar.png"
