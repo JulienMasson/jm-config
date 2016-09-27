@@ -44,7 +44,7 @@ popd
 # compile awesome
 pushd bin/awesome-repo
 make -j
-cp .build*/awesome ../
+cp awesome ../
 popd
 
 # setup awesome
