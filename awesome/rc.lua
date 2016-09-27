@@ -141,7 +141,8 @@ vicious.register(ram_usage, vicious.widgets.mem, "$2 MB", 2)
 
 -- Volume
 local volume = blingbling.volume({height = 20,
-				  width = 40,
+				  width = 60,
+				  font_size = 8,
 				  show_text = true,
 				  bar = true,
 				  label = "Vol: $percent %",
@@ -150,8 +151,8 @@ volume:update_master()
 volume:set_master_control()
 
 -- Battery
-local batt_label = wibox.widget.textbox()
-batt_label.text="BAT "
+local batt_usage = wibox.widget.textbox()
+vicious.register(batt_usage, vicious.widgets.bat, "$3", 30, "BAT1")
 
 local batt_graph = blingbling.progress_graph({height = 18,
 					      width = 20,
@@ -249,8 +250,8 @@ for s = 1, screen.count() do
    right_layout:add(ram_graph)
    right_layout:add(ram_usage)
    right_layout:add(separator)
-   right_layout:add(batt_label)
    right_layout:add(batt_graph)
+   right_layout:add(batt_usage)
    right_layout:add(separator)
    right_layout:add(volume)
    right_layout:add(separator)
@@ -278,75 +279,39 @@ root.buttons(awful.util.table.join(
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
-   awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
-   awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
-   awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
 
-   awful.key({ modkey,           }, "j",
+   -- Layout manipulation
+   awful.key({ modkey,           }, "Right",
       function ()
 	 awful.client.focus.byidx( 1)
 	 if client.focus then client.focus:raise() end
    end),
-   awful.key({ modkey,           }, "k",
+   awful.key({ modkey,           }, "Left",
       function ()
 	 awful.client.focus.byidx(-1)
 	 if client.focus then client.focus:raise() end
    end),
-   awful.key({ modkey,           }, "w", function () mymainmenu:show() end),
-
-   -- Layout manipulation
-   awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end),
-   awful.key({ modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end),
-   awful.key({ modkey, "Control" }, "j", function () awful.screen.focus_relative( 1) end),
-   awful.key({ modkey, "Control" }, "k", function () awful.screen.focus_relative(-1) end),
-   awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
-   awful.key({ modkey,           }, "Tab",
-      function ()
-	 awful.client.focus.history.previous()
-	 if client.focus then
-	    client.focus:raise()
-	 end
-   end),
+   awful.key({ modkey, "Shift"   }, "Right", function () awful.client.swap.byidx(  1)    end),
+   awful.key({ modkey, "Shift"   }, "Left", function () awful.client.swap.byidx( -1)    end),
 
    -- Standard program
    awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
    awful.key({ modkey, "Control" }, "r", awesome.restart),
    awful.key({ modkey, "Shift"   }, "q", awesome.quit),
-
-   awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)    end),
-   awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)    end),
-   awful.key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1)      end),
-   awful.key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1)      end),
-   awful.key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1)         end),
-   awful.key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1)         end),
-   awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
    awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
-
    awful.key({ modkey }, "o", function () awful.util.spawn("amixer set Master 4%+") end),
    awful.key({ modkey }, "i", function () awful.util.spawn("amixer set Master 4%-") end),
-   awful.key({ modkey }, "p", function () awful.util.spawn("amixer -D pulse set Master toggle") end),
-
+   awful.key({ modkey }, "p", function () awful.util.spawn("amixer set Master toggle") end),
+   awful.key({ modkey, "Control" }, "l", function () awful.util.spawn("slock") end),
+   awful.key({ modkey, "Shift" }, "p", function () awful.util.spawn("evince") end),
+   awful.key({ modkey, "Shift" }, "e", function () awful.util.spawn("emacs") end),
+   awful.key({ modkey, "Shift" }, "f", function () awful.util.spawn("firefox") end),
    awful.key({ modkey },            "d",     function ()
 	 awful.util.spawn("dmenu_run -i -p 'Run command:' -nb '" ..
 			     beautiful.bg_normal .. "' -nf '" .. beautiful.fg_normal ..
 			     "' -sb '" .. beautiful.bg_focus ..
 			     "' -sf '" .. beautiful.fg_focus .. "'")
-   end),
-
-   awful.key({ modkey, "Control" }, "n", awful.client.restore),
-
-   -- Prompt
-   awful.key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
-
-   awful.key({ modkey }, "x",
-      function ()
-	 awful.prompt.run({ prompt = "Run Lua code: " },
-	    mypromptbox[mouse.screen].widget,
-	    awful.util.eval, nil,
-	    awful.util.getdir("cache") .. "/history_eval")
-   end),
-   -- Menubar
-   awful.key({ modkey }, "p", function() menubar.show() end)
+   end)
 )
 
 clientkeys = awful.util.table.join(
