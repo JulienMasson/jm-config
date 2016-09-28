@@ -42,7 +42,7 @@ local homedir = os.getenv("HOME")
 beautiful.init(homedir .. "/jm-config/awesome/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "gnome-terminal"
+terminal = "urxvt"
 editor = os.getenv("EDITOR") or "nano"
 editor_cmd = terminal .. " -e " .. editor
 

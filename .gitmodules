@@ -40,9 +40,6 @@
 	path = emacs/modules/offlineimap
 	url = https://github.com/jd/offlineimap.el.git
 	ignore = untracked
-[submodule "bash/bash-git-prompt"]
-	path = bash/bash-git-prompt
-	url = https://github.com/magicmonty/bash-git-prompt.git
 [submodule "emacs/modules/log-tools"]
 	path = emacs/modules/log-tools
 	url = https://github.com/JulienMasson/log-tools.git
