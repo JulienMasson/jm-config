@@ -145,7 +145,6 @@ local volume = blingbling.volume({height = 20,
 				  font_size = 8,
 				  show_text = true,
 				  bar = true,
-				  label = "Vol: $percent %",
 })
 volume:update_master()
 volume:set_master_control()
@@ -293,12 +292,14 @@ globalkeys = awful.util.table.join(
    end),
    awful.key({ modkey, "Shift"   }, "Right", function () awful.client.swap.byidx(  1)    end),
    awful.key({ modkey, "Shift"   }, "Left", function () awful.client.swap.byidx( -1)    end),
+   awful.key({ modkey, "Control" }, "Right", function () awful.screen.focus_relative( 1) end),
+   awful.key({ modkey, "Control" }, "Left", function () awful.screen.focus_relative(-1) end),
 
    -- Standard program
    awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
    awful.key({ modkey, "Control" }, "r", awesome.restart),
    awful.key({ modkey, "Shift"   }, "q", awesome.quit),
-   awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
+   awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
    awful.key({ modkey }, "o", function () awful.util.spawn("amixer set Master 4%+") end),
    awful.key({ modkey }, "i", function () awful.util.spawn("amixer set Master 4%-") end),
    awful.key({ modkey }, "p", function () awful.util.spawn("amixer set Master toggle") end),
