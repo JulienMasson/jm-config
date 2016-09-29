@@ -1,4 +1,5 @@
-xvt*font:               xft:montecarlo:size=8
+URxvt.font:     xft:bitstream vera sans mono:size=8:antialias=true
+URxvt.boldFont: xft:bitstream vera sans mono:bold:size=8:antialias=true
 urxvt*termName:         rxvt
 urxvt*background:       #2B2B2B
 urxvt*foreground:       #DEDEDE
