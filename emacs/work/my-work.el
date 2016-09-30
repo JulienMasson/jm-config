@@ -57,29 +57,6 @@
 ;; mpta
 (require 'mpta-text)
 
-;; magit push gerrit
-(defun magit-git-push-gerrit (branch target args)
-  (run-hooks 'magit-credential-hook)
-  (-let [(remote . target)
-         (magit-split-branch-name target)]
-    (magit-run-git-async "push" "-v" args remote
-                         (format "%s:refs/for/%s" branch target))))
-
-(defun magit-push-gerrit (source target args)
-  "Push an arbitrary branch or commit somewhere.
-Both the source and the target are read in the minibuffer."
-  (interactive
-   (let ((source (magit-read-local-branch-or-commit "Push")))
-     (list source
-           (magit-read-remote-branch (format "Push %s to" source) nil
-                                     (magit-get-upstream-branch source)
-                                     source 'confirm)
-           (magit-push-arguments))))
-  (magit-git-push-gerrit source target args))
-
-(magit-define-popup-action 'magit-push-popup
-  ?g "Gerrit" 'magit-push-gerrit)
-
 (defun adb-dired ()
   (interactive)
   (shell-command-to-string "adb wait-for-device root")
