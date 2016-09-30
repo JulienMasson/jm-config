@@ -91,8 +91,6 @@ Both the source and the target are read in the minibuffer."
 ;; work keybindings
 (require 'work-keybindings)
 
-;; expand tramp remote path
-(add-to-list 'tramp-remote-path "/home/jmassonx/bin")
 
 ;; startup work stuff
 (defun start-work ()

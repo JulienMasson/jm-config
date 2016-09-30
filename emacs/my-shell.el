@@ -5,9 +5,6 @@
 ;; set default shell
 (setq explicit-shell-file-name "/bin/bash")
 
-;; tramp
-(setq tramp-histfile-override "$HOME/.tramp_history")
-
 ;; ansi color
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on t)

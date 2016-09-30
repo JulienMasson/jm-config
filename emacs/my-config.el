@@ -5,6 +5,9 @@
 ;; windows config
 (require 'my-windows)
 
+;; tramp config
+(require 'my-tramp)
+
 ;; org config
 (require 'my-org)
 
