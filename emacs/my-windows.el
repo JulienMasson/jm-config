@@ -7,6 +7,9 @@
 			 ("marmalade" . "http://marmalade-repo.org/packages/")
 			 ("melpa" . "http://melpa.milkbox.net/packages/")))
 
+;; don't ask to follow symlink
+(setq vc-follow-symlinks t)
+
 ;; disable erase-buffer
 (put 'erase-buffer 'disabled nil)
 
