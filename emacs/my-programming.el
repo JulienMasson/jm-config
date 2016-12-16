@@ -66,9 +66,7 @@
 
 ;; auto-detection indenting
 (require 'dtrt-indent)
-(add-hook 'c-mode-common-hook
-	  (lambda() (require 'dtrt-indent)
-	    (dtrt-indent-mode t)))
+(dtrt-indent-mode t)
 
 ;; change default grep
 (setq grep-command "grep --color -nsrH -e ")
