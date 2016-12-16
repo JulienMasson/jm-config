@@ -90,7 +90,7 @@
 	path = emacs/modules/visual-regexp
 	url = https://github.com/benma/visual-regexp.el.git
 [submodule "emacs/modules/emacs-which-key"]
-	path = emacs/modules/emacs-which-key
+	path = emacs/modules/which-key/
 	url = https://github.com/justbur/emacs-which-key.git
 [submodule "emacs/modules/smart-mode-line"]
 	path = emacs/modules/smart-mode-line
@@ -98,3 +98,6 @@
 [submodule "emacs/modules/rich-minority"]
 	path = emacs/modules/rich-minority
 	url = https://github.com/Malabarba/rich-minority
+[submodule "emacs/modules/which-key"]
+	path = emacs/modules/which-key
+	url = https://github.com/justbur/emacs-which-key.git
