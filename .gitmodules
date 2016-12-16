@@ -86,3 +86,6 @@
 [submodule "emacs/modules/lua-mode"]
 	path = emacs/modules/lua-mode
 	url = https://github.com/immerrr/lua-mode.git
+[submodule "emacs/modules/visual-regexp"]
+	path = emacs/modules/visual-regexp
+	url = https://github.com/benma/visual-regexp.el.git

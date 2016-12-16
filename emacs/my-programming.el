@@ -5,6 +5,9 @@
 ;; jump only on error compilation
 (setq compilation-skip-threshold 2)
 
+;; visual regexp
+(require 'visual-regexp)
+
 ;; default indentation
 (setq c-default-style (quote ((awk-mode . "awk") (c-mode . "linux") (other . "gnu"))))
 
