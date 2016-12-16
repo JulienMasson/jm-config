@@ -89,3 +89,6 @@
 [submodule "emacs/modules/visual-regexp"]
 	path = emacs/modules/visual-regexp
 	url = https://github.com/benma/visual-regexp.el.git
+[submodule "emacs/modules/emacs-which-key"]
+	path = emacs/modules/emacs-which-key
+	url = https://github.com/justbur/emacs-which-key.git
