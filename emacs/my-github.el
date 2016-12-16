@@ -6,8 +6,32 @@
 (require 'magit)
 (require 'magit-blame)
 
-;; remove tag entry for magit status
-(setq magit-status-headers-hook (remove 'magit-insert-tags-header magit-status-headers-hook))
+;; blacklist slow git repository
+(setq magit-blacklist-repo '())
+(setq magit-status-headers-hook-saved magit-status-headers-hook)
+(setq magit-revision-sections-hook-saved magit-revision-sections-hook)
+
+(defun my-magit-status-headers ()
+  (let ((magit-insert-headers-hook
+	 (if (-contains? magit-blacklist-repo (magit-toplevel))
+	     ;; remove tag entry for magit status
+	     (remove 'magit-insert-tags-header magit-status-headers-hook-saved)
+	   magit-status-headers-hook-saved))
+	 wrapper)
+    (while (and (setq wrapper (pop magit-insert-headers-hook))
+		(= (point) (point-min)))
+      (funcall wrapper))))
+
+(defun my-magit-revision-sections (rev)
+  (let ((magit-revision-section-hook
+	 (if (-contains? magit-blacklist-repo (magit-toplevel))
+	     ;; remove revision header in magit-diff
+	     (remove 'magit-insert-revision-headers magit-revision-sections-hook-saved)
+	   magit-revision-sections-hook-saved)))
+    (run-hook-with-args 'magit-revision-section-hook rev)))
+
+(setq magit-status-headers-hook '(my-magit-status-headers))
+(setq magit-revision-sections-hook '(my-magit-revision-sections))
 
 ;; turn on flyspell on git commit
 (add-hook 'git-commit-setup-hook 'git-commit-turn-on-flyspell)
