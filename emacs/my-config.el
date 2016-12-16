@@ -11,6 +11,9 @@
 ;; org config
 (require 'my-org)
 
+;; dired config
+(require 'my-dired)
+
 ;; irc config
 (require 'my-irc)
 
