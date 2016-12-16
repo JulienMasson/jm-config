@@ -135,5 +135,13 @@
 (require 'which-key)
 (which-key-mode)
 
+;; smart mode line
+(require 'smart-mode-line)
+(setq sml/theme 'dark
+      sml/theme 'light
+      sml/theme 'respectful
+      sml/no-confirm-load-theme t)
+(sml/setup)
+
 
 (provide 'my-windows)

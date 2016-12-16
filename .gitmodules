@@ -92,3 +92,9 @@
 [submodule "emacs/modules/emacs-which-key"]
 	path = emacs/modules/emacs-which-key
 	url = https://github.com/justbur/emacs-which-key.git
+[submodule "emacs/modules/smart-mode-line"]
+	path = emacs/modules/smart-mode-line
+	url = https://github.com/Malabarba/smart-mode-line.git
+[submodule "emacs/modules/rich-minority"]
+	path = emacs/modules/rich-minority
+	url = https://github.com/Malabarba/rich-minority
