@@ -25,6 +25,15 @@
 # - install realtek wifi binairies
 # $ sudo apt-get install firmware-realtek -y
 #
+# - connect to wireless
+# $ ip link show wlan0
+# $ sudo ip link set wlan0 up
+# $ sudo iwlist scan
+# $ wpa_passphrase SFR_9BB8 > wpa_supplicant.conf
+# $ wpa_supplicant -B -D wext -i wlan0 -c wpa_supplicant.conf
+# $ iwconfig && ifconfig
+# $ sudo dhclient wlan0
+#
 # - clean recompile emacs
 # $ make distclean
 # $ make all
@@ -32,7 +41,6 @@
 # - update all git submodules on master
 # $ git submodule foreach git checkout master
 # $ git submodule foreach git pull --rebase
-
 
 # basic setup
 cd ~
@@ -52,7 +60,7 @@ sudo apt-get install build-essential autogen autoconf automake libtool texinfo l
 
 # packages for awesome
 sudo apt-get build-dep awesome -y
-sudo apt-get install libx11-xcb-dev libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev lua-lgi libpango1.0-dev -y
+sudo apt-get install libx11-xcb-dev libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev lua-lgi libpango1.0-dev libxcb-xrm-dev -y
 
 # git clone repo in ~/bin/
 pushd bin
@@ -65,17 +73,18 @@ pushd bin/awesome-repo
 make -j
 cp awesome ../
 popd
-ln -s jm-config/awesome/ .config/awesome
+ln -s ~/jm-config/awesome/ .config/awesome
 
 # compile/setup emacs
 pushd bin/emacs-repo
 ./configure
 make -j
 popd
-ln -s bin/emacs-repo/src/emacs bin/emacs
+ln -s ~/bin/emacs-repo/src/emacs bin/emacs
 
 # compile emacs modules
 pushd jm-config/emacs/modules/bbdb
+./autogen.sh
 ./configure
 make
 popd
