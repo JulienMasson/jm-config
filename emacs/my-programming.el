@@ -8,6 +8,13 @@
 ;; visual regexp
 (require 'visual-regexp)
 
+;; markdown mode
+(require 'markdown-mode)
+(autoload 'markdown-mode "markdown-mode"
+  "Major mode for editing Markdown files" t)
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+
 ;; default indentation
 (setq c-default-style (quote ((awk-mode . "awk") (c-mode . "linux") (other . "gnu"))))
 

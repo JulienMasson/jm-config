@@ -101,3 +101,6 @@
 [submodule "emacs/modules/which-key"]
 	path = emacs/modules/which-key
 	url = https://github.com/justbur/emacs-which-key.git
+[submodule "emacs/modules/markdown-mode"]
+	path = emacs/modules/markdown-mode
+	url = https://github.com/jrblevin/markdown-mode.git
