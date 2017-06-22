@@ -15,5 +15,6 @@
 (global-set-key (kbd "C-c C-o") 'browse-url)
 (global-set-key (kbd "C-c i i") 'ifwi-tools)
 
+(global-set-key (kbd "C-c C-u") (lambda () (interactive) (run-at-time 1 status-refresh-timer-delay 'status-update)))
 
 (provide 'work-keybindings)
