@@ -7,6 +7,10 @@
 			 ("marmalade" . "http://marmalade-repo.org/packages/")
 			 ("melpa" . "http://melpa.milkbox.net/packages/")))
 
+;; vertical split by default
+(setq split-height-threshold nil)
+(setq split-width-threshold 160)
+
 ;; don't ask to follow symlink
 (setq vc-follow-symlinks t)
 
