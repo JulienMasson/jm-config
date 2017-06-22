@@ -40,6 +40,8 @@
 
 ;; cscope
 (require 'xcscope)
+(setq cscope-option-do-not-update-database t)
+(setq cscope-option-use-inverted-index t)
 (cscope-setup)
 (setq path-to-cscope "/usr/bin/cscope")
 (defun create-tags-cscope (dir-name)
