@@ -54,8 +54,12 @@
 ;; ifwi tools
 (require 'ifwi-tools)
 
-;; mpta
-(require 'mpta-text)
+;; intel tools
+(require 'intel-lib)
+(require 'dmesg)
+(require 'ifwi-tools)
+(require 'mpta)
+(require 'locate)
 
 (defun adb-dired ()
   (interactive)
