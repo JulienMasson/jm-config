@@ -104,3 +104,6 @@
 [submodule "emacs/modules/markdown-mode"]
 	path = emacs/modules/markdown-mode
 	url = https://github.com/jrblevin/markdown-mode.git
+[submodule "emacs/modules/intel-tools"]
+	path = emacs/modules/intel-tools
+	url = https://massonju@gitlab.com/makohoek/intel-tools.git
