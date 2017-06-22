@@ -5,17 +5,26 @@
 (require 'device-control-flashrom)
 (require 'device-control-relay)
 
-(add-to-list 'dctrl-adb-reboot-target "dnx" t 'string=)
-
 (dolist (image '(("fastboot"	.	"droidboot.img")
 		 ("manufacturing".	"manufacturing.img")
-		 ("mfg_sys"     .	"mfg_sys.img")
+		 ("bootloader"  .	"bootloader.img")
+		 ("cache"       .	"cache.img")
 		 ("oem"         .	"oem.img")
-		 ("ESP"		.	"ESP.img")
-		 ("osloader"	.       "efilinux-eng.efi")
-		 ("capsule"	.	"capsule.bin")))
+		 ("mfg_sys"     .	"mfg_sys.img")))
   (add-to-list 'dctrl-fastboot-flash-alist image t
 	       (lambda (x y) (string= (car x) (car y)))))
+
+(setq dctrl-fastboot-flash-alist '(("boot" . "boot.img")
+ ("bootloader" . "bootloader.img")
+ ("recovery" . "recovery.img")
+ ("system" . "system.img")
+ ("zimage" . "kernel")
+ ("fastboot" . "droidboot.img")
+ ("manufacturing" . "manufacturing.img")
+ ("cache" . "cache.img")
+ ("mfg_sys" . "mfg_sys.img")
+ ("oem" . "oem.img")))
+
 
 (defvar dctrl-intel-custom-boot-targets
   '(("MOS" . "1")
@@ -77,9 +86,6 @@
       (dctrl-untramp-file file))
     (append tramp-cmd
 	    (dctrl-run-process (list "platformflashtool-cli-launcher.sh" "--always-unzip" "-f" ctrlhost-filename)))))
-
-(defun dctrl-intel-action-intel-adb-to-efi-shell ()
-  (dctrl-adb-run "shell" "uefivar" "-g" "8be4df61-93ca-11d2-aa0d-00e098032b8c" "-n" "BootNext" "-t" "int16" "-s" "1"))
 
 (defun dctrl-intel-get-actions ()
   (dctrl-agregate-fun-list (dctrl-build-fun-list "dctrl-intel-action-adb-"

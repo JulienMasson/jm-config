@@ -18,13 +18,13 @@
 
 (setq http-proxy "http://proxy.ir.intel.com:911"
       no-proxy   "localhost,intel.com,10.0.0.0/8,192.168.0.0/16"
-      jdk-path   "/usr/lib/jvm/java-7-openjdk-amd64")
+      jdk-path   "/usr/lib/jvm/java-8-openjdk-amd64")
 
 (setq aosp-env-vars '(("http_proxy"	.	http-proxy)
 		      ("https_proxy"	.	http-proxy)
 		      ("ftp_proxy"	.	http-proxy)
 		      ("no_proxy"	.	no-proxy)
-		      ("PATH"		.	(concat "$PATH:" jdk-path "/bin:/home/lab/bin:/usr/sbin:/sbin:/opt/bin"))
+		      ("PATH"		.	(concat "$PATH:" jdk-path "/bin:/home/jmassonx/bin:/usr/sbin:/sbin:/opt/bin"))
 		      ("JAVA_HOME"	.	jdk-path)
 		      ("CLASSPATH"	.	".")
 		      ("EDITOR"		.	"emacsclient --socket-name /tmp/emacs1000/server")))
@@ -33,63 +33,63 @@
 
 
 (register-project
- (make-project :name "Robby"
-	       :pm-backend "intel-android"
-	       :root-path "/ssh:tllabx2:/build/jmassonx/ndg-android"
-	       :env-vars '((aosp-path		.	(project-root-path current-project))
-			   (aosp-board-name	.	"robby")
-			   (aosp-build-variant	.	"userdebug")
-			   (aosp-thread-number	.	32))
-	       :subprojects my-usual-subprojects))
-
-(register-project
  (make-project :name "Grant"
 	       :pm-backend "intel-android"
-	       :root-path "/ssh:tllabx2:/build/jmassonx/ndg-android"
+	       :root-path "/ssh:tldlab401:/build/jmassonx/ndg-android-f"
 	       :env-vars '((aosp-path		.	(project-root-path current-project))
 			   (aosp-board-name	.	"grant")
 			   (aosp-build-variant	.	"userdebug")
-			   (aosp-thread-number	.	32))
+			   (aosp-thread-number	.	40))
 	       :subprojects my-usual-subprojects))
 
 (register-project
  (make-project :name "Glacier"
 	       :pm-backend "intel-android"
-	       :root-path "/ssh:tllabx2:/build/jmassonx/ndg-android"
+	       :root-path "/ssh:tldlab401:/build/jmassonx/ndg-android-f"
 	       :env-vars '((aosp-path		.	(project-root-path current-project))
 			   (aosp-board-name	.	"glacier")
 			   (aosp-build-variant	.	"userdebug")
-			   (aosp-thread-number	.	32))
+			   (aosp-thread-number	.	40))
 	       :subprojects my-usual-subprojects))
 
 (register-project
  (make-project :name "Shasta"
 	       :pm-backend "intel-android"
-	       :root-path "/ssh:tllabx2:/build/jmassonx/ndg-android"
+	       :root-path "/ssh:tldlab401:/build/jmassonx/ndg-android-f"
 	       :env-vars '((aosp-path		.	(project-root-path current-project))
 			   (aosp-board-name	.	"shasta")
 			   (aosp-build-variant	.	"userdebug")
-			   (aosp-thread-number	.	32))
+			   (aosp-thread-number	.	40))
 	       :subprojects my-usual-subprojects))
 
 (register-project
- (make-project :name "Anthracite"
+ (make-project :name "Spectralite"
 	       :pm-backend "intel-android"
-	       :root-path "/ssh:tllabx2:/build/jmassonx/ndg-android"
+	       :root-path "/ssh:tldlab401:/build/jmassonx/ndg-android-f"
 	       :env-vars '((aosp-path		.	(project-root-path current-project))
-			   (aosp-board-name	.	"anthracite")
+			   (aosp-board-name	.	"spectralite")
 			   (aosp-build-variant	.	"userdebug")
-			   (aosp-thread-number	.	32))
+			   (aosp-thread-number	.	40))
 	       :subprojects my-usual-subprojects))
 
 (register-project
- (make-project :name "Mars"
+ (make-project :name "fabien"
 	       :pm-backend "intel-android"
-	       :root-path "/ssh:tllabx2:/build/jmassonx/ndg-android"
+	       :root-path "/ssh:flouisx@tllabx11:/data/flouisx/android_f"
 	       :env-vars '((aosp-path		.	(project-root-path current-project))
-			   (aosp-board-name	.	"mars_aosp")
+			   (aosp-board-name	.	"spectralite")
 			   (aosp-build-variant	.	"userdebug")
-			   (aosp-thread-number	.	32))
+			   (aosp-thread-number	.	72))
+	       :subprojects my-usual-subprojects))
+
+(register-project
+ (make-project :name "Connor"
+	       :pm-backend "intel-android"
+	       :root-path "/ssh:jpeyraux@tldlab403.tl.intel.com:/build/jpeyraux/connor-src-code"
+	       :env-vars '((aosp-path		.	(project-root-path current-project))
+			   (aosp-board-name	.	"connor")
+			   (aosp-build-variant	.	"userdebug")
+			   (aosp-thread-number	.	40))
 	       :subprojects my-usual-subprojects))
 
 (register-project
@@ -103,6 +103,16 @@
 			      ("bash"	       .	"/bash")
 			      ("awesome"       .	"/awesome")
 			      ("tools"	       .	"/tools"))))
+
+(register-project
+ (make-project :name "intel-tools"
+	       :pm-backend "emacslisp"
+	       :root-path "/home/lab/Documents/Intel/intel-tools"
+	       :env-vars '()
+	       :subprojects '(("lisp"          .       "/lisp")
+			      ("c"             .       "/c")
+			      ("python"        .       "/python")
+			      ("perl"	       .       "/perl"))))
 
 (register-project
  (make-project :name "IFWI"
@@ -129,11 +139,11 @@
 (register-project
  (make-project :name "local"
 	       :pm-backend "intel-android"
-	       :root-path "/home/lab/Documents/Intel/ndg-android"
+	       :root-path "/home/lab/Documents/Intel/ndg-android-f"
 	       :env-vars '((aosp-path		.	(project-root-path current-project))
-			   (aosp-board-name	.	"shasta")
+			   (aosp-board-name	.	"spectralite")
 			   (aosp-build-variant	.	"userdebug")
-			   (aosp-thread-number	.	4))
+			   (aosp-thread-number	.	2))
 	       :subprojects my-usual-subprojects))
 
 

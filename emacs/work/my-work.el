@@ -64,16 +64,34 @@
 	(shell-command-to-string "adb wait-for-device devices | grep -w \"device\" | awk '{ print $1}' | tr -d \"\n\""))
   (let ((default-directory (concat "/adb:" adb-device-name ":/")))
     (ido-find-file)))
+;; add partition for device control
+(add-to-list 'dctrl-fastboot-partition-list "manufacturing")
+(add-to-list 'dctrl-fastboot-partition-list "mfg_sys")
+(add-to-list 'dctrl-fastboot-partition-list "oem")
 
 ;; work keybindings
 (require 'work-keybindings)
 
+;; connect to marvin irc
+(add-to-list 'erc-autojoin-channels-alist '("marvin.net" "#marvin"))
+(defun irc-marvin ()
+  (interactive)
+  (erc :server "tldlab401.tl.intel.com" :port 6667 :nick "jmasson"))
 
 ;; startup work stuff
+(defun clean-work ()
+  (interactive)
+  (mapcar #'(lambda (buffer)
+	      (let ((file (buffer-name buffer)))
+		(when (and file (string-match ".*\\.[h|c]" file))
+		  (kill-buffer file))))
+	  (buffer-list)))
+
 (defun start-work ()
   (interactive)
 
   ;; status widgets
+  (status-add-to-left 'status-erc)
   (status-add-to-left 'status-purple-conversation)
   (status-add-to-left 'status-gnus)
   (status-add-to-left 'status-cscope)

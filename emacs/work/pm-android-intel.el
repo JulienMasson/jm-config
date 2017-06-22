@@ -10,6 +10,8 @@
     ("test"             .       "testimage")
     ("custom"           .       "custom_images")
     ("manufacturing"    .       "manufacturingimage")
+    ("cache"            .       "cacheimage")
+    ("oem"              .       "oem_image_intel")
     ("flashfiles"       .	"flashfiles")))
 
 (defun pm-intel-android-compile ()

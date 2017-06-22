@@ -60,12 +60,14 @@
 		       ("nnmaildir+Intel:Gerrit" . "GERRIT")
 		       ("nnmaildir+Intel:Jira" . "JIRA")
 		       ("nnmaildir+Intel:Confluence" . "CONFLUENCE")
+		       ("nnmaildir+Intel:Report" . "REPORT")
 		       ("nnmaildir+Intel:Sent" . "SENT")))
 
 (setq group-name-map-status '(("nnmaildir+Intel:INBOX" . "INBOX")
 			      ("nnmaildir+Intel:Gerrit" . "GERRIT")
 			      ("nnmaildir+Intel:Jira" . "JIRA")
 			      ("nnmaildir+Intel:Confluence" . "CONFLUENCE")
+			      ("nnmaildir+Intel:Report" . "REPORT")
 			      ("nnmaildir+Intel:Sent" . "SENT")))
 
 ;; authinfo
