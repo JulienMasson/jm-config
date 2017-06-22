@@ -69,7 +69,7 @@
 
 ;; magit
 (global-set-key (kbd "C-c g s") 'magit-status)
-(global-set-key (kbd "C-c g l") 'magit-log-current)
+(global-set-key (kbd "C-c g l") 'magit-log-head)
 (global-set-key (kbd "C-c g f") 'magit-log-buffer-file)
 (global-set-key (kbd "C-c g p") 'magit-pull)
 (global-set-key (kbd "C-c g r") 'magit-reset-hard)
