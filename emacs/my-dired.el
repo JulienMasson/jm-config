@@ -3,6 +3,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (require 'ls-lisp)
+(require 'dired)
 
 (defun ls-lisp-format-file-size (file-size human-readable)
   "This is a redefinition of the function from `dired.el'. This
