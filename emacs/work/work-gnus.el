@@ -242,4 +242,17 @@
 	    (setq fill-column 100)
 	    (turn-on-auto-fill)))
 
+(eval-after-load 'gnus-topic
+  '(progn
+     (setq gnus-topic-topology '(("Gnus" visible) (("Intel" visible nil nil))))
+     (setq gnus-topic-alist '(("Intel"
+			       "nnmaildir+Intel:INBOX"
+			       "nnmaildir+Intel:Jira"
+			       "nnmaildir+Intel:Gerrit"
+			       "nnmaildir+Intel:Confluence"
+			       "nnmairix+mysearch:"
+			       "nnmaildir+Intel:Sent")
+			      ("Gnus" "nndraft:drafts")))))
+
+
 (provide 'work-gnus)
