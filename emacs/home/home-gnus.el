@@ -149,13 +149,12 @@
       smtpmail-debug-info nil
       mail-setup-hook nil)
 
-;; addresses completion default ~/.bbdb
-(require 'bbdb-loaddefs "~/jm-config/emacs/modules/bbdb/lisp/bbdb-loaddefs.el")
-(add-hook 'message-mode-hook
-          '(lambda ()
-             (bbdb-initialize 'message)
-             (bbdb-initialize 'gnus)
-             (local-set-key "<TAB>" 'bbdb-complete-name)))
+;; contact completion
+(require 'org-contacts)
+(setq org-contacts-files '("~/org/contacts.org"))
+(defun org-contacts-update ()
+  (interactive)
+  (async-shell-command "mu index --maildir=~/Maildir/Gmail && mu cfind --format=org-contact > ~/org/contacts.org"))
 
 ;; flyspell when composing gnus message
 (add-hook 'message-mode-hook 'git-commit-turn-on-flyspell)

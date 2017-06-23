@@ -56,9 +56,6 @@
 	url = http://www.dr-qubit.org/git/predictive.git
 	ignore = dirty
 	ignore = untracked
-[submodule "emacs/modules/bbdb"]
-	path = emacs/modules/bbdb
-	url = https://github.com/emacsmirror/bbdb.git
 [submodule "emacs/modules/with-editor"]
 	path = emacs/modules/with-editor
 	url = https://github.com/magit/with-editor.git
@@ -101,3 +98,6 @@
 [submodule "emacs/modules/tablist"]
 	path = emacs/modules/tablist
 	url = https://github.com/politza/tablist.git
+[submodule "emacs/modules/org-mode"]
+	path = emacs/modules/org-mode
+	url = http://repo.or.cz/r/org-mode.git
