@@ -14,10 +14,6 @@
 	path = emacs/modules/auto-complete
 	url = https://github.com/auto-complete/auto-complete
 	ignore = untracked
-[submodule "emacs/erc-nick-notify"]
-	path = emacs/modules/erc-nick-notify
-	url = https://github.com/emacsmirror/erc-nick-notify
-	ignore = untracked
 [submodule "emacs/purple"]
 	path = emacs/modules/purple
 	url = https://github.com/JulienMasson/purple
@@ -32,10 +28,6 @@
 	url = https://github.com/JulienMasson/status
 	ignore = untracked
 	branch = master
-[submodule "emacs/browse-kill-ring"]
-	path = emacs/modules/browse-kill-ring
-	url = https://github.com/browse-kill-ring/browse-kill-ring
-	ignore = untracked
 [submodule "emacs/modules/offlineimap.el"]
 	path = emacs/modules/offlineimap
 	url = https://github.com/jd/offlineimap.el.git
@@ -50,10 +42,6 @@
 	url = https://github.com/JulienMasson/project-manager.git
 	ignore = untracked
 	branch = master
-[submodule "emacs/modules/gerrit"]
-	path = emacs/modules/gerrit
-	url = https://github.com/jeremy-compostella/gerrit.git
-	ignore = untracked
 [submodule "emacs/modules/device-control"]
 	path = emacs/modules/device-control
 	url = https://github.com/JulienMasson/device-control.git

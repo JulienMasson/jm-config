@@ -135,9 +135,6 @@
 ;; remove scroll bar
 (scroll-bar-mode -1)
 
-;; browse kill ring
-(require 'browse-kill-ring)
-
 ;; which key
 (require 'which-key)
 (which-key-mode)

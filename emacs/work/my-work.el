@@ -34,11 +34,6 @@
 (require 'pm-ifwi-intel)
 (require 'jm-projects)
 
-;; Gerrit
-(require 'gerrit)
-(require 'repo)
-(require 'org-gerrit)
-
 ;; Device control
 (require 'device-control)
 (require 'device-control-flashrom)
