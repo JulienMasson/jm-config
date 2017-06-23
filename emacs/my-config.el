@@ -41,5 +41,9 @@
 ;; keybindings config
 (require 'my-keybindings)
 
+;; pdf tools
+(require 'pdf-tools)
+(pdf-tools-install)
+
 
 (provide 'my-config)
