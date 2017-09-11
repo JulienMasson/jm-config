@@ -7,12 +7,6 @@
 (global-set-key (kbd "C-c <right>") 'windmove-right)
 (global-set-key (kbd "C-c <up>")    'windmove-up)
 (global-set-key (kbd "C-c <down>")  'windmove-down)
-;; (global-set-key (kbd "C-M-j") 'windmove-down)
-;; (global-set-key (kbd "C-M-k") 'windmove-up)
-;; (global-set-key (kbd "C-M-l") 'windmove-left)
-;; (global-set-key (kbd "C-M-;") 'windmove-right)
-(global-set-key (kbd "C-c e") 'eval-region)
-(global-set-key (kbd "C-c S") 'sudo-edit)
 (global-set-key (kbd "C-c l") 'goto-line)
 (global-set-key (kbd "C-c d") 'delete-rectangle)
 (global-set-key (kbd "C-c M-i") 'string-insert-rectangle)
@@ -23,9 +17,8 @@
 (global-set-key (kbd "C-c u") 'uncomment-region)
 (global-set-key (kbd "C-c k") 'kill-buffer-and-window)
 (global-set-key (kbd "C-c M-f") 'find-name-dired)
-(global-set-key (kbd "C-h C-f") 'find-function)
-(global-set-key (kbd "C-h C-v") 'find-variable)
 (global-set-key (kbd "C-M-y") (lambda () (interactive) (yank-pop -1)))
+(global-set-key (kbd "C-c M-w") 'show-and-copy-buffer-filename)
 
 ;; goto virtual desktops
 (global-set-key (kbd "M-1") (lambda () (interactive) (virtual-desktops-goto 1)))
