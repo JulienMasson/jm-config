@@ -58,6 +58,8 @@
 (set-face-attribute 'default nil :height 90)
 
 ;; enable ido-mode
+(require 'ido)
+(setq ido-ignore-files '("\\`\\.\\./" "\\`\\./"))
 (ido-mode 1)
 
 ;; hide welcome screen
