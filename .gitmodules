@@ -101,3 +101,6 @@
 [submodule "emacs/modules/org-mode"]
 	path = emacs/modules/org-mode
 	url = http://repo.or.cz/r/org-mode.git
+[submodule "emacs/modules/buffer-move"]
+	path = emacs/modules/buffer-move
+	url = https://github.com/lukhas/buffer-move.git

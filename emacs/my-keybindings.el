@@ -88,5 +88,11 @@
 ;; locate
 (global-set-key (kbd "C-c C-l") 'jm-search-locate-database)
 
+;; buffer move
+(global-set-key (kbd "C-<tab> <up>")     'buf-move-up)
+(global-set-key (kbd "C-<tab> <down>")   'buf-move-down)
+(global-set-key (kbd "C-<tab> <left>")   'buf-move-left)
+(global-set-key (kbd "C-<tab> <right>")  'buf-move-right)
+
 
 (provide 'my-keybindings)

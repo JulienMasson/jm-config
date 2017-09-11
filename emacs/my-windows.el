@@ -147,5 +147,8 @@
       sml/no-confirm-load-theme t)
 (sml/setup)
 
+;; buffer move
+(require 'buffer-move)
+
 
 (provide 'my-windows)
