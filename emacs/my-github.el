@@ -11,6 +11,9 @@
 (setq magit-status-headers-hook-saved magit-status-headers-hook)
 (setq magit-revision-sections-hook-saved magit-revision-sections-hook)
 
+;; revert this change: `magit-visit-ref' behaves just like `magit-show-commit'
+(setq magit-visit-ref-behavior '(checkout-any focus-on-ref))
+
 (defun my-magit-status-headers ()
   (let ((magit-insert-headers-hook
 	 (if (-contains? magit-blacklist-repo (magit-toplevel))
