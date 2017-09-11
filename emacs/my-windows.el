@@ -152,5 +152,15 @@
 ;; buffer move
 (require 'buffer-move)
 
+;; copy buffer filename
+(defun show-and-copy-buffer-filename ()
+  "Show and copy the full path to the current file in the minibuffer."
+  (interactive)
+  ;; list-buffers-directory is the variable set in dired buffers
+  (let ((file-name (or (buffer-file-name) list-buffers-directory)))
+    (if file-name
+        (message (kill-new file-name))
+      (error "Buffer not visiting a file"))))
+
 
 (provide 'my-windows)
