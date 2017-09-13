@@ -2,9 +2,6 @@
 ;;;;                TRAMP CONFIG               ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; override tramp histfile
-(setq tramp-histfile-override "$HOME/.tramp_history")
-
 ;; expand tramp remote path
 (require 'tramp-sh)
 (add-to-list 'tramp-remote-path "~/bin")
