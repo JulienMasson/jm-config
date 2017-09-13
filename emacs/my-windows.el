@@ -28,23 +28,6 @@
 ;; save password
 (setq password-cache-expiry nil)
 
-;; Toggle window dedication
-(defadvice pop-to-buffer (before cancel-other-window first)
-  (ad-set-arg 1 nil))
-
-(ad-activate 'pop-to-buffer)
-
-(defun toggle-window-dedicated ()
-  "Toggle whether the current active window is dedicated or not"
-  (interactive)
-  (message
-   (if (let (window (get-buffer-window (current-buffer)))
-         (set-window-dedicated-p window
-                                 (not (window-dedicated-p window))))
-       "Window '%s' is dedicated"
-     "Window '%s' is normal")
-   (current-buffer)))
-
 ;; set some variables
 (custom-set-variables
  '(column-number-mode t)
