@@ -89,6 +89,9 @@
 (eval-after-load 'company
   '(add-to-list 'company-backends '(company-c-headers)))
 
+;; perl
+(defalias 'perl-mode 'cperl-mode)
+
 ;; ctags
 (defun create-ctags-tag (dir)
   (interactive "DDirectory: ")
