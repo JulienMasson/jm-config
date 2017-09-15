@@ -10,10 +10,6 @@
 	url = https://github.com/JulienMasson/virtual-desktops.el
 	ignore = untracked
 	branch = master
-[submodule "emacs/auto-complete"]
-	path = emacs/modules/auto-complete
-	url = https://github.com/auto-complete/auto-complete
-	ignore = untracked
 [submodule "emacs/purple"]
 	path = emacs/modules/purple
 	url = https://github.com/JulienMasson/purple
@@ -107,3 +103,9 @@
 [submodule "emacs/modules/color-theme-sanityinc-tomorrow"]
 	path = emacs/modules/color-theme-sanityinc-tomorrow
 	url = https://github.com/JulienMasson/color-theme-sanityinc-tomorrow.git
+[submodule "emacs/modules/company-mode"]
+	path = emacs/modules/company-mode
+	url = https://github.com/company-mode/company-mode.git
+[submodule "emacs/modules/company-c-headers"]
+	path = emacs/modules/company-c-headers
+	url = https://github.com/randomphrase/company-c-headers.git

@@ -80,9 +80,14 @@
 ;; change default grep
 (setq grep-command "grep --color -nsrH -e ")
 
-;; minimum setup for autocomplete
-(require 'auto-complete-config)
-(ac-config-default)
+;; company mode
+(require 'company)
+(add-hook 'after-init-hook 'global-company-mode)
+
+;; additionnals company backends
+(require 'company-c-headers)
+(eval-after-load 'company
+  '(add-to-list 'company-backends '(company-c-headers)))
 
 
 (provide 'my-programming)
