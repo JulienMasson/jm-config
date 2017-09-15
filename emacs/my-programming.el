@@ -89,5 +89,11 @@
 (eval-after-load 'company
   '(add-to-list 'company-backends '(company-c-headers)))
 
+;; ctags
+(defun create-ctags-tag (dir)
+  (interactive "DDirectory: ")
+  (let ((default-directory dir))
+    (shell-command "/usr/bin/ctags -e -R .")))
+
 
 (provide 'my-programming)
