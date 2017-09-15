@@ -107,5 +107,11 @@ search modes defined in the new `dired-sort-toggle'.
                    (concat "Dired " dired-actual-switches)))))
     (force-mode-line-update)))
 
+;; rebinds `^´ to use the same buffer.
+(add-hook 'dired-mode-hook
+	  (lambda ()
+	    (define-key dired-mode-map (kbd "^")
+	      (lambda () (interactive) (find-alternate-file "..")))))
+
 
 (provide 'my-dired)
