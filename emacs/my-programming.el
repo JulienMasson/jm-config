@@ -84,6 +84,9 @@
 (require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
 
+;; map TAB to company completion in shell mode
+(define-key shell-mode-map (kbd "TAB") #'company-manual-begin)
+
 ;; additionnals company backends
 (require 'company-c-headers)
 (eval-after-load 'company
