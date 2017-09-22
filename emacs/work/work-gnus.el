@@ -207,12 +207,9 @@
       smtpmail-debug-info nil
       mail-setup-hook nil)
 
-;; contact completion
-(require 'org-contacts)
-(setq org-contacts-files '("~/org/contacts.org"))
-(defun org-contacts-update ()
-  (interactive)
-  (async-shell-command "mu index --maildir=~/Maildir/Intel && mu cfind --format=org-contact > ~/org/contacts.org"))
+;; bbdb config
+(require 'bbdb)
+(require 'bbdb-loaddefs)
 
 ;; flyspell when composing gnus message
 (add-hook 'message-mode-hook 'git-commit-turn-on-flyspell)

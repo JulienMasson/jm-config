@@ -94,9 +94,6 @@
 [submodule "emacs/modules/tablist"]
 	path = emacs/modules/tablist
 	url = https://github.com/politza/tablist.git
-[submodule "emacs/modules/org-mode"]
-	path = emacs/modules/org-mode
-	url = http://repo.or.cz/r/org-mode.git
 [submodule "emacs/modules/buffer-move"]
 	path = emacs/modules/buffer-move
 	url = https://github.com/lukhas/buffer-move.git
@@ -109,3 +106,6 @@
 [submodule "emacs/modules/company-c-headers"]
 	path = emacs/modules/company-c-headers
 	url = https://github.com/randomphrase/company-c-headers.git
+[submodule "emacs/modules/bbdb"]
+	path = emacs/modules/bbdb
+	url = https://github.com/emacsmirror/bbdb.git
