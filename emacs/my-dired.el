@@ -113,5 +113,9 @@ search modes defined in the new `dired-sort-toggle'.
 	    (define-key dired-mode-map (kbd "^")
 	      (lambda () (interactive) (find-alternate-file "..")))))
 
+;; dired async
+(require 'dired-async)
+(dired-async-mode 1)
+
 
 (provide 'my-dired)

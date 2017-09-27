@@ -109,3 +109,6 @@
 [submodule "emacs/modules/bbdb"]
 	path = emacs/modules/bbdb
 	url = https://github.com/emacsmirror/bbdb.git
+[submodule "emacs/modules/async"]
+	path = emacs/modules/async
+	url = https://github.com/jwiegley/emacs-async.git
