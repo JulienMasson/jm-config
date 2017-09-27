@@ -117,5 +117,84 @@ search modes defined in the new `dired-sort-toggle'.
 (require 'dired-async)
 (dired-async-mode 1)
 
+;; dired diff
+(require 'diff)
+
+(defun get-dired-mark (func)
+  (let* ((marks
+	  (apply 'append
+		 (delq nil
+		       (mapcar (lambda (arg)
+				 (with-current-buffer (buffer-name arg)
+				   (when (string= major-mode "dired-mode")
+				     (dired-get-marked-files))))
+			       (buffer-list))))))
+    (delq nil
+	  (mapcar (lambda (arg)
+		    (when (funcall func arg)
+		      arg))
+		  marks))))
+
+(defun apply-all-dired-buffer (func)
+  (dolist (buffer (buffer-list))
+    (with-current-buffer (buffer-name buffer)
+      (when (string= major-mode "dired-mode")
+	(funcall func)))))
+
+(defun unmark-all-dired-buffer ()
+  (interactive)
+  (apply-all-dired-buffer 'dired-unmark-all-marks))
+
+(defun kill-all-dired-buffer ()
+  (interactive)
+  (apply-all-dired-buffer '(lambda ()
+			     (kill-buffer (current-buffer)))))
+
+;; diff for files
+(defun dired-diff-files ()
+  (interactive)
+  (let ((files (get-dired-mark 'file-regular-p)))
+    (if (= (length files) 2)
+	(diff (car files) (cadr files))
+      (error "You should set only two files"))))
+
+;; diff for directories
+(defun dired-diff-directories ()
+  (interactive)
+  (let ((directories (get-dired-mark 'file-directory-p)))
+    (if (= (length directories) 2)
+	(let ((directory-1 (car directories))
+	      (directory-2 (cadr directories)))
+	  (if (or (file-remote-p directory-1)
+		  (file-remote-p directory-2))
+	      (error "Cannot diff with remote directories")
+	    (let* ((buf (get-buffer-create "*Diff*"))
+		   (command (format "diff -r %s %s"
+				    directory-1 directory-2))
+		   (thisdir default-directory))
+	      (with-current-buffer buf
+		(setq buffer-read-only t)
+		(buffer-disable-undo (current-buffer))
+		(let ((inhibit-read-only t))
+		  (erase-buffer))
+		(buffer-enable-undo (current-buffer))
+		(diff-mode)
+		(setq default-directory thisdir)
+		(let ((inhibit-read-only t))
+		  (insert command "\n"))
+		(let ((proc (start-process "Diff" buf shell-file-name
+					   shell-command-switch command)))
+		  (set-process-filter proc 'diff-process-filter)
+		  (set-process-sentinel
+		   proc (lambda (proc _msg)
+			  (with-current-buffer (process-buffer proc)
+			    (diff-sentinel (process-exit-status proc))))))
+		(switch-to-buffer buf)))))
+      (error "You should set only two directories"))))
+
+;; change keys in dired-mode
+(define-key dired-mode-map "=" 'dired-diff-files)
+(define-key dired-mode-map "r" 'dired-diff-directories)
+
 
 (provide 'my-dired)
