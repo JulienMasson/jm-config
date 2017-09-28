@@ -80,6 +80,9 @@
 ;; change default grep
 (setq grep-command "grep --color -nsrH -e ")
 
+;; ripgrep
+(require 'rg)
+
 ;; company mode
 (require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
