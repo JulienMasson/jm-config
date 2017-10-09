@@ -144,5 +144,10 @@
         (message (kill-new file-name))
       (error "Buffer not visiting a file"))))
 
+;; define key in help mode
+(require 'help-mode)
+(define-key help-mode-map "n" 'help-go-forward)
+(define-key help-mode-map "p" 'help-go-back)
+
 
 (provide 'my-windows)
