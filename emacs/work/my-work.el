@@ -90,6 +90,8 @@
   (interactive)
 
   ;; status widgets
+  (status-add-to-left 'status-compilation)
+  (status-add-to-left 'status-ctags)
   (status-add-to-left 'status-erc)
   (status-add-to-left 'status-purple-conversation)
   (status-add-to-left 'status-gnus)
