@@ -211,6 +211,15 @@
 (require 'bbdb)
 (require 'bbdb-loaddefs)
 
+;; use company on message completion
+(setq message-completion-alist
+      (list (cons message-newgroups-header-regexp 'message-expand-group)
+	    '("^\\(Resent-\\)?\\(To\\|B?Cc\\):" . company-complete)
+	    '("^\\(Reply-To\\|From\\|Mail-Followup-To\\|Mail-Copies-To\\):"
+	      . company-complete)
+	    '("^\\(Disposition-Notification-To\\|Return-Receipt-To\\):"
+	      . company-complete)))
+
 ;; flyspell when composing gnus message
 (add-hook 'message-mode-hook 'git-commit-turn-on-flyspell)
 
