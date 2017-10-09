@@ -104,5 +104,8 @@
   (let ((default-directory dir))
     (shell-command "/usr/bin/ctags -e -R .")))
 
+;; python doc
+(require 'pydoc)
+
 
 (provide 'my-programming)

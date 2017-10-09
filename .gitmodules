@@ -118,3 +118,6 @@
 [submodule "emacs/modules/s"]
 	path = emacs/modules/s
 	url = https://github.com/magnars/s.el.git
+[submodule "emacs/modules/pydoc"]
+	path = emacs/modules/pydoc
+	url = https://github.com/statmobile/pydoc.git
