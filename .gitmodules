@@ -121,3 +121,6 @@
 [submodule "emacs/modules/pydoc"]
 	path = emacs/modules/pydoc
 	url = https://github.com/statmobile/pydoc.git
+[submodule "emacs/modules/jm-private"]
+	path = emacs/modules/jm-private
+	url = https://massonju@gitlab.com/massonju/jm-private.git

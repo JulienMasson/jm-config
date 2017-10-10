@@ -32,7 +32,6 @@
 (require 'pm-emacslisp)
 (require 'pm-android-intel)
 (require 'pm-ifwi-intel)
-(require 'jm-projects)
 
 ;; Device control
 (require 'device-control)
@@ -55,6 +54,9 @@
 (require 'ifwi-tools)
 (require 'mpta)
 (require 'locate)
+
+;; jm private
+(require 'jm-private)
 
 (defun adb-dired ()
   (interactive)
