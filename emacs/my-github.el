@@ -36,9 +36,6 @@
 (setq magit-status-headers-hook '(my-magit-status-headers))
 (setq magit-revision-sections-hook '(my-magit-revision-sections))
 
-;; turn on flyspell on git commit
-(add-hook 'git-commit-setup-hook 'git-commit-turn-on-flyspell)
-
 ;; set signoff by default
 (setq magit-commit-arguments (quote ("--signoff")))
 
