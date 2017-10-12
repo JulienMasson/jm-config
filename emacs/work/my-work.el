@@ -19,6 +19,7 @@
 (setq status-gnus-separator " - ")
 (setq status-gnus-medium-threshold 5)
 (setq status-gnus-high-threshold 10)
+(setq status-erc-blacklist '("&bitlbee" "localhost.*"))
 (setq net-interfaces '("wlan0"))
 
 ;; Log management
