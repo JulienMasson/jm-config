@@ -29,11 +29,8 @@
 ;; rss config
 (require 'my-rss)
 
-;; home - work config
-(if (string= jm-config-emacs "home")
-    (require 'my-home)
-  (if (string= jm-config-emacs "work")
-      (require 'my-work)))
+;; work config
+(require 'my-work)
 
 ;; keybindings config
 (require 'my-keybindings)
