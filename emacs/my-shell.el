@@ -5,12 +5,6 @@
 ;; set default shell
 (setq explicit-shell-file-name "/bin/bash")
 
-;; ansi color
-(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on t)
-(set-face-attribute 'comint-highlight-prompt nil
-                    :inherit nil)
-
 ;; ssh history
 (defvar ssh-history '()
   "History of `ssh' function argument.")

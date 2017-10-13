@@ -94,5 +94,11 @@
       sml/no-confirm-load-theme t)
 (sml/setup)
 
+;; ansi color
+(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on t)
+(set-face-attribute 'comint-highlight-prompt nil
+                    :inherit nil)
+
 
 (provide 'my-windows)
