@@ -14,8 +14,8 @@
 ;; dired config
 (require 'my-dired)
 
-;; irc config
-(require 'my-irc)
+;; erc config
+(require 'my-erc)
 
 ;; programming config
 (require 'my-programming)

@@ -124,3 +124,6 @@
 [submodule "emacs/modules/jm-private"]
 	path = emacs/modules/jm-private
 	url = https://massonju@gitlab.com/massonju/jm-private.git
+[submodule "emacs/modules/erc-image"]
+	path = emacs/modules/erc-image
+	url = https://github.com/kidd/erc-image.el.git

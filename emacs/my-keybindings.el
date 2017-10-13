@@ -41,13 +41,7 @@
 (global-set-key (kbd "C-c o c") 'org-capture)
 
 ;; erc
-(global-set-key (kbd "C-c i n") 'erc-channel-names)
-(global-set-key (kbd "C-c i i") (lambda () (interactive)
-			   (erc-tls :server "otcirc.jf.intel.com" :port "994"
-				:nick "jmasson")))
-(global-set-key (kbd "C-c i r") (lambda () (interactive)
-			   (erc :server "irc.freenode.net" :port "6667"
-				:nick "jmasson")))
+(global-set-key (kbd "C-c e j") 'erc-chat-jump)
 
 ;; shortcuts for pidgin using purple
 (global-set-key (kbd "C-c p i") 'purple-init)
