@@ -2,31 +2,14 @@
 ;;;;              WINDOWS CONFIG               ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; add packages
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-			 ("marmalade" . "http://marmalade-repo.org/packages/")
-			 ("melpa" . "http://melpa.milkbox.net/packages/")))
-
 ;; vertical split by default
 (setq split-height-threshold nil)
 (setq split-width-threshold 160)
-
-;; don't ask to follow symlink
-(setq vc-follow-symlinks t)
-
-;; disable erase-buffer
-(put 'erase-buffer 'disabled nil)
-
-;; delete recursively without asking
-(setq dired-recursive-deletes 'always)
 
 ;; windows config
 (windmove-default-keybindings 'meta)
 (setq windmove-wrap-around t)
 (setq shift-select-mode t)
-
-;; save password
-(setq password-cache-expiry nil)
 
 ;; set some variables
 (custom-set-variables
@@ -54,26 +37,6 @@
 
 ;; show parenthese
 (show-paren-mode 1)
-
-;; dired Extra
-(add-hook 'dired-load-hook
-            (function (lambda () (load "dired-x"))))
-
-;; default dired setting
-(put 'dired-find-alternate-file 'disabled nil)
-
-;; virtual desktop
-(require 'virtual-desktops)
-(setq virtual-desktops-display-mode-line nil)
-(virtual-desktops-mode 1)
-
-;; edit file root
-(defun sudo-edit (&optional arg)
-  (interactive "P")
-  (if (or arg (not buffer-file-name))
-      (find-file (concat "/sudo:root@localhost:"
-                         (ido-read-file-name "Find file(as root): ")))
-    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 
 ;; highlight focus
 (require 'face-remap)
@@ -130,24 +93,6 @@
       sml/theme 'respectful
       sml/no-confirm-load-theme t)
 (sml/setup)
-
-;; buffer move
-(require 'buffer-move)
-
-;; copy buffer filename
-(defun show-and-copy-buffer-filename ()
-  "Show and copy the full path to the current file in the minibuffer."
-  (interactive)
-  ;; list-buffers-directory is the variable set in dired buffers
-  (let ((file-name (or (buffer-file-name) list-buffers-directory)))
-    (if file-name
-        (message (kill-new file-name))
-      (error "Buffer not visiting a file"))))
-
-;; define key in help mode
-(require 'help-mode)
-(define-key help-mode-map "n" 'help-go-forward)
-(define-key help-mode-map "p" 'help-go-back)
 
 
 (provide 'my-windows)

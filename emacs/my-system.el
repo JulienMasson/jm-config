@@ -17,6 +17,61 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
+;; add packages
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+			 ("marmalade" . "http://marmalade-repo.org/packages/")
+			 ("melpa" . "http://melpa.milkbox.net/packages/")))
+
+;; don't ask to follow symlink
+(setq vc-follow-symlinks t)
+
+;; disable erase-buffer
+(put 'erase-buffer 'disabled nil)
+
+;; delete recursively without asking
+(setq dired-recursive-deletes 'always)
+
+;; save password
+(setq password-cache-expiry nil)
+
+;; dired Extra
+(add-hook 'dired-load-hook
+            (function (lambda () (load "dired-x"))))
+
+;; default dired setting
+(put 'dired-find-alternate-file 'disabled nil)
+
+;; virtual desktop
+(require 'virtual-desktops)
+(setq virtual-desktops-display-mode-line nil)
+(virtual-desktops-mode 1)
+
+;; edit file root
+(defun sudo-edit (&optional arg)
+  (interactive "P")
+  (if (or arg (not buffer-file-name))
+      (find-file (concat "/sudo:root@localhost:"
+                         (ido-read-file-name "Find file(as root): ")))
+    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+
+;; buffer move
+(require 'buffer-move)
+
+;; copy buffer filename
+(defun show-and-copy-buffer-filename ()
+  "Show and copy the full path to the current file in the minibuffer."
+  (interactive)
+  ;; list-buffers-directory is the variable set in dired buffers
+  (let ((file-name (or (buffer-file-name) list-buffers-directory)))
+    (if file-name
+        (message (kill-new file-name))
+      (error "Buffer not visiting a file"))))
+
+;; define key in help mode
+(require 'help-mode)
+(define-key help-mode-map "n" 'help-go-forward)
+(define-key help-mode-map "p" 'help-go-back)
+
 ;; tramp config
 (require 'my-tramp)
 
