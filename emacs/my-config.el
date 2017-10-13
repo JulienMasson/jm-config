@@ -29,15 +29,14 @@
 ;; rss config
 (require 'my-rss)
 
-;; work config
-(require 'my-work)
-
 ;; keybindings config
 (require 'my-keybindings)
 
 ;; pdf tools
 (require 'pdf-tools)
 (pdf-tools-install)
+;; jm private
+(require 'jm-private)
 
 
 (provide 'my-config)
