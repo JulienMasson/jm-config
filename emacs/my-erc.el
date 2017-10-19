@@ -20,5 +20,8 @@
 (add-to-list 'erc-modules 'image)
 (erc-update-modules)
 
+;; emojify mode
+(add-hook 'erc-mode-hook 'emojify-mode)
+
 
 (provide 'my-erc)
