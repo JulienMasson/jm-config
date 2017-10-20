@@ -24,5 +24,8 @@
 (require 'emojify)
 (add-hook 'erc-mode-hook 'emojify-mode)
 
+;; exclude some types of messages
+(setq erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"))
+
 
 (provide 'my-erc)
