@@ -95,6 +95,7 @@
 (sml/setup)
 
 ;; ansi color
+(require 'comint)
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on t)
 (set-face-attribute 'comint-highlight-prompt nil

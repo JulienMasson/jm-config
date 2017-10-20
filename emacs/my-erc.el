@@ -21,6 +21,7 @@
 (erc-update-modules)
 
 ;; emojify mode
+(require 'emojify)
 (add-hook 'erc-mode-hook 'emojify-mode)
 
 
