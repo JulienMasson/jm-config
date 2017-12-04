@@ -102,5 +102,35 @@
 (set-face-attribute 'comint-highlight-prompt nil
                     :inherit nil)
 
+;; silent some message in echo area
+(defun suppress-messages (old-fun &rest args)
+  (cl-flet ((silence (&rest args1) (ignore)))
+    (advice-add 'message :around #'silence)
+    (unwind-protect
+         (apply old-fun args)
+      (advice-remove 'message #'silence))))
+
+(dolist (func '(isearch-done
+		undo
+		basic-save-buffer
+		push-mark))
+  (if (functionp func)
+      (advice-add func :around #'suppress-messages)))
+
+(defun my-command-error-function (data context caller)
+  (when (not (memq (car data) '(do-auto-save
+				buffer-read-only
+                                beginning-of-buffer
+                                end-of-buffer)))
+    (command-error-default-function data context caller)))
+
+(setq command-error-function #'my-command-error-function)
+
+;; remove eldoc mode
+(global-eldoc-mode -1)
+
+;; silent tramp message
+(setq tramp-verbose 1)
+
 
 (provide 'my-windows)
