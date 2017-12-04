@@ -82,12 +82,16 @@
 ;; remove scroll bar
 (scroll-bar-mode -1)
 
+;; change default mode-line-format
+(setq mode-line-center '(:eval (format (format "%%%ds " (/ (window-width) 4)) "")))
+(setq mode-line-end '(:eval (format (format "%%%ds " (/ (window-width) 3)) "")))
+(setq mode-line-format '("%e" mode-line-front-space " " mode-line-modified
+			 (:eval mode-line-center) mode-line-buffer-identification
+			 (:eval mode-line-end) mode-line-end-spaces mode-line-modes))
 
 ;; smart mode line
 (require 'smart-mode-line)
-(setq sml/theme 'dark
-      sml/theme 'light
-      sml/theme 'respectful
+(setq sml/theme 'respectful
       sml/no-confirm-load-theme t)
 (sml/setup)
 
