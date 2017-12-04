@@ -58,15 +58,6 @@
 [submodule "emacs/modules/xcscope"]
 	path = emacs/modules/xcscope
 	url = https://github.com/JulienMasson/xcscope.el.git
-[submodule "awesome/blingbling"]
-	path = awesome/blingbling
-	url = https://github.com/JulienMasson/blingbling.git
-[submodule "awesome/vicious"]
-	path = awesome/vicious
-	url = http://git.sysphere.org/vicious
-[submodule "emacs/modules/lua-mode"]
-	path = emacs/modules/lua-mode
-	url = https://github.com/immerrr/lua-mode.git
 [submodule "emacs/modules/visual-regexp"]
 	path = emacs/modules/visual-regexp
 	url = https://github.com/benma/visual-regexp.el.git
