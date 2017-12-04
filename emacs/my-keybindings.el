@@ -40,9 +40,6 @@
 (global-set-key (kbd "C-c o t") 'org-todo-list)
 (global-set-key (kbd "C-c o c") 'org-capture)
 
-;; erc
-(global-set-key (kbd "C-c e j") 'erc-chat-jump)
-
 ;; shortcuts for pidgin using purple
 (global-set-key (kbd "C-c p i") 'purple-init)
 (global-set-key (kbd "C-c p b") 'purple-buddies-list)
