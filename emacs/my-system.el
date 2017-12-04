@@ -95,7 +95,8 @@
 
 ;; pdf tools
 (require 'pdf-tools)
-;; (pdf-tools-install)
+(require 'pdf-occur)
+(pdf-tools-install)
 
 ;; set default web browser
 (setq browse-url-browser-function 'browse-url-firefox
