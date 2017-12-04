@@ -82,9 +82,6 @@
 ;; remove scroll bar
 (scroll-bar-mode -1)
 
-;; which key
-(require 'which-key)
-(which-key-mode)
 
 ;; smart mode line
 (require 'smart-mode-line)
