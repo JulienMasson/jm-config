@@ -107,5 +107,13 @@
 ;; python doc
 (require 'pydoc)
 
+;; pycscope
+(defun cscope-pycscope (dir)
+  (interactive "DDirectory: ")
+  (let ((default-directory dir))
+    (async-shell-command "pycscope -D .")))
+
+(define-key cscope-minor-mode-keymap (kbd "C-c s p") 'cscope-pycscope)
+(add-hook 'python-mode-hook (function cscope-minor-mode))
 
 (provide 'my-programming)
