@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# dbus
+export $(dbus-launch)
+
 # check if we are in dual screen
 DUAL_SCREEN=`xrandr -q | grep -E -e "VGA-1 connected" -e "HDMI-1 connected" | wc -l)`
 if [ "$DUAL_SCREEN" -eq 2 ]; then
