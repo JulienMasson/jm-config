@@ -121,3 +121,12 @@
 [submodule "emacs/modules/ht"]
 	path = emacs/modules/ht
 	url = https://github.com/Wilfred/ht.el.git
+[submodule "emacs/modules/load-relative"]
+	path = emacs/modules/load-relative
+	url = https://github.com/rocky/emacs-load-relative.git
+[submodule "emacs/modules/loc-changes"]
+	path = emacs/modules/loc-changes
+	url = https://github.com/rocky/emacs-loc-changes.git
+[submodule "emacs/modules/realgud"]
+	path = emacs/modules/realgud
+	url = https://github.com/JulienMasson/realgud.git

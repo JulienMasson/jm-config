@@ -5,6 +5,11 @@
 ;; jump only on error compilation
 (setq compilation-skip-threshold 2)
 
+;; gdb config
+(require 'load-relative)
+(require 'loc-changes)
+(require 'realgud)
+
 ;; visual regexp
 (require 'visual-regexp)
 
