@@ -103,5 +103,8 @@
       browse-url-new-window-flag  t
       browse-url-firefox-new-window-is-tab t)
 
+;; tail
+(require 'tail)
+
 
 (provide 'my-system)
