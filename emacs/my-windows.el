@@ -132,5 +132,10 @@
 ;; silent tramp message
 (setq tramp-verbose 1)
 
+;; ansi color buffer
+(defun ansi-color-buffer ()
+  (interactive)
+  (ansi-color-apply-on-region (point-min) (point-max)))
+
 
 (provide 'my-windows)
