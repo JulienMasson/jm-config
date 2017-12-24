@@ -10,6 +10,10 @@
 (require 'loc-changes)
 (require 'realgud)
 
+(defun gdb (file)
+  (interactive (list (ido-read-file-name "gdb on: ")))
+  (realgud:gdb (concat "gdb " file)))
+
 ;; visual regexp
 (require 'visual-regexp)
 
