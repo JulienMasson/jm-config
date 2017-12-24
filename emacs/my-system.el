@@ -103,8 +103,11 @@
       browse-url-new-window-flag  t
       browse-url-firefox-new-window-is-tab t)
 
-;; tail
+;; utils
 (require 'tail)
+(require 'nmcli)
+(require 'dmesg)
+(require 'locate-database)
 
 
 (provide 'my-system)
