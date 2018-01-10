@@ -22,9 +22,9 @@
 (defstruct bitlbee
   process
   server
-  bitlbee-backend)
+  b-backend)
 
-(defstruct bitlbee-backend
+(defstruct b-backend
   name
   nick
   cmd-args
@@ -39,16 +39,16 @@
 (defvar bitlbee-current nil)
 
 (defun bitlbee-register (backend)
-  (let* ((name (bitlbee-backend-name backend))
+  (let* ((name (b-backend-name backend))
 	 (account (make-bitlbee :process (format "*%s*" name)
 				:server (format "%s-erc" name)
-				:bitlbee-backend backend)))
+				:b-backend backend)))
     (add-to-list 'bitlbee-accounts account nil)))
 
 (defun bitlbee-find-account (name)
   (seq-find (lambda (account)
-	      (string= (bitlbee-backend-name
-			(bitlbee-bitlbee-backend account))
+	      (string= (b-backend-name
+			(bitlbee-b-backend account))
 		       name))
 	    bitlbee-accounts))
 
@@ -60,18 +60,18 @@
 
 (defun bitlbee-build-cmd (backend)
   (format " %s -p %s -d %s -c %s "
-	  (bitlbee-backend-cmd-args backend)
-	  (bitlbee-backend-port backend)
+	  (b-backend-cmd-args backend)
+	  (b-backend-port backend)
 	  bitlbee-user-directory
-	  (bitlbee-backend-conf-file backend)))
+	  (b-backend-conf-file backend)))
 
 (defun bitlbee-hook ()
   (when (and (string= "localhost" erc-session-server)
              (string= "&bitlbee" (buffer-name)))
-    (let ((backend (bitlbee-backend bitlbee-current)))
+    (let ((backend (bitlbee-b-backend bitlbee-current)))
       (rename-buffer (bitlbee-server bitlbee-current))
       (remove-hook 'erc-join-hook 'bitlbee-hook)
-      (call-if-function (bitlbee-backend-after-connect backend)))))
+      (call-if-function (b-backend-after-connect backend)))))
 
 (defun bitlbee-list-erc-modified ()
   (delq nil
@@ -108,8 +108,8 @@
 
 (defun bitlbee-get-buddy (proc parsed)
   (let ((msg (erc-response.contents parsed))
-	(match (bitlbee-backend-name
-		(bitlbee-backend bitlbee-current))))
+	(match (b-backend-name
+		(bitlbee-b-backend bitlbee-current))))
     (when (stringp msg)
       (if (string-match "buddies" msg)
 	  (progn
@@ -129,8 +129,8 @@
 (defun bitlbee-update-list (name)
   (interactive (list (ido-completing-read "Update: "
 					  (delq nil (mapcar (lambda (account)
-							      (if (bitlbee-running-p (bitlbee-process account))
-								  (bitlbee-backend-name (bitlbee-backend account))))
+							      ;; (if (bitlbee-running-p (bitlbee-process account))
+								  (b-backend-name (bitlbee-b-backend account)))
 							    bitlbee-accounts))
 					  nil t nil nil)))
   (let ((account (bitlbee-find-account name)))
@@ -150,19 +150,19 @@
 (defun bitlbee-start (name)
   (interactive (list (ido-completing-read "Start: "
 					  (mapcar (lambda (account)
-						    (bitlbee-backend-name (bitlbee-backend account)))
+						    (b-backend-name (bitlbee-b-backend account)))
 						  bitlbee-accounts)
 					  nil t nil nil)))
   (let* ((account (bitlbee-find-account name))
-	 (backend (bitlbee-backend account))
+	 (backend (bitlbee-b-backend account))
 	 (cmd-line (bitlbee-build-cmd backend)))
     (start-process-shell-command name
     				 (bitlbee-process account)
     				 bitlbee-executable
     				 cmd-line)
     (erc :server "localhost"
-	 :port (bitlbee-backend-port backend)
-	 :nick (bitlbee-backend-nick backend))
+	 :port (b-backend-port backend)
+	 :nick (b-backend-nick backend))
     (setq bitlbee-current account)
     (add-hook 'erc-join-hook 'bitlbee-hook)))
 
@@ -186,7 +186,7 @@
 (defun bitlbee-quit (name)
   (interactive (list (ido-completing-read "Quit: "
 					  (mapcar (lambda (account)
-						    (bitlbee-backend-name (bitlbee-backend account)))
+						    (b-backend-name (bitlbee-b-backend account)))
 						  bitlbee-accounts)
 					  nil t nil nil)))
   (let* ((account (bitlbee-find-account name))
