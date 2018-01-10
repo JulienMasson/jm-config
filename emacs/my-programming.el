@@ -84,4 +84,37 @@
 
 (add-hook 'python-mode-hook (function cscope-minor-mode))
 
+;; manual at point
+(defun manual-at-point()
+  (interactive)
+  (cond
+   ;; C mode
+   ((string= major-mode "c-mode")
+    (let* ((pattern (thing-at-point 'symbol))
+	   (man-result (split-string
+			(shell-command-to-string (format "man -f %s" pattern)) "\n"))
+	   (match (car (delq nil
+			     (mapcar (lambda (line)
+				       (if (string-match (format "\\(%s ([23])\\).*" pattern) line)
+					   (match-string 1 line)))
+				     man-result)))))
+      (if match
+	  (man match))))
+   ;; Perl mode
+   ((string= major-mode "cperl-mode")
+    (cperl-perldoc-at-point))
+   ;; Python mode
+   ((string= major-mode "python-mode")
+    (pydoc-at-point))
+   ;; Emacs lisp mode
+   ((string= major-mode "emacs-lisp-mode")
+    (let* ((string (thing-at-point 'symbol))
+	   (symbol (intern-soft string)))
+      (when symbol
+	(cond ((fboundp symbol)
+	       (describe-function symbol))
+	      ((boundp symbol)
+	       (describe-variable symbol))))))))
+
+
 (provide 'my-programming)

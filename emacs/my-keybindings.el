@@ -62,6 +62,8 @@
 ;; pycscope
 (define-key cscope-minor-mode-keymap (kbd "C-c s p") 'cscope-pycscope)
 
+;; manual at point
+(global-set-key (kbd "M-h") 'manual-at-point)
 
 
 (provide 'my-keybindings)
