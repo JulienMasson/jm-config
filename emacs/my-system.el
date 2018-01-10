@@ -22,6 +22,9 @@
 			 ("marmalade" . "http://marmalade-repo.org/packages/")
 			 ("melpa" . "http://melpa.milkbox.net/packages/")))
 
+;; convert the region to lower case
+(put 'downcase-region 'disabled nil)
+
 ;; don't ask to follow symlink
 (setq vc-follow-symlinks t)
 
