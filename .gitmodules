@@ -82,9 +82,6 @@
 [submodule "emacs/modules/tablist"]
 	path = emacs/modules/tablist
 	url = https://github.com/politza/tablist.git
-[submodule "emacs/modules/buffer-move"]
-	path = emacs/modules/buffer-move
-	url = https://github.com/lukhas/buffer-move.git
 [submodule "emacs/modules/color-theme-sanityinc-tomorrow"]
 	path = emacs/modules/color-theme-sanityinc-tomorrow
 	url = https://github.com/JulienMasson/color-theme-sanityinc-tomorrow.git
