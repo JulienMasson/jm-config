@@ -156,5 +156,52 @@
 ;; use ido when completing read
 (setq gnus-completing-read-function 'gnus-ido-completing-read)
 
+;; attachments
+(defun gnus-get-line-article (match)
+  (goto-char (point-min))
+  (search-forward match nil t)
+  (line-number-at-pos))
+
+(defun gnus-build-list-attachments ()
+  (with-current-buffer gnus-article-buffer
+    (let ((start (gnus-get-line-article "Attachments:\n"))
+	  (end (gnus-get-line-article "\n\n"))
+	  attachments)
+      (goto-line start)
+      (while (< (line-number-at-pos) end)
+	(right-char 1)
+	(let* ((data (get-text-property (point) 'gnus-data))
+	       (name (or (mail-content-type-get
+			  (mm-handle-disposition data) 'filename)
+			 (mail-content-type-get
+			  (mm-handle-type data) 'name))))
+	  (when (and name data)
+	    (add-to-list 'attachments `(,name . ,data))))
+	(forward-line 1))
+      (delq nil attachments))))
+
+(defun gnus-save-attachment (file handle)
+  (when (or (not (file-exists-p file))
+	    (yes-or-no-p (format "File %s already exists; overwrite? "
+				 file)))
+      (mm-save-part-to-file handle file)))
+
+(defun gnus-ido-save-attachments ()
+  (interactive)
+  (let* ((attachments (gnus-build-list-attachments))
+	 (target (ido-completing-read "Save: "
+				      (append '("all")
+					      (mapcar 'car attachments))
+				      nil t nil nil))
+	 (dir (ido-read-directory-name "Directory: ")))
+    (if (string= target "all")
+	(mapc (lambda (data)
+		(gnus-save-attachment (expand-file-name (car data) dir)
+				      (cdr data)))
+	      attachments)
+      (let ((file (expand-file-name target dir))
+	    (handle (cdr (assoc target attachments))))
+	(gnus-save-attachment file handle)))))
+
 
 (provide 'my-gnus)
