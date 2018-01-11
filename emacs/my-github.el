@@ -6,6 +6,9 @@
 (require 'magit)
 (require 'magit-blame)
 
+;; ido on magit
+(setq magit-completing-read-function 'magit-ido-completing-read)
+
 ;; blacklist slow git repository
 (setq magit-blacklist-repo '())
 (setq magit-status-headers-hook-saved magit-status-headers-hook)

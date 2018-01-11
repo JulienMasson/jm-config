@@ -27,6 +27,26 @@
 (require 'ido)
 (setq ido-ignore-files '("\\`\\.\\./" "\\`\\./"))
 (ido-mode 1)
+(ido-everywhere)
+
+;; ido-completing-read+
+(require 'ido-completing-read+)
+(ido-ubiquitous-mode 1)
+
+;; ido on yes-or-no
+(defun ido-yes-or-no-p (prompt)
+  (let* ((yes-or-no-prompt (concat prompt " "))
+         (choices '("YES" "NO"))
+         (answer (ido-completing-read yes-or-no-prompt choices
+				      nil t nil nil)))
+    (string= answer "YES")))
+
+(defadvice yes-or-no-p (around use-ido activate)
+  (setq ad-return-value (ido-yes-or-no-p prompt)))
+
+;; smex
+(require 'smex)
+(smex-initialize)
 
 ;; hide welcome screen
 (setq inhibit-startup-message t)

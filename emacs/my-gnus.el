@@ -153,5 +153,8 @@
       starttls-extra-arguments nil
       starttls-use-gnutls t)
 
+;; use ido when completing read
+(setq gnus-completing-read-function 'gnus-ido-completing-read)
+
 
 (provide 'my-gnus)

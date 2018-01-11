@@ -127,3 +127,12 @@
 [submodule "emacs/modules/tablist"]
 	path = emacs/modules/tablist
 	url = https://github.com/JulienMasson/tablist.git
+[submodule "emacs/modules/ido-completing-read-plus"]
+	path = emacs/modules/ido-completing-read-plus
+	url = https://github.com/DarwinAwardWinner/ido-completing-read-plus.git
+[submodule "emacs/modules/memoize"]
+	path = emacs/modules/memoize
+	url = https://github.com/skeeto/emacs-memoize.git
+[submodule "emacs/modules/smex"]
+	path = emacs/modules/smex
+	url = https://github.com/nonsequitur/smex.git
