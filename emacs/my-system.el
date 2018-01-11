@@ -103,6 +103,9 @@
       browse-url-new-window-flag  t
       browse-url-firefox-new-window-is-tab t)
 
+;; gnus config
+(require 'my-gnus)
+
 ;; utils
 (require 'tail)
 (require 'nmcli)
