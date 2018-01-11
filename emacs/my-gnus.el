@@ -17,9 +17,6 @@
         gnus-tmp-group
       (cdr mapped-name))))
 
-;; authinfo
-(setq smtpmail-auth-credentials "~/.authinfo")
-
 ;; gnus render
 (setq mm-text-html-renderer 'shr)
 
@@ -144,6 +141,17 @@
 	  (lambda ()
 	    (setq fill-column 100)
 	    (turn-on-auto-fill)))
+
+;; config regarding sending message
+(setq send-mail-function 'smtpmail-send-it
+      message-send-mail-function 'smtpmail-send-it
+      smtpmail-debug-info nil
+      mail-setup-hook nil
+      smtpmail-auth-credentials (expand-file-name "~/.authinfo")
+      starttls-extra-arguments nil
+      starttls-gnutls-program "/usr/bin/gnutls-cli"
+      starttls-extra-arguments nil
+      starttls-use-gnutls t)
 
 
 (provide 'my-gnus)
