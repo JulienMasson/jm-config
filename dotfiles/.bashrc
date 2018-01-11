@@ -101,3 +101,6 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+# private
+source ~/jm-config/emacs/modules/jm-private/.bashrc_private
