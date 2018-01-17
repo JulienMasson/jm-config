@@ -103,8 +103,8 @@
       browse-url-new-window-flag  t
       browse-url-firefox-new-window-is-tab t)
 
-;; gnus config
-(require 'my-gnus)
+;; mail config
+(require 'my-mu4e)
 
 ;; utils
 (require 'tail)

@@ -65,8 +65,8 @@
 ;; manual at point
 (global-set-key (kbd "M-h") 'manual-at-point)
 
-;; gnus
-(define-key gnus-article-mode-map (kbd "C-c C-s") 'gnus-ido-save-attachments)
+;; mu4e
+(global-set-key (kbd "C-x m") 'mu4e-compose-new)
 
 
 (provide 'my-keybindings)

@@ -88,9 +88,6 @@
 [submodule "emacs/modules/company-c-headers"]
 	path = emacs/modules/company-c-headers
 	url = https://github.com/randomphrase/company-c-headers.git
-[submodule "emacs/modules/bbdb"]
-	path = emacs/modules/bbdb
-	url = https://github.com/emacsmirror/bbdb.git
 [submodule "emacs/modules/async"]
 	path = emacs/modules/async
 	url = https://github.com/jwiegley/emacs-async.git
@@ -133,3 +130,9 @@
 [submodule "emacs/modules/memoize"]
 	path = emacs/modules/memoize
 	url = https://github.com/skeeto/emacs-memoize.git
+[submodule "emacs/modules/mu4e-maildirs-extension"]
+	path = emacs/modules/mu4e-maildirs-extension
+	url = https://github.com/agpchil/mu4e-maildirs-extension.git
+[submodule "emacs/modules/mu"]
+	path = emacs/modules/mu
+	url = https://github.com/djcb/mu.git
