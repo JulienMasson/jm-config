@@ -107,7 +107,8 @@
    ((string= major-mode "python-mode")
     (pydoc-at-point))
    ;; Emacs lisp mode
-   ((string= major-mode "emacs-lisp-mode")
+   ((or (string= major-mode "emacs-lisp-mode")
+	(string= major-mode "lisp-interaction-mode"))
     (let* ((string (thing-at-point 'symbol))
 	   (symbol (intern-soft string)))
       (when symbol
