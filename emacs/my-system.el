@@ -107,6 +107,7 @@
 (require 'my-mu4e)
 
 ;; utils
+(require 'utils)
 (require 'tail)
 (require 'nmcli)
 (require 'dmesg)
