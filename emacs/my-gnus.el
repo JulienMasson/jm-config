@@ -7,15 +7,79 @@
 
 ;; gnus basic config
 (require 'gnus)
+
+;; method for selecting/reading
 (setq gnus-select-method '(nnnil ""))
+(setq gnus-secondary-select-methods nil)
+
+;; don't save .newsrc and .newsrc-dribble file
+(require 'gnus-start)
+(setq gnus-use-dribble-file nil)
+(setq gnus-save-newsrc-file nil)
+(defun gnus-save-newsrc-file (&optional force))
+
+;; accounts management
+(defstruct gnus-account
+  name
+  folder
+  smtp)
+
+(defvar gnus-accounts '())
+(defvar default-maildir "~/Maildir/")
+
+(defun register-gnus-nnmaildir-account (name folder smtp)
+  (let ((dir (concat default-maildir name))
+	(account (make-gnus-account :name name
+				    :folder folder
+				    :smtp smtp)))
+    (add-to-list 'gnus-secondary-select-methods
+		 `(nnmaildir ,name
+			     (directory ,dir)
+			     (directory-files nnheader-directory-files-safe)
+			     (get-new-mail nil)))
+    (add-to-list 'gnus-accounts account)))
+
+(defun ido-compose-mail (account)
+  (interactive (list (ido-completing-read "Account: "
+					  (mapcar (lambda (account)
+						    (gnus-account-name account))
+						    gnus-accounts)
+					  nil t nil nil)))
+  (let ((func (gnus-account-smtp
+	       (find account gnus-accounts :key 'gnus-account-name :test 'string=))))
+    (call-if-function func)
+    (compose-mail)))
+
+(defun gnus-add-accounts-topic ()
+  (mapc (lambda (account)
+	   (let ((name (gnus-account-name account))
+	   	 (folder (gnus-account-folder account)))
+	     (unless (gnus-topic-find-topology name)
+	       (gnus-topic-create-topic name "Gnus"))
+	     (setq gnus-topic-alist
+	   	   (append `(,(append `(,name) folder))
+	   		   gnus-topic-alist))))
+	 gnus-accounts))
+
+;; topic config
+(require 'gnus-topic)
+(defun gnus-my-topic ()
+  (setq gnus-topic-topology '(("Gnus" visible)))
+  (setq gnus-topic-alist '(("Gnus" "nndraft:drafts")))
+  (gnus-add-accounts-topic)
+  (gnus-group-list-all-groups))
+
+;; (add-hook 'gnus-started-hook 'gnus-my-topic)
+
+;; hook when exiting summary
+(add-hook 'gnus-summary-exit-hook 'gnus-group-list-all-groups)
 
 ;; rename groups name
 (setq gnus-group-line-format "%M%S%5y/%-5t: %uG %D\n")
 (defun gnus-user-format-function-G (arg)
-  (let ((mapped-name (assoc gnus-tmp-group group-name-map)))
-    (if (null mapped-name)
-        gnus-tmp-group
-      (cdr mapped-name))))
+  (if (string-match ".*:\\(.*\\)" gnus-tmp-group)
+      (match-string 1 gnus-tmp-group)
+    gnus-tmp-group))
 
 ;; gnus render
 (setq mm-text-html-renderer 'shr)
@@ -131,6 +195,16 @@
 
 ;; search engine
 (require 'nnmairix)
+(defun create-search-group-nnmaildir (name)
+  (let* ((defaultgroup "Search"))
+    ;; Create default search group
+    (gnus-group-make-group
+     defaultgroup (list 'nnmairix name
+			(list 'nnmairix-backend (intern "nnmaildir"))
+			(list 'nnmairix-backend-server name)
+			(list 'nnmairix-mairix-command "mairix")
+			(list 'nnmairix-hidden-folders nil)
+			(list 'nnmairix-default-group defaultgroup)))))
 
 ;; Use gnus for default compose-mail
 (if (boundp 'mail-user-agent)
@@ -202,6 +276,18 @@
       (let ((file (expand-file-name target dir))
 	    (handle (cdr (assoc target attachments))))
 	(gnus-save-attachment file handle)))))
+
+;; add personal gmail account
+(defvar gnus-perso-folders '("nnmaildir+Gmail:INBOX"
+			     "nnmaildir+Gmail:Sent"))
+(defun gnus-set-smtp-gmail ()
+  (setq user-mail-address "massonju.eseo@gmail.com"
+        user-full-name "Masson, Julien"
+        smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-service 587
+        gnus-message-archive-group "nnmaildir+Gmail:Sent"))
+
+(register-gnus-nnmaildir-account "Gmail" gnus-perso-folders 'gnus-set-smtp-gmail)
 
 
 (provide 'my-gnus)
