@@ -44,10 +44,6 @@
 (defadvice yes-or-no-p (around use-ido activate)
   (setq ad-return-value (ido-yes-or-no-p prompt)))
 
-;; smex
-(require 'smex)
-(smex-initialize)
-
 ;; hide welcome screen
 (setq inhibit-startup-message t)
 

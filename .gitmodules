@@ -133,6 +133,3 @@
 [submodule "emacs/modules/memoize"]
 	path = emacs/modules/memoize
 	url = https://github.com/skeeto/emacs-memoize.git
-[submodule "emacs/modules/smex"]
-	path = emacs/modules/smex
-	url = https://github.com/nonsequitur/smex.git
