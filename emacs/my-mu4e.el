@@ -88,5 +88,49 @@
 
 (add-hook 'mu4e-compose-pre-hook 'my-mu4e-set-account)
 
+;; ido attachment
+(defstruct mu4e-attachments
+  name
+  index
+  docid)
+
+(defun mu4e-build-attachments-list ()
+  (let* ((msg (mu4e-message-at-point))
+	 (docid (mu4e-message-field msg :docid)))
+    (mapcar (lambda (count)
+	      (let* ((att (mu4e~view-get-attach msg count))
+		     (name (plist-get att :name))
+		     (index (plist-get att :index)))
+		(make-mu4e-attachments :name name
+				       :index index
+				       :docid docid)))
+	    (number-sequence 1
+			     (hash-table-count mu4e~view-attach-map)))))
+
+(defun mu4e-save-attachment (file data)
+  (let ((docid (mu4e-attachments-docid data))
+	(index (mu4e-attachments-index data)))
+    (mu4e~proc-extract 'save docid index mu4e-decryption-policy file)))
+
+(defun mu4e-ido-save-attachments ()
+  (interactive)
+  (let* ((attachments (mu4e-build-attachments-list))
+	 (target (ido-completing-read "Save: "
+				      (append '("all")
+					      (mapcar (lambda (data)
+							(mu4e-attachments-name data))
+						      attachments))
+				      nil t nil nil))
+	 (dir (ido-read-directory-name "Directory: ")))
+    (if (string= target "all")
+	(mapc (lambda (data)
+		(let ((target (mu4e-attachments-name data)))
+		  (mu4e-save-attachment (expand-file-name target dir)
+					data)))
+	      attachments)
+      (let ((file (expand-file-name target dir))
+	    (data (find target attachments :key 'mu4e-attachments-name :test 'string=)))
+	(mu4e-save-attachment file data)))))
+
 
 (provide 'my-mu4e)

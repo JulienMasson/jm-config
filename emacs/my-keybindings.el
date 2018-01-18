@@ -68,6 +68,7 @@
 ;; mu4e
 (global-set-key (kbd "C-x m") 'mu4e-compose-new)
 (global-set-key (kbd "C-M-m") 'mu4e)
+(define-key mu4e-view-mode-map (kbd "C-c C-s") 'mu4e-ido-save-attachments)
 
 ;; project manager
 (global-set-key (kbd "C-c i s") 'switch-project)
