@@ -48,5 +48,45 @@
 ;; don't display some folders
 (setq mu4e-maildirs-extension-ignored-regex "\\(/drafts\\|/sent\\|trash\\)")
 
+;; config regarding sending message
+(setq send-mail-function 'smtpmail-send-it
+      message-send-mail-function 'smtpmail-send-it
+      smtpmail-debug-info nil
+      mail-setup-hook nil
+      smtpmail-auth-credentials (expand-file-name "~/.authinfo")
+      starttls-extra-arguments nil
+      starttls-gnutls-program "/usr/bin/gnutls-cli"
+      starttls-extra-arguments nil
+      starttls-use-gnutls t)
+
+;; account list
+(defvar my-mu4e-account-alist
+  '(("Gmail"
+     (user-mail-address "massonju.eseo@gmail.com")
+     (user-full-name "Masson, Julien")
+     (smtpmail-smtp-server "smtp.gmail.com")
+     (smtpmail-smtp-service 587))))
+
+(defun my-mu4e-set-account ()
+  "Set the account for composing a message."
+  (let* ((account
+          (if mu4e-compose-parent-message
+              (let ((maildir (mu4e-message-field mu4e-compose-parent-message :maildir)))
+                (string-match "/\\(.*?\\)/" maildir)
+                (match-string 1 maildir))
+            (completing-read (format "Compose with account: (%s) "
+                                     (mapconcat #'(lambda (var) (car var))
+                                                my-mu4e-account-alist "/"))
+                             (mapcar #'(lambda (var) (car var)) my-mu4e-account-alist)
+                             nil t nil nil (caar my-mu4e-account-alist))))
+         (account-vars (cdr (assoc account my-mu4e-account-alist))))
+    (if account-vars
+        (mapc #'(lambda (var)
+                  (set (car var) (cadr var)))
+              account-vars)
+      (error "No email account found"))))
+
+(add-hook 'mu4e-compose-pre-hook 'my-mu4e-set-account)
+
 
 (provide 'my-mu4e)
