@@ -32,8 +32,34 @@
        (mu4e~main-action-str "\t* [q]uit\n" 'mu4e-quit))
        (mu4e-main-mode))))
 
+;; change headers
+(setq mu4e-headers-date-format "%R  %d %b %G  %A")
+(setq mu4e-headers-fields '((:date          .  32)
+			    (:from          .  25)
+			    (:subject       .  nil)))
+(setq mu4e-view-fields '(:from :to :cc :subject :date :mailing-list :attachments :signature))
+
+;; enable inline images
+(setq mu4e-view-show-images t)
+
+;; body display on the html-version
+(setq mu4e-view-prefer-html t)
+
+;; show full addresses in view message
+(setq mu4e-view-show-addresses 't)
+
+;; message buffer will be killed after sending a message
+(setq message-kill-buffer-on-exit t)
+
 ;; handle multi maildir accounts
 (require 'mu4e-maildirs-extension)
+(setq mu4e-maildirs-extension-maildir-indent 0
+      mu4e-maildirs-extension-maildir-default-prefix " "
+      mu4e-maildirs-extension-maildir-collapsed-prefix " "
+      mu4e-maildirs-extension-maildir-expanded-prefix "*"
+      mu4e-maildirs-extension-updating-string ""
+      mu4e-maildirs-extension-maildir-format "\t%i%p %-20n (%u/%t)"
+      mu4e-maildirs-extension-maildir-hl-regex mu4e-maildirs-extension-maildir-format)
 (mu4e-maildirs-extension)
 
 ;; insert maildir header above "Help Commands" header
