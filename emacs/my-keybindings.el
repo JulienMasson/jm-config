@@ -67,6 +67,7 @@
 
 ;; mu4e
 (global-set-key (kbd "C-x m") 'mu4e-compose-new)
+(global-set-key (kbd "C-M-m") 'mu4e)
 
 ;; project manager
 (global-set-key (kbd "C-c i s") 'switch-project)

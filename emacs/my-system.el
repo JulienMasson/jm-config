@@ -49,6 +49,11 @@
 (setq virtual-desktops-display-mode-line nil)
 (virtual-desktops-mode 1)
 
+;; add 4 virtual desktop
+(dotimes (i 4)
+  (virtual-desktops-add 1))
+(virtual-desktops-goto 1)
+
 ;; edit file root
 (defun sudo-edit (&optional arg)
   (interactive "P")
@@ -125,6 +130,7 @@
 			      ("utils"          .       "/emacs/utils")
 			      ("modules"	.       "/emacs/modules")
 			      ("emacs"		.	"/emacs"))))
+(switch-project "jm-config")
 
 ;; Status
 (require 'status)
