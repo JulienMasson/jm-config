@@ -68,5 +68,10 @@
 ;; mu4e
 (global-set-key (kbd "C-x m") 'mu4e-compose-new)
 
+;; project manager
+(global-set-key (kbd "C-c i s") 'switch-project)
+(global-set-key (kbd "C-c i p") 'project-compile)
+(global-set-key (kbd "C-c f") 'project-find-file-subproject)
+
 
 (provide 'my-keybindings)

@@ -54,7 +54,7 @@ mkdir bin Documents Downloads Pictures Music Desktop .config
 sudo apt-get update
 sudo apt-get upgrade -y
 sudo apt-get dist-upgrade -y
-sudo apt-get install xinit rxvt-unicode arandr cscope offlineimap alsa-utils pulseaudio rofi i3lock-fancy dunst dbus-x11 tint2 thunar evince mairix eog install-info locate -y
+sudo apt-get install xinit rxvt-unicode arandr cscope offlineimap alsa-utils pulseaudio rofi i3lock-fancy dunst dbus-x11 tint2 thunar evince eog install-info locate -y
 
 # OPTIONAL packages
 sudo apt-get install aptitude pv lxappearance network-manager-gnome numix-gtk-theme numix-icon-theme gnome-system-monitor -y
@@ -103,3 +103,4 @@ popd
 
 # symlink all dotfiles in home directory
 find ~/jm-config/dotfiles/ -name ".*" -exec sh -c 'ln -sf {} ~/$(basename {})' \;
+find ~/jm-config/emacs/modules/jm-private/dotfiles/ -name ".*" -exec sh -c 'ln -sf {} ~/$(basename {})' \;

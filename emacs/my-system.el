@@ -113,5 +113,37 @@
 (require 'dmesg)
 (require 'locate-database)
 
+;; Project manager
+(require 'project-manager)
+(require 'pm-emacslisp)
+(register-project
+ (make-project :name "jm-config"
+	       :pm-backend "emacslisp"
+	       :root-path "~/jm-config"
+	       :env-vars '()
+	       :subprojects '(("private"        .       "/emacs/modules/jm-private")
+			      ("utils"          .       "/emacs/utils")
+			      ("modules"	.       "/emacs/modules")
+			      ("emacs"		.	"/emacs"))))
+
+;; Status
+(require 'status)
+(setq status-separator  " | ")
+(setq status-battery-discharging-fmt " %p%% %t")
+(setq net-interfaces '("enx70886b8212af"))
+(status-add-to-left 'status-compilation)
+(status-add-to-left 'status-ctags)
+(status-add-to-left 'status-erc)
+(status-add-to-left 'status-cscope)
+(status-add-to-left 'status-project-manager)
+(status-add-to-left 'status-virtual-desktops)
+(status-add-to-right 'status-date)
+(status-add-to-right 'status-volume)
+(status-add-to-right 'status-battery)
+(status-add-to-right 'status-cpu)
+(status-add-to-right 'status-mem)
+(status-add-to-right 'status-net)
+(turn-on-status)
+
 
 (provide 'my-system)

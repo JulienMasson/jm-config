@@ -103,4 +103,4 @@ if ! shopt -oq posix; then
 fi
 
 # private
-source ~/jm-config/emacs/modules/jm-private/.bashrc_private
+source ~/.bash_private
