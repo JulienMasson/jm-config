@@ -134,6 +134,7 @@
 (status-add-to-left 'status-compilation)
 (status-add-to-left 'status-ctags)
 (status-add-to-left 'status-erc)
+(status-add-to-left 'status-mu4e)
 (status-add-to-left 'status-cscope)
 (status-add-to-left 'status-project-manager)
 (status-add-to-left 'status-virtual-desktops)
