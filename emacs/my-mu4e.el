@@ -18,8 +18,9 @@
 (setq mu4e-update-interval 60)
 
 ;; write own main view
-(defun mu4e~main-view-real (ignore-auto noconfirm)
-  (let ((buf (get-buffer-create mu4e~main-buffer-name))
+(defvar my-mu4e~main-buffer-name "*mail*")
+(defun mu4e~main-view ()
+  (let ((buf (get-buffer-create my-mu4e~main-buffer-name))
 	(inhibit-read-only t))
     (with-current-buffer buf
       (erase-buffer)
@@ -30,7 +31,10 @@
        (mu4e~main-action-str "\t* [s]earch query\n" 'mu4e-search)
        (mu4e~main-action-str "\t* [C]ompose a new message\n" 'mu4e-compose-new)
        (mu4e~main-action-str "\t* [q]uit\n" 'mu4e-quit))
-       (mu4e-main-mode))))
+      (mu4e-main-mode)
+      (goto-char (point-min))
+      (pop-to-buffer-same-window buf))
+    (add-to-list 'global-mode-string '(:eval (mu4e-context-label)))))
 
 ;; change headers
 (setq mu4e-headers-date-format "%R  %d %b %G  %A")
@@ -53,7 +57,8 @@
 
 ;; handle multi maildir accounts
 (require 'mu4e-maildirs-extension)
-(setq mu4e-maildirs-extension-maildir-indent 0
+(setq mu4e-maildirs-extension-buffer-name my-mu4e~main-buffer-name
+      mu4e-maildirs-extension-maildir-indent 0
       mu4e-maildirs-extension-maildir-default-prefix " "
       mu4e-maildirs-extension-maildir-collapsed-prefix " "
       mu4e-maildirs-extension-maildir-expanded-prefix "*"
