@@ -71,7 +71,13 @@
     ("jm-blue-3"   . "#5C888B")
     ("jm-blue-4"   . "#4C7073")
     ("jm-blue-5"   . "#366060")
-    ("jm-magenta"  . "#DC8CC3"))
+    ("jm-magenta"  . "#DC8CC3")
+    ("highlight"   . "#393939")
+    ("contrast-bg" . "#515151")
+    ("comment"     . "#999999")
+    ("orange"      . "#fb8512")
+    ("green"       . "#99cc99")
+    ("blue"        . "#6699cc"))
   "List of Jm colors.
 Each element has the form (NAME . HEX).
 
@@ -643,6 +649,20 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(cscope-line-number-face ((t :foreground ,jm-red)))
    `(cscope-mouse-face ((t :foreground "white" :background "blue")))
    `(cscope-separator-face ((t :bold t :overline t :underline t :foreground ,jm-orange)))
+;;;;; company
+   `(company-preview ((t (:foreground ,comment :background ,contrast-bg))))
+   `(company-preview-common ((t (:inherit company-preview :foreground ,orange))))
+   `(company-preview-search ((t (:inherit company-preview :foreground ,blue))))
+   `(company-tooltip ((t (:background ,contrast-bg))))
+   `(company-tooltip-selection ((t (:background ,highlight))))
+   `(company-tooltip-common ((t (:inherit company-tooltip :foreground ,orange))))
+   `(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :foreground ,orange))))
+   `(company-tooltip-search ((t (:inherit company-tooltip :foreground ,blue))))
+   `(company-tooltip-annotation ((t (:inherit company-tooltip :foreground ,green))))
+   `(company-tooltip-annotation-selection ((t (:inherit company-tooltip-selection :foreground ,green))))
+   `(company-scrollbar-bg ((t (:inherit 'company-tooltip :background ,highlight))))
+   `(company-scrollbar-fg ((t (:background ,contrast-bg))))
+   `(company-echo-common ((t (:inherit company-echo :foreground ,orange))))
 ))
 
 ;;; Theme Variables
