@@ -32,8 +32,7 @@
        (mu4e~main-action-str "\t* [C]ompose a new message\n" 'mu4e-compose-new)
        (mu4e~main-action-str "\t* [q]uit\n" 'mu4e-quit))
       (mu4e-main-mode)
-      (goto-char (point-min))
-      (pop-to-buffer-same-window buf))
+      (goto-char (point-min)))
     (add-to-list 'global-mode-string '(:eval (mu4e-context-label)))))
 
 ;; change headers
