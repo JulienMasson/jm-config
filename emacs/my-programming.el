@@ -9,6 +9,7 @@
 (require 'load-relative)
 (require 'loc-changes)
 (require 'realgud)
+(setq realgud-safe-mode nil)
 
 (defun gdb (file)
   (interactive (list (ido-read-file-name "gdb on: ")))
