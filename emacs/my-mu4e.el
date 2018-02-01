@@ -14,6 +14,9 @@
 ;; hide index messages
 (setq mu4e-hide-index-messages t)
 
+;; fancy chars
+(setq mu4e-use-fancy-chars t)
+
 ;; time (secs) to retrieve mail and update the database
 (setq mu4e-update-interval 60)
 
