@@ -139,3 +139,15 @@
 [submodule "emacs/modules/ghub"]
 	path = emacs/modules/ghub
 	url = https://github.com/magit/ghub.git
+[submodule "emacs/modules/request"]
+	path = emacs/modules/request
+	url = https://github.com/tkf/emacs-request.git
+[submodule "emacs/modules/alert"]
+	path = emacs/modules/alert
+	url = https://github.com/jwiegley/alert.git
+[submodule "emacs/modules/org-gcal"]
+	path = emacs/modules/org-gcal
+	url = https://github.com/myuhe/org-gcal.el.git
+[submodule "emacs/modules/deferred"]
+	path = emacs/modules/deferred
+	url = https://github.com/kiwanami/emacs-deferred.git
