@@ -54,7 +54,7 @@ mkdir bin Documents Downloads Pictures Music Desktop .config
 sudo apt-get update
 sudo apt-get upgrade -y
 sudo apt-get dist-upgrade -y
-sudo apt-get install xinit rxvt-unicode arandr cscope offlineimap alsa-utils pulseaudio rofi i3lock-fancy dunst dbus-x11 tint2 thunar evince eog install-info locate -y
+sudo apt-get install xinit rxvt-unicode arandr cscope offlineimap alsa-utils pulseaudio rofi i3lock-fancy dunst dbus-x11 thunar evince eog install-info locate -y
 
 # OPTIONAL packages
 sudo apt-get install aptitude pv lxappearance network-manager-gnome numix-gtk-theme numix-icon-theme gnome-system-monitor -y
@@ -63,7 +63,7 @@ sudo apt-get install aptitude pv lxappearance network-manager-gnome numix-gtk-th
 sudo apt-get install build-essential autogen autoconf automake libtool texinfo html2text libc6-dev libncurses5-dev libpng-dev xaw3dg-dev zlib1g-dev libice-dev libsm-dev libx11-dev libxext-dev libxi-dev libxmu-dev libxmuu-dev libxpm-dev libxrandr-dev libxt-dev libxtst-dev libxv-dev libgif-dev libtiff5-dev libgtk-3-dev libncurses5-dev libgtk2.0-dev libgif-dev libjpeg-dev libpng-dev libxpm-dev libtiff5-dev libxml2-dev librsvg2-dev libotf-dev libm17n-dev libgpm-dev libgconf2-dev libdbus-1-dev libgmime-2.6-dev libxapian-dev gnutls-dev libmagickcore-dev libmagick++-dev -y
 
 # packages for jwm
-sudo apt-get install libx11-xcb-dev libxcb-ewmh-dev libxcb-icccm4-dev libxcb-randr0-dev libxcb-keysyms1-dev
+sudo apt-get install libx11-xcb-dev libxcb-randr0-dev libxcb-keysyms1-dev libxcb-icccm4-dev libxcb-ewmh-dev libcairo2-dev libpangocairo-1.0-0 -y
 
 # install firefox
 pushd Downloads
