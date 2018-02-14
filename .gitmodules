@@ -136,3 +136,6 @@
 [submodule "emacs/modules/mu"]
 	path = emacs/modules/mu
 	url = https://github.com/djcb/mu.git
+[submodule "emacs/modules/ghub"]
+	path = emacs/modules/ghub
+	url = https://github.com/magit/ghub.git
