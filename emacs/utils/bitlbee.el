@@ -26,7 +26,9 @@
 
 (defstruct b-backend
   name
+  (color 'success)
   nick
+  type
   cmd-args
   port
   (conf-file 'ignore)
@@ -35,7 +37,9 @@
 (defvar bitlbee-executable "bitlbee")
 (defvar bitlbee-user-directory "~/.bitlbee")
 (defvar bitlbee-accounts '())
+(defvar bitlbee-accounts-tmp '())
 (defvar bitlbee-buddies nil)
+(defvar bitlbee-buddies-tmp nil)
 (defvar bitlbee-current nil)
 
 (defun bitlbee-register (backend)
@@ -107,44 +111,54 @@
   (if (get-buffer-process process) t nil))
 
 (defun bitlbee-get-buddy (proc parsed)
-  (let ((msg (erc-response.contents parsed))
-	(match (b-backend-name
-		(bitlbee-b-backend bitlbee-current))))
+  (let* ((current (car bitlbee-accounts-tmp))
+	 (msg (erc-response.contents parsed))
+	 (match (b-backend-type
+		 (bitlbee-b-backend current))))
     (when (stringp msg)
       (if (string-match "buddies" msg)
 	  (progn
 	    (remove-hook 'erc-server-PRIVMSG-functions 'bitlbee-get-buddy)
-	    (setq bitlbee-buddies (mapcar (lambda (buddy)
-					    `(,bitlbee-current . ,buddy))
+	    (setq bitlbee-buddies (append (mapcar (lambda (buddy)
+						    `(,current . ,buddy))
+						  bitlbee-buddies-tmp)
 					  bitlbee-buddies))
-	    (message (propertize "Update list done" 'face 'success)))
+	    (setq bitlbee-accounts-tmp (cdr bitlbee-accounts-tmp))
+	    (bitlbee-update))
 	(save-match-data
 	  (if (string-match (format "\\(\\w*\\)\\s-*[0-9]* %s\\s-*\\(\\w*\\)$" match) msg)
 	      (let ((buddy-face (if (string= "Online" (match-string 2 msg))
-				    'success
+				    (b-backend-color
+				     (bitlbee-b-backend current))
 				  'error)))
 	      (delete-dups (push (propertize (match-string 1 msg) 'face buddy-face)
-				 bitlbee-buddies)))))))))
+				 bitlbee-buddies-tmp)))))))))
 
-(defun bitlbee-update-list (name)
-  (interactive (list (ido-completing-read "Update: "
-					  (delq nil (mapcar (lambda (account)
-							      ;; (if (bitlbee-running-p (bitlbee-process account))
-								  (b-backend-name (bitlbee-b-backend account)))
-							    bitlbee-accounts))
-					  nil t nil nil)))
-  (let ((account (bitlbee-find-account name)))
-    (setq bitlbee-current account)
-    (setq bitlbee-buddies nil)
-    (add-hook 'erc-server-PRIVMSG-functions 'bitlbee-get-buddy)
-    (with-current-buffer (bitlbee-server account)
-      (erc-send-message "blist all"))))
+(defun bitlbee-update ()
+  (setq bitlbee-buddies-tmp nil)
+  (if bitlbee-accounts-tmp
+      (let* ((account (car bitlbee-accounts-tmp))
+	     (server (bitlbee-server account)))
+	(if (get-buffer server)
+	    (progn
+	      (add-hook 'erc-server-PRIVMSG-functions 'bitlbee-get-buddy)
+	      (with-current-buffer server
+		(erc-send-message "blist all")))
+	  (setq bitlbee-accounts-tmp (cdr bitlbee-accounts-tmp))
+	  (bitlbee-update)))
+    (message (propertize "Update list done" 'face 'success))))
+
+(defun bitlbee-update-all ()
+  (interactive)
+  (setq bitlbee-buddies nil)
+  (setq bitlbee-accounts-tmp bitlbee-accounts)
+  (bitlbee-update))
 
 ;; bitlbee actions
 (defvar bitlbee-actions '(("start"       . bitlbee-start)
 			  ("chat"        . bitlbee-chat)
 			  ("jump"        . bitlbee-jump)
-			  ("update-list" . bitlbee-update-list)
+			  ("update-list" . bitlbee-update-all)
 			  ("quit"        . bitlbee-quit)))
 
 (defun bitlbee-start (name)
@@ -178,7 +192,6 @@
   (interactive (list (ido-completing-read "Chat to: "
 					  (mapcar 'cdr bitlbee-buddies)
 					  nil t nil nil)))
-
   (let* ((buddy (bitlbee-find-buddy name))
 	 (server (bitlbee-server (car buddy))))
     (bitlbee-connect server name)))

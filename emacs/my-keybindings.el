@@ -48,7 +48,7 @@
 (global-set-key (kbd "C-c C-u") (lambda () (interactive) (run-at-time 1 status-refresh-timer-delay 'status-update)))
 
 ;; bitlbee
-(global-set-key (kbd "C-c e b") 'bitlbee-update-list)
+(global-set-key (kbd "C-c e b") 'bitlbee-update-all)
 (global-set-key (kbd "C-c e c") 'bitlbee-chat)
 (global-set-key (kbd "C-c e j") 'bitlbee-jump)
 
