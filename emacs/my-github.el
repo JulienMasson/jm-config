@@ -6,6 +6,10 @@
 (require 'magit)
 (require 'magit-blame)
 
+;; use emacsclient as the $EDITOR
+(require 'with-editor)
+(add-hook 'shell-mode-hook 'with-editor-export-editor)
+
 ;; ido on magit
 (setq magit-completing-read-function 'magit-ido-completing-read)
 
