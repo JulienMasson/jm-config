@@ -64,9 +64,6 @@
 [submodule "emacs/modules/emacs-which-key"]
 	path = emacs/modules/which-key/
 	url = https://github.com/justbur/emacs-which-key.git
-[submodule "emacs/modules/smart-mode-line"]
-	path = emacs/modules/smart-mode-line
-	url = https://github.com/Malabarba/smart-mode-line.git
 [submodule "emacs/modules/rich-minority"]
 	path = emacs/modules/rich-minority
 	url = https://github.com/Malabarba/rich-minority
@@ -163,3 +160,6 @@
 [submodule "emacs/modules/websocket"]
 	path = emacs/modules/websocket
 	url = https://github.com/ahyatt/emacs-websocket.git
+[submodule "emacs/modules/telephone-line"]
+	path = emacs/modules/telephone-line
+	url = https://github.com/dbordak/telephone-line.git
