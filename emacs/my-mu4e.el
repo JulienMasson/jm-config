@@ -6,7 +6,7 @@
 (require 'mu4e)
 
 ;; maildir root path
-(setq mu4e-maildir "/home/lab/Maildir")
+(setq mu4e-maildir "~/Maildir")
 
 ;; command to fetch mail
 (setq mu4e-get-mail-command "offlineimap")
@@ -35,7 +35,8 @@
        (mu4e~main-action-str "\t* [C]ompose a new message\n" 'mu4e-compose-new)
        (mu4e~main-action-str "\t* [q]uit\n" 'mu4e-quit))
       (mu4e-main-mode)
-      (goto-char (point-min)))
+      (goto-char (point-min))
+      (pop-to-buffer-same-window buf))
     (add-to-list 'global-mode-string '(:eval (mu4e-context-label)))))
 
 ;; change headers
@@ -81,24 +82,19 @@
 ;; don't display some folders
 (setq mu4e-maildirs-extension-ignored-regex "\\(/drafts\\|/sent\\|trash\\)")
 
-;; config regarding sending message
-(setq send-mail-function 'smtpmail-send-it
-      message-send-mail-function 'smtpmail-send-it
+;; default config when sending mail
+(setq send-mail-function 'message-send-mail-with-sendmail
+      message-send-mail-function 'message-send-mail-with-sendmail
       smtpmail-debug-info nil
       mail-setup-hook nil
-      smtpmail-auth-credentials (expand-file-name "~/.authinfo")
-      starttls-extra-arguments nil
-      starttls-gnutls-program "/usr/bin/gnutls-cli"
-      starttls-extra-arguments nil
-      starttls-use-gnutls t)
+      sendmail-program "/usr/bin/msmtp")
 
 ;; account list
 (defvar my-mu4e-account-alist
   '(("Gmail"
      (user-mail-address "massonju.eseo@gmail.com")
      (user-full-name "Masson, Julien")
-     (smtpmail-smtp-server "smtp.gmail.com")
-     (smtpmail-smtp-service 587))))
+     (message-sendmail-extra-arguments ("-a" "perso")))))
 
 (defun my-mu4e-set-account ()
   "Set the account for composing a message."
@@ -107,9 +103,7 @@
               (let ((maildir (mu4e-message-field mu4e-compose-parent-message :maildir)))
                 (string-match "/\\(.*?\\)/" maildir)
                 (match-string 1 maildir))
-            (completing-read (format "Compose with account: (%s) "
-                                     (mapconcat #'(lambda (var) (car var))
-                                                my-mu4e-account-alist "/"))
+            (completing-read "Compose with account: "
                              (mapcar #'(lambda (var) (car var)) my-mu4e-account-alist)
                              nil t nil nil (caar my-mu4e-account-alist))))
          (account-vars (cdr (assoc account my-mu4e-account-alist))))
