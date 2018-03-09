@@ -75,5 +75,8 @@
 (global-set-key (kbd "C-c i p") 'project-compile)
 (global-set-key (kbd "C-c f") 'project-find-file-subproject)
 
+;; grep at point
+(global-set-key (kbd "C-M-g") 'grep-at-point)
+
 
 (provide 'my-keybindings)

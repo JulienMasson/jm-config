@@ -53,6 +53,14 @@
 ;; change default grep
 (setq grep-command "grep --color -nsrH -e ")
 
+;; grep at point
+(require 'thingatpt)
+(defun grep-at-point ()
+  (interactive)
+  (grep (format "%s%s ."
+		grep-command
+		(thing-at-point 'symbol))))
+
 ;; ripgrep
 (require 'rg)
 
