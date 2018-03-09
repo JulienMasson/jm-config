@@ -40,5 +40,21 @@
 		(arguments arguments))
     (lambda (&rest more) (apply function (append more arguments)))))
 
+(defmacro light-save-excursion (&rest body)
+  (declare (indent 1))
+  `(let ((save-pos (make-symbol "save-pos")))
+     (setq save-pos (point))
+     ,@body
+     (goto-char save-pos)))
+
+(defmacro light-save-excursion-if-not-at-point-max (buf &rest body)
+  (declare (indent 1))
+  `(if (= (point-max) (point))
+       (progn ,@body
+              (when (get-buffer-window ,buf t)
+		(with-selected-window (get-buffer-window ,buf t)
+		  (goto-char (point-max)))))
+     (light-save-excursion (progn ,@body))))
+
 
 (provide 'utils)
