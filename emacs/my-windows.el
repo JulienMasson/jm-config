@@ -92,6 +92,10 @@
 (add-hook 'focus-in-hook (lambda () (highlight-focus:app-focus t)))
 (add-hook 'focus-out-hook (lambda () (highlight-focus:app-focus nil)))
 
+;; line highlighting in all buffers
+(require 'hl-line)
+(global-hl-line-mode 1)
+
 ;; remove scroll bar
 (scroll-bar-mode -1)
 
