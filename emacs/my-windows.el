@@ -152,5 +152,22 @@
   (interactive)
   (ansi-color-apply-on-region (point-min) (point-max)))
 
+;; window dedicated
+(defun toggle-window-dedicated ()
+  (interactive)
+  (message
+   (if (let (window (get-buffer-window (current-buffer)))
+         (set-window-dedicated-p window (not (window-dedicated-p window))))
+       "%s dedicated"
+     "%s free")
+   (current-buffer)))
+
+;; toggle horizontal split
+(defun toggle-horizontal-split ()
+  (interactive)
+  (if (not split-height-threshold)
+      (setq split-height-threshold 119)
+    (setq split-height-threshold nil)))
+
 
 (provide 'my-windows)

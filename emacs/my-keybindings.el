@@ -12,7 +12,6 @@
 (global-set-key (kbd "C-c M-i") 'string-insert-rectangle)
 (global-set-key (kbd "C-c M-d") 'delete-matching-lines)
 (global-set-key (kbd "C-c M-r") 'revert-buffer)
-(global-set-key (kbd "C-c h") 'highlight-lines-matching-regexp)
 (global-set-key (kbd "C-c m") 'comment-region)
 (global-set-key (kbd "C-c u") 'uncomment-region)
 (global-set-key (kbd "C-c k") 'kill-buffer-and-window)
@@ -75,6 +74,12 @@
 
 ;; grep at point
 (global-set-key (kbd "C-M-g") 'grep-at-point)
+
+;; window dedicated
+(global-set-key (kbd "C-c t") 'toggle-window-dedicated)
+
+;; horizontal split
+(global-set-key (kbd "C-c h") 'toggle-horizontal-split)
 
 
 (provide 'my-keybindings)
