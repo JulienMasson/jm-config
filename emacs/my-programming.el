@@ -70,10 +70,9 @@
 (require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
 
-;; additionnals company backends
+;; c header company
 (require 'company-c-headers)
-(eval-after-load 'company
-  '(add-to-list 'company-backends '(company-c-headers)))
+(add-to-list 'company-backends 'company-c-headers)
 
 ;; perl
 (defalias 'perl-mode 'cperl-mode)
