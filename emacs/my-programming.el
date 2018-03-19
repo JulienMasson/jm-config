@@ -84,8 +84,10 @@
   (let ((default-directory dir))
     (shell-command "/usr/bin/ctags -e -R .")))
 
-;; python doc
-(require 'pydoc)
+;; anaconda company
+(require 'company-anaconda)
+(add-to-list 'company-backends 'company-anaconda)
+(add-hook 'python-mode-hook 'anaconda-mode)
 
 ;; pycscope
 (defun cscope-pycscope (dir)
@@ -116,7 +118,7 @@
     (cperl-perldoc-at-point))
    ;; Python mode
    ((string= major-mode "python-mode")
-    (pydoc-at-point))
+    (anaconda-mode-show-doc))
    ;; Emacs lisp mode
    ((or (string= major-mode "emacs-lisp-mode")
 	(string= major-mode "lisp-interaction-mode"))

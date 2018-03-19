@@ -91,9 +91,6 @@
 [submodule "emacs/modules/s"]
 	path = emacs/modules/s
 	url = https://github.com/magnars/s.el.git
-[submodule "emacs/modules/pydoc"]
-	path = emacs/modules/pydoc
-	url = https://github.com/statmobile/pydoc.git
 [submodule "emacs/modules/jm-private"]
 	path = emacs/modules/jm-private
 	url = https://massonju@gitlab.com/massonju/jm-private.git
@@ -163,3 +160,15 @@
 [submodule "emacs/modules/org-bullets"]
 	path = emacs/modules/org-bullets
 	url = https://github.com/sabof/org-bullets.git
+[submodule "emacs/modules/anaconda-mode"]
+	path = emacs/modules/anaconda-mode
+	url = https://github.com/proofit404/anaconda-mode.git
+[submodule "emacs/modules/company-anaconda"]
+	path = emacs/modules/company-anaconda
+	url = https://github.com/proofit404/company-anaconda.git
+[submodule "emacs/modules/pythonic"]
+	path = emacs/modules/pythonic
+	url = https://github.com/proofit404/pythonic.git
+[submodule "emacs/modules/f"]
+	path = emacs/modules/f
+	url = https://github.com/rejeep/f.el.git

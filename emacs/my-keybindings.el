@@ -81,5 +81,9 @@
 ;; horizontal split
 (global-set-key (kbd "C-c h") 'toggle-horizontal-split)
 
+;; anaconda
+(define-key anaconda-mode-map (kbd "M-,") 'anaconda-mode-go-back)
+(define-key anaconda-mode-map (kbd "M-=") 'anaconda-mode-find-assignments)
+
 
 (provide 'my-keybindings)
