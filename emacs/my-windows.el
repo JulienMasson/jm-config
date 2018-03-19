@@ -3,8 +3,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; vertical split by default
-(setq split-height-threshold nil)
-(setq split-width-threshold 160)
+(setq split-height-threshold 119)
+(setq split-width-threshold 143)
 
 ;; windows config
 (windmove-default-keybindings 'meta)
