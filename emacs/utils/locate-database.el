@@ -45,7 +45,7 @@
   (if (file-exists-p locate-database-path)
       (message (propertize "Found database" 'face 'success))
     (progn
-      (shell-command (format "updatedb --localpaths=%s --output=%s --prunefs=\".bzr .hg .git .svn\""
+      (shell-command (format "updatedb --database-root=%s --output=%s --prunenames=\".bzr .hg .git .svn .repo\""
 			     (untramp-path (expand-file-name dir))
 			     (untramp-path locate-database-path)))
       (message (propertize "Create database" 'face 'success)))))
