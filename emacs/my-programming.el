@@ -32,6 +32,8 @@
 ;; cscope
 (require 'xcscope)
 (setq cscope-option-use-inverted-index t)
+(setq cscope-option-kernel-mode t)
+(setq cscope-display-buffer-args nil)
 (cscope-setup)
 
 ;; cscope search list
