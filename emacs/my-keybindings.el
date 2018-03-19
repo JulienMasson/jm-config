@@ -26,10 +26,8 @@
 (global-set-key (kbd "M-3") (lambda () (interactive) (virtual-desktops-goto 3)))
 (global-set-key (kbd "M-4") (lambda () (interactive) (virtual-desktops-goto 4)))
 
-;; org timer shortcuts
-(global-set-key (kbd "C-c o a") 'org-agenda-list)
-(global-set-key (kbd "C-c o t") 'org-todo-list)
-(global-set-key (kbd "C-c o c") 'org-capture)
+;; org
+(global-set-key (kbd "C-c o a") 'jm-org-agenda)
 
 ;; magit
 (global-set-key (kbd "C-c g s") 'magit-status)

@@ -9,35 +9,28 @@
 ;; org todo keywords
 (setq org-todo-keywords
        '((sequence "TODO" "WORKING" "UNMERGED" "|" "DONE")))
+
 (setq org-todo-keyword-faces
-      '(("TODO" . org-warning) ("WORKING" . "yellow")
+      '(("TODO" . org-warning)
+	("WORKING" . "yellow")
 	("UNMERGED" . (:foreground "lightblue" :weight bold))))
 
-
-;; add org agenda
-(setq org-agenda-files (list "~/org/notes.org"
-			     "~/org/agenda.org"
-			     "~/org/todo.org"))
+;; show org-mode bullets
+(require 'org-bullets)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
 ;; use current window
 (setq org-agenda-window-setup 'current-window)
 
-;; org capture for wanderlust
-(setq org-capture-templates '(("n" "Notes" entry
-			       (file+headline "~/org/notes.org" "Extra")
-			       " TODO %^{Brief Description} %^g\n%?\nAdded: %U" :prepend t)
-			      ("l" "Link" plain
-			       (file "~/org/notes.org" "Links")
-			       "- %?\n %x\n")
-			      ("t" "Todo" entry
-			       (file+headline "~/org/todo.org" "Tasks")
-			       " TODO %^{Brief Description} %^g\n%?\nAdded: %U" :prepend t)
-			      ("j" "Journal" entry
-			       (file+datetree "~/org/journal.org")
-			       "* %?\nEntered on %U\n  %i\n  %a")
-			      ("e" "Email Todo" entry
-			       (file+headline "~/org/todo.org" "Mails")
-			       "* %^{Brief Description}\nEmail: %a\nFrom: %:from \nTo: %:to \n%?Added: %U\n" :prepend t)
-			      ))
+;; display todo in org agenda
+(setq org-agenda-custom-commands
+      '((" " "Agenda"
+         ((agenda "")
+          (alltodo "")))))
+
+(defun jm-org-agenda ()
+  (interactive)
+  (org-agenda nil " "))
+
 
 (provide 'my-org)

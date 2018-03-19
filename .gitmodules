@@ -163,3 +163,6 @@
 [submodule "emacs/modules/telephone-line"]
 	path = emacs/modules/telephone-line
 	url = https://github.com/dbordak/telephone-line.git
+[submodule "emacs/modules/org-bullets"]
+	path = emacs/modules/org-bullets
+	url = https://github.com/sabof/org-bullets.git
