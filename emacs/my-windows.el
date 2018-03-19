@@ -77,23 +77,20 @@
   (setq highlight-focus:app-has-focus state)
   (highlight-focus:check))
 
-;; Graphical / Console - theme
+;; load jm theme
 (add-to-list 'custom-theme-load-path "~/jm-config/emacs")
-(if (display-graphic-p)
-      (progn
-	(load-theme 'jm t)
-	(defadvice other-window (after highlight-focus activate)
-	  (highlight-focus:check))
-	(defadvice select-window (after highlight-focus activate)
-	  (highlight-focus:check))
-	(defadvice select-frame (after highlight-focus activate)
-	  (highlight-focus:check))
-	(add-hook 'window-configuration-change-hook 'highlight-focus:check)
-	(add-hook 'focus-in-hook (lambda () (highlight-focus:app-focus t)))
-	(add-hook 'focus-out-hook (lambda () (highlight-focus:app-focus nil))))
-  (progn
-    (require 'color-theme-sanityinc-tomorrow)
-    (color-theme-sanityinc-tomorrow--define-theme eighties)))
+(load-theme 'jm t)
+
+;; change background color on focus window
+(defadvice other-window (after highlight-focus activate)
+  (highlight-focus:check))
+(defadvice select-window (after highlight-focus activate)
+  (highlight-focus:check))
+(defadvice select-frame (after highlight-focus activate)
+  (highlight-focus:check))
+(add-hook 'window-configuration-change-hook 'highlight-focus:check)
+(add-hook 'focus-in-hook (lambda () (highlight-focus:app-focus t)))
+(add-hook 'focus-out-hook (lambda () (highlight-focus:app-focus nil)))
 
 ;; remove scroll bar
 (scroll-bar-mode -1)

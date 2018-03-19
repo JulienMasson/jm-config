@@ -76,9 +76,6 @@
 [submodule "emacs/modules/pdf-tools"]
 	path = emacs/modules/pdf-tools
 	url = https://github.com/politza/pdf-tools.git
-[submodule "emacs/modules/color-theme-sanityinc-tomorrow"]
-	path = emacs/modules/color-theme-sanityinc-tomorrow
-	url = https://github.com/JulienMasson/color-theme-sanityinc-tomorrow.git
 [submodule "emacs/modules/company-mode"]
 	path = emacs/modules/company-mode
 	url = https://github.com/company-mode/company-mode.git
