@@ -14,6 +14,9 @@
 ;; hide index messages
 (setq mu4e-hide-index-messages t)
 
+;; maximum number of results to show
+(setq mu4e-headers-results-limit 100)
+
 ;; fancy chars
 (setq mu4e-use-fancy-chars t)
 
