@@ -43,11 +43,36 @@
     (add-to-list 'global-mode-string '(:eval (mu4e-context-label)))))
 
 ;; change headers
-(setq mu4e-headers-date-format "%R  %d %b %G  %A")
-(setq mu4e-headers-fields '((:date          .  32)
+(setq mu4e-headers-date-format "%d %b")
+(setq mu4e-headers-fields '((:date          .  8)
 			    (:from          .  25)
 			    (:subject       .  nil)))
 (setq mu4e-view-fields '(:from :to :cc :subject :date :mailing-list :attachments :signature))
+
+;; re-defun mu4e headers field function to display color on date and author
+(defun mu4e~headers-field-apply-basic-properties (msg field val width)
+  (case field
+    (:subject
+     (concat
+      (mu4e~headers-thread-prefix (mu4e-message-field msg :thread))
+      (truncate-string-to-width val 600)))
+    (:thread-subject (mu4e~headers-thread-subject msg))
+    ((:maildir :path :message-id) val)
+    ((:to :from :cc :bcc) (propertize (mu4e~headers-contact-str val)
+				      'face 'mu4e-contact-face))
+    (:from-or-to (mu4e~headers-from-or-to msg))
+    (:date (propertize (format-time-string mu4e-headers-date-format val)
+		       'face 'mu4e-header-key-face))
+    (:mailing-list (mu4e~headers-mailing-list val))
+    (:human-date (propertize (mu4e~headers-human-date msg)
+			     'help-echo (format-time-string
+					 mu4e-headers-long-date-format
+					 (mu4e-msg-field msg :date))))
+    (:flags (propertize (mu4e~headers-flags-str val)
+			'help-echo (format "%S" val)))
+    (:tags (propertize (mapconcat 'identity val ", ")))
+    (:size (mu4e-display-size val))
+    (t (mu4e~headers-custom-field msg field))))
 
 ;; enable inline images
 (setq mu4e-view-show-images t)
