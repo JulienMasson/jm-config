@@ -99,6 +99,18 @@
       mu4e-maildirs-extension-updating-string ""
       mu4e-maildirs-extension-maildir-format "\t%i%p %-20n (%u/%t)"
       mu4e-maildirs-extension-maildir-hl-regex mu4e-maildirs-extension-maildir-format)
+
+;; update cache and summary after index updated even if window in background
+(defun jm-mu4e-maildirs-extension-index-updated-handler ()
+  (setq mu4e-maildirs-extension-bookmarks nil)
+  (setq mu4e-maildirs-extension-maildirs nil)
+  (mu4e-maildirs-extension-update)
+  (mu4e-maildirs-extension-unqueue-maybe))
+
+(setq mu4e-maildirs-extension-index-updated-func
+  'jm-mu4e-maildirs-extension-index-updated-handler)
+
+;; load mu4e maildir extension
 (mu4e-maildirs-extension)
 
 ;; insert maildir header above "Help Commands" header
