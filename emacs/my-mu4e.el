@@ -123,7 +123,7 @@
 (setq mu4e-maildirs-extension-title "  Accounts\n")
 
 ;; don't display some folders
-(setq mu4e-maildirs-extension-ignored-regex "\\(/drafts\\|/sent\\|trash\\)")
+(setq mu4e-maildirs-extension-ignored-regex "\\(^/drafts$\\|^/sent$\\)")
 
 ;; default config when sending mail
 (setq send-mail-function 'message-send-mail-with-sendmail
