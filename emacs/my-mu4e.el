@@ -86,6 +86,9 @@
 ;; message buffer will be killed after sending a message
 (setq message-kill-buffer-on-exit t)
 
+;; shell command used to converts from html to plain text
+(setq mu4e-html2text-command "w3m -T text/html")
+
 ;; handle multi maildir accounts
 (require 'mu4e-maildirs-extension)
 (setq mu4e-maildirs-extension-buffer-name my-mu4e~main-buffer-name
