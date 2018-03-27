@@ -172,3 +172,6 @@
 [submodule "emacs/modules/f"]
 	path = emacs/modules/f
 	url = https://github.com/rejeep/f.el.git
+[submodule "emacs/modules/erc-view-log"]
+	path = emacs/modules/erc-view-log
+	url = https://github.com/Niluge-KiWi/erc-view-log.git

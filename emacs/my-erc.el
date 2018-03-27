@@ -37,5 +37,12 @@
 (setq erc-log-write-after-send t)
 (setq erc-log-insert-log-on-open t)
 
+;; erc view log
+(require 'erc-view-log)
+(add-to-list 'auto-mode-alist
+	     `(,(format "%s/.*\\.log"
+			(regexp-quote (expand-file-name erc-log-channels-directory))) . erc-view-log-mode))
+(add-hook 'erc-view-log-mode-hook 'turn-on-auto-revert-tail-mode)
+
 
 (provide 'my-erc)
