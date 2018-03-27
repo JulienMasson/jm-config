@@ -92,7 +92,7 @@
 (defun cscope-pycscope (dir)
   (interactive "DDirectory: ")
   (let ((default-directory dir))
-    (async-shell-command "pycscope -D .")))
+    (async-shell-command "pycscope -D -R . && find . -name '*.py' > cscope.files")))
 
 (add-hook 'python-mode-hook (function cscope-minor-mode))
 
