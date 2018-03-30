@@ -85,5 +85,9 @@
 (define-key anaconda-mode-map (kbd "M-,") 'anaconda-mode-go-back)
 (define-key anaconda-mode-map (kbd "M-=") 'anaconda-mode-find-assignments)
 
+;; shell command with editor
+(global-set-key (kbd "M-&") 'with-editor-async-shell-command)
+(global-set-key (kbd "M-!") 'with-editor-shell-command)
+
 
 (provide 'my-keybindings)
