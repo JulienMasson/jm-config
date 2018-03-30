@@ -22,12 +22,14 @@
 
 ;; clear shell screen
 (defun my-clear ()
-      (interactive)
-      (erase-buffer)
-      (comint-send-input))
+  (interactive)
+  (erase-buffer)
+  (comint-send-input))
+
 (defun my-shell-hook ()
   (local-set-key (kbd "C-c l") 'my-clear))
-  (add-hook 'shell-mode-hook 'my-shell-hook)
+
+(add-hook 'shell-mode-hook 'my-shell-hook)
 
 ;; history results
 (defun search-history (pattern number)
@@ -38,6 +40,16 @@
                    "*search-history-output*"
                    "*Messages*")
     (pop-to-buffer "*search-history-output*")))
+
+;; export PS1
+(defun export-ps1-shell ()
+  (let ((process (get-buffer-process (current-buffer))))
+    (goto-char (process-mark process))
+    (process-send-string
+     process (format "export PS1='\\[\\e[1;34m\\]\\u  \\w${text}\\[\\e[m\\]\\n\\[\\e[1;32m\\]\\t\\[\\e[m\\] '&&"))
+    (while (accept-process-output process 0.1))))
+
+(add-hook 'shell-mode-hook 'export-ps1-shell)
 
 
 (provide 'my-shell)
