@@ -37,17 +37,20 @@
 (setq erc-log-write-after-send t)
 (setq erc-log-insert-log-on-open t)
 
+;; disable erc-track-enable-keybindings
+(setq erc-track-enable-keybindings nil)
+
 ;; apply face on log
 (defun erc-log-match-face ()
   (list
    ;; own message line
-   `(,(format "^\\(<\\)\\(%s\\)\\(>\\)[ \n]\\(%s\\)$" "jmasson" erc-view-log-message-regexp)
+   `("^\\(<\\)\\(jmasson\\)\\(>\\)[ \n]\\(.*\\)$"
      (1 'erc-default-face)
      (2 'erc-my-nick-face)
      (3 'erc-default-face)
      (4 'erc-input-face))
    ;; standard message line
-   `(,(format "^\\(<\\)\\(%s\\)\\(>\\)[ \n]\\(%s\\)$" erc-view-log-nickname-regexp erc-view-log-message-regexp)
+   `(,(format "^\\(<\\)\\(%s\\)\\(>\\)[ \n]\\(.*\\)$" erc-valid-nick-regexp)
      (1 'erc-default-face)
      (2 (erc-log-nick-get-face (match-string 3)))
      (3 'erc-default-face)
