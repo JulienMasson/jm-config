@@ -153,5 +153,8 @@
 (status-add-to-right 'status-net)
 (turn-on-status)
 
+;; never request confirmation when opening large file
+(setq large-file-warning-threshold nil)
+
 
 (provide 'my-system)
