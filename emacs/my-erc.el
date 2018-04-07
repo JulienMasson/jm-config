@@ -41,10 +41,12 @@
 (setq erc-track-enable-keybindings nil)
 
 ;; apply face on log
+(defvar erc-my-nickname-match "jmasson\\|julien")
+
 (defun erc-log-match-face ()
   (list
    ;; own message line
-   `("^\\(<\\)\\(jmasson\\)\\(>\\)[ \n]\\(.*\\)$"
+   `(,(format "^\\(<\\)\\(%s\\)\\(>\\)[ \n]\\(.*\\)$" erc-my-nickname-match)
      (1 'erc-default-face)
      (2 'erc-my-nick-face)
      (3 'erc-default-face)
@@ -52,11 +54,11 @@
    ;; standard message line
    `(,(format "^\\(<\\)\\(%s\\)\\(>\\)[ \n]\\(.*\\)$" erc-valid-nick-regexp)
      (1 'erc-default-face)
-     (2 (erc-log-nick-get-face (match-string 3)))
+     (2 'erc-nick-default-face)
      (3 'erc-default-face)
      (4 'erc-default-face))
    ;; *** message line
-   `("^\\(\\*\\*\\*.*\\)"
+   `("^\\(\\*\\*\\* .*\\)"
      (1 'erc-timestamp-face))
    ;; [date] message line
    `("^\\(\\[.*\\]\\)"
@@ -65,7 +67,19 @@
 (defun erc-apply-face-on-log ()
   (setq font-lock-defaults `(,(erc-log-match-face))))
 
-(advice-add 'erc-mode :before #'erc-apply-face-on-log)
+(define-derived-mode erc-mode fundamental-mode "ERC"
+  "Major mode for Emacs IRC."
+  (erc-apply-face-on-log)
+  (setq local-abbrev-table erc-mode-abbrev-table)
+  (when (boundp 'next-line-add-newlines)
+    (set (make-local-variable 'next-line-add-newlines) nil))
+  (setq line-move-ignore-invisible t)
+  (set (make-local-variable 'paragraph-separate)
+       (concat "\C-l\\|\\(^" (regexp-quote (erc-prompt)) "\\)"))
+  (set (make-local-variable 'paragraph-start)
+       (concat "\\(" (regexp-quote (erc-prompt)) "\\)"))
+  (setq-local completion-ignore-case t)
+  (add-hook 'completion-at-point-functions 'erc-complete-word-at-point nil t))
 
 
 (provide 'my-erc)
