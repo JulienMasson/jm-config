@@ -196,5 +196,15 @@ search modes defined in the new `dired-sort-toggle'.
 (define-key dired-mode-map "=" 'dired-diff-files)
 (define-key dired-mode-map "r" 'dired-diff-directories)
 
+;; do hexl-find-file in dired mode
+(defun dired-do-hexl-find-file (&optional arg)
+  (interactive "P")
+  (let ((files (dired-get-marked-files t arg nil nil t)))
+    (mapc (lambda (file)
+	    (hexl-find-file file))
+	  files)))
+
+(define-key dired-mode-map "h" 'dired-do-hexl-find-file)
+
 
 (provide 'my-dired)
