@@ -148,6 +148,14 @@
 	  (bitlbee-update)))
     (message (propertize "Update list done" 'face 'success))))
 
+(defun bitlbee-quit-account (account)
+  (let ((buffer-process (bitlbee-process account))
+	(kill-buffer-query-functions (remq 'process-kill-buffer-query-function
+					   kill-buffer-query-functions)))
+    (when (get-buffer buffer-process)
+      (kill-buffer buffer-process))
+    (mapcar #'kill-buffer (erc-buffer-list))))
+
 (defun bitlbee-update-all ()
   (interactive)
   (setq bitlbee-buddies nil)
@@ -198,17 +206,14 @@
 
 (defun bitlbee-quit (name)
   (interactive (list (ido-completing-read "Quit: "
-					  (mapcar (lambda (account)
-						    (b-backend-name (bitlbee-b-backend account)))
-						  bitlbee-accounts)
+					  (append '("all")
+						  (mapcar (lambda (account)
+							    (b-backend-name (bitlbee-b-backend account)))
+							  bitlbee-accounts))
 					  nil t nil nil)))
-  (let* ((account (bitlbee-find-account name))
-	 (buffer-process (bitlbee-process account))
-	 (kill-buffer-query-functions (remq 'process-kill-buffer-query-function
-					    kill-buffer-query-functions)))
-    (when (get-buffer buffer-process)
-      (kill-buffer buffer-process))
-    (mapcar #'kill-buffer (erc-buffer-list))))
+  (if (string= name "all")
+      (mapcar #'bitlbee-quit-account bitlbee-accounts)
+    (bitlbee-quit-account (bitlbee-find-account name))))
 
 (defun bitlbee (action)
   (interactive (list (ido-completing-read "Bitlbee: "
