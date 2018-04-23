@@ -156,5 +156,8 @@
 ;; never request confirmation when opening large file
 (setq large-file-warning-threshold nil)
 
+;; yaml mode
+(require 'yaml-mode)
+
 
 (provide 'my-system)
