@@ -2,9 +2,10 @@
 ;;;;                ORG CONFIG                 ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; org mode
 (require 'org)
 (setq org-log-done t)
-
+(setq org-agenda-files nil)
 
 ;; org todo keywords
 (setq org-todo-keywords
@@ -26,7 +27,8 @@
 (setq org-agenda-custom-commands
       '((" " "Agenda"
          ((agenda "")
-          (alltodo "")))))
+	  (tags-todo "perso")
+	  (tags-todo "work")))))
 
 (defun jm-org-agenda ()
   (interactive)
