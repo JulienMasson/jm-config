@@ -159,5 +159,22 @@
 ;; yaml mode
 (require 'yaml-mode)
 
+;; google translate
+(require 'google-translate)
+
+(defun translate-at-point ()
+  (interactive)
+  (let* ((text (if (use-region-p)
+		   (buffer-substring-no-properties (region-beginning) (region-end))
+		 (or (and (setq bounds (bounds-of-thing-at-point 'word))
+			  (buffer-substring-no-properties (car bounds) (cdr bounds)))
+		     (error "No word at point."))))
+	 (detected-language (aref (google-translate-request "auto" "french" text) 2)))
+    (cond
+     ((string= detected-language "fr")
+      (google-translate-translate "fr" "en" text))
+     ((string= detected-language "en")
+      (google-translate-translate "en" "fr" text)))))
+
 
 (provide 'my-system)

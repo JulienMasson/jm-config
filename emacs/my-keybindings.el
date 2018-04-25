@@ -89,5 +89,8 @@
 (global-set-key (kbd "M-&") 'with-editor-async-shell-command)
 (global-set-key (kbd "M-!") 'with-editor-shell-command)
 
+;; translate at point
+(global-set-key (kbd "M-*") 'translate-at-point)
+
 
 (provide 'my-keybindings)
