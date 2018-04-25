@@ -9,7 +9,7 @@
 (global-set-key (kbd "C-c <down>")  'windmove-down)
 (global-set-key (kbd "C-c l") 'goto-line)
 (global-set-key (kbd "C-c d") 'delete-rectangle)
-(global-set-key (kbd "C-c M-i") 'string-insert-rectangle)
+(global-set-key (kbd "C-c M-i") 'string-rectangle)
 (global-set-key (kbd "C-c M-d") 'delete-matching-lines)
 (global-set-key (kbd "C-c M-r") 'revert-buffer)
 (global-set-key (kbd "C-c m") 'comment-region)
