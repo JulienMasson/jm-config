@@ -159,6 +159,10 @@
 ;; yaml mode
 (require 'yaml-mode)
 
+;; silent url status
+(require 'url-vars)
+(setq url-show-status nil)
+
 ;; google translate
 (require 'google-translate)
 
