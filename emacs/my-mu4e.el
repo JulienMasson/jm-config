@@ -5,6 +5,9 @@
 ;; load mu4e module
 (require 'mu4e)
 
+;; use mu4e for e-mail in emacs
+(setq mail-user-agent 'mu4e-user-agent)
+
 ;; maildir root path
 (setq mu4e-maildir "~/Maildir")
 
@@ -137,6 +140,7 @@
   '(("Gmail"
      (user-mail-address "massonju.eseo@gmail.com")
      (user-full-name "Masson, Julien")
+     (mu4e-compose-signature "Julien Masson")
      (message-sendmail-extra-arguments ("-a" "perso")))))
 
 (defun my-mu4e-set-account ()
