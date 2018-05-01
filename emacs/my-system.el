@@ -180,5 +180,8 @@
      ((string= detected-language "en")
       (google-translate-translate "en" "fr" text)))))
 
+;; add to list of directories to search for Info documentation files.
+(add-to-list 'Info-default-directory-list "~/info")
+
 
 (provide 'my-system)
