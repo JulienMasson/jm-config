@@ -57,11 +57,7 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 # Handle when using emacs shell
-if [[ $TERM == "dumb" ]]; then
-    PS1='$ '
-else
-    PS1='\[\e[1;34m\]\u  \w${text}\[\e[m\]\n\[\e[1;32m\]\t\[\e[m\] '
-fi
+PS1='\[\e[1;34m\]\u  \w${text}\[\e[m\]\n\[\e[1;32m\]\t\[\e[m\] '
 
 unset color_prompt force_color_prompt
 

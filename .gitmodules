@@ -178,3 +178,6 @@
 [submodule "emacs/modules/google-translate"]
 	path = emacs/modules/google-translate
 	url = https://github.com/atykhonov/google-translate.git
+[submodule "emacs/modules/bash-completion"]
+	path = emacs/modules/bash-completion
+	url = https://github.com/szermatt/emacs-bash-completion.git

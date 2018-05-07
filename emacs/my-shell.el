@@ -41,15 +41,9 @@
                    "*Messages*")
     (pop-to-buffer "*search-history-output*")))
 
-;; export PS1
-(defun export-ps1-shell ()
-  (let ((process (get-buffer-process (current-buffer))))
-    (goto-char (process-mark process))
-    (process-send-string
-     process (format "export PS1='\\[\\e[1;34m\\]\\u  \\w${text}\\[\\e[m\\]\\n\\[\\e[1;32m\\]\\t\\[\\e[m\\] '&&"))
-    (while (accept-process-output process 0.1))))
-
-(add-hook 'shell-mode-hook 'export-ps1-shell)
+;; bash completion
+(require 'bash-completion)
+(bash-completion-setup)
 
 
 (provide 'my-shell)
