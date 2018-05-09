@@ -101,6 +101,11 @@
 ;; pdf tools
 (require 'pdf-tools)
 (require 'pdf-occur)
+(require 'pdf-history)
+(require 'pdf-links)
+(require 'pdf-outline)
+(require 'pdf-annot)
+(require 'pdf-sync)
 (pdf-tools-install)
 
 ;; set default web browser
