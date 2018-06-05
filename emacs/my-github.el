@@ -33,12 +33,12 @@
       (funcall wrapper))))
 
 (defun my-magit-revision-sections (rev)
-  (let ((magit-revision-section-hook
+  (let ((magit-revision-sections-hook
 	 (if (-contains? magit-blacklist-repo (magit-toplevel))
 	     ;; remove revision header in magit-diff
 	     (remove 'magit-insert-revision-headers magit-revision-sections-hook-saved)
 	   magit-revision-sections-hook-saved)))
-    (run-hook-with-args 'magit-revision-section-hook rev)))
+    (run-hook-with-args 'magit-revision-sections-hook rev)))
 
 (setq magit-status-headers-hook '(my-magit-status-headers))
 (setq magit-revision-sections-hook '(my-magit-revision-sections))
