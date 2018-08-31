@@ -206,5 +206,8 @@
 	    (data (find target attachments :key 'mu4e-attachments-name :test 'string=)))
 	(mu4e-save-attachment file data)))))
 
+;; org store link
+(require 'org-mu4e)
+
 
 (provide 'my-mu4e)
