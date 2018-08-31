@@ -181,3 +181,6 @@
 [submodule "emacs/modules/bash-completion"]
 	path = emacs/modules/bash-completion
 	url = https://github.com/szermatt/emacs-bash-completion.git
+[submodule "emacs/modules/org-gtasks"]
+	path = emacs/modules/org-gtasks
+	url = https://github.com/JulienMasson/org-gtasks.git
