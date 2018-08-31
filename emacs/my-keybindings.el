@@ -101,5 +101,8 @@
 (define-key dired-mode-map "h" 'dired-do-hexl-find-file)
 (define-key dired-mode-map "L" 'locate-database)
 
+;; erc
+(define-key erc-mode-map (kbd "C-c C-i") 'emojify-insert-emoji)
+
 
 (provide 'my-keybindings)
