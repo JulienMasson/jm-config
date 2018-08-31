@@ -92,5 +92,14 @@
 ;; translate at point
 (global-set-key (kbd "M-*") 'translate-at-point)
 
+;; dired
+(define-key dired-mode-map "=" 'dired-diff-files)
+(define-key dired-mode-map "r" 'dired-diff-directories)
+(define-key dired-mode-map "h" 'dired-do-hexl-find-file)
+(define-key dired-mode-map (kbd "^")
+  (lambda () (interactive) (find-alternate-file "..")))
+(define-key dired-mode-map "h" 'dired-do-hexl-find-file)
+(define-key dired-mode-map "L" 'locate-database)
+
 
 (provide 'my-keybindings)

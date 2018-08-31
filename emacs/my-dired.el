@@ -107,12 +107,6 @@ search modes defined in the new `dired-sort-toggle'.
                    (concat "Dired " dired-actual-switches)))))
     (force-mode-line-update)))
 
-;; rebinds `^´ to use the same buffer.
-(add-hook 'dired-mode-hook
-	  (lambda ()
-	    (define-key dired-mode-map (kbd "^")
-	      (lambda () (interactive) (find-alternate-file "..")))))
-
 ;; dired async
 (require 'dired-async)
 (dired-async-mode 1)
@@ -192,10 +186,6 @@ search modes defined in the new `dired-sort-toggle'.
 		(switch-to-buffer buf)))))
       (error "You should set only two directories"))))
 
-;; change keys in dired-mode
-(define-key dired-mode-map "=" 'dired-diff-files)
-(define-key dired-mode-map "r" 'dired-diff-directories)
-
 ;; do hexl-find-file in dired mode
 (defun dired-do-hexl-find-file (&optional arg)
   (interactive "P")
@@ -203,8 +193,6 @@ search modes defined in the new `dired-sort-toggle'.
     (mapc (lambda (file)
 	    (hexl-find-file file))
 	  files)))
-
-(define-key dired-mode-map "h" 'dired-do-hexl-find-file)
 
 
 (provide 'my-dired)
