@@ -99,14 +99,16 @@
 (require 'my-github)
 
 ;; pdf tools
-(require 'pdf-tools)
-(require 'pdf-occur)
-(require 'pdf-history)
-(require 'pdf-links)
-(require 'pdf-outline)
-(require 'pdf-annot)
-(require 'pdf-sync)
-(pdf-tools-install)
+(if (not (executable-find "epdfinfo"))
+    (message "Please compile pdf-tools")
+  (require 'pdf-tools)
+  (require 'pdf-occur)
+  (require 'pdf-history)
+  (require 'pdf-links)
+  (require 'pdf-outline)
+  (require 'pdf-annot)
+  (require 'pdf-sync)
+  (pdf-tools-install))
 
 ;; set default web browser
 (setq browse-url-browser-function 'browse-url-firefox
