@@ -61,6 +61,11 @@
 	     ,org-tags-todo-list)))))
 
 ;; define own org tags view
+(setq org-agenda-prefix-format '((agenda . "%-13i %?-12t% s")
+				 (todo . "%-14i")
+				 (tags . "%-14i")
+				 (search . " %i %-12:c")))
+
 (defun org-agenda-format-item (extra txt &optional level category tags dotime
 				     remove-re habitp)
   (let* ((bindings (car org-prefix-format-compiled))
@@ -227,13 +232,7 @@ The prefix arg TODO-ONLY limits the search to TODO entries."
       (setq matcher (org-make-tags-matcher match)
 	    match (car matcher)
 	    matcher (cdr matcher))
-      ;; (org-compile-prefix-format 'tags)
-      (setq org-prefix-format-compiled '(((org-prefix-has-time nil)
-					  (org-prefix-has-tag nil)
-					  (org-prefix-category-length 12)
-					  (org-prefix-has-effort nil)
-					  (org-prefix-has-breadcrumbs nil))
-					 (format "%-14s" " ")))
+      (org-compile-prefix-format 'tags)
       (org-set-sorting-strategy 'tags)
       (setq org-agenda-query-string match)
       (setq org-agenda-redo-command
