@@ -130,15 +130,15 @@
 (require 'project-manager)
 (require 'pm-emacslisp)
 (register-project
- (make-project :name "jm-config"
+ (make-project :name "Home"
 	       :pm-backend "emacslisp"
-	       :root-path "~/jm-config"
-	       :env-vars '()
-	       :subprojects '(("private"        .       "/emacs/modules/jm-private")
-			      ("utils"          .       "/emacs/utils")
-			      ("modules"	.       "/emacs/modules")
-			      ("emacs"		.	"/emacs"))))
-(switch-project "jm-config")
+	       :root-path "~"
+	       :subprojects '(("private"        .       "/jm-config/emacs/modules/jm-private")
+			      ("modules"	.       "/jm-config/emacs/modules")
+			      ("emacs"		.	"/jm-config/emacs")
+			      ("docs"		.	"/Documents/Docs")
+			      ("gdrive"		.	"/Documents/gdrive"))))
+(switch-project "Home")
 
 ;; Status
 (require 'status)
