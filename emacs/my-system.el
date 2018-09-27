@@ -190,5 +190,8 @@
 ;; add to list of directories to search for Info documentation files.
 (add-to-list 'Info-default-directory-list "~/info")
 
+;; default browser
+(setq browse-url-browser-function 'browse-url-chrome)
+
 
 (provide 'my-system)
