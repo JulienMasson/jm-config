@@ -61,13 +61,151 @@
 	     ,org-tags-todo-list)))))
 
 ;; define own org tags view
+(defun org-agenda-format-item (extra txt &optional level category tags dotime
+				     remove-re habitp)
+  (let* ((bindings (car org-prefix-format-compiled))
+	 (formatter (cadr org-prefix-format-compiled)))
+    (cl-loop for (var value) in bindings
+	     do (set var value))
+    (save-match-data
+      ;; Diary entries sometimes have extra whitespace at the beginning
+      (setq txt (org-trim txt))
+
+      (let* ((category (or category
+			   (if buffer-file-name
+			       (file-name-sans-extension
+				(file-name-nondirectory buffer-file-name))
+			     "")))
+	     (category-icon (org-agenda-get-category-icon category))
+	     (category-icon (if category-icon
+				(propertize " " 'display category-icon)
+			      ""))
+	     (effort (and (not (string= txt ""))
+			  (get-text-property 1 'effort txt)))
+	     ;; time, tag, effort are needed for the eval of the prefix format
+	     (tag (if tags (nth (1- (length tags)) tags) ""))
+	     (time-grid-trailing-characters (nth 2 org-agenda-time-grid))
+	     time
+	     (ts (if dotime (concat
+			     (if (stringp dotime) dotime "")
+			     (and org-agenda-search-headline-for-time txt))))
+	     (time-of-day (and dotime (org-get-time-of-day ts)))
+	     stamp plain s0 s1 s2 rtn srp l
+	     duration breadcrumbs)
+	(and (derived-mode-p 'org-mode) buffer-file-name
+	     (add-to-list 'org-agenda-contributing-files buffer-file-name))
+	(when (and dotime time-of-day)
+	  ;; Extract starting and ending time and move them to prefix
+	  (when (or (setq stamp (string-match org-stamp-time-of-day-regexp ts))
+		    (setq plain (string-match org-plain-time-of-day-regexp ts)))
+	    (setq s0 (match-string 0 ts)
+		  srp (and stamp (match-end 3))
+		  s1 (match-string (if plain 1 2) ts)
+		  s2 (match-string (if plain 8 (if srp 4 6)) ts))
+
+	    ;; If the times are in TXT (not in DOTIMES), and the prefix will list
+	    ;; them, we might want to remove them there to avoid duplication.
+	    ;; The user can turn this off with a variable.
+	    (if (and org-prefix-has-time
+		     org-agenda-remove-times-when-in-prefix (or stamp plain)
+		     (string-match (concat (regexp-quote s0) " *") txt)
+		     (not (equal ?\] (string-to-char (substring txt (match-end 0)))))
+		     (if (eq org-agenda-remove-times-when-in-prefix 'beg)
+			 (= (match-beginning 0) 0)
+		       t))
+		(setq txt (replace-match "" nil nil txt))))
+	  ;; Normalize the time(s) to 24 hour
+	  (if s1 (setq s1 (org-get-time-of-day s1 'string t)))
+	  (if s2 (setq s2 (org-get-time-of-day s2 'string t)))
+
+	  ;; Try to set s2 if s1 and
+	  ;; `org-agenda-default-appointment-duration' are set
+	  (when (and s1 (not s2) org-agenda-default-appointment-duration)
+	    (setq s2
+		  (org-duration-from-minutes
+		   (+ (org-duration-to-minutes s1 t)
+		      org-agenda-default-appointment-duration)
+		   nil t)))
+
+	  ;; Compute the duration
+	  (when s2
+	    (setq duration (- (org-duration-to-minutes s2)
+			      (org-duration-to-minutes s1)))))
+
+	(when (string-match "\\([ \t]+\\)\\(:[[:alnum:]_@#%:]+:\\)[ \t]*$" txt)
+	  ;; Tags are in the string
+	  (if (or (eq org-agenda-remove-tags t)
+		  (and org-agenda-remove-tags
+		       org-prefix-has-tag))
+	      (setq txt (replace-match "" t t txt))
+	    (setq txt (replace-match
+		       (concat (make-string (max (- 50 (length txt)) 1) ?\ )
+			       (match-string 2 txt))
+		       t t txt))))
+
+	(when remove-re
+	  (while (string-match remove-re txt)
+	    (setq txt (replace-match "" t t txt))))
+
+	;; Set org-heading property on `txt' to mark the start of the
+	;; heading.
+	(add-text-properties 0 (length txt) '(org-heading t) txt)
+
+	;; Prepare the variables needed in the eval of the compiled format
+	(if org-prefix-has-breadcrumbs
+	    (setq breadcrumbs (org-with-point-at (org-get-at-bol 'org-marker)
+				(let ((s (org-display-outline-path nil nil "->" t)))
+				  (if (eq "" s) "" (concat s "->"))))))
+	(setq time (cond (s2 (concat
+			      (org-agenda-time-of-day-to-ampm-maybe s1)
+			      "-" (org-agenda-time-of-day-to-ampm-maybe s2)
+			      (if org-agenda-timegrid-use-ampm " ")))
+			 (s1 (concat
+			      (org-agenda-time-of-day-to-ampm-maybe s1)
+			      (if org-agenda-timegrid-use-ampm
+                                  (concat time-grid-trailing-characters " ")
+                                time-grid-trailing-characters)))
+			 (t ""))
+	      extra (or (and (not habitp) extra) "")
+	      category (if (symbolp category) (symbol-name category) category)
+	      level (or level ""))
+	(if (string-match org-bracket-link-regexp category)
+	    (progn
+	      (setq l (if (match-end 3)
+			  (- (match-end 3) (match-beginning 3))
+			(- (match-end 1) (match-beginning 1))))
+	      (when (< l (or org-prefix-category-length 0))
+		(setq category (copy-sequence category))
+		(org-add-props category nil
+		  'extra-space (make-string
+				(- org-prefix-category-length l 1) ?\ ))))
+	  (if (and org-prefix-category-max-length
+		   (>= (length category) org-prefix-category-max-length))
+	      (setq category (substring category 0 (1- org-prefix-category-max-length)))))
+	;; Evaluate the compiled format
+	(setq rtn (concat (eval formatter) txt))
+
+	;; And finally add the text properties
+	(remove-text-properties 0 (length rtn) '(line-prefix t wrap-prefix t) rtn)
+	(org-add-props rtn nil
+	  'org-category category
+	  'tags (mapcar 'org-downcase-keep-props tags)
+	  'org-highest-priority org-highest-priority
+	  'org-lowest-priority org-lowest-priority
+	  'time-of-day time-of-day
+	  'duration duration
+	  'breadcrumbs breadcrumbs
+	  'txt txt
+	  'level level
+	  'time time
+	  'extra extra
+	  'format org-prefix-format-compiled
+	  'dotime dotime)))))
+
 (defun org-tags-view (&optional todo-only match)
   "Show all headlines for all `org-agenda-files' matching a TAGS criterion.
 The prefix arg TODO-ONLY limits the search to TODO entries."
   (interactive "P")
-  (if org-agenda-overriding-arguments
-      (setq todo-only (car org-agenda-overriding-arguments)
-	    match (nth 1 org-agenda-overriding-arguments)))
   (let* ((org-tags-match-list-sublevels
 	  org-tags-match-list-sublevels)
 	 (completion-ignore-case t)
@@ -89,7 +227,13 @@ The prefix arg TODO-ONLY limits the search to TODO entries."
       (setq matcher (org-make-tags-matcher match)
 	    match (car matcher)
 	    matcher (cdr matcher))
-      (org-compile-prefix-format 'tags)
+      ;; (org-compile-prefix-format 'tags)
+      (setq org-prefix-format-compiled '(((org-prefix-has-time nil)
+					  (org-prefix-has-tag nil)
+					  (org-prefix-category-length 12)
+					  (org-prefix-has-effort nil)
+					  (org-prefix-has-breadcrumbs nil))
+					 (format "%-14s" " ")))
       (org-set-sorting-strategy 'tags)
       (setq org-agenda-query-string match)
       (setq org-agenda-redo-command
