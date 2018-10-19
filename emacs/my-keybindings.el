@@ -75,6 +75,9 @@
 ;; grep at point
 (global-set-key (kbd "C-M-g") 'grep-at-point)
 
+;; grep save buffer
+(define-key grep-mode-map "s" 'grep-save-buffer)
+
 ;; window dedicated
 (global-set-key (kbd "C-c t") 'toggle-window-dedicated)
 

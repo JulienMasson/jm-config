@@ -61,7 +61,12 @@
 (dtrt-indent-mode t)
 
 ;; change default grep
-(setq grep-command "grep --color -nsrH -e ")
+(setq grep-command "grep --color -nsrH -E ")
+
+;; grep save buffer
+(defun grep-save-buffer ()
+  (interactive)
+  (rename-buffer (generate-new-buffer-name "*grep*")))
 
 ;; grep at point
 (require 'thingatpt)
