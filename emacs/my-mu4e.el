@@ -135,12 +135,27 @@
       mail-setup-hook nil
       sendmail-program "/usr/bin/msmtp")
 
+;; org msg
+(require 'org-msg)
+(setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil")
+(setq org-msg-startup "hidestars indent inlineimages")
+(setq org-msg-greeting-fmt "\nHi %s,\n\n")
+(setq org-msg-greeting-fmt-mailto t)
+(setq org-msg-signature "
+
+Regards,
+
+#+begin_signature
+--\n
+Julien Masson
+#+end_signature")
+(org-msg-mode)
+
 ;; account list
 (defvar my-mu4e-account-alist
   '(("Gmail"
      (user-mail-address "massonju.eseo@gmail.com")
      (user-full-name "Masson, Julien")
-     (mu4e-compose-signature "Julien Masson")
      (message-sendmail-extra-arguments ("-a" "perso")))))
 
 (defun my-mu4e-set-account ()

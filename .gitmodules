@@ -184,3 +184,9 @@
 [submodule "emacs/modules/org-gtasks"]
 	path = emacs/modules/org-gtasks
 	url = https://github.com/JulienMasson/org-gtasks.git
+[submodule "emacs/modules/htmlize"]
+	path = emacs/modules/htmlize
+	url = https://github.com/hniksic/emacs-htmlize.git
+[submodule "emacs/modules/org-msg"]
+	path = emacs/modules/org-msg
+	url = https://github.com/JulienMasson/org-msg.git
