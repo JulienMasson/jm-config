@@ -190,3 +190,6 @@
 [submodule "emacs/modules/org-msg"]
 	path = emacs/modules/org-msg
 	url = https://github.com/JulienMasson/org-msg.git
+[submodule "emacs/modules/gnuplot-mode"]
+	path = emacs/modules/gnuplot-mode
+	url = https://github.com/bruceravel/gnuplot-mode.git

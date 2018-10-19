@@ -7,6 +7,12 @@
 (require 'org-agenda)
 (require 'org-gtasks)
 (require 'org-gcal)
+(require 'ob-gnuplot)
+(require 'ob-C)
+(require 'ob-shell)
+(require 'ob-plantuml)
+
+(setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
 
 ;; Add a time stamp when a task moves to the DONE state.
 (setq org-log-done t)
