@@ -90,7 +90,7 @@
 (setq message-kill-buffer-on-exit t)
 
 ;; shell command used to converts from html to plain text
-(setq mu4e-html2text-command "w3m -T text/html")
+(setq mu4e-html2text-command 'mu4e-shr2text)
 
 ;; handle multi maildir accounts
 (require 'mu4e-maildirs-extension)
