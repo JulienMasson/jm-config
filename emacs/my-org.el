@@ -29,6 +29,9 @@
 	("WORKING" . "yellow")
 	("UNMERGED" . (:foreground "lightblue" :weight bold))))
 
+;; Hook after sorting entries
+(add-hook 'org-after-sorting-entries-or-items-hook #'org-set-startup-visibility)
+
 ;; show org-mode bullets
 (require 'org-bullets)
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
