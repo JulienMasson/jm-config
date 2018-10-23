@@ -193,3 +193,6 @@
 [submodule "emacs/modules/gnuplot-mode"]
 	path = emacs/modules/gnuplot-mode
 	url = https://github.com/bruceravel/gnuplot-mode.git
+[submodule "emacs/modules/hide-lines"]
+	path = emacs/modules/hide-lines
+	url = https://github.com/JulienMasson/hide-lines.git

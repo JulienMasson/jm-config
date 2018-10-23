@@ -169,5 +169,8 @@
       (setq split-height-threshold 119)
     (setq split-height-threshold nil)))
 
+;; hide lines
+(require 'hide-lines)
+
 
 (provide 'my-windows)
