@@ -110,6 +110,12 @@
   (require 'pdf-sync)
   (pdf-tools-install))
 
+;; pdfgrep
+(if (not (executable-find "pdfgrep"))
+    (message "Please install pdfgrep")
+  (require 'pdfgrep)
+  (pdfgrep-mode))
+
 ;; set default web browser
 (setq browse-url-browser-function 'browse-url-firefox
       browse-url-new-window-flag  t

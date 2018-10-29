@@ -196,3 +196,6 @@
 [submodule "emacs/modules/hide-lines"]
 	path = emacs/modules/hide-lines
 	url = https://github.com/JulienMasson/hide-lines.git
+[submodule "emacs/modules/pdfgrep"]
+	path = emacs/modules/pdfgrep
+	url = https://github.com/JulienMasson/pdfgrep.git
