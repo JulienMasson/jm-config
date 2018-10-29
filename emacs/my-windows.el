@@ -29,6 +29,9 @@
 (ido-mode 1)
 (ido-everywhere)
 
+;; disable automatic file search in ido mode
+(setq ido-auto-merge-work-directories-length -1)
+
 ;; ido-completing-read+
 (require 'ido-completing-read+)
 (ido-ubiquitous-mode 1)
