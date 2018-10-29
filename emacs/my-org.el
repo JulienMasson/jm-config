@@ -12,7 +12,11 @@
 (require 'ob-shell)
 (require 'ob-plantuml)
 
+;; set path to plantuml jar
 (setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
+
+;; don't archive gcal old events
+(setq org-gcal-auto-archive nil)
 
 ;; Add a time stamp when a task moves to the DONE state.
 (setq org-log-done t)
@@ -24,10 +28,15 @@
 (setq org-todo-keywords
       '((sequence "TODO" "WORKING" "UNMERGED" "|" "DONE")))
 
+;; org faces
+(defface my-org-working-faces '((t (:foreground "yellow" :weight bold)))
+				    'convenience)
+(defface my-org-unmerged-faces '((t (:foreground "lightblue" :weight bold)))
+				    'convenience)
 (setq org-todo-keyword-faces
       '(("TODO" . org-warning)
-	("WORKING" . "yellow")
-	("UNMERGED" . (:foreground "lightblue" :weight bold))))
+	("WORKING" . my-org-working-faces)
+	("UNMERGED" . my-org-unmerged-faces)))
 
 ;; Hook after sorting entries
 (add-hook 'org-after-sorting-entries-or-items-hook #'org-set-startup-visibility)
@@ -274,30 +283,27 @@ The prefix arg TODO-ONLY limits the search to TODO entries."
 					   matcher
 					   org--matcher-tags-todo-only))
 		  (setq rtnall (append rtnall rtn))))))))
-      (if org-agenda-overriding-header
-	  (insert (org-add-props (copy-sequence org-agenda-overriding-header)
-		      nil 'face 'org-agenda-structure) "\n")
-	(setq pos (point))
-	(insert (upcase match) "\n")
-	(add-text-properties pos (1- (point)) (list 'face 'org-level-1))
-	(setq pos (point))
-	(unless org-agenda-multi
-	  (insert (substitute-command-keys
-		   "Press `\\[universal-argument] \\[org-agenda-redo]' \
-to search again with new search string\n")))
-	(add-text-properties pos (1- (point))
-			     (list 'face 'org-agenda-structure)))
-      (org-agenda-mark-header-line (point-min))
       (when rtnall
-      	(insert (org-agenda-finalize-entries rtnall 'tags) "\n"))
-      (goto-char (point-min))
-      (or org-agenda-multi (org-agenda-fit-window-to-buffer))
-      (add-text-properties
-       (point-min) (point-max)
-       `(org-agenda-type tags
-			 org-last-args (,org--matcher-tags-todo-only ,match)
-			 org-redo-cmd ,org-agenda-redo-command
-			 org-series-cmd ,org-cmd))
+      	(if org-agenda-overriding-header
+      	    (insert (org-add-props (copy-sequence org-agenda-overriding-header)
+      			nil 'face 'org-agenda-structure) "\n")
+      	  (setq pos (point))
+      	  (insert (upcase match) "\n")
+      	  (add-text-properties pos (1- (point)) (list 'face 'org-level-1))
+      	  (setq pos (point))
+      	  (add-text-properties pos (1- (point))
+      			       (list 'face 'org-agenda-structure)))
+      	(org-agenda-mark-header-line (point-min))
+      	(when rtnall
+      	  (insert (org-agenda-finalize-entries rtnall 'tags) "\n"))
+      	(goto-char (point-min))
+      	(or org-agenda-multi (org-agenda-fit-window-to-buffer))
+      	(add-text-properties
+      	 (point-min) (point-max)
+      	 `(org-agenda-type tags
+      			   org-last-args (,org--matcher-tags-todo-only ,match)
+      			   org-redo-cmd ,org-agenda-redo-command
+      			   org-series-cmd ,org-cmd)))
       (org-agenda-finalize)
       (setq buffer-read-only t))))
 
