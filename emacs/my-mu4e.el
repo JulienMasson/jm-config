@@ -137,8 +137,8 @@
 
 ;; org msg
 (require 'org-msg)
-(setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil")
-(setq org-msg-startup "hidestars indent inlineimages")
+(setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil \n:t")
+(setq org-msg-startup "hidestars noindent inlineimages")
 (setq org-msg-greeting-fmt "\nHi %s,\n\n")
 (setq org-msg-greeting-fmt-mailto t)
 (setq org-msg-signature "
