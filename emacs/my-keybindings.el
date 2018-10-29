@@ -83,8 +83,8 @@
 ;; window dedicated
 (global-set-key (kbd "C-c t") 'toggle-window-dedicated)
 
-;; horizontal split
-(global-set-key (kbd "C-c h") 'toggle-horizontal-split)
+;; hide lines
+(global-set-key (kbd "C-c h") 'hide-lines)
 
 ;; anaconda
 (define-key anaconda-mode-map (kbd "M-,") 'anaconda-mode-go-back)
