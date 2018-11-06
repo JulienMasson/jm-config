@@ -7,7 +7,6 @@
 (setq split-width-threshold 143)
 
 ;; windows config
-(windmove-default-keybindings 'meta)
 (setq windmove-wrap-around t)
 (setq shift-select-mode t)
 
