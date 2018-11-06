@@ -175,5 +175,9 @@
 ;; hide lines
 (require 'hide-lines)
 
+;; move lines
+(require 'move-lines)
+(move-lines-binding)
+
 
 (provide 'my-windows)

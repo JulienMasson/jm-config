@@ -199,3 +199,6 @@
 [submodule "emacs/modules/pdfgrep"]
 	path = emacs/modules/pdfgrep
 	url = https://github.com/JulienMasson/pdfgrep.git
+[submodule "emacs/modules/move-lines"]
+	path = emacs/modules/move-lines
+	url = https://github.com/targzeta/move-lines.git
