@@ -68,6 +68,8 @@
 (global-set-key (kbd "C-M-u") (lambda () (interactive)
                                 (mu4e-headers-search-bookmark "flag:unread AND NOT flag:trashed")))
 (define-key mu4e-view-mode-map (kbd "C-c C-s") 'mu4e-ido-save-attachments)
+(define-key mu4e-headers-mode-map (kbd "TAB") 'mu4e-headers-fold-unfold-thread)
+(define-key mu4e-headers-mode-map "f" 'mu4e-headers-fold-unfold-all)
 
 ;; project manager
 (global-set-key (kbd "C-c i s") 'switch-project)
