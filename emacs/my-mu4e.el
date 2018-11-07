@@ -111,7 +111,7 @@
   (mu4e-maildirs-extension-unqueue-maybe))
 
 (setq mu4e-maildirs-extension-index-updated-func
-  'jm-mu4e-maildirs-extension-index-updated-handler)
+      'jm-mu4e-maildirs-extension-index-updated-handler)
 
 ;; load mu4e maildir extension
 (mu4e-maildirs-extension)
@@ -242,18 +242,20 @@ Julien Masson
       (beginning-of-line)
       (let ((end (point))
 	    (begin (thread-pos 'previous-line)))
-	(forward-line)
+	(next-line)
 	(when (> (mu4e-level-at-point) 0)
 	  (setq end (- (thread-pos 'forward-line) 1)))
 	(unless (= begin end)
 	  `(,begin ,end))))))
 
 (defun mu4e-find-overlay-at-point ()
-  (seq-find (lambda (overlay)
-	      (let ((pos (line-end-position))
-		    (start (overlay-start overlay)))
-		(= pos start)))
-	    hide-lines-invisible-areas))
+  (save-excursion
+    (move-end-of-line nil)
+    (seq-find (lambda (overlay)
+		(let ((pos (point))
+		      (end (overlay-end overlay)))
+		  (= pos end)))
+	      hide-lines-invisible-areas)))
 
 (defun mu4e-unfold-one-thread (overlay)
   (setq hide-lines-invisible-areas
@@ -278,12 +280,13 @@ Julien Masson
 
 (defun mu4e-headers-fold-unfold-all ()
   (interactive)
-  (if hide-lines-invisible-areas
-      (hide-lines-show-all)
-    (goto-char (point-min))
-    (while (< (point) (point-max))
-      (mu4e-fold-one-thread)
-      (next-line))))
+  (save-excursion
+    (if hide-lines-invisible-areas
+	(hide-lines-show-all)
+      (goto-char (point-min))
+      (while (< (point) (point-max))
+	(mu4e-fold-one-thread)
+	(next-line)))))
 
 
 (provide 'my-mu4e)
