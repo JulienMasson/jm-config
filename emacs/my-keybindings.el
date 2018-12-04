@@ -18,6 +18,7 @@
 (global-set-key (kbd "C-c M-f") 'find-name-dired)
 (global-set-key (kbd "C-M-y") (lambda () (interactive) (yank-pop -1)))
 (global-set-key (kbd "C-c M-w") 'show-and-copy-buffer-filename)
+(global-set-key (kbd "C-M-d") 'my-delete-word)
 ;; interactive-align
 (global-set-key (kbd "M-@") 'ialign)
 

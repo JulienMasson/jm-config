@@ -199,6 +199,13 @@
 ;; default browser
 (setq browse-url-browser-function 'browse-url-chrome)
 
+;; delete word without save it in kill ring
+(defun my-delete-word (arg)
+  (interactive "p")
+  (let ((opoint (point)))
+    (forward-sexp (or arg 1))
+    (delete-region opoint (point))))
+
 ;; interactive-align
 (require 'ialign)
 
