@@ -63,6 +63,15 @@
 ;; change default grep
 (setq grep-command "grep --color -nsrH -E ")
 
+;; grep context
+(require 'grep-context)
+(add-hook 'compilation-mode-hook #'grep-context-mode)
+
+(defun my-grep-context (&optional arg)
+  (interactive "p")
+    (cond ((= arg 1) (call-interactively 'grep-context-more-around-point))
+        (t (call-interactively 'grep-context-less-around-point))))
+
 ;; grep save buffer
 (defun grep-save-buffer ()
   (interactive)

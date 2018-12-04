@@ -202,3 +202,9 @@
 [submodule "emacs/modules/move-lines"]
 	path = emacs/modules/move-lines
 	url = https://github.com/targzeta/move-lines.git
+[submodule "emacs/modules/interactive-align"]
+	path = emacs/modules/interactive-align
+	url = https://github.com/mkcms/interactive-align.git
+[submodule "emacs/modules/grep-context"]
+	path = emacs/modules/grep-context
+	url = https://github.com/mkcms/grep-context.git

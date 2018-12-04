@@ -18,6 +18,8 @@
 (global-set-key (kbd "C-c M-f") 'find-name-dired)
 (global-set-key (kbd "C-M-y") (lambda () (interactive) (yank-pop -1)))
 (global-set-key (kbd "C-c M-w") 'show-and-copy-buffer-filename)
+;; interactive-align
+(global-set-key (kbd "M-@") 'ialign)
 
 ;; goto virtual desktops
 (global-set-key (kbd "M-1") (lambda () (interactive) (virtual-desktops-goto 1)))
@@ -76,11 +78,10 @@
 (global-set-key (kbd "C-c i p") 'project-compile)
 (global-set-key (kbd "C-c f") 'project-find-file-subproject)
 
-;; grep at point
+;; grep
 (global-set-key (kbd "C-M-g") 'grep-at-point)
-
-;; grep save buffer
 (define-key grep-mode-map "s" 'grep-save-buffer)
+(define-key grep-mode-map (kbd "TAB") #'my-grep-context)
 
 ;; window dedicated
 (global-set-key (kbd "C-c t") 'toggle-window-dedicated)

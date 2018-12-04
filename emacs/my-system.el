@@ -199,5 +199,8 @@
 ;; default browser
 (setq browse-url-browser-function 'browse-url-chrome)
 
+;; interactive-align
+(require 'ialign)
+
 
 (provide 'my-system)
