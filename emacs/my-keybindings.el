@@ -88,6 +88,9 @@
 (define-key grep-mode-map "s" 'grep-save-buffer)
 (define-key grep-mode-map (kbd "TAB") #'my-grep-context)
 
+;; occur
+(global-set-key (kbd "C-M-o") 'occur-at-point)
+
 ;; window dedicated
 (global-set-key (kbd "C-c t") 'toggle-window-dedicated)
 

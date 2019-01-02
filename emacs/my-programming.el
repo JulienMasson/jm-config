@@ -85,6 +85,11 @@
 		grep-command
 		(thing-at-point 'symbol))))
 
+;; occur at point
+(defun occur-at-point ()
+  (interactive)
+  (occur (thing-at-point 'symbol)))
+
 ;; ripgrep
 (require 'rg)
 
