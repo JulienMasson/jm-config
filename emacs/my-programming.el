@@ -23,6 +23,17 @@
   (interactive (list (ido-read-file-name "gdb on: ")))
   (realgud:gdb (concat "gdb " file)))
 
+(defun gdb-attach (process)
+  (interactive "sProcess Name: ")
+  (let* ((user (getenv "USER"))
+	 (regexp (format "^%s\s*(\\d+).*%s$"
+			 user process))
+	 (cmd (format "ps aux | perl -ne 'print \"$1\" if /%s/'"
+		      regexp))
+	 (pid (shell-command-to-string cmd)))
+    (when pid
+      (realgud:gdb-pid (string-to-number pid)))))
+
 ;; visual regexp
 (require 'visual-regexp)
 
