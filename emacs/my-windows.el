@@ -20,7 +20,7 @@
 (setq default-frame-alist '((width . 80) (height . 40)))
 
 ;; set font size
-(set-face-attribute 'default nil :height 90)
+(set-face-attribute 'default nil :height 100)
 
 ;; enable ido-mode
 (require 'ido)
