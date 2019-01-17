@@ -6,6 +6,9 @@
 (require 'magit)
 (require 'magit-blame)
 
+;; don’t show any indicators
+(setq magit-section-visibility-indicator nil)
+
 ;; use emacsclient as the $EDITOR
 (require 'with-editor)
 (add-hook 'shell-mode-hook 'with-editor-export-editor)

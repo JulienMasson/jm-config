@@ -211,3 +211,12 @@
 [submodule "emacs/modules/wgrep"]
 	path = emacs/modules/wgrep
 	url = https://github.com/mhayashi1120/Emacs-wgrep.git
+[submodule "emacs/modules/magit-popup"]
+	path = emacs/modules/magit-popup
+	url = https://github.com/magit/magit-popup.git
+[submodule "emacs/modules/graphql"]
+	path = emacs/modules/graphql
+	url = https://github.com/vermiculus/graphql.el.git
+[submodule "emacs/modules/treepy"]
+	path = emacs/modules/treepy
+	url = https://github.com/volrath/treepy.el.git
