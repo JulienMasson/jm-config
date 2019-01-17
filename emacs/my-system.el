@@ -95,8 +95,8 @@
 ;; shell config
 (require 'my-shell)
 
-;; github config
-(require 'my-github)
+;; git config
+(require 'my-git)
 
 ;; pdf tools
 (if (not (executable-find "epdfinfo"))

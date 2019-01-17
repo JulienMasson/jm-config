@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;               GITHUB CONFIG               ;;;;
+;;;;                 GIT CONFIG                ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; magit
@@ -87,4 +87,4 @@ Both the source and the target are read in the minibuffer."
 (magit-define-popup-action 'magit-log-popup
   ?t "Log from HEAD to last Tag" 'magit-log-from-head-to-last-tag)
 
-(provide 'my-github)
+(provide 'my-git)
