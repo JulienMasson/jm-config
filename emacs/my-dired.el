@@ -189,7 +189,7 @@ search modes defined in the new `dired-sort-toggle'.
 ;; do hexl-find-file in dired mode
 (defun dired-do-hexl-find-file (&optional arg)
   (interactive "P")
-  (let ((files (dired-get-marked-files t arg nil nil t)))
+  (let ((files (dired-get-marked-files t arg)))
     (mapc (lambda (file)
 	    (hexl-find-file file))
 	  files)))
