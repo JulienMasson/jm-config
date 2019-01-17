@@ -73,5 +73,15 @@ Both the source and the target are read in the minibuffer."
 (magit-define-popup-action 'magit-push-popup
   ?g "Gerrit" 'magit-push-gerrit)
 
+;; magit log from HEAD to last Tag found
+(defun magit-log-from-head-to-last-tag (&optional args files)
+  "Show log from `HEAD' to last Tag found."
+  (interactive (magit-log-arguments))
+  (let ((last-tag (magit-git-string "describe" "--abbrev=0" "--tags")))
+    (when last-tag
+      (magit-log (list (format "%s..HEAD" last-tag)) args files))))
+
+(magit-define-popup-action 'magit-log-popup
+  ?t "Log from HEAD to last Tag" 'magit-log-from-head-to-last-tag)
 
 (provide 'my-github)
