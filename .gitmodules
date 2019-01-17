@@ -208,3 +208,6 @@
 [submodule "emacs/modules/grep-context"]
 	path = emacs/modules/grep-context
 	url = https://github.com/mkcms/grep-context.git
+[submodule "emacs/modules/wgrep"]
+	path = emacs/modules/wgrep
+	url = https://github.com/mhayashi1120/Emacs-wgrep.git
