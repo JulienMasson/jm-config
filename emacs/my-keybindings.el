@@ -20,6 +20,12 @@
 (global-set-key (kbd "C-c M-w") 'show-and-copy-buffer-filename)
 (global-set-key (kbd "C-M-d") 'my-delete-word)
 
+;; markdown
+(define-key markdown-mode-map (kbd "C-c <left>")  'windmove-left)
+(define-key markdown-mode-map (kbd "C-c <right>") 'windmove-right)
+(define-key markdown-mode-map (kbd "C-c <up>")    'windmove-up)
+(define-key markdown-mode-map (kbd "C-c <down>")  'windmove-down)
+
 ;; visual-regexp
 (global-set-key (kbd "M-%") 'vr/query-replace)
 
