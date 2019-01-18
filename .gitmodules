@@ -220,3 +220,15 @@
 [submodule "emacs/modules/treepy"]
 	path = emacs/modules/treepy
 	url = https://github.com/volrath/treepy.el.git
+[submodule "emacs/modules/forge"]
+	path = emacs/modules/forge
+	url = https://github.com/magit/forge.git
+[submodule "emacs/modules/closql"]
+	path = emacs/modules/closql
+	url = https://github.com/emacscollective/closql.git
+[submodule "emacs/modules/emacsql"]
+	path = emacs/modules/emacsql
+	url = https://github.com/skeeto/emacsql.git
+[submodule "emacs/modules/pg"]
+	path = emacs/modules/pg
+	url = https://github.com/cbbrowne/pg.el.git

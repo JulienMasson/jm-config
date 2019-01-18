@@ -6,6 +6,9 @@
 (require 'magit)
 (require 'magit-blame)
 
+;; forge
+(require 'forge)
+
 ;; don’t show any indicators
 (setq magit-section-visibility-indicator nil)
 
