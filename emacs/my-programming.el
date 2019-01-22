@@ -25,7 +25,7 @@
 
 (defun gdb-attach (process)
   (interactive "sProcess Name: ")
-  (let* ((user (getenv "USER"))
+  (let* ((user (shell-command-to-string "echo -n $USER"))
 	 (regexp (format "^%s\s*(\\d+).*%s$"
 			 user process))
 	 (cmd (format "ps aux | perl -ne 'print \"$1\" if /%s/'"
@@ -33,6 +33,11 @@
 	 (pid (shell-command-to-string cmd)))
     (when pid
       (realgud:gdb-pid (string-to-number pid)))))
+
+(defun my-realgud-file-find-function (marker filename directory &rest formats)
+  (concat (f-root) filename))
+
+(setq realgud-file-find-function 'my-realgud-file-find-function)
 
 ;; visual regexp
 (require 'visual-regexp)
