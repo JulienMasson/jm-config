@@ -111,7 +111,52 @@
 
 ;; company mode
 (require 'company)
+(setq company-backends nil)
 (add-hook 'after-init-hook 'global-company-mode)
+
+;; completion at point company
+(require 'company-capf)
+(add-to-list 'company-backends 'company-capf)
+
+;; ;; files company
+(require 'company-files)
+(add-to-list 'company-backends 'company-files)
+
+;; clang company
+(require 'company-clang)
+(add-to-list 'company-backends 'company-clang)
+
+(defvar cscope-include-dirs-cached nil)
+
+(defun cscope-generate-include-dirs (dir)
+  (unless (assoc dir cscope-include-dirs-cached)
+    (let* ((default-directory dir)
+	   (search-regex "\\.\\/(.*)\\/.*h$")
+	   (search-cmd (concat
+			"cat cscope.files |"
+			"perl -ne 'print \"$1\n\" if /"
+			search-regex
+			"/' |"
+			"sort | uniq"))
+	   (directories (split-string (shell-command-to-string
+				       search-cmd))))
+      (add-to-list 'cscope-include-dirs-cached
+		   `(,dir . ,(mapcar
+			      (lambda (arg)
+				(format "-I%s" (untramp-path
+						(concat dir arg))))
+			      directories)))))
+  (assoc-default dir cscope-include-dirs-cached))
+
+(defun extra-args-clang-company ()
+  (when jm-cscope-search-list
+      (setq-local company-clang-arguments
+		  (apply 'append
+			 (mapcar (lambda (arg)
+				   (cscope-generate-include-dirs (car arg)))
+				 jm-cscope-search-list)))))
+
+(add-hook 'c-mode-hook 'extra-args-clang-company)
 
 ;; c header company
 (require 'company-c-headers)
