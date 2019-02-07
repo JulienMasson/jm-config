@@ -21,7 +21,7 @@
 
 (defun gdb (file)
   (interactive (list (ido-read-file-name "gdb on: ")))
-  (realgud:gdb (concat "gdb " file)))
+  (realgud:gdb (concat "gdb " (untramp-path file))))
 
 (defun gdb-attach (process)
   (interactive "sProcess Name: ")
