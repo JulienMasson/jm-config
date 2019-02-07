@@ -29,6 +29,10 @@
 ;; time (secs) to retrieve mail and update the database
 (setq mu4e-update-interval 60)
 
+;; default citation format
+(setq message-citation-line-format "On %a %d %b %Y at %R, %f wrote:\n")
+(setq message-citation-line-function 'message-insert-formatted-citation-line)
+
 ;; header child marks
 (setq mu4e-headers-thread-child-prefix '("  ├>" . "  ┣▶ "))
 (setq mu4e-headers-thread-last-child-prefix '("  └>" . "  ┗▶ "))
