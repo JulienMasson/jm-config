@@ -59,7 +59,7 @@
 ;; change headers
 (setq mu4e-headers-date-format "%d %b")
 (setq mu4e-headers-fields '((:date          .  8)
-			    (:from          .  25)
+			    (:from          .  20)
 			    (:subject       .  nil)))
 (setq mu4e-view-fields '(:from :to :cc :subject :date :mailing-list :attachments :signature))
 
