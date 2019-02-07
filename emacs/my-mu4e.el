@@ -56,6 +56,10 @@
       (pop-to-buffer-same-window buf))
     (add-to-list 'global-mode-string '(:eval (mu4e-context-label)))))
 
+;; default action in mu4e view and header
+(setq mu4e-view-actions '(("show this thread" . mu4e-action-show-thread)))
+(setq mu4e-headers-actions '(("show this thread" . mu4e-action-show-thread)))
+
 ;; change headers
 (setq mu4e-headers-date-format "%d %b")
 (setq mu4e-headers-fields '((:date          .  8)
