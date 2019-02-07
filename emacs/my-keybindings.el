@@ -46,7 +46,7 @@
 (global-set-key (kbd "C-c g l") 'magit-log-head)
 (global-set-key (kbd "C-c g f") 'magit-log-buffer-file)
 (global-set-key (kbd "C-c g r") 'magit-reset-hard)
-(global-set-key (kbd "C-c g b") 'magit-blame)
+(global-set-key (kbd "C-c g b") 'magit-blame-addition)
 
 ;; compilation
 (global-set-key (kbd "C-c SPC") (lambda () (interactive) (with-current-buffer "*compilation*" (recompile))))
