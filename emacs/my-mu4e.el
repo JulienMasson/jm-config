@@ -487,5 +487,37 @@ Julien Masson
   (interactive "nPatch version: ")
   (kernel-patch-send version))
 
+;; add Apply patch list action in mu4e header
+(defun mu4e-get-patch-list ()
+  (let (patch-list)
+    (save-excursion
+      (let ((range (mu4e-range-thread)))
+	(when range
+	  (cl-multiple-value-bind (begin end)
+	      range
+	    (goto-char begin)
+	    (while (< (point) end)
+	      (let* ((msg (mu4e-message-at-point))
+		     (subject (plist-get msg :subject))
+		     (level (plist-get (plist-get msg :thread) :level))
+		     (path (plist-get msg :path)))
+		(when (and (= level 1)
+			   (string-match "^\\[PATCH" subject))
+		  (add-to-list 'patch-list `(,subject . ,path)))
+		(next-line)))))))
+    (when patch-list
+      (cl-sort patch-list (lambda (a b)
+			    (string< (car a) (car b)))))))
+
+(defun mu4e-apply-patch-list (msg)
+  (let ((patch-list (mu4e-get-patch-list))
+	(default-directory (ido-read-directory-name "Directory: ")))
+    (when patch-list
+      (mapc (lambda (patch)
+	      (magit-run-git "am" (cdr patch)))
+	    patch-list))))
+
+(add-to-list 'mu4e-headers-actions '("Apply patch list" . mu4e-apply-patch-list))
+
 
 (provide 'my-mu4e)
