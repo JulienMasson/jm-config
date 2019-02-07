@@ -60,6 +60,15 @@
 (setq mu4e-view-actions '(("show this thread" . mu4e-action-show-thread)))
 (setq mu4e-headers-actions '(("show this thread" . mu4e-action-show-thread)))
 
+;; add Apply patch action in mu4e view and header
+(defun mu4e-action-git-apply-mbox (msg)
+  (let ((default-directory (ido-read-directory-name "Directory: "))
+	(path (mu4e-message-field msg :path)))
+    (magit-run-git "am" path)))
+
+(add-to-list 'mu4e-view-actions '("apply patch" . mu4e-action-git-apply-mbox))
+(add-to-list 'mu4e-headers-actions '("apply patch" . mu4e-action-git-apply-mbox))
+
 ;; change headers
 (setq mu4e-headers-date-format "%d %b")
 (setq mu4e-headers-fields '((:date          .  8)
