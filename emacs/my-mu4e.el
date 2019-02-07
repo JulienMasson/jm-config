@@ -160,7 +160,6 @@ Regards,
 --\n
 Julien Masson
 #+end_signature")
-(org-msg-mode)
 
 ;; account list
 (defvar my-mu4e-account-alist
@@ -171,6 +170,7 @@ Julien Masson
 
 (defun my-mu4e-set-account ()
   "Set the account for composing a message."
+  (org-msg-mode)
   (let* ((account
           (if mu4e-compose-parent-message
               (let ((maildir (mu4e-message-field mu4e-compose-parent-message :maildir)))
