@@ -20,6 +20,9 @@
 ;; maximum number of results to show
 (setq mu4e-headers-results-limit 100)
 
+;; descending sorting
+(setq mu4e-headers-sort-direction 'descending)
+
 ;; fancy chars
 (setq mu4e-use-fancy-chars t)
 
