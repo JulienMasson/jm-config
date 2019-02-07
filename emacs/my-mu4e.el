@@ -69,6 +69,15 @@
 (add-to-list 'mu4e-view-actions '("apply patch" . mu4e-action-git-apply-mbox))
 (add-to-list 'mu4e-headers-actions '("apply patch" . mu4e-action-git-apply-mbox))
 
+;; add Show message id action in mu4e view and header
+(defun mu4e-action-show-message-id (msg)
+  (let ((message-id (mu4e-message-field msg :message-id)))
+    (message "%s" message-id)
+    (kill-new message-id)))
+
+(add-to-list 'mu4e-view-actions '("Show Message-Id" . mu4e-action-show-message-id))
+(add-to-list 'mu4e-headers-actions '("Show Message-Id" . mu4e-action-show-message-id))
+
 ;; change headers
 (setq mu4e-headers-date-format "%d %b")
 (setq mu4e-headers-fields '((:date          .  8)
