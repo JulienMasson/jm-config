@@ -247,7 +247,8 @@ Julien Masson
 (defun mu4e-range-thread ()
   (save-excursion
     (cl-flet ((thread-pos (direction)
-			  (while (> (mu4e-level-at-point) 0)
+			  (while (and (mu4e-level-at-point)
+				      (> (mu4e-level-at-point) 0))
 			    (funcall direction))
 			  (point)))
       (beginning-of-line)
