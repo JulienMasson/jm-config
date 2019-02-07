@@ -60,6 +60,10 @@
 (setq cscope-display-buffer-args nil)
 (cscope-setup)
 
+(defun cscope-regenerate-cscope-files (top-directory)
+  (shell-command "find . -name \"*.[chxsS]\" > cscope.files"))
+(advice-add 'cscope-index-files :after #'cscope-regenerate-cscope-files)
+
 ;; cscope search list
 (defvar jm-cscope-search-list nil)
 (defun cscope-add-cscope-search-list (dir)
