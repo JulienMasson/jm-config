@@ -69,7 +69,7 @@
 (defun cscope-add-cscope-search-list (dir)
   "Add cscope database to search list."
   (interactive "DAdd database: ")
-  (setq jm-cscope-search-list (add-to-list 'jm-cscope-search-list (list dir))))
+  (add-to-list 'jm-cscope-search-list (list dir)))
 
 (defun cscope-reset-cscope-search-list ()
   "Rest cscope search list"
