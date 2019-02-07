@@ -300,5 +300,30 @@ Julien Masson
 	(mu4e-fold-one-thread)
 	(next-line)))))
 
+;; appply diff face in view mode
+(defun apply-minimal-diff-face-buffer ()
+  (cl-flet ((apply-defface (min max face)
+			   (let ((overlay (make-overlay min max)))
+			     (overlay-put overlay 'face face))))
+    (save-excursion
+      (goto-char (point-max))
+      (while (re-search-backward "^diff \-\-git" nil t))
+      (while (not (eobp))
+	(let* ((beg (point))
+	       (end (line-end-position))
+	       (str (buffer-substring-no-properties beg end)))
+	  (cond ((string-match "^\\(---\\|\\+\\+\\+\\|@@\\)" str)
+		 (apply-defface beg end 'diff-hunk-header))
+		((string-match "^\\+" str)
+		 (apply-defface beg end 'diff-added))
+		((string-match "^\\-" str)
+		 (apply-defface beg end 'diff-removed)))
+	  (forward-line))))))
+
+(defun mu4e-view-apply-diff-face (msg)
+  (with-current-buffer mu4e~view-buffer-name
+    (apply-minimal-diff-face-buffer)))
+(advice-add 'mu4e-view :after #'mu4e-view-apply-diff-face)
+
 
 (provide 'my-mu4e)
