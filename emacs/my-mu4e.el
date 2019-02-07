@@ -29,6 +29,14 @@
 ;; time (secs) to retrieve mail and update the database
 (setq mu4e-update-interval 60)
 
+;; header child marks
+(setq mu4e-headers-thread-child-prefix '("  ├>" . "  ┣▶ "))
+(setq mu4e-headers-thread-last-child-prefix '("  └>" . "  ┗▶ "))
+(setq mu4e-headers-thread-connection-prefix '("  │" . "  ┃ "))
+(setq mu4e-headers-thread-orphan-prefix '("  ┬>" . "  ┳▶ "))
+(setq mu4e-headers-thread-single-orphan-prefix '("  ─>" . "  ━▶ "))
+(setq mu4e-headers-thread-duplicate-prefix '("  =" . "  ≡ "))
+
 ;; write own main view
 (defvar my-mu4e~main-buffer-name "*mail*")
 (defun mu4e~main-view ()
