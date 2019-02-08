@@ -32,8 +32,11 @@
 (setq cscope-display-buffer-args nil)
 (cscope-setup)
 
+;; cscope regenerate files after indexing
+(defvar cscope-files-cmd "find . -name \"*.[chxsS]\" > cscope.files")
+
 (defun cscope-regenerate-cscope-files (top-directory)
-  (shell-command "find . -name \"*.[chxsS]\" > cscope.files"))
+  (shell-command cscope-files-cmd))
 (advice-add 'cscope-index-files :after #'cscope-regenerate-cscope-files)
 
 ;; cscope search list
