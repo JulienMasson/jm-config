@@ -52,12 +52,13 @@
 (require 'company-clang)
 (add-to-list 'company-backends 'company-clang)
 
+;; add extra args for clang based on cscope
 (defvar cscope-include-dirs-cached nil)
 
 (defun cscope-generate-include-dirs (dir)
   (unless (assoc dir cscope-include-dirs-cached)
     (let* ((default-directory dir)
-	   (search-regex "\\.\\/(.*)\\/.*h$")
+	   (search-regex "\\.\\/(.*[i|I]nclude\\/).*h$")
 	   (search-cmd (concat
 			"cat cscope.files |"
 			"perl -ne 'print \"$1\n\" if /"
@@ -66,6 +67,7 @@
 			"sort | uniq"))
 	   (directories (split-string (shell-command-to-string
 				       search-cmd))))
+      (push dir directories)
       (add-to-list 'cscope-include-dirs-cached
 		   `(,dir . ,(mapcar
 			      (lambda (arg)
