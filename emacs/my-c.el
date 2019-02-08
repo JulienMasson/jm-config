@@ -55,6 +55,10 @@
 (require 'company-clang)
 (add-to-list 'company-backends 'company-clang)
 
+;; c header company
+(require 'company-c-headers)
+(add-to-list 'company-backends 'company-c-headers)
+
 ;; add extra args for clang based on cscope
 (defvar cscope-include-dirs-cached nil)
 
@@ -87,11 +91,41 @@
 				   (cscope-generate-include-dirs (car arg)))
 				 jm-cscope-search-list)))))
 
-(add-hook 'c-mode-hook 'extra-args-clang-company)
+;; global setting applied to specific c files
+(defvar c-global-settings-list nil)
 
-;; c header company
-(require 'company-c-headers)
-(add-to-list 'company-backends 'company-c-headers)
+(defun apply-c-default-settings ()
+  (setq cscope-option-do-not-update-database nil)
+  (setq cscope-files-cmd "find . -name \"*.[chxsS]\" > cscope.files")
+  (setq magit-log-arguments '("-n256" "--graph" "--decorate"))
+  (when (string= major-mode "c-mode")
+    (extra-args-clang-company)))
+
+(defun apply-c-global-settings (&rest _)
+  (let* ((filename (expand-file-name default-directory))
+	 (settings (seq-find (lambda (elem)
+			       (string-match-p (car elem)
+					       filename))
+			     c-global-settings-list)))
+    (if settings
+	(funcall (cdr settings))
+      (apply-c-default-settings))))
+
+(add-hook 'c-mode-hook 'apply-c-global-settings)
+(add-hook 'dired-mode-hook 'apply-c-global-settings)
+(add-hook 'magit-status-mode-hook 'apply-c-global-settings)
+(advice-add 'select-window :after #'apply-c-global-settings)
+
+(defun kernel-global-settings ()
+  (setq cscope-option-do-not-update-database t)
+  (setq cscope-files-cmd "find . -name \"*.[chxsS]\" > cscope.files")
+  (setq magit-log-arguments '("-n256" "--decorate"))
+  (when (string= major-mode "c-mode")
+    (extra-args-clang-company)))
+
+(defun register-kernel-global-settings (path)
+  (add-to-list 'magit-blacklist-repo path)
+  (add-to-list 'c-global-settings-list `(,path . kernel-global-settings)))
 
 ;; ctags
 (defun create-ctags-tag (dir)
