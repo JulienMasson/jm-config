@@ -103,6 +103,7 @@
 (define-key mu4e-view-mode-map (kbd "C-c C-s") 'mu4e-ido-save-attachments)
 (define-key mu4e-headers-mode-map (kbd "TAB") 'mu4e-headers-fold-unfold-thread)
 (define-key mu4e-headers-mode-map "f" 'mu4e-headers-fold-unfold-all)
+(define-key mu4e-headers-mode-map "G" 'mu4e-headers-toggle-sort-direction)
 
 ;; project manager
 (global-set-key (kbd "C-c i s") 'switch-project)

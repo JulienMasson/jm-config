@@ -43,6 +43,13 @@
 ;; descending sorting
 (setq mu4e-headers-sort-direction 'descending)
 
+(defun mu4e-headers-toggle-sort-direction ()
+  (interactive)
+  (if (eq mu4e-headers-sort-direction 'descending)
+      (setq mu4e-headers-sort-direction 'ascending)
+    (setq mu4e-headers-sort-direction 'descending))
+  (mu4e-headers-rerun-search))
+
 ;; fancy chars
 (setq mu4e-use-fancy-chars t)
 
