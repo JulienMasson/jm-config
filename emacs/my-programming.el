@@ -33,32 +33,6 @@
   (toggle-read-only))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
-;; gdb config
-(require 'load-relative)
-(require 'loc-changes)
-(require 'realgud)
-(setq realgud-safe-mode nil)
-
-(defun gdb (file)
-  (interactive (list (ido-read-file-name "gdb on: ")))
-  (realgud:gdb (concat "gdb " (untramp-path file))))
-
-(defun gdb-attach (process)
-  (interactive "sProcess Name: ")
-  (let* ((user (shell-command-to-string "echo -n $USER"))
-	 (regexp (format "^%s\s*(\\d+).*%s$"
-			 user process))
-	 (cmd (format "ps aux | perl -ne 'print \"$1\" if /%s/'"
-		      regexp))
-	 (pid (shell-command-to-string cmd)))
-    (when pid
-      (realgud:gdb-pid (string-to-number pid)))))
-
-(defun my-realgud-file-find-function (marker filename directory &rest formats)
-  (concat (f-root) filename))
-
-(setq realgud-file-find-function 'my-realgud-file-find-function)
-
 ;; visual regexp
 (require 'visual-regexp)
 
@@ -67,35 +41,8 @@
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
-;; default indentation
-(setq c-default-style '((c-mode . "linux") (other . "gnu")))
-
 ;; save backup files
 (setq backup-directory-alist `(("." . "~/.saves")))
-
-;; cscope
-(require 'xcscope)
-(setq cscope-option-use-inverted-index t)
-(setq cscope-option-do-not-update-database t)
-(setq cscope-option-kernel-mode t)
-(setq cscope-display-buffer-args nil)
-(cscope-setup)
-
-(defun cscope-regenerate-cscope-files (top-directory)
-  (shell-command "find . -name \"*.[chxsS]\" > cscope.files"))
-(advice-add 'cscope-index-files :after #'cscope-regenerate-cscope-files)
-
-;; cscope search list
-(defvar jm-cscope-search-list nil)
-(defun cscope-add-cscope-search-list (dir)
-  "Add cscope database to search list."
-  (interactive "DAdd database: ")
-  (add-to-list 'jm-cscope-search-list (list dir)))
-
-(defun cscope-reset-cscope-search-list ()
-  "Rest cscope search list"
-  (interactive)
-  (setq jm-cscope-search-list nil))
 
 ;; auto-detection indenting
 (require 'dtrt-indent)
@@ -147,67 +94,17 @@
 (require 'company-files)
 (add-to-list 'company-backends 'company-files)
 
-;; clang company
-(require 'company-clang)
-(add-to-list 'company-backends 'company-clang)
-
-(defvar cscope-include-dirs-cached nil)
-
-(defun cscope-generate-include-dirs (dir)
-  (unless (assoc dir cscope-include-dirs-cached)
-    (let* ((default-directory dir)
-	   (search-regex "\\.\\/(.*)\\/.*h$")
-	   (search-cmd (concat
-			"cat cscope.files |"
-			"perl -ne 'print \"$1\n\" if /"
-			search-regex
-			"/' |"
-			"sort | uniq"))
-	   (directories (split-string (shell-command-to-string
-				       search-cmd))))
-      (add-to-list 'cscope-include-dirs-cached
-		   `(,dir . ,(mapcar
-			      (lambda (arg)
-				(format "-I%s" (untramp-path
-						(concat dir arg))))
-			      directories)))))
-  (assoc-default dir cscope-include-dirs-cached))
-
-(defun extra-args-clang-company ()
-  (when jm-cscope-search-list
-      (setq-local company-clang-arguments
-		  (apply 'append
-			 (mapcar (lambda (arg)
-				   (cscope-generate-include-dirs (car arg)))
-				 jm-cscope-search-list)))))
-
-(add-hook 'c-mode-hook 'extra-args-clang-company)
-
-;; c header company
-(require 'company-c-headers)
-(add-to-list 'company-backends 'company-c-headers)
-
 ;; perl
 (defalias 'perl-mode 'cperl-mode)
 
-;; ctags
-(defun create-ctags-tag (dir)
-  (interactive "DDirectory: ")
-  (let ((default-directory dir))
-    (shell-command "/usr/bin/ctags -e -R .")))
+;; gdb
+(require 'my-gdb)
 
-;; anaconda company
-(require 'company-anaconda)
-(add-to-list 'company-backends 'company-anaconda)
-(add-hook 'python-mode-hook 'anaconda-mode)
+;; C source code
+(require 'my-c)
 
-;; pycscope
-(defun cscope-pycscope (dir)
-  (interactive "DDirectory: ")
-  (let ((default-directory dir))
-    (async-shell-command "pycscope -D -R . && find . -name '*.py' > cscope.files")))
-
-(add-hook 'python-mode-hook (function cscope-minor-mode))
+;; python source code
+(require 'my-python)
 
 ;; manual at point
 (defun manual-at-point()
