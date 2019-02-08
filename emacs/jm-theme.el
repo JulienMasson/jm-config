@@ -1,33 +1,24 @@
-;;; jm-theme.el --- Julien Masson Theme for Emacs 24
+;;; jm-theme.el --- My Custom Theme from zenburn
 
-;; Filename: jm-theme.el
-;; Description: A Calm and Low Contract Dark Theme for Emacs 24
-;; Author: Julien Masson
-;; Version: 0.1
+;; Copyright (C) 2019 Julien Masson
 
-;; This program is free software; you can redistribute it and/or modify
+;; Author: Julien Masson <massonju.eseo@gmail.com>
+;; URL: https://github.com/JulienMasson/jm-config/
+
+;; This file is part of GNU Emacs.
+
+;; GNU Emacs is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
 
-;; This program is distributed in the hope that it will be useful,
+;; GNU Emacs is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-;;; Commentary:
-
-;; A combination of zenburn-emacs by Bozhidar Batsov and Ample Theme
-;; by Jordon Biondo.  This theme is built with Emacs 24.  Based on version
-;; 0.2.4 of ample-theme found at
-;; https://github.com/jordonbiondo/ample-theme and version 2.1 of
-;; zenburn-emacs found at http://github.com/bbatsov/zenburn-emacs
-
-;; Mostly, I liked the colors of ample and the better highlighting and
-;; and robustness of zenburn
+;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Code:
 

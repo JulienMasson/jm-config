@@ -1,8 +1,11 @@
-;;; utils.el
+;;; utils.el --- Utils
 
-;; Copyright (C) 2018 Julien Masson
+;; Copyright (C) 2019 Julien Masson
 
-;; This file is NOT part of GNU Emacs.
+;; Author: Julien Masson <massonju.eseo@gmail.com>
+;; URL: https://github.com/JulienMasson/jm-config/
+
+;; This file is part of GNU Emacs.
 
 ;; GNU Emacs is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -16,6 +19,8 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Code:
 
 (defmacro save-excursion-if-not-at-point-max (buf &rest body)
   (declare (indent 1))

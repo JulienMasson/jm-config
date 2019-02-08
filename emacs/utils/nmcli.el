@@ -1,10 +1,11 @@
-;;; nmcli.el
+;;; nmcli.el --- nmcli Utils
 
-;; Copyright (C) 2017 Julien Masson
+;; Copyright (C) 2019 Julien Masson
 
 ;; Author: Julien Masson <massonju.eseo@gmail.com>
+;; URL: https://github.com/JulienMasson/jm-config/
 
-;; This file is NOT part of GNU Emacs.
+;; This file is part of GNU Emacs.
 
 ;; GNU Emacs is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -19,6 +20,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
+;;; Code:
 
 (defun connect-wifi (target)
   (interactive (list (ido-completing-read "Connect: "
