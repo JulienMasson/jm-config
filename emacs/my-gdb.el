@@ -48,5 +48,33 @@
 
 (setq realgud-file-find-function 'my-realgud-file-find-function)
 
+;; kgdb
+(defvar kgdb-default-port "ttyUSB0")
+(defvar kgdb-default-speed 115200)
+(defvar kgdb-default-vmlinux "vmlinux")
+(defvar kgdb-default-gdb-cmd "gdb")
+
+(defun kgdb-send-command (process cmd)
+  (let ((str (concat cmd "\r")))
+    (if (> (length str) 10)
+	(mapc (lambda (c) (progn (comint-send-string process (string c))
+				 (sleep-for 0.01))) (string-to-list str))
+      (comint-send-string process str))))
+
+(defun kgdb (vmlinux port speed)
+  (interactive (list (read-file-name "vmlinux: " nil kgdb-default-vmlinux t)
+		     (read-file-name "Serial port: " "/dev" kgdb-default-port t)
+		     (read-number "Serial speed: " kgdb-default-speed)))
+  (let ((process (make-serial-process :port port :speed speed))
+	(kgdb-args (format "-ex \"target remote %s\"" port))
+	(default-directory (file-name-directory vmlinux)))
+    (when process
+      (kgdb-send-command process "sudo su")
+      (kgdb-send-command process "echo g > /proc/sysrq-trigger")
+      (delete-process process)
+      (realgud:gdb (format "%s %s %s"
+			   kgdb-default-gdb-cmd
+			   kgdb-args vmlinux)))))
+
 
 (provide 'my-gdb)
