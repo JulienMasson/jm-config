@@ -34,10 +34,14 @@
 
 (setq realgud-file-find-function 'my-realgud-file-find-function)
 
+;; gdb
+(defvar gdb-default-cmd "gdb")
+
 (defun gdb (file)
   (interactive (list (ido-read-file-name "gdb on: ")))
   (realgud:gdb (concat "gdb " (untramp-path file))))
 
+;; gdb attach
 (defun gdb-attach (process)
   (interactive "sProcess Name: ")
   (let* ((user (shell-command-to-string "echo -n $USER"))
@@ -54,7 +58,6 @@
 (defvar kgdb-default-port "ttyUSB0")
 (defvar kgdb-default-speed 115200)
 (defvar kgdb-default-vmlinux "vmlinux")
-(defvar kgdb-default-gdb-cmd "gdb")
 
 (defun kgdb-send-command (process cmd)
   (let ((str (concat cmd "\r")))
