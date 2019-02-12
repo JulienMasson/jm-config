@@ -28,6 +28,12 @@
 (require 'realgud)
 (setq realgud-safe-mode nil)
 
+;; define own realgud file-find function
+(defun my-realgud-file-find-function (marker filename directory &rest formats)
+  (concat (f-root) filename))
+
+(setq realgud-file-find-function 'my-realgud-file-find-function)
+
 (defun gdb (file)
   (interactive (list (ido-read-file-name "gdb on: ")))
   (realgud:gdb (concat "gdb " (untramp-path file))))
@@ -43,10 +49,6 @@
     (when pid
       (realgud:gdb-pid (string-to-number pid)))))
 
-(defun my-realgud-file-find-function (marker filename directory &rest formats)
-  (concat (f-root) filename))
-
-(setq realgud-file-find-function 'my-realgud-file-find-function)
 
 ;; kgdb
 (defvar kgdb-default-port "ttyUSB0")
