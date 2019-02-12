@@ -232,3 +232,6 @@
 [submodule "emacs/modules/pg"]
 	path = emacs/modules/pg
 	url = https://github.com/cbbrowne/pg.el.git
+[submodule "emacs/modules/hide-region"]
+	path = emacs/modules/hide-region
+	url = https://github.com/emacsmirror/hide-region.git

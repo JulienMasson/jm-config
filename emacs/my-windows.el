@@ -191,8 +191,9 @@
       (setq split-height-threshold 119)
     (setq split-height-threshold nil)))
 
-;; hide lines
+;; hide lines/region
 (require 'hide-lines)
+(require 'hide-region)
 
 ;; move lines
 (require 'move-lines)
