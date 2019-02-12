@@ -47,6 +47,14 @@
 ;; exclude some types of messages
 (setq erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"))
 
+;; autojoin channel
+(setq erc-autojoin-channels-alist '(("freenode.net" "#wayland" "#sway-devel")))
+
+;; start erc by default with freenode, port 6667, nick JulienMasson
+(defun start-erc ()
+  (interactive)
+  (erc :server "irc.freenode.net" :port 6667 :nick "JulienMasson"))
+
 ;; logging
 (erc-log-mode)
 (setq erc-log-channels-directory "~/.erc/logs/")
