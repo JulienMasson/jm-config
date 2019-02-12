@@ -34,6 +34,15 @@
 
 (setq realgud-file-find-function 'my-realgud-file-find-function)
 
+;; gdb get pid
+(defun gdb-get-pid (process-name)
+  (let* ((user (shell-command-to-string "echo -n $USER"))
+	 (regexp (format "^%s\s*(\\d+).*%s$"
+			 user process-name))
+	 (cmd (format "ps aux | perl -ne 'print \"$1\" if /%s/'"
+		      regexp)))
+    (shell-command-to-string cmd)))
+
 ;; gdb
 (defvar gdb-default-cmd "gdb")
 
@@ -44,12 +53,7 @@
 ;; gdb attach
 (defun gdb-attach (process)
   (interactive "sProcess Name: ")
-  (let* ((user (shell-command-to-string "echo -n $USER"))
-	 (regexp (format "^%s\s*(\\d+).*%s$"
-			 user process))
-	 (cmd (format "ps aux | perl -ne 'print \"$1\" if /%s/'"
-		      regexp))
-	 (pid (shell-command-to-string cmd)))
+  (let ((pid (gdb-get-pid process)))
     (when pid
       (realgud:gdb-pid (string-to-number pid)))))
 
