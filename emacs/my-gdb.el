@@ -70,20 +70,23 @@
 				 (sleep-for 0.01))) (string-to-list str))
       (comint-send-string process str))))
 
-(defun kgdb (vmlinux port speed)
+(defun kgdb (vmlinux port speed trigger)
   (interactive (list (read-file-name "vmlinux: " nil kgdb-default-vmlinux t)
 		     (read-file-name "Serial port: " "/dev" kgdb-default-port t)
-		     (read-number "Serial speed: " kgdb-default-speed)))
-  (let ((process (make-serial-process :port port :speed speed))
+		     (read-number "Serial speed: " kgdb-default-speed)
+		     (yes-or-no-p "Trigger KGDB ? ")))
+  (let ((default-directory (file-name-directory vmlinux))
 	(kgdb-args (format "-ex \"target remote %s\"" port))
-	(default-directory (file-name-directory vmlinux)))
-    (when process
-      (kgdb-send-command process "sudo su")
-      (kgdb-send-command process "echo g > /proc/sysrq-trigger")
-      (delete-process process)
-      (realgud:gdb (format "%s %s %s"
-			   kgdb-default-gdb-cmd
-			   kgdb-args vmlinux)))))
+	serial-process)
+    (when trigger
+      (setq serial-process (make-serial-process :port port :speed speed))
+      (when serial-process
+	(kgdb-send-command serial-process "sudo su")
+	(kgdb-send-command serial-process "echo g > /proc/sysrq-trigger")
+	(delete-process serial-process)))
+    (realgud:gdb (format "%s %s %s"
+			 gdb-default-cmd
+			 kgdb-args vmlinux))))
 
 
 (provide 'my-gdb)
