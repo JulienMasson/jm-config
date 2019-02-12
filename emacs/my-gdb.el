@@ -57,6 +57,61 @@
     (when pid
       (realgud:gdb-pid (string-to-number pid)))))
 
+;; gdbserver
+(defvar gdbserver-default-port 2345)
+
+(defun gdb-get-host-ssh-config ()
+  (delq nil (mapcar 'cadr (tramp-parse-sconfig "~/.ssh/config"))))
+
+(defun gdbserver-send-command (host cmd)
+  (let ((default-directory (format "/ssh:%s:/" host)))
+    (replace-regexp-in-string
+     "[[:blank:]]*\n$" ""
+     (shell-command-to-string cmd))))
+
+(defun gdbserver-send-command-async (host cmd)
+  (let ((default-directory (format "/ssh:%s:/" host))
+	(gdbserver-buffer "*gdbserver-buffer*")
+	(kill-buffer-query-functions (remq 'process-kill-buffer-query-function
+					   kill-buffer-query-functions)))
+    (with-current-buffer (get-buffer-create gdbserver-buffer)
+      (shell-command cmd (current-buffer))
+      (kill-current-buffer))))
+
+(defun gdbserver (host process)
+  (interactive (let* ((host (completing-read "Host: "
+					     (gdb-get-host-ssh-config)))
+		      (process (read-file-name "Process name: "
+					       (format "/ssh:%s:/" host))))
+		 (list host process)))
+  (let* ((ip-address (gdbserver-send-command host "hostname -I"))
+	 (gdb-cmd (format "gdbserver %s:%s %s"
+			  ip-address
+			  gdbserver-default-port
+			  (untramp-path process)))
+	 (final-cmd (format "nohup %s &" gdb-cmd))
+	 (gdb-args (format "-ex \"target remote tcp:%s:%s\""
+			   ip-address gdbserver-default-port)))
+    (gdbserver-send-command-async host final-cmd)
+    (sleep-for 1)
+    (realgud:gdb (format "%s %s" gdb-default-cmd gdb-args))))
+
+(defun gdbserver-attach (host process)
+  (interactive (list (completing-read "Host: " (gdb-get-host-ssh-config))
+		     (read-string "Process name: ")))
+  (let* ((process-pid (let ((default-directory (format "/ssh:%s:/" host)))
+			(gdb-get-pid process)))
+	 (ip-address (gdbserver-send-command host "hostname -I"))
+	 (gdb-cmd (format "gdbserver --attach %s:%s %s"
+			  ip-address
+			  gdbserver-default-port
+			  process-pid))
+	 (final-cmd (format "nohup %s &" gdb-cmd))
+	 (gdb-args (format "-ex \"target remote tcp:%s:%s\""
+			   ip-address gdbserver-default-port)))
+    (gdbserver-send-command-async host final-cmd)
+    (sleep-for 1)
+    (realgud:gdb (format "%s %s" gdb-default-cmd gdb-args))))
 
 ;; kgdb
 (defvar kgdb-default-port "ttyUSB0")
