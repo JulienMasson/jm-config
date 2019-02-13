@@ -147,5 +147,8 @@
 ;; erc
 (define-key erc-mode-map (kbd "C-c C-i") 'emojify-insert-emoji)
 
+;; realgud
+(global-set-key (kbd "C-c r a") (lambda () (interactive) (realgud:cmdbuf-associate)))
+
 
 (provide 'my-keybindings)
