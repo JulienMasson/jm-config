@@ -37,7 +37,7 @@
 ;; gdb get pid
 (defun gdb-get-pid (process-name)
   (let* ((user (shell-command-to-string "echo -n $USER"))
-	 (regexp (format "^%s\s*(\\d+).*%s$"
+	 (regexp (format "^(?:%s|root)\s*(\\d+).*%s$"
 			 user process-name))
 	 (cmd (format "ps aux | perl -ne 'print \"$1\" if /%s/'"
 		      regexp)))
