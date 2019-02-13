@@ -48,14 +48,16 @@
 
 (defun gdb (file)
   (interactive (list (ido-read-file-name "gdb on: ")))
-  (realgud:gdb (concat "gdb " (untramp-path file))))
+  (realgud:gdb (format "%s %s" gdb-default-cmd
+		       (untramp-path file))))
 
 ;; gdb attach
 (defun gdb-attach (process)
   (interactive "sProcess Name: ")
   (let ((pid (gdb-get-pid process)))
     (when pid
-      (realgud:gdb-pid (string-to-number pid)))))
+      (realgud:gdb (format "%s -p %s" gdb-default-cmd
+			   (string-to-number pid))))))
 
 ;; gdbserver
 (defvar gdbserver-default-port 2345)
