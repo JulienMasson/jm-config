@@ -374,8 +374,9 @@ Julien Masson
 	  (forward-line))))))
 
 (defun mu4e-view-apply-diff-face (msg)
-  (with-current-buffer mu4e~view-buffer-name
-    (apply-minimal-diff-face-buffer)))
+  (when (get-buffer mu4e~view-buffer-name)
+    (with-current-buffer mu4e~view-buffer-name
+      (apply-minimal-diff-face-buffer))))
 (advice-add 'mu4e-view :after #'mu4e-view-apply-diff-face)
 
 ;; send kernel patchs
