@@ -149,6 +149,7 @@
 
 ;; realgud
 (global-set-key (kbd "C-c r a") (lambda () (interactive) (realgud:cmdbuf-associate)))
+(global-set-key (kbd "C-c r f") 'realgud:cmd-frame)
 
 
 (provide 'my-keybindings)
