@@ -59,13 +59,18 @@
   (virtual-desktops-add 1))
 (virtual-desktops-goto 1)
 
-;; edit file root
-(defun sudo-edit (&optional arg)
-  (interactive "P")
-  (if (or arg (not buffer-file-name))
-      (find-file (concat "/sudo:root@localhost:"
-                         (ido-read-file-name "Find file(as root): ")))
-    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+;; find file as root
+(defun sudo-find-file (file)
+  (interactive (list (read-file-name "Find file (as root): ")))
+  (if (tramp-tramp-file-p file)
+      (let* ((dissect (tramp-dissect-file-name file))
+	     (method (tramp-file-name-method dissect))
+	     (user (tramp-file-name-user dissect))
+	     (host (tramp-file-name-host dissect))
+	     (file-name (tramp-file-name-localname dissect)))
+	(find-alternate-file (format "/%s:%s@%s|sudo:root@%s:%s"
+				     method user host host file-name)))
+    (find-alternate-file (concat "/sudo:root@localhost:" file))))
 
 ;; copy buffer filename
 (defun show-and-copy-buffer-filename ()
