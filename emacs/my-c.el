@@ -36,7 +36,8 @@
 (defvar cscope-files-cmd "find . -name \"*.[chxsS]\" > cscope.files")
 
 (defun cscope-regenerate-cscope-files (top-directory)
-  (shell-command cscope-files-cmd))
+  (let ((default-directory top-directory))
+    (shell-command cscope-files-cmd)))
 (advice-add 'cscope-index-files :after #'cscope-regenerate-cscope-files)
 
 ;; cscope search list
