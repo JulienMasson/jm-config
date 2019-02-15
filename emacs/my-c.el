@@ -73,15 +73,16 @@
 			search-regex
 			"/' |"
 			"sort | uniq"))
-	   (directories (split-string (shell-command-to-string
-				       search-cmd))))
-      (push dir directories)
+	   (output-cmd (split-string (shell-command-to-string
+				      search-cmd)))
+	   (directories (mapcar
+			 (lambda (arg)
+			   (format "-I%s" (untramp-path
+					   (concat dir arg))))
+				output-cmd)))
+      (push (format "-I%s" dir) directories)
       (add-to-list 'cscope-include-dirs-cached
-		   `(,dir . ,(mapcar
-			      (lambda (arg)
-				(format "-I%s" (untramp-path
-						(concat dir arg))))
-			      directories)))))
+		   `(,dir . ,directories))))
   (assoc-default dir cscope-include-dirs-cached))
 
 (defun extra-args-clang-company ()
