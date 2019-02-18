@@ -380,144 +380,27 @@ Julien Masson
 (advice-add 'mu4e-view :after #'mu4e-view-apply-diff-face)
 
 ;; send kernel patchs
-(defvar kernel-mail-buffers nil)
-(defvar kernel-cover-letter-message-id nil)
+(require 'kernel-patch)
+(setq kernel-patch-user-email "Julien Masson <jmasson@baylibre.com>")
 
-(defun mu4e-message-position-on (header afters)
-  (interactive)
-  (push-mark)
-  (message-position-on-field header afters))
+(defun mu4e-kernel-patch ()
+  ;; mu4e faces and completion
+  (mu4e~compose-remap-faces)
+  (mu4e~compose-setup-completion)
 
-(defun get-kernel-address-components (patchs)
-  (let* ((files-str (mapconcat 'identity patchs " "))
-	 (cmd (concat "./scripts/get_maintainer.pl " files-str))
-	 (user-list (split-string
-		     (shell-command-to-string cmd) "\n"))
-	 (cc '("Julien Masson <jmasson@baylibre.com>"
-	       "linux-kernel@vger.kernel.org"))
-	 to)
-    (mapc (lambda (user)
-	    (save-match-data
-	      (when (string-match "\\(.*\\) \(\\(.*\\):.*" user)
-		(if (string-equal (match-string 2 user)
-				  "maintainer")
-		    (add-to-list 'to (match-string 1 user))
-		  (add-to-list 'cc (match-string 1 user))))))
-	  user-list)
-    (list to cc)))
+  ;; diff face
+  (apply-minimal-diff-face-buffer)
 
-(defun mu4e-minimal-compose-mail (mail-buf patch to cc)
-  (with-current-buffer mail-buf
-    (erase-buffer)
+  ;; set draft internal vars
+  (set (make-local-variable 'mu4e~draft-drafts-folder)
+       (mu4e-get-drafts-folder))
+  (put 'mu4e~draft-drafts-folder 'permanent-local t)
 
-    ;; insert patch content
-    (insert-file-contents patch)
+  ;; set default smtp settings
+  (setq-local message-sendmail-extra-arguments
+	      '("-a" "baylibre")))
 
-    ;; remove everything before From header
-    (goto-char (point-max))
-    (while (re-search-backward "^From:" nil t))
-    (delete-region (point) (point-min))
-
-    ;; insert seperator
-    (mu4e~draft-insert-mail-header-separator)
-
-    ;; insert cc and to header
-    (mu4e-message-position-on "To" "From")
-    (insert (mapconcat 'identity to ", "))
-    (mu4e-message-position-on "Cc" "To")
-    (insert (mapconcat 'identity cc ", "))
-
-    ;; apply message mode, some mu4e utils and diff face
-    (goto-char (point-min))
-    (message-mode)
-    (mu4e~compose-remap-faces)
-    (mu4e~compose-setup-completion)
-    (apply-minimal-diff-face-buffer)
-
-    ;; set draft internal vars
-    (set (make-local-variable 'mu4e~draft-drafts-folder)
-	 (mu4e-get-drafts-folder))
-    (put 'mu4e~draft-drafts-folder 'permanent-local t)
-
-    ;; set buffer read only and not modified
-    (setq buffer-read-only t)
-    (set-buffer-modified-p nil)
-
-    ;; set default smtp settings
-    (setq-local message-sendmail-extra-arguments
-		'("-a" "baylibre"))))
-
-(defun generate-kernel-mails (patchs to cc)
-  (mapcar (lambda (patch)
-	    (let ((mail-buf (get-buffer-create
-			     (format "<mail-%s>" patch))))
-	      (mu4e-minimal-compose-mail mail-buf patch to cc)
-	      mail-buf))
-	  patchs))
-
-(defun process-kernel-mails ()
-  (let ((mail-buffer (pop kernel-mail-buffers)))
-    (if mail-buffer
-	(with-current-buffer mail-buffer
-	  (setq buffer-read-only nil)
-
-	  ;; set date to current time
-	  (mu4e-message-position-on "Date" "Cc")
-	  (message-beginning-of-line)
-	  (delete-region (point) (line-end-position))
-	  (insert (format-time-string
-		   "%a, %e %b %Y %T %z" (current-time)))
-
-	  ;; add Reply-To and References header
-	  ;; if we have a cover letter
-	  (when kernel-cover-letter-message-id
-	    (message-goto-reply-to)
-	    (insert kernel-cover-letter-message-id)
-	    (mu4e-message-position-on "References" "Reply-To")
-	    (insert kernel-cover-letter-message-id))
-
-	  (set-buffer-modified-p nil)
-	  (switch-to-buffer mail-buffer))
-      (kernel-patch-cleanup-env))))
-
-(defun get-cover-letter-message-id ()
-  (let ((message-id (message-fetch-field "Message-ID")))
-    (setq kernel-cover-letter-message-id message-id)
-    (remove-hook 'message-header-hook 'get-cover-letter-message-id)
-    (add-hook 'message-sent-hook 'process-kernel-mails)))
-
-(defun kernel-patch-cleanup-env ()
-  (when kernel-mail-buffers
-    (mapc #'kill-buffer kernel-mail-buffers)
-    (setq kernel-mail-buffers nil))
-  (setq kernel-cover-letter-message-id nil)
-  (remove-hook 'message-header-hook 'get-cover-letter-message-id)
-  (remove-hook 'message-sent-hook 'process-kernel-mails))
-
-(defun kernel-patch-send (&optional version)
-  (interactive)
-  (let* ((default-directory (magit-toplevel))
-	 (last-tag (magit-git-string "describe" "--abbrev=0" "--tags"))
-	 (range (format "%s..HEAD" last-tag))
-	 (count (length (magit-git-lines "log" "--oneline" range)))
-	 patchs)
-    (unless (zerop  count)
-      (kernel-patch-cleanup-env)
-      (mapc #'delete-file (file-expand-wildcards "*.patch"))
-      (magit-run-git "format-patch" range
-		     (if version (format "-v%d" version))
-		     (if (> count 1) "--cover-letter"))
-      (setq patchs (file-expand-wildcards "*.patch"))
-      (cl-multiple-value-bind (to cc)
-	  (get-kernel-address-components patchs)
-	(setq kernel-mail-buffers (generate-kernel-mails patchs to cc)))
-      (process-kernel-mails)
-      (when (> count 1)
-	(add-hook 'message-header-hook 'get-cover-letter-message-id)))))
-
-(defun kernel-patch-new-version (version)
-  (interactive "nPatch version: ")
-  (kernel-patch-send version))
+(add-hook 'kernel-patch-compose-hook 'mu4e-kernel-patch)
 
 ;; add Apply patch list action in mu4e header
 (defun mu4e-get-patch-list ()
