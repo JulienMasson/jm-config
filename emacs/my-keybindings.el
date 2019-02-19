@@ -80,7 +80,7 @@
 ;; bitlbee
 (global-set-key (kbd "C-c e b") 'bitlbee-update-all)
 (global-set-key (kbd "C-c e c") 'bitlbee-chat)
-(global-set-key (kbd "C-c e j") 'bitlbee-jump)
+(global-set-key (kbd "C-c e j") 'erc-chat-jump)
 
 ;; cscope
 (define-key cscope-minor-mode-keymap  "\C-csa" 'cscope-add-cscope-search-list)

@@ -159,21 +159,12 @@
 ;; Status
 (require 'status)
 (setq status-separator  " | ")
-(setq status-battery-discharging-fmt " %p%% %t")
-(setq net-interfaces '("enx70886b8212af"))
 (status-add-to-left 'status-compilation)
-(status-add-to-left 'status-ctags)
-(status-add-to-left 'status-erc)
-(status-add-to-left 'status-mu4e)
 (status-add-to-left 'status-cscope)
 (status-add-to-left 'status-project-manager)
 (status-add-to-left 'status-virtual-desktops)
-(status-add-to-right 'status-date)
-(status-add-to-right 'status-volume)
-(status-add-to-right 'status-battery)
-(status-add-to-right 'status-cpu)
-(status-add-to-right 'status-mem)
-(status-add-to-right 'status-net)
+(status-add-to-right 'status-erc)
+(status-add-to-right 'status-mu4e)
 (turn-on-status)
 
 ;; never request confirmation when opening large file

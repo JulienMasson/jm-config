@@ -31,7 +31,7 @@
 ;; erc chat jump
 (defun erc-chat-jump (buffer)
   (interactive (list (ido-completing-read "Switch to ERC buffer: "
-					  (mapcar (lambda (arg) (buffer-name (car arg))) erc-modified-channels-alist)
+					  (mapcar #'buffer-name (erc-chat-list))
 					  nil t nil nil)))
   (switch-to-buffer buffer))
 
