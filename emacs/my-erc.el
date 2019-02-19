@@ -35,9 +35,14 @@
 			       channels-buffer)))
     (mapcar #'buffer-name channels)))
 
+(defun erc-chat-buffer-name ()
+  (let ((all (mapcar #'buffer-name (erc-chat-list)))
+	(unread (erc-chat-buffer-name-unread)))
+    (delete-dups (append unread all))))
+
 (defun erc-chat-jump (buffer)
   (interactive (list (ido-completing-read "Switch to ERC buffer: "
-					  (erc-chat-buffer-name-unread)
+					  (erc-chat-buffer-name)
 					  nil t nil nil)))
   (switch-to-buffer buffer))
 
