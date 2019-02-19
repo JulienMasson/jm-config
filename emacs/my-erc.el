@@ -29,9 +29,15 @@
 (add-to-list 'erc-modules 'notifications)
 
 ;; erc chat jump
+(defun erc-chat-buffer-name-unread ()
+  (let* ((channels-buffer (mapcar #'car erc-modified-channels-alist))
+	 (channels (seq-filter #'erc-not-blacklist-p
+			       channels-buffer)))
+    (mapcar #'buffer-name channels)))
+
 (defun erc-chat-jump (buffer)
   (interactive (list (ido-completing-read "Switch to ERC buffer: "
-					  (mapcar #'buffer-name (erc-chat-list))
+					  (erc-chat-buffer-name-unread)
 					  nil t nil nil)))
   (switch-to-buffer buffer))
 
