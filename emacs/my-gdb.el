@@ -28,6 +28,15 @@
 (require 'realgud)
 (setq realgud-safe-mode nil)
 
+;; current/calling frame
+(defun realgud-current-frame ()
+  (interactive)
+  (realgud:cmd-frame 0))
+
+(defun realgud-calling-frame ()
+  (interactive)
+  (realgud:cmd-frame 1))
+
 ;; define own realgud file-find function
 (defun my-realgud-file-find-function (marker filename directory &rest formats)
   (concat (f-root) filename))
