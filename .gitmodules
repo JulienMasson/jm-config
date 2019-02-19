@@ -235,3 +235,6 @@
 [submodule "emacs/modules/hide-region"]
 	path = emacs/modules/hide-region
 	url = https://github.com/emacsmirror/hide-region.git
+[submodule "emacs/modules/multi-term-plus"]
+	path = emacs/modules/multi-term-plus
+	url = https://github.com/aborn/multi-term-plus.git

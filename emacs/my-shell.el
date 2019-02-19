@@ -65,5 +65,9 @@
 (require 'bash-completion)
 (bash-completion-setup)
 
+;; multi term plus
+(require 'multi-term-plus)
+(setq multi-term-program explicit-shell-file-name)
+
 
 (provide 'my-shell)
