@@ -133,6 +133,7 @@
 
 ;; mail config
 (require 'my-mu4e)
+(require 'my-notmuch)
 
 ;; utils
 (require 'utils)

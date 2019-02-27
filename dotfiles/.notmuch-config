@@ -1,0 +1,9 @@
+[database]
+path=/home/julienm/Maildir
+
+[new]
+tags=unread;inbox
+ignore=
+
+[search]
+exclude_tags=deleted;spam

@@ -97,13 +97,19 @@
 
 ;; mu4e
 (global-set-key (kbd "C-x m") 'mu4e-compose-new)
-(global-set-key (kbd "C-M-m") 'mu4e)
 (global-set-key (kbd "C-M-u") (lambda () (interactive)
                                 (mu4e-headers-search-bookmark "flag:unread AND NOT flag:trashed")))
 (define-key mu4e-view-mode-map (kbd "C-c C-s") 'mu4e-ido-save-attachments)
 (define-key mu4e-headers-mode-map (kbd "TAB") 'mu4e-headers-fold-unfold-thread)
 (define-key mu4e-headers-mode-map "f" 'mu4e-headers-fold-unfold-all)
 (define-key mu4e-headers-mode-map "G" 'mu4e-headers-toggle-sort-direction)
+
+;; notmuch
+(global-set-key (kbd "C-M-m") 'notmuch)
+(define-key notmuch-common-keymap "u" 'notmuch-show-unread)
+(define-key notmuch-tree-mode-map "m" 'notmuch-thread-remove-unread)
+(define-key notmuch-show-mode-map "n" 'my-notmuch-show-next-message)
+(define-key notmuch-show-mode-map "p" 'my-notmuch-show-prev-message)
 
 ;; project manager
 (global-set-key (kbd "C-c i s") 'switch-project)
