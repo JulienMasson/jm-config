@@ -29,6 +29,9 @@
 (setq notmuch-tree-result-format `(("date" . "%12s  ")
 				   ("authors" . "%-20s")
 				   ((("tree" . "%s")("subject" . "%s")) ." %-54s ")))
+;; remove wash citations from insert text hook
+(setq notmuch-show-insert-text/plain-hook (remove 'notmuch-wash-excerpt-citations
+						  notmuch-show-insert-text/plain-hook))
 
 ;; refresh management
 (defvar notmuch-hello-buffer "*notmuch-hello*")
