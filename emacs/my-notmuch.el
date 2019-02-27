@@ -295,5 +295,9 @@
 	(push "  ┃" tree-status))
     (notmuch-tree-insert-thread replies (1+ depth) tree-status)))
 
+;; fold mail thread
+(defun notmuch-level-at-point ()
+  (if (notmuch-tree-get-prop :previous-subject) 1 0))
+
 
 (provide 'my-notmuch)
