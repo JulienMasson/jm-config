@@ -29,6 +29,11 @@
 (setq notmuch-tree-result-format `(("date" . "%12s  ")
 				   ("authors" . "%-20s")
 				   ((("tree" . "%s")("subject" . "%s")) ." %-54s ")))
+;; message tree headers
+(setq notmuch-tree-headers '(("Date" . "%-14s")
+			     ("From" . "%-16s")
+			     ("Subject" . "%s")))
+
 ;; remove wash citations from insert text hook
 (setq notmuch-show-insert-text/plain-hook (remove 'notmuch-wash-excerpt-citations
 						  notmuch-show-insert-text/plain-hook))
@@ -78,6 +83,14 @@
   (switch-to-buffer-other-window notmuch-tree-message-buffer))
 (advice-add 'notmuch-tree-show-message-in :after #'notmuch-switch-to-buffer)
 
+;; notmuch header line format
+(defun notmuch-header-line-format ()
+  (setq-local header-line-format
+	      (cons " " (mapcar (lambda (item)
+				  (format (cdr item) (car item)))
+				notmuch-tree-headers))))
+(advice-add 'notmuch-tree-refresh-view :after #'notmuch-header-line-format)
+
 ;; use same buffer when display tree view
 (defvar notmuch-tree-buffer-name "*notmuch-tree*")
 
@@ -91,6 +104,7 @@
     (erase-buffer))
   (set 'buffer-undo-list t)
   (notmuch-tree-worker query query-context target open-target)
+  (notmuch-header-line-format)
   (setq truncate-lines t))
 
 ;; my show next/prev message func
