@@ -132,8 +132,7 @@
       browse-url-firefox-new-window-is-tab t)
 
 ;; mail config
-(require 'my-mu4e)
-(require 'my-notmuch)
+(require 'my-mail)
 
 ;; utils
 (require 'utils)

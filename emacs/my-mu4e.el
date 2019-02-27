@@ -56,10 +56,6 @@
 ;; time (secs) to retrieve mail and update the database
 (setq mu4e-update-interval 60)
 
-;; default citation format
-(setq message-citation-line-format "On %a %d %b %Y at %R, %f wrote:\n")
-(setq message-citation-line-function 'message-insert-formatted-citation-line)
-
 ;; header child marks
 (setq mu4e-headers-thread-child-prefix '("  ├>" . "  ┣▶ "))
 (setq mu4e-headers-thread-last-child-prefix '("  └>" . "  ┗▶ "))
@@ -150,9 +146,6 @@
 ;; show full addresses in view message
 (setq mu4e-view-show-addresses 't)
 
-;; message buffer will be killed after sending a message
-(setq message-kill-buffer-on-exit t)
-
 ;; shell command used to converts from html to plain text
 (setq mu4e-html2text-command 'mu4e-shr2text)
 
@@ -191,29 +184,6 @@
 
 ;; don't display some folders
 (setq mu4e-maildirs-extension-ignored-regex "\\(^/drafts$\\|^/sent$\\)")
-
-;; default config when sending mail
-(setq send-mail-function 'message-send-mail-with-sendmail
-      message-send-mail-function 'message-send-mail-with-sendmail
-      smtpmail-debug-info nil
-      mail-setup-hook nil
-      sendmail-program "/usr/bin/msmtp")
-
-;; org msg
-(require 'org-msg)
-(setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil \\n:t")
-(setq org-msg-startup "hidestars noindent inlineimages")
-(setq org-msg-greeting-fmt "\nHi %s,\n\n")
-(setq org-msg-greeting-fmt-mailto t)
-(setq org-msg-signature "
-
-Regards,
-
-#+begin_signature
---\n
-Julien Masson
-#+end_signature")
-(org-msg-mode)
 
 ;; account list
 (defvar my-mu4e-account-alist
@@ -354,25 +324,6 @@ Julien Masson
 	(next-line)))))
 
 ;; appply diff face in view mode
-(defun apply-minimal-diff-face-buffer ()
-  (cl-flet ((apply-defface (min max face)
-			   (let ((overlay (make-overlay min max)))
-			     (overlay-put overlay 'face face))))
-    (save-excursion
-      (goto-char (point-max))
-      (while (re-search-backward "^diff \-\-git" nil t))
-      (while (not (eobp))
-	(let* ((beg (point))
-	       (end (line-end-position))
-	       (str (buffer-substring-no-properties beg end)))
-	  (cond ((string-match "^\\(---\\|\\+\\+\\+\\|@@\\)" str)
-		 (apply-defface beg end 'diff-hunk-header))
-		((string-match "^\\+" str)
-		 (apply-defface beg end 'diff-added))
-		((string-match "^\\-" str)
-		 (apply-defface beg end 'diff-removed)))
-	  (forward-line))))))
-
 (defun mu4e-view-apply-diff-face (msg)
   (when (get-buffer mu4e~view-buffer-name)
     (with-current-buffer mu4e~view-buffer-name
