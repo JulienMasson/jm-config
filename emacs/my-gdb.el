@@ -128,6 +128,7 @@
 (defvar kgdb-default-port "ttyUSB0")
 (defvar kgdb-default-speed 115200)
 (defvar kgdb-default-vmlinux "vmlinux")
+(defvar kgdb-default-root-cmd "sudo su")
 
 (defun kgdb-send-command (process cmd)
   (let ((str (concat cmd "\r")))
@@ -147,7 +148,7 @@
     (when trigger
       (setq serial-process (make-serial-process :port port :speed speed))
       (when serial-process
-	(kgdb-send-command serial-process "sudo su")
+	(kgdb-send-command serial-process kgdb-default-root-cmd)
 	(kgdb-send-command serial-process "echo g > /proc/sysrq-trigger")
 	(delete-process serial-process)))
     (realgud:gdb (format "%s %s %s"
