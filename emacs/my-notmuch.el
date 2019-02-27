@@ -257,5 +257,37 @@
     (notmuch-show-message-visible msg (and (plist-get msg :match)
 					   (not (plist-get msg :excluded))))))
 
+;; redesign how is display the tree
+(defun notmuch-tree-insert-tree (tree depth tree-status first last)
+  (let ((msg (car tree))
+	(replies (cadr tree)))
+      (cond
+       ((and (< 0 depth) (not last))
+	(push "  ┣" tree-status))
+       ((and (< 0 depth) last)
+	(push "  ┗" tree-status))
+       ((and (eq 0 depth) first last)
+	(push "  " tree-status))
+       ((and (eq 0 depth) first (not last))
+	  (push "  ┳" tree-status))
+       ((and (eq 0 depth) (not first) last)
+	(push "  ┗" tree-status))
+       ((and (eq 0 depth) (not first) (not last))
+	(push "  ┣" tree-status)))
+
+      (unless (= 0 depth)
+	(push "━▶" tree-status))
+      (setq msg (plist-put msg :first (and first (eq 0 depth))))
+      (setq msg (plist-put msg :tree-status tree-status))
+      (setq msg (plist-put msg :orig-tags (plist-get msg :tags)))
+      (notmuch-tree-goto-and-insert-msg msg)
+      (pop tree-status)
+      (pop tree-status)
+
+      (if last
+	  (push "  " tree-status)
+	(push "  ┃" tree-status))
+    (notmuch-tree-insert-thread replies (1+ depth) tree-status)))
+
 
 (provide 'my-notmuch)
