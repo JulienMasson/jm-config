@@ -68,6 +68,7 @@
 ;; multi term plus
 (require 'multi-term-plus)
 (setq multi-term-program explicit-shell-file-name)
+(defalias 'term 'multi-term)
 
 
 (provide 'my-shell)
