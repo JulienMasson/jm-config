@@ -73,11 +73,6 @@
   (notmuch-tree-tag-thread '("-unread"))
   (notmuch-refresh-this-buffer))
 
-;; appply diff face in notmuch show mode
-(defun notmuch-view-apply-diff-face (msg depth)
-  (apply-minimal-diff-face-buffer))
-(advice-add 'notmuch-show-insert-msg :after #'notmuch-view-apply-diff-face)
-
 ;; switch to buffer when RET on message
 (defun notmuch-switch-to-buffer ()
   (switch-to-buffer-other-window notmuch-tree-message-buffer))
@@ -187,6 +182,80 @@
     (mapcar #'notmuch-insert-maildir maildirs)))
 
 (setq notmuch-hello-sections (list #'notmuch-hello-maildir))
+
+;; redefine how to insert msg in notmuch-show
+(defun notmuch-show-insert-msg (msg depth)
+  (let* ((headers (plist-get msg :headers))
+	 message-start message-end
+	 content-start content-end
+	 headers-start headers-end
+	 (bare-subject (notmuch-show-strip-re (plist-get headers :Subject))))
+
+    (setq message-start (point-marker))
+
+    (setq content-start (point-marker))
+
+    ;; Set `headers-start' to point after the 'Subject:' header to be
+    ;; compatible with the existing implementation. This just sets it
+    ;; to after the first header.
+    (notmuch-show-insert-headers headers)
+    (save-excursion
+      (goto-char content-start)
+      ;; If the subject of this message is the same as that of the
+      ;; previous message, don't display it when this message is
+      ;; collapsed.
+      (when (not (string= notmuch-show-previous-subject
+			  bare-subject))
+	(forward-line 1))
+      (setq headers-start (point-marker)))
+    (setq headers-end (point-marker))
+
+    (setq notmuch-show-previous-subject bare-subject)
+
+    ;; A blank line between the headers and the body.
+    (insert "\n")
+    (notmuch-show-insert-body msg (plist-get msg :body)
+			      (if notmuch-show-indent-content depth 0))
+    ;; Ensure that the body ends with a newline.
+    (unless (bolp)
+      (insert "\n"))
+    (setq content-end (point-marker))
+
+    ;; Indent according to the depth in the thread.
+    (if notmuch-show-indent-content
+	(indent-rigidly content-start content-end (* notmuch-show-indent-messages-width depth)))
+
+    (setq message-end (point-max-marker))
+
+    ;; apply custom faces
+    (mu4e~compose-remap-faces)
+    (apply-minimal-diff-face-buffer)
+    (mu4e~fontify-cited)
+    (goto-char message-end)
+
+    ;; Save the extents of this message over the whole text of the
+    ;; message.
+    (put-text-property message-start message-end :notmuch-message-extent (cons message-start message-end))
+
+    ;; Create overlays used to control visibility
+    (plist-put msg :headers-overlay (make-overlay headers-start headers-end))
+    (plist-put msg :message-overlay (make-overlay headers-start content-end))
+
+    (plist-put msg :depth depth)
+
+    ;; Save the properties for this message. Currently this saves the
+    ;; entire message (augmented it with other stuff), which seems
+    ;; like overkill. We might save a reduced subset (for example, not
+    ;; the content).
+    (notmuch-show-set-message-properties msg)
+
+    ;; Set header visibility.
+    (notmuch-show-headers-visible msg notmuch-message-headers-visible)
+
+    ;; Message visibility depends on whether it matched the search
+    ;; criteria.
+    (notmuch-show-message-visible msg (and (plist-get msg :match)
+					   (not (plist-get msg :excluded))))))
 
 
 (provide 'my-notmuch)
