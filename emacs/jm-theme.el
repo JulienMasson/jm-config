@@ -448,8 +448,8 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(mu4e-replied-face ((t (:foreground ,jm-bg+3))))
    `(mu4e-trashed-face ((t (:foreground ,jm-bg+3 :strike-through t))))
 ;;;;; notmuch
-   `(notmuch-tree-match-date-face ((t (:inherit font-lock-comment-face :bold t))))
-   `(notmuch-tree-match-author-face ((t (:inherit font-lock-variable-name-face :bold t))))
+   `(notmuch-tree-match-date-face ((t (:inherit font-lock-comment-face))))
+   `(notmuch-tree-match-author-face ((t (:inherit font-lock-variable-name-face))))
 ;;;;; org-mode
    `(org-agenda-date-today
      ((t (:foreground "white" :slant italic :weight bold))) t)

@@ -85,7 +85,12 @@
 	      (cons " " (mapcar (lambda (item)
 				  (format (cdr item) (car item)))
 				notmuch-tree-headers))))
-(advice-add 'notmuch-tree-refresh-view :after #'notmuch-header-line-format)
+
+;; notmuch tree custom visual
+(defun notmuch-tree-custom-visual ()
+  (notmuch-header-line-format)
+  (set (make-local-variable 'hl-line-face) 'mu4e-header-highlight-face))
+(advice-add 'notmuch-tree-refresh-view :after #'notmuch-tree-custom-visual)
 
 ;; use same buffer when display tree view
 (defvar notmuch-tree-buffer-name "*notmuch-tree*")
@@ -100,7 +105,7 @@
     (erase-buffer))
   (set 'buffer-undo-list t)
   (notmuch-tree-worker query query-context target open-target)
-  (notmuch-header-line-format)
+  (notmuch-tree-custom-visual)
   (setq truncate-lines t))
 
 ;; my show next/prev message func
