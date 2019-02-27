@@ -26,9 +26,10 @@
 (require 'notmuch)
 
 ;; tree result format
-(setq notmuch-tree-result-format `(("date" . "%12s  ")
-				   ("authors" . "%-20s")
-				   ((("tree" . "%s")("subject" . "%s")) ." %-54s ")))
+(setq notmuch-tree-result-format `(("date" . "%-14s")
+				   ("authors" . "%-16s")
+				   ((("tree" . "%s")("subject" . "%s")) . "%s")))
+
 ;; message tree headers
 (setq notmuch-tree-headers '(("Date" . "%-14s")
 			     ("From" . "%-16s")
