@@ -259,69 +259,12 @@
 (require 'org-mu4e)
 
 ;; fold mail thread
-(require 'hide-lines)
 (require 'mu4e-message)
 
 (defun mu4e-level-at-point ()
   (let* ((msg (mu4e-message-at-point))
 	 (thread (plist-get msg :thread)))
     (plist-get thread :level)))
-
-(defun mu4e-range-thread ()
-  (save-excursion
-    (cl-flet ((thread-pos (direction)
-			  (while (and (mu4e-level-at-point)
-				      (> (mu4e-level-at-point) 0))
-			    (funcall direction))
-			  (point)))
-      (beginning-of-line)
-      (let ((end (point))
-	    (begin (thread-pos 'previous-line)))
-	(next-line)
-	(when (> (mu4e-level-at-point) 0)
-	  (setq end (- (thread-pos 'forward-line) 1)))
-	(unless (= begin end)
-	  `(,begin ,end))))))
-
-(defun mu4e-find-overlay-at-point ()
-  (save-excursion
-    (move-end-of-line nil)
-    (seq-find (lambda (overlay)
-		(let ((pos (point))
-		      (end (overlay-end overlay)))
-		  (= pos end)))
-	      hide-lines-invisible-areas)))
-
-(defun mu4e-unfold-one-thread (overlay)
-  (setq hide-lines-invisible-areas
-	(delete overlay hide-lines-invisible-areas))
-  (delete-overlay overlay))
-
-(defun mu4e-fold-one-thread ()
-  (save-excursion
-    (let ((range (mu4e-range-thread)))
-      (when range
-	(cl-multiple-value-bind (begin end)
-	    range
-	  (goto-char begin)
-	  (hide-lines-add-overlay (line-end-position) end))))))
-
-(defun mu4e-headers-fold-unfold-thread ()
-  (interactive)
-  (let ((overlay (mu4e-find-overlay-at-point)))
-    (if overlay
-	(mu4e-unfold-one-thread overlay)
-      (mu4e-fold-one-thread))))
-
-(defun mu4e-headers-fold-unfold-all ()
-  (interactive)
-  (save-excursion
-    (if hide-lines-invisible-areas
-	(hide-lines-show-all)
-      (goto-char (point-min))
-      (while (< (point) (point-max))
-	(mu4e-fold-one-thread)
-	(next-line)))))
 
 ;; appply diff face in view mode
 (defun mu4e-view-apply-diff-face (msg)

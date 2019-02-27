@@ -72,6 +72,74 @@ Julien Masson
 		 (apply-defface beg end 'diff-removed)))
 	  (forward-line))))))
 
+;; fold mail thread
+(require 'hide-lines)
+
+(defun mail-level-at-point ()
+  (let* ((backend (replace-regexp-in-string
+		  "-user-agent" ""
+		  (symbol-name mail-user-agent)))
+	 (fun (intern (format "%s-level-at-point" backend))))
+    (if (symbol-function fun)
+	(funcall fun)
+      (error "`%s` not implemented !" fun))))
+
+(defun mail-range-thread ()
+  (save-excursion
+    (cl-flet ((thread-pos (direction)
+			  (while (and (mail-level-at-point)
+				      (> (mail-level-at-point) 0))
+			    (funcall direction))
+			  (point)))
+      (beginning-of-line)
+      (let ((end (point))
+	    (begin (thread-pos 'previous-line)))
+	(next-line)
+	(when (> (mail-level-at-point) 0)
+	  (setq end (- (thread-pos 'forward-line) 1)))
+	(unless (= begin end)
+	  `(,begin ,end))))))
+
+(defun mail-find-overlay-at-point ()
+  (save-excursion
+    (move-end-of-line nil)
+    (seq-find (lambda (overlay)
+		(let ((pos (point))
+		      (end (overlay-end overlay)))
+		  (= pos end)))
+	      hide-lines-invisible-areas)))
+
+(defun mail-unfold-one-thread (overlay)
+  (setq hide-lines-invisible-areas
+	(delete overlay hide-lines-invisible-areas))
+  (delete-overlay overlay))
+
+(defun mail-fold-one-thread ()
+  (save-excursion
+    (let ((range (mail-range-thread)))
+      (when range
+	(cl-multiple-value-bind (begin end)
+	    range
+	  (goto-char begin)
+	  (hide-lines-add-overlay (line-end-position) end))))))
+
+(defun mail-headers-fold-unfold-thread ()
+  (interactive)
+  (let ((overlay (mail-find-overlay-at-point)))
+    (if overlay
+	(mail-unfold-one-thread overlay)
+      (mail-fold-one-thread))))
+
+(defun mail-headers-fold-unfold-all ()
+  (interactive)
+  (save-excursion
+    (if hide-lines-invisible-areas
+	(hide-lines-show-all)
+      (goto-char (point-min))
+      (while (< (point) (point-max))
+	(mail-fold-one-thread)
+	(next-line)))))
+
 ;; mail client
 (require 'my-mu4e)
 (require 'my-notmuch)
