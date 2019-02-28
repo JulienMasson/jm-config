@@ -168,7 +168,7 @@ Julien Masson
 	(mail-fold-one-thread)
 	(next-line)))))
 
-;; mail client
+;; default mail client
 (require 'my-mu4e)
 (require 'my-notmuch)
 

@@ -219,7 +219,7 @@
 (defun notmuch-hello-maildir ()
   (let ((maildirs (notmuch-maildir-assoc)))
     (notmuch-insert-maildir-header)
-    (mapcar #'notmuch-insert-maildir maildirs)))
+    (mapc #'notmuch-insert-maildir maildirs)))
 
 (setq notmuch-hello-sections (list #'notmuch-hello-maildir))
 
