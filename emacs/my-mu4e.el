@@ -185,29 +185,12 @@
 ;; don't display some folders
 (setq mu4e-maildirs-extension-ignored-regex "\\(^/drafts$\\|^/sent$\\)")
 
-;; account list
-(defvar my-mu4e-account-alist
-  '(("Gmail"
-     (user-mail-address "massonju.eseo@gmail.com")
-     (user-full-name "Masson, Julien")
-     (message-sendmail-extra-arguments ("-a" "perso")))))
-
+;; set account settings
 (defun my-mu4e-set-account ()
-  "Set the account for composing a message."
-  (let* ((account
-          (if mu4e-compose-parent-message
-              (let ((maildir (mu4e-message-field mu4e-compose-parent-message :maildir)))
-                (string-match "/\\(.*?\\)/" maildir)
-                (match-string 1 maildir))
-            (completing-read "Compose with account: "
-                             (mapcar #'(lambda (var) (car var)) my-mu4e-account-alist)
-                             nil t nil nil (caar my-mu4e-account-alist))))
-         (account-vars (cdr (assoc account my-mu4e-account-alist))))
-    (if account-vars
-        (mapc #'(lambda (var)
-                  (set (car var) (cadr var)))
-              account-vars)
-      (error "No email account found"))))
+  (when mu4e-compose-parent-message
+    (let ((maildir (mu4e-message-field mu4e-compose-parent-message :maildir)))
+      (string-match "/\\(.*?\\)/" maildir)
+      (mail-set-vars (match-string 1 maildir)))))
 
 (add-hook 'mu4e-compose-pre-hook 'my-mu4e-set-account)
 

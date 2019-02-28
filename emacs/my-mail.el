@@ -46,6 +46,27 @@
 		  (symbol-name mail-user-agent))))
     (intern (concat backend string))))
 
+;; accounts management
+(defvar mail-accounts-alist
+  '(("Gmail"
+     (user-mail-address "massonju.eseo@gmail.com")
+     (user-full-name "Masson, Julien")
+     (message-sendmail-extra-arguments ("-a" "perso")))))
+
+(defun mail-set-vars (account)
+  (mapc (lambda (var)
+	  (set (car var) (cadr var)))
+	(assoc-default account mail-accounts-alist)))
+
+(defun mail-compose-new (account)
+  (interactive (list (completing-read "Compose with account: "
+				      (mapcar #'car mail-accounts-alist))))
+  (let ((fun (get-mail-agent-function "-compose-new")))
+    (mail-set-vars account)
+    (if (symbol-function fun)
+	(funcall fun)
+      (compose-mail))))
+
 ;; org msg
 (require 'org-msg)
 (setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil \\n:t")

@@ -42,6 +42,37 @@
 (setq notmuch-show-insert-text/plain-hook (remove 'notmuch-wash-excerpt-citations
 						  notmuch-show-insert-text/plain-hook))
 
+;; notmuch compose new mail
+(defun notmuch-compose-new ()
+  (notmuch-mua-mail))
+
+(defun notmuch-user-name ()
+  user-full-name)
+
+(defun notmuch-user-primary-email ()
+  user-mail-address)
+
+(defun notmuch-get-current-account ()
+  (let* ((maildir-path (notmuch-database-path))
+	 (props (notmuch-show-get-message-properties))
+	 (maildir (car (plist-get props :filename))))
+    (string-match (concat maildir-path "/\\(.*?\\)/") maildir)
+    (match-string 1 maildir)))
+
+(defun notmuch-set-account-vars (args)
+  ;; when args is non nil means we are replying/forwarding ...
+  ;; We need to set account vars and reset From field
+  (when args
+    (mail-set-vars (notmuch-get-current-account))
+    (setcdr (assq 'From (nth 2 args)) nil))
+  args)
+
+(defun notmuch-compose-after (&rest _)
+  (mu4e~compose-remap-faces))
+
+(advice-add 'notmuch-mua-mail :filter-args #'notmuch-set-account-vars)
+(advice-add 'notmuch-mua-mail :after #'notmuch-compose-after)
+
 ;; refresh management
 (defvar notmuch-hello-buffer "*notmuch-hello*")
 (defvar notmuch-refresh-cmd "offlineimap")
