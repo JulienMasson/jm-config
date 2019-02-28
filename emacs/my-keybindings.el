@@ -106,13 +106,14 @@
 
 ;; notmuch
 (global-set-key (kbd "C-M-m") 'notmuch)
+(define-key notmuch-common-keymap "s" 'notmuch-tree)
 (define-key notmuch-common-keymap "u" 'notmuch-show-unread)
-(define-key notmuch-tree-mode-map "m" 'notmuch-thread-remove-unread)
+(define-key notmuch-common-keymap "z" 'notmuch-search)
 (define-key notmuch-show-mode-map "n" 'my-notmuch-show-next-message)
 (define-key notmuch-show-mode-map "p" 'my-notmuch-show-prev-message)
-(define-key notmuch-tree-mode-map (kbd "TAB") 'mail-headers-fold-unfold-thread)
 (define-key notmuch-tree-mode-map "f" 'mail-headers-fold-unfold-all)
-
+(define-key notmuch-tree-mode-map "m" 'notmuch-thread-remove-unread)
+(define-key notmuch-tree-mode-map (kbd "TAB") 'mail-headers-fold-unfold-thread)
 
 ;; project manager
 (global-set-key (kbd "C-c i s") 'switch-project)
