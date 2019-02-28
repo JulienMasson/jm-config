@@ -123,13 +123,21 @@
 
 ;; modeline
 (require 'telephone-line)
+
+(telephone-line-defsegment telephone-window-dedicated ()
+  (when (window-dedicated-p)
+    "Window Dedicated"))
+
 (setq telephone-line-lhs
-      '((accent . (telephone-line-airline-position-segment))
+      '((accent . (telephone-line-airline-position-segment
+		   telephone-window-dedicated))
         (nil    . (telephone-line-buffer-segment))))
+
 (setq telephone-line-rhs
       '((nil    . (telephone-line-misc-info-segment
 		   telephone-line-process-segment))
         (accent . (telephone-line-major-mode-segment))))
+
 (telephone-line-mode 1)
 
 ;; ansi color
