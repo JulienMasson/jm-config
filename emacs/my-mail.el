@@ -39,6 +39,13 @@
       mail-setup-hook nil
       sendmail-program "/usr/bin/msmtp")
 
+;; utils to get a mail agent function
+(defun get-mail-agent-function (string)
+  (let ((backend (replace-regexp-in-string
+		  "-user-agent" ""
+		  (symbol-name mail-user-agent))))
+    (intern (concat backend string))))
+
 ;; org msg
 (require 'org-msg)
 (setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil \\n:t")
@@ -79,10 +86,7 @@ Julien Masson
 (require 'hide-lines)
 
 (defun mail-level-at-point ()
-  (let* ((backend (replace-regexp-in-string
-		  "-user-agent" ""
-		  (symbol-name mail-user-agent)))
-	 (fun (intern (format "%s-level-at-point" backend))))
+  (let ((fun (get-mail-agent-function "-level-at-point")))
     (if (symbol-function fun)
 	(funcall fun)
       (error "`%s` not implemented !" fun))))
