@@ -185,12 +185,8 @@
 ;; window dedicated
 (defun toggle-window-dedicated ()
   (interactive)
-  (message
-   (if (let (window (get-buffer-window (current-buffer)))
-         (set-window-dedicated-p window (not (window-dedicated-p window))))
-       "%s dedicated"
-     "%s free")
-   (current-buffer)))
+  (let (window (get-buffer-window (current-buffer)))
+    (set-window-dedicated-p window (not (window-dedicated-p window)))))
 
 ;; toggle horizontal split
 (defun toggle-horizontal-split ()
