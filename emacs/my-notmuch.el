@@ -241,6 +241,7 @@
     (apply-minimal-diff-face-buffer)
     (mu4e~fontify-cited)
     (goto-char message-end)
+    (local-set-key (kbd "C-c k") 'notmuch-bury-or-kill-this-buffer)
 
     ;; Save the extents of this message over the whole text of the
     ;; message.
