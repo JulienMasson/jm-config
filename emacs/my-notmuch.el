@@ -30,6 +30,9 @@
 				   ("authors" . "%-16s")
 				   ((("tree" . "%s")("subject" . "%s")) . "%s")))
 
+;; message headers
+(setq notmuch-message-headers '("From" "To" "Subject" "Date"))
+
 ;; message tree headers
 (setq notmuch-tree-headers '(("Date" . "%-14s")
 			     ("From" . "%-16s")
