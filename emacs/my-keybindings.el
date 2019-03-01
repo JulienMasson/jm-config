@@ -67,6 +67,8 @@
 (global-set-key (kbd "C-c g f") 'magit-log-buffer-file)
 (global-set-key (kbd "C-c g r") 'magit-reset-hard)
 (global-set-key (kbd "C-c g b") 'magit-blame-addition)
+(define-key magit-mode-map [remap magit-copy-buffer-thing-as-kill] 'kill-ring-save)
+(define-key magit-mode-map [remap magit-copy-buffer-revision] 'kill-ring-save)
 
 ;; compilation
 (global-set-key (kbd "C-c SPC") (lambda () (interactive) (with-current-buffer "*compilation*" (recompile))))
@@ -163,6 +165,13 @@
 (global-set-key (kbd "C-c r a") (lambda () (interactive) (realgud:cmdbuf-associate)))
 (global-set-key (kbd "C-c r f") 'realgud-current-frame)
 (global-set-key (kbd "C-c r c") 'realgud-calling-frame)
+
+;; help-mode
+(define-key help-mode-map "n" 'help-go-forward)
+(define-key help-mode-map "p" 'help-go-back)
+
+;; shell
+(define-key shell-mode-map (kbd "C-c l") 'shell-clear)
 
 
 (provide 'my-keybindings)

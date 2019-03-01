@@ -22,6 +22,9 @@
 
 ;;; Code:
 
+;; silent tramp message
+(setq tramp-verbose 1)
+
 ;; expand tramp remote path
 (require 'tramp-sh)
 (add-to-list 'tramp-remote-path "~/bin")

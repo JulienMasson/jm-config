@@ -166,39 +166,12 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(font-lock-type-face ((t (:foreground ,jm-blue-1))))
    `(font-lock-variable-name-face ((t (:foreground ,jm-orange))))
    `(font-lock-warning-face ((t (:foreground ,jm-yellow-2 :weight bold))))
-
    `(c-annotation-face ((t (:inherit font-lock-constant-face))))
-;;;; Third-party
-;;;;; anzu
-   `(anzu-mode-line ((t (:foreground ,jm-cyan :weight bold))))
-;;;;; full-ack
-   `(ack-separator ((t (:foreground ,jm-fg))))
-   `(ack-file ((t (:foreground ,jm-blue))))
-   `(ack-line ((t (:foreground ,jm-yellow))))
-   `(ack-match ((t (:foreground ,jm-orange :background ,jm-bg-1 :weight bold))))
 ;;;;; auctex
    `(font-latex-bold-face ((t (:inherit bold))))
    `(font-latex-warning-face ((t (:inherit font-lock-warning))))
    `(font-latex-sectioning-5-face ((t (:foreground ,jm-red :weight bold ))))
    `(font-latex-sedate-face ((t (:foreground ,jm-yellow))))
-;;;;; auto-complete
-   `(ac-candidate-face ((t (:background ,jm-bg+3 :foreground ,jm-bg-2))))
-   `(ac-selection-face ((t (:background ,jm-blue-4 :foreground ,jm-fg))))
-   `(popup-face ((t (:background "black" :foreground ,jm-bg+3))))
-   `(popup-tip-face ((t (:background ,jm-orange-1 :foreground ,jm-bg+3))))
-   `(popup-scroll-bar-foreground-face ((t (:background ,jm-blue-5))))
-   `(popup-scroll-bar-background-face ((t (:background ,jm-bg-1))))
-   `(popup-isearch-match ((t (:background ,jm-bg :foreground ,jm-fg))))
-;;;;; android mode
-   `(android-mode-debug-face ((t (:foreground ,jm-green+1))))
-   `(android-mode-error-face ((t (:foreground ,jm-orange :weight bold))))
-   `(android-mode-info-face ((t (:foreground ,jm-fg))))
-   `(android-mode-verbose-face ((t (:foreground ,jm-green))))
-   `(android-mode-warning-face ((t (:foreground ,jm-yellow))))
-;;;;; clojure-test-mode
-   `(clojure-test-failure-face ((t (:foreground ,jm-orange :weight bold :underline t))))
-   `(clojure-test-error-face ((t (:foreground ,jm-red :weight bold :underline t))))
-   `(clojure-test-success-face ((t (:foreground ,jm-green+1 :weight bold :underline t))))
 ;;;;; diff
    `(diff-added ((,class (:foreground ,jm-green+4 :background nil))
                  (t (:foreground ,jm-green-1 :background nil))))
@@ -213,73 +186,6 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(diff-file-header
      ((,class (:background ,jm-bg+2 :foreground ,jm-fg :bold t))
       (t (:background ,jm-fg :foreground ,jm-bg :bold t))))
-;;;;; ediff
-   `(ediff-current-diff-A ((t (:foreground ,jm-fg :background ,jm-red-4))))
-   `(ediff-current-diff-Ancestor ((t (:foreground ,jm-fg :background ,jm-red-4))))
-   `(ediff-current-diff-B ((t (:foreground ,jm-fg :background ,jm-green-1))))
-   `(ediff-current-diff-C ((t (:foreground ,jm-fg :background ,jm-blue-5))))
-   `(ediff-even-diff-A ((t (:background ,jm-bg+1))))
-   `(ediff-even-diff-Ancestor ((t (:background ,jm-bg+1))))
-   `(ediff-even-diff-B ((t (:background ,jm-bg+1))))
-   `(ediff-even-diff-C ((t (:background ,jm-bg+1))))
-   `(ediff-fine-diff-A ((t (:foreground ,jm-fg :background ,jm-red-2 :weight bold))))
-   `(ediff-fine-diff-Ancestor ((t (:foreground ,jm-fg :background ,jm-red-2 weight bold))))
-   `(ediff-fine-diff-B ((t (:foreground ,jm-fg :background ,jm-green :weight bold))))
-   `(ediff-fine-diff-C ((t (:foreground ,jm-fg :background ,jm-blue-3 :weight bold ))))
-   `(ediff-odd-diff-A ((t (:background ,jm-bg+2))))
-   `(ediff-odd-diff-Ancestor ((t (:background ,jm-bg+2))))
-   `(ediff-odd-diff-B ((t (:background ,jm-bg+2))))
-   `(ediff-odd-diff-C ((t (:background ,jm-bg+2))))
-;;;;; eshell
-   `(eshell-prompt ((t (:foreground ,jm-yellow :weight bold))))
-   `(eshell-ls-archive ((t (:foreground ,jm-red-1 :weight bold))))
-   `(eshell-ls-backup ((t (:inherit font-lock-comment))))
-   `(eshell-ls-clutter ((t (:inherit font-lock-comment))))
-   `(eshell-ls-directory ((t (:foreground ,jm-blue+1 :weight bold))))
-   `(eshell-ls-executable ((t (:foreground ,jm-red+1 :weight bold))))
-   `(eshell-ls-unreadable ((t (:foreground ,jm-fg))))
-   `(eshell-ls-missing ((t (:inherit font-lock-warning))))
-   `(eshell-ls-product ((t (:inherit font-lock-doc))))
-   `(eshell-ls-special ((t (:foreground ,jm-yellow :weight bold))))
-   `(eshell-ls-symlink ((t (:foreground ,jm-cyan :weight bold))))
-;;;;; flx
-   `(flx-highlight-face ((t (:foreground ,jm-green+2 :weight bold))))
-;;;;; flycheck
-   `(flycheck-error
-     ((((supports :underline (:style wave)))
-       (:underline (:style wave :color ,jm-red) :inherit unspecified))
-      (t (:foreground ,jm-red-1 :weight bold :underline t))))
-   `(flycheck-warning
-     ((((supports :underline (:style wave)))
-       (:underline (:style wave :color ,jm-orange) :inherit unspecified))
-      (t (:foreground ,jm-orange :weight bold :underline t))))
-   `(flycheck-fringe-error ((t (:foreground ,jm-red-1 :weight bold))))
-   `(flycheck-fringe-warning ((t (:foreground ,jm-orange :weight bold))))
-;;;;; flymake
-   `(flymake-errline
-     ((((supports :underline (:style wave)))
-       (:underline (:style wave :color ,jm-red)
-                   :inherit unspecified :foreground unspecified :background unspecified))
-      (t (:foreground ,jm-red-1 :weight bold :underline t))))
-   `(flymake-warnline
-     ((((supports :underline (:style wave)))
-       (:underline (:style wave :color ,jm-orange)
-                   :inherit unspecified :foreground unspecified :background unspecified))
-      (t (:foreground ,jm-orange :weight bold :underline t))))
-   `(flymake-infoline
-     ((((supports :underline (:style wave)))
-       (:underline (:style wave :color ,jm-green)
-                   :inherit unspecified :foreground unspecified :background unspecified))
-      (t (:foreground ,jm-green-1 :weight bold :underline t))))
-;;;;; flyspell
-   `(flyspell-duplicate
-     ((((supports :underline (:style wave)))
-       (:underline (:style wave :color ,jm-orange) :inherit unspecified))
-      (t (:foreground ,jm-orange :weight bold :underline t))))
-   `(flyspell-incorrect
-     ((((supports :underline (:style wave)))
-       (:underline (:style wave :color ,jm-red) :inherit unspecified))
-      (t (:foreground ,jm-red-1 :weight bold :underline t))))
 ;;;;; erc
    `(erc-action-face ((t (:inherit erc-default-face))))
    `(erc-bold-face ((t (:weight bold))))
@@ -300,15 +206,6 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(erc-prompt-face ((t (:foreground ,jm-orange :background ,jm-bg :weight bold))))
    `(erc-timestamp-face ((t (:foreground ,jm-green+1))))
    `(erc-underline-face ((t (:underline t))))
-;;;;; git-gutter
-   `(git-gutter:added ((t (:foreground ,jm-green :weight bold))))
-   `(git-gutter:deleted ((t (:foreground ,jm-red :weight bold))))
-   `(git-gutter:modified ((t (:foreground ,jm-yellow-2 :weight bold))))
-   `(git-gutter:unchanged ((t (:foreground ,jm-fg :weight bold))))
-;;;;; git-gutter-fr
-   `(git-gutter-fr:added ((t (:foreground ,jm-green  :weight bold))))
-   `(git-gutter-fr:deleted ((t (:foreground ,jm-red :weight bold))))
-   `(git-gutter-fr:modified ((t (:foreground ,jm-magenta :weight bold))))
 ;;;;; gnus
    `(gnus-group-mail-1 ((t (:bold t :inherit gnus-group-mail-1-empty))))
    `(gnus-group-mail-1-empty ((t (:inherit gnus-group-news-1-empty))))
@@ -383,18 +280,6 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(ido-only-match ((t (:foreground ,jm-green :weight bold))))
    `(ido-incomplete-regex ((t (:foreground ,jm-red-4))))
    `(ido-subdir ((t (:foreground ,jm-blue))))
-;;;;; jabber-mode
-   `(jabber-roster-user-away ((t (:foreground ,jm-green+2))))
-   `(jabber-roster-user-online ((t (:foreground ,jm-blue-1))))
-   `(jabber-roster-user-dnd ((t (:foreground ,jm-red+1))))
-   `(jabber-rare-time-face ((t (:foreground ,jm-green+1))))
-   `(jabber-chat-prompt-local ((t (:foreground ,jm-blue-1))))
-   `(jabber-chat-prompt-foreign ((t (:foreground ,jm-red+1))))
-   `(jabber-activity-face((t (:foreground ,jm-red+1))))
-   `(jabber-activity-personal-face ((t (:foreground ,jm-blue+1))))
-   `(jabber-title-small ((t (:height 1.1 :weight bold))))
-   `(jabber-title-medium ((t (:height 1.2 :weight bold))))
-   `(jabber-title-large ((t (:height 1.3 :weight bold))))
 ;;;;; linum-mode
    `(linum ((t (:foreground ,jm-green+2 :background ,jm-bg))))
 ;;;;; magit
@@ -426,17 +311,6 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(message-header-xheader ((t (:foreground ,jm-green))))
    `(message-mml ((t (:foreground ,jm-yellow :weight bold))))
    `(message-separator ((t (:inherit font-lock-comment))))
-;;;;; mic-paren
-   `(paren-face-match ((t (:foreground ,jm-cyan :background ,jm-bg :weight bold))))
-   `(paren-face-mismatch ((t (:foreground ,jm-bg :background ,jm-magenta :weight bold))))
-   `(paren-face-no-match ((t (:foreground ,jm-bg :background ,jm-red :weight bold))))
-;;;;; nav
-   `(nav-face-heading ((t (:foreground ,jm-yellow))))
-   `(nav-face-button-num ((t (:foreground ,jm-cyan))))
-   `(nav-face-dir ((t (:foreground ,jm-green))))
-   `(nav-face-hdir ((t (:foreground ,jm-red))))
-   `(nav-face-file ((t (:foreground ,jm-fg))))
-   `(nav-face-hfile ((t (:foreground ,jm-red-4))))
 ;;;;; mu4e
    `(mu4e-cited-1-face ((t (:foreground ,jm-blue    :slant italic))))
    `(mu4e-cited-2-face ((t (:foreground ,jm-green+2 :slant italic))))
@@ -486,119 +360,20 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(org-warning ((t (:bold t :foreground ,jm-red :weight bold :underline nil))))
    `(org-column ((t (:background ,jm-bg-1))))
    `(org-column-title ((t (:background ,jm-bg-1 :underline t :weight bold))))
-;;;;; outline
-   `(outline-1 ((t (:foreground ,jm-orange))))
-   `(outline-2 ((t (:foreground ,jm-green+4))))
-   `(outline-3 ((t (:foreground ,jm-blue-1))))
-   `(outline-4 ((t (:foreground ,jm-yellow-2))))
-   `(outline-5 ((t (:foreground ,jm-cyan))))
-   `(outline-6 ((t (:foreground ,jm-green+2))))
-   `(outline-7 ((t (:foreground ,jm-red-4))))
-   `(outline-8 ((t (:foreground ,jm-blue-4))))
-;;;;; p4
-   `(p4-depot-added-face ((t :inherit diff-added)))
-   `(p4-depot-branch-op-face ((t :inherit diff-changed)))
-   `(p4-depot-deleted-face ((t :inherit diff-removed)))
-   `(p4-depot-unmapped-face ((t :inherit diff-changed)))
-   `(p4-diff-change-face ((t :inherit diff-changed)))
-   `(p4-diff-del-face ((t :inherit diff-removed)))
-   `(p4-diff-file-face ((t :inherit diff-file-header)))
-   `(p4-diff-head-face ((t :inherit diff-header)))
-   `(p4-diff-ins-face ((t :inherit diff-added)))
-;;;;; powerline
-   `(powerline-active1 ((t (:background ,jm-bg-05 :inherit mode-line))))
-   `(powerline-active2 ((t (:background ,jm-bg+2 :inherit mode-line))))
-   `(powerline-inactive1 ((t (:background ,jm-bg+1 :inherit mode-line-inactive))))
-   `(powerline-inactive2 ((t (:background ,jm-bg+3 :inherit mode-line-inactive))))
-;;;;; rainbow-delimiters
-   `(rainbow-delimiters-depth-1-face ((t (:foreground ,jm-fg))))
-   `(rainbow-delimiters-depth-2-face ((t (:foreground ,jm-green+2))))
-   `(rainbow-delimiters-depth-3-face ((t (:foreground ,jm-yellow-2))))
-   `(rainbow-delimiters-depth-4-face ((t (:foreground ,jm-cyan))))
-   `(rainbow-delimiters-depth-5-face ((t (:foreground ,jm-green-1))))
-   `(rainbow-delimiters-depth-6-face ((t (:foreground ,jm-blue+1))))
-   `(rainbow-delimiters-depth-7-face ((t (:foreground ,jm-yellow-1))))
-   `(rainbow-delimiters-depth-8-face ((t (:foreground ,jm-green+1))))
-   `(rainbow-delimiters-depth-9-face ((t (:foreground ,jm-blue-2))))
-   `(rainbow-delimiters-depth-10-face ((t (:foreground ,jm-orange))))
-   `(rainbow-delimiters-depth-11-face ((t (:foreground ,jm-green))))
-   `( rainbow-delimiters-depth-12-face ((t (:foreground ,jm-blue-5))))
-;;;;; rbenv
-   `(rbenv-active-ruby-face ((t (:foreground ,jm-fg))))
-;;;;; rcirc
-   `(rcirc-my-nick ((t (:foreground ,jm-blue))))
-   `(rcirc-other-nick ((t (:foreground ,jm-orange))))
-   `(rcirc-bright-nick ((t (:foreground ,jm-blue+1))))
-   `(rcirc-dim-nick ((t (:foreground ,jm-blue-2))))
-   `(rcirc-server ((t (:foreground ,jm-green))))
-   `(rcirc-server-prefix ((t (:foreground ,jm-green+1))))
-   `(rcirc-timestamp ((t (:foreground ,jm-green+2))))
-   `(rcirc-nick-in-message ((t (:foreground ,jm-yellow))))
-   `(rcirc-nick-in-message-full-line ((t (:bold t))))
-   `(rcirc-prompt ((t (:foreground ,jm-yellow :bold t))))
-   `(rcirc-track-nick ((t (:inverse-video t))))
-   `(rcirc-track-keyword ((t (:bold t))))
-   `(rcirc-url ((t (:bold t))))
-   `(rcirc-keyword ((t (:foreground ,jm-yellow :bold t))))
-;;;;; rpm-mode
-   `(rpm-spec-dir-face ((t (:foreground ,jm-green))))
-   `(rpm-spec-doc-face ((t (:foreground ,jm-green))))
-   `(rpm-spec-ghost-face ((t (:foreground ,jm-red))))
-   `(rpm-spec-macro-face ((t (:foreground ,jm-yellow))))
-   `(rpm-spec-obsolete-tag-face ((t (:foreground ,jm-red))))
-   `(rpm-spec-package-face ((t (:foreground ,jm-red))))
-   `(rpm-spec-section-face ((t (:foreground ,jm-yellow))))
-   `(rpm-spec-tag-face ((t (:foreground ,jm-blue))))
-   `(rpm-spec-var-face ((t (:foreground ,jm-red))))
-;;;;; rst-mode
-   `(rst-level-1-face ((t (:foreground ,jm-orange))))
-   `(rst-level-2-face ((t (:foreground ,jm-green+1))))
-   `(rst-level-3-face ((t (:foreground ,jm-blue-1))))
-   `(rst-level-4-face ((t (:foreground ,jm-yellow-2))))
-   `(rst-level-5-face ((t (:foreground ,jm-cyan))))
-   `(rst-level-6-face ((t (:foreground ,jm-green-1))))
 ;;;;; show-paren
    `(show-paren-mismatch ((t (:foreground ,jm-red-3 :background ,jm-bg :weight bold))))
    `(show-paren-match ((t (:foreground ,jm-blue-1 :background ,jm-bg :weight bold))))
-;;;;; sml-mode-line
-   '(sml-modeline-end-face ((t :inherit default :width condensed)))
-;;;;; SLIME
-   `(slime-repl-inputed-output-face ((t (:foreground ,jm-red))))
 ;;;;; term
-   `(term-color-black ((t (:foreground ,jm-bg
-                                       :background ,jm-bg-1))))
-   `(term-color-red ((t (:foreground ,jm-red-2
-                                       :background ,jm-red-4))))
-   `(term-color-green ((t (:foreground ,jm-green
-                                       :background ,jm-green+2))))
-   `(term-color-yellow ((t (:foreground ,jm-orange
-                                       :background ,jm-yellow))))
-   `(term-color-blue ((t (:foreground ,jm-blue-1
-                                      :background ,jm-blue-4))))
-   `(term-color-magenta ((t (:foreground ,jm-magenta
-                                         :background ,jm-red))))
-   `(term-color-cyan ((t (:foreground ,jm-cyan
-                                       :background ,jm-blue))))
-   `(term-color-white ((t (:foreground ,jm-fg
-                                       :background ,jm-fg-1))))
+   `(term-color-black ((t (:foreground ,jm-bg :background ,jm-bg-1))))
+   `(term-color-red ((t (:foreground ,jm-red-2 :background ,jm-red-4))))
+   `(term-color-green ((t (:foreground ,jm-green :background ,jm-green+2))))
+   `(term-color-yellow ((t (:foreground ,jm-orange :background ,jm-yellow))))
+   `(term-color-blue ((t (:foreground ,jm-blue-1 :background ,jm-blue-4))))
+   `(term-color-magenta ((t (:foreground ,jm-magenta :background ,jm-red))))
+   `(term-color-cyan ((t (:foreground ,jm-cyan :background ,jm-blue))))
+   `(term-color-white ((t (:foreground ,jm-fg :background ,jm-fg-1))))
    '(term-default-fg-color ((t (:inherit term-color-white))))
    '(term-default-bg-color ((t (:inherit term-color-black))))
-;;;;; volatile-highlights
-   `(vhl/default-face ((t (:background ,jm-bg-05))))
-;;;;; emacs-w3m
-   `(w3m-anchor ((t (:foreground ,jm-yellow :underline t
-                                 :weight bold))))
-   `(w3m-arrived-anchor ((t (:foreground ,jm-yellow-2
-                                         :underline t :weight normal))))
-   `(w3m-form ((t (:foreground ,jm-red-1 :underline t))))
-   `(w3m-header-line-location-title ((t (:foreground ,jm-yellow
-                                                     :underline t :weight bold))))
-   '(w3m-history-current-url ((t (:inherit match))))
-   `(w3m-lnum ((t (:foreground ,jm-green+2 :background ,jm-bg))))
-   `(w3m-lnum-match ((t (:background ,jm-bg-1
-                                     :foreground ,jm-orange
-                                     :weight bold))))
-   `(w3m-lnum-minibuffer-prompt ((t (:foreground ,jm-yellow))))
 ;;;;; web-mode
    `(web-mode-builtin-face ((t (:inherit ,font-lock-builtin-face))))
    `(web-mode-comment-face ((t (:inherit ,font-lock-comment-face))))
@@ -635,8 +410,6 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(whitespace-indentation ((t (:background ,jm-yellow :foreground ,jm-red))))
    `(whitespace-empty ((t (:background ,jm-yellow))))
    `(whitespace-space-after-tab ((t (:background ,jm-yellow :foreground ,jm-red))))
-;;;;; which-func-mode
-   `(which-func ((t (:foreground ,jm-green+4))))
 ;;;;; xcscope
    `(cscope-file-face ((t (:foreground ,jm-green+4))))
    `(cscope-function-face ((t :foreground ,jm-blue)))
@@ -692,20 +465,6 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(vc-annotate-background ,jm-bg-1)
    ))
 
-;;; Rainbow Support
-
-(declare-function rainbow-mode 'rainbow-mode)
-(declare-function rainbow-colorize-by-assoc 'rainbow-mode)
-
-(defvar jm-add-font-lock-keywords nil
-  "Whether to add font-lock keywords for jm color names.
-In buffers visiting library `jm-theme.el' the jm
-specific keywords are always added.  In all other Emacs-Lisp
-buffers this variable controls whether this should be done.
-This requires library `rainbow-mode'.")
-
-(defvar jm-colors-font-lock-keywords nil)
-
 ;;; Footer
 
 ;;;###autoload
@@ -715,15 +474,5 @@ This requires library `rainbow-mode'.")
                   (file-name-as-directory
                    (file-name-directory load-file-name))))
 
+
 (provide-theme 'jm)
-
-;;;###autoload
-(add-to-list 'safe-local-eval-forms
-             '(when (require 'rainbow-mode nil t) (rainbow-mode 1)))
-
-;; Local Variables:
-;; no-byte-compile: t
-;; indent-tabs-mode: nil
-;; eval: (when (require 'rainbow-mode nil t) (rainbow-mode 1))
-;; End:
-;;; jm-theme.el ends here

@@ -22,16 +22,20 @@
 
 ;;; Code:
 
-;; add packages
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-			 ("marmalade" . "http://marmalade-repo.org/packages/")
-			 ("melpa" . "http://melpa.milkbox.net/packages/")))
-
-;; convert the region to lower case
+;; enable upcase/dowcase commands
+(put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
+
+;; enable narrowing commands
+(put 'narrow-to-defun  'disabled nil)
+(put 'narrow-to-page   'disabled nil)
+(put 'narrow-to-region 'disabled nil)
 
 ;; don't ask to follow symlink
 (setq vc-follow-symlinks t)
+
+;; remove eldoc mode
+(global-eldoc-mode -1)
 
 ;; disable erase-buffer
 (put 'erase-buffer 'disabled nil)
@@ -84,8 +88,6 @@
 
 ;; define key in help mode
 (require 'help-mode)
-(define-key help-mode-map "n" 'help-go-forward)
-(define-key help-mode-map "p" 'help-go-back)
 
 ;; tramp config
 (require 'my-tramp)
@@ -170,9 +172,6 @@
 
 ;; never request confirmation when opening large file
 (setq large-file-warning-threshold nil)
-
-;; yaml mode
-(require 'yaml-mode)
 
 ;; silent url status
 (require 'url-vars)

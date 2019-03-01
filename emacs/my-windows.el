@@ -26,15 +26,19 @@
 (setq split-height-threshold 119)
 (setq split-width-threshold 143)
 
-;; windows config
+;; movement off the edge of the frame wraps around.
 (setq windmove-wrap-around t)
+
+;; shifted motion keys activate the mark momentarily
 (setq shift-select-mode t)
 
-;; set some variables
-(custom-set-variables
- '(column-number-mode t)
- '(menu-bar-mode nil)
- '(tool-bar-mode nil))
+;; enable column number mode
+(setq column-number-mode t)
+
+;; disable menubar, toolbar and scrollbar
+(menu-bar-mode -1)
+(toggle-scroll-bar -1)
+(tool-bar-mode -1)
 
 ;; windows size
 (setq default-frame-alist '((width . 80) (height . 40)))
@@ -118,9 +122,6 @@
 (require 'hl-line)
 (global-hl-line-mode 1)
 
-;; remove scroll bar
-(scroll-bar-mode -1)
-
 ;; modeline
 (require 'telephone-line)
 
@@ -170,12 +171,6 @@
     (command-error-default-function data context caller)))
 
 (setq command-error-function #'my-command-error-function)
-
-;; remove eldoc mode
-(global-eldoc-mode -1)
-
-;; silent tramp message
-(setq tramp-verbose 1)
 
 ;; ansi color buffer
 (defun ansi-color-buffer ()

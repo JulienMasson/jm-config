@@ -72,10 +72,6 @@
 ;; set signoff by default
 (setq magit-commit-arguments (quote ("--signoff")))
 
-; redefine key in magit mode
-(define-key magit-mode-map [remap magit-copy-buffer-thing-as-kill] 'kill-ring-save)
-(define-key magit-mode-map [remap magit-copy-buffer-revision] 'kill-ring-save)
-
 ;; magit push gerrit
 (defun magit-git-push-gerrit (branch target args)
   (run-hooks 'magit-credential-hook)

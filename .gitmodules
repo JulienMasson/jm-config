@@ -172,9 +172,6 @@
 [submodule "emacs/modules/f"]
 	path = emacs/modules/f
 	url = https://github.com/rejeep/f.el.git
-[submodule "emacs/modules/yaml-mode"]
-	path = emacs/modules/yaml-mode
-	url = https://github.com/yoshiki/yaml-mode.git
 [submodule "emacs/modules/google-translate"]
 	path = emacs/modules/google-translate
 	url = https://github.com/atykhonov/google-translate.git
