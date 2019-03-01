@@ -1,0 +1,12 @@
+* Personnal Config
+
+This is my personnal config which contains:
+- Emacs configurations
+- Emacs modules
+- Dotfiles (X files, emacs, bash ...)
+- Tools (utils scripts)
+
+Install jm-config in your system:
+#+BEGIN_SRC shell
+git clone --recurse-submodules https://github.com/JulienMasson/jm-config.git
+#+END_SRC
