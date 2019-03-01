@@ -25,6 +25,10 @@
 ;; load notmuch module
 (require 'notmuch)
 
+;; notmuch company
+(require 'notmuch-company)
+(add-to-list 'company-backends 'notmuch-company)
+
 ;; tree result format
 (setq notmuch-tree-result-format `(("date" . "%-14s")
 				   ("authors" . "%-16s")
