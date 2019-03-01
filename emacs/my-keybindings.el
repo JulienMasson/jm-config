@@ -153,6 +153,8 @@
   (lambda () (interactive) (find-alternate-file "..")))
 (define-key dired-mode-map "h" 'dired-do-hexl-find-file)
 (define-key dired-mode-map "L" 'locate-database)
+(define-key dired-mode-map "U" 'unmark-all-dired-buffer)
+(define-key dired-mode-map "K" 'kill-all-dired-buffer)
 
 ;; erc
 (define-key erc-mode-map (kbd "C-c C-i") 'emojify-insert-emoji)

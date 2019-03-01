@@ -134,40 +134,44 @@ search modes defined in the new `dired-sort-toggle'.
 ;; dired diff
 (require 'diff)
 
-(defun get-dired-mark (func)
-  (let* ((marks
-	  (apply 'append
-		 (delq nil
-		       (mapcar (lambda (arg)
-				 (with-current-buffer (buffer-name arg)
-				   (when (string= major-mode "dired-mode")
-				     (dired-get-marked-files))))
-			       (buffer-list))))))
-    (delq nil
-	  (mapcar (lambda (arg)
-		    (when (funcall func arg)
-		      arg))
-		  marks))))
-
 (defun apply-all-dired-buffer (func)
   (dolist (buffer (buffer-list))
-    (with-current-buffer (buffer-name buffer)
+    (with-current-buffer buffer
       (when (string= major-mode "dired-mode")
 	(funcall func)))))
 
+(defun my-dired-get-marked ()
+  (save-excursion
+    (let (results)
+      (goto-char (point-min))
+      (while (re-search-forward (dired-marker-regexp) nil t)
+	(push (dired-get-filename) results)
+	(forward-line 1))
+      results)))
+
+(defun dired-get-all-marked ()
+  (let (results marks)
+    (mapc (lambda (buffer)
+	    (with-current-buffer buffer
+	      (when (string= major-mode "dired-mode")
+		(setq marks (my-dired-get-marked))
+		(when marks
+		  (push marks results)))))
+	  (buffer-list))
+    (apply 'append results)))
+
 (defun unmark-all-dired-buffer ()
   (interactive)
-  (apply-all-dired-buffer 'dired-unmark-all-marks))
+  (apply-all-dired-buffer #'dired-unmark-all-marks))
 
 (defun kill-all-dired-buffer ()
   (interactive)
-  (apply-all-dired-buffer '(lambda ()
-			     (kill-buffer (current-buffer)))))
+  (apply-all-dired-buffer #'kill-current-buffer))
 
 ;; diff for files
 (defun dired-diff-files ()
   (interactive)
-  (let ((files (get-dired-mark 'file-regular-p)))
+  (let ((files (seq-filter #'file-regular-p (dired-get-all-marked))))
     (if (= (length files) 2)
 	(diff (car files) (cadr files))
       (error "You should set only two files"))))
@@ -175,7 +179,8 @@ search modes defined in the new `dired-sort-toggle'.
 ;; diff for directories
 (defun dired-diff-directories ()
   (interactive)
-  (let ((directories (get-dired-mark 'file-directory-p)))
+  (let ((directories (seq-filter #'file-directory-p
+				 (dired-get-all-marked))))
     (if (= (length directories) 2)
 	(let ((directory-1 (car directories))
 	      (directory-2 (cadr directories)))
