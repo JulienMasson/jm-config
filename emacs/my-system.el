@@ -166,7 +166,6 @@
 (status-add-to-left 'status-project-manager)
 (status-add-to-left 'status-virtual-desktops)
 (status-add-to-right 'status-erc)
-(status-add-to-right 'status-mu4e)
 (status-add-to-right 'status-notmuch)
 (turn-on-status)
 
