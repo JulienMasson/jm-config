@@ -384,5 +384,11 @@
 (defun notmuch-level-at-point ()
   (if (notmuch-tree-get-prop :previous-subject) 1 0))
 
+;; notmuch jump folder
+(defun notmuch-jump-folder (folder)
+  (interactive (list (completing-read "Folder: "
+				      (notmuch-maildir-folders))))
+  (notmuch-tree (format "folder:\"%s\"" folder)))
+
 
 (provide 'my-notmuch)

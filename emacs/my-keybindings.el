@@ -108,6 +108,7 @@
 
 ;; notmuch
 (global-set-key (kbd "C-M-m") 'notmuch)
+(define-key notmuch-common-keymap "j" 'notmuch-jump-folder)
 (define-key notmuch-common-keymap "s" 'notmuch-tree)
 (define-key notmuch-common-keymap "u" 'notmuch-show-unread)
 (define-key notmuch-common-keymap "z" 'notmuch-search)
