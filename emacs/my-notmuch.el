@@ -189,7 +189,7 @@
     (with-temp-buffer
       ;; insert queries
       (mapc (lambda (folder)
-	      (let* ((query (concat "folder:" folder))
+	      (let* ((query (format "folder:\"%s\"" folder))
 		     (query-unread (concat query " and tag:unread")))
 		(insert query "\n")
 		(insert query-unread "\n")))
@@ -239,7 +239,7 @@
   (mapc (lambda (data)
   	  (let* ((label (plist-get data :label))
 		 (folder (plist-get data :folder))
-		 (query (concat "folder:" folder))
+		 (query (format "folder:\"%s\"" folder))
   		 (total (plist-get data :total))
 		 (unread (plist-get data :unread))
   		 (widget-push-button-prefix "")
