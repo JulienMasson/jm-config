@@ -114,6 +114,15 @@
   (notmuch-tree-tag-thread '("-unread"))
   (notmuch-refresh-this-buffer))
 
+(defun notmuch-thread-remove-unread-all ()
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (not (eobp))
+      (notmuch-tree-tag-thread '("-unread"))
+      (notmuch-tree-next-thread)))
+  (notmuch-refresh-this-buffer))
+
 ;; switch to buffer when RET on message
 (defun notmuch-switch-to-buffer ()
   (switch-to-buffer-other-window notmuch-tree-message-buffer))

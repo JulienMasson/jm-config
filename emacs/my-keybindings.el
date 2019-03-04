@@ -115,6 +115,7 @@
 (define-key notmuch-show-mode-map "p" 'my-notmuch-show-prev-message)
 (define-key notmuch-tree-mode-map "f" 'mail-headers-fold-unfold-all)
 (define-key notmuch-tree-mode-map "m" 'notmuch-thread-remove-unread)
+(define-key notmuch-tree-mode-map "M" 'notmuch-thread-remove-unread-all)
 (define-key notmuch-tree-mode-map (kbd "TAB") 'mail-headers-fold-unfold-thread)
 
 ;; project manager
