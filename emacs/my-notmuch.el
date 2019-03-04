@@ -30,6 +30,9 @@
 (require 'notmuch-company)
 (add-to-list 'company-backends 'notmuch-company)
 
+;; no Fcc header added
+(setq notmuch-fcc-dirs nil)
+
 ;; tree result format
 (setq notmuch-tree-result-format `(("date" . "%-14s")
 				   ("authors" . "%-16s")
