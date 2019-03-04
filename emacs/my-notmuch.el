@@ -160,27 +160,62 @@
 ;; maildir view in hello sections
 (defvar notmuch-maildir-data-cached nil)
 
-(defun notmuch-maildir-assoc ()
+(defun notmuch-maildir-folders ()
   (let* ((maildir-path (notmuch-database-path))
   	 (dirs (directory-files-recursively maildir-path "cur$" t))
   	 (subdirs (mapcar (lambda (dir)
   			    (replace-regexp-in-string
   			     (format "%s/\\(.*\\)/cur"
   				     (expand-file-name maildir-path))
-  			     "\\1" dir)) dirs))
-  	 maildir-assoc)
-    (mapc (lambda (dir)
-  	    (cl-multiple-value-bind (account folder)
-  		(split-string dir "/")
-  	      (when folder
-  		(if (assoc account maildir-assoc)
-  		    (let ((folders (assoc-default account maildir-assoc)))
-  		      (setcdr (assoc account maildir-assoc)
-  			      (add-to-list 'folders `(:folder ,folder :unread 0 :total 0)
-					   t)))
-  		  (add-to-list 'maildir-assoc
-  			       (cons account `(,`(:folder ,folder :unread 0 :total 0))) t)))))
-  	  subdirs)
+  			     "\\1" dir)) dirs)))
+    subdirs))
+
+(defun notmuch-maildir-get-data (folders)
+  (let (total-list unread-list data)
+    (with-temp-buffer
+      ;; insert queries
+      (mapc (lambda (folder)
+	      (let* ((query (concat "folder:" folder))
+		     (query-unread (concat query " and tag:unread")))
+		(insert query "\n")
+		(insert query-unread "\n")))
+	    folders)
+      ;; run queries
+      (call-process-region (point-min) (point-max) notmuch-command
+			   t t nil "count" "--batch")
+      ;; parse results
+      (goto-char (point-min))
+      (while (not (eobp))
+	(push (string-to-number (buffer-substring (point) (point-at-eol)))
+	      total-list)
+	(forward-line 1)
+	(push (string-to-number (buffer-substring (point) (point-at-eol)))
+	      unread-list)
+	(forward-line 1)))
+    ;; set read/unread
+    (cl-mapc (lambda (folder total unread)
+	       (add-to-list 'data `(:folder ,folder :unread ,unread :total ,total) t))
+	     folders (nreverse total-list) (nreverse unread-list))
+    data))
+
+(defun notmuch-create-data-assoc (data-list)
+  (let (maildir-assoc)
+    (mapc (lambda (data)
+	    (let ((folder (plist-get data :folder))
+		  (unread (plist-get data :unread))
+		  (total (plist-get data :total)))
+	      (cl-multiple-value-bind (account label)
+		  (split-string folder "/")
+		(when label
+		  (let* ((new-label (replace-regexp-in-string "^.*\\." "" label))
+			 (new `(:label ,new-label :folder ,folder :unread ,unread :total ,total)))
+		    (if (assoc account maildir-assoc)
+			(let ((folders (assoc-default account maildir-assoc)))
+			  (setcdr (assoc account maildir-assoc)
+				  (add-to-list 'folders new t)))
+		      (add-to-list 'maildir-assoc
+				   (cons account `(,new)) t)))))))
+	  data-list)
     maildir-assoc))
 
 (defun notmuch-insert-maildir (maildir)
@@ -188,8 +223,9 @@
 		  (format "    * %s\n" (upcase (car maildir)))
 		  'face 'font-lock-variable-name-face))
   (mapc (lambda (data)
-  	  (let* ((folder (plist-get data :folder))
-		 (query (format "folder:\"%s/%s\"" (car maildir) folder))
+  	  (let* ((label (plist-get data :label))
+		 (folder (plist-get data :folder))
+		 (query (concat "folder:" folder))
   		 (total (plist-get data :total))
 		 (unread (plist-get data :unread))
   		 (widget-push-button-prefix "")
@@ -200,8 +236,7 @@
   			   :notmuch-search-terms query
   			   :notmuch-search-oldest-first 'newest-first
   			   :notmuch-search-type 'tree
-  			   (format "%-20s" (replace-regexp-in-string
-  					    "^.*\\." "" folder)))
+  			   (format "%-20s" label))
   	    (widget-insert (propertize
   			    (format "(%d/%d)\n" unread total)
   			    'face (if (> unread 0)
@@ -214,44 +249,13 @@
   (widget-insert "\n")
   (widget-insert (propertize "  Accounts\n\n" 'face 'mu4e-title-face)))
 
-(defun notmuch-set-data-maildir (maildirs)
-  (mapc (lambda (maildir)
-	  (let (total-list unread-list data-list)
-	    (with-temp-buffer
-	      ;; insert queries
-	      (mapc (lambda (data)
-		      (let* ((folder (plist-get data :folder))
-			     (query (format "folder:\"%s/%s\"" (car maildir) folder))
-			     (query-unread (concat query " and tag:unread")))
-			(insert query "\n")
-			(insert query-unread "\n")))
-		    (cdr maildir))
-	      ;; run queries
-	      (call-process-region (point-min) (point-max) notmuch-command
-				   t t nil "count" "--batch")
-	      ;; parse results
-	      (goto-char (point-min))
-	      (while (not (eobp))
-		(push (string-to-number (buffer-substring (point) (point-at-eol)))
-		      total-list)
-		(forward-line 1)
-		(push (string-to-number (buffer-substring (point) (point-at-eol)))
-		      unread-list)
-		(forward-line 1)))
-	    ;; set read/unread
-	    (cl-mapc (lambda (data total unread)
-		       (add-to-list 'data-list `(:folder ,(plist-get data :folder)
-		       					:unread ,unread :total ,total) t))
-		     (cdr maildir) (nreverse total-list) (nreverse unread-list))
-	    (setcdr maildir data-list)))
-  maildirs))
-
 (defun notmuch-hello-maildir ()
-  (let ((maildirs (notmuch-maildir-assoc)))
-    (notmuch-set-data-maildir maildirs)
-    (setq notmuch-maildir-data-cached maildirs)
+  (let* ((folders (notmuch-maildir-folders))
+	 (data-list (notmuch-maildir-get-data folders))
+	 (data-assoc (notmuch-create-data-assoc data-list)))
+    (setq notmuch-maildir-data-cached data-assoc)
     (notmuch-insert-maildir-header)
-    (mapc #'notmuch-insert-maildir maildirs)))
+    (mapc #'notmuch-insert-maildir data-assoc)))
 
 (setq notmuch-hello-sections (list #'notmuch-hello-maildir))
 
