@@ -149,7 +149,11 @@ Julien Masson
 	(cl-multiple-value-bind (begin end)
 	    range
 	  (goto-char begin)
-	  (hide-lines-add-overlay (line-end-position) end))))))
+	  (hide-lines-add-overlay (line-end-position) end)
+	  (overlay-put (mail-find-overlay-at-point)
+		       'before-string
+		       (propertize " [...]" 'face
+				   'font-lock-keyword-face)))))))
 
 (defun mail-headers-fold-unfold-thread ()
   (interactive)
