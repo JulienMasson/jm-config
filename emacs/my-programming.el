@@ -86,6 +86,9 @@
 (setq company-backends nil)
 (add-hook 'after-init-hook 'global-company-mode)
 
+;; don't message in echo area
+(defun company-echo-show (&optional getter))
+
 ;; completion at point company
 (require 'company-capf)
 (add-to-list 'company-backends 'company-capf)
