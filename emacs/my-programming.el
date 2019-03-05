@@ -110,21 +110,38 @@
 (require 'my-python)
 
 ;; manual at point
+(defun man-get-index-list (pattern)
+  (let* ((cmd (format "man -f %s" pattern))
+	 (results (split-string (shell-command-to-string cmd) "\n"))
+	 (regex (format "^%s (\\([0-9]\\)).*$" pattern)))
+    (delq nil (mapcar (lambda (line)
+			(when (string-match regex line)
+			  (string-to-number (match-string 1 line))))
+		      results))))
+
+(defun man-search-index (pattern search-list)
+  (let ((index-list (man-get-index-list pattern)))
+    (seq-find (lambda (index)
+		(member index index-list))
+	      search-list)))
+
 (defun manual-at-point()
   (interactive)
   (cond
    ;; C mode
    ((string= major-mode "c-mode")
     (let* ((pattern (thing-at-point 'symbol))
-	   (man-result (split-string
-			(shell-command-to-string (format "man -f %s" pattern)) "\n"))
-	   (match (car (delq nil
-			     (mapcar (lambda (line)
-				       (if (string-match (format "\\(%s ([23])\\).*" pattern) line)
-					   (match-string 1 line)))
-				     man-result)))))
-      (if match
-	  (man match))))
+	   (search-list '(2 3))
+	   (index (man-search-index pattern search-list)))
+      (when index
+	(man (format "%s (%d)" pattern index)))))
+   ;; Shell mode
+   ((string= major-mode "sh-mode")
+    (let* ((pattern (thing-at-point 'symbol))
+	   (search-list '(1 8))
+	   (index (man-search-index pattern search-list)))
+      (when index
+	(man (format "%s (%d)" pattern index)))))
    ;; Perl mode
    ((string= major-mode "cperl-mode")
     (cperl-perldoc-at-point))
