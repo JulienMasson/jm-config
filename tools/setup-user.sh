@@ -16,7 +16,25 @@ sudo apt-get upgrade -y
 sudo apt-get install -y git
 
 # install manpages
-sudo apt-get install manpages-dev manpages-posix-dev
+sudo apt-get install -y manpages-dev manpages-posix-dev
+
+# install programming tools
+sudo apt-get install -y build-essential cscope ripgrep locate
+
+# install terminal
+sudo apt-get install -y rxvt-unicode
+
+# install X utils
+sudo apt-get install -y xinit arandr
+
+# install pdf viewer
+sudo apt-get install -y evince
+
+# install image viewer
+sudo apt-get install -y eog
+
+# install mail sync
+sudo apt-get install -y offlineimap
 
 # install jm-config
 read -s -p "Password (jm-config): " JM_PASSWORD
@@ -44,21 +62,25 @@ make -j$(nproc)
 popd
 popd
 
-# install emacs
+# install jwm
 pushd "${JM_SRC}"
-git clone https://github.com/emacs-mirror/emacs.git
+git clone https://github.com/JulienMasson/jwm.git jwm
+sudo apt-get install -y check libx11-xcb-dev libxcb-randr0-dev libxcb-keysyms1-dev libxcb-ewmh-dev libxcb-icccm4-dev libxcb-util0-dev libcairo2-dev libpangocairo-1.0-0 libpango1.0-dev
+pushd jwm
+make
 popd
-
-# install ripgrep
-pushd "${JM_SRC}"
-git clone https://github.com/BurntSushi/ripgrep.git
 popd
 
 # install google chrome
 pushd Downloads
-sudo apt-get install -y wget
+sudo apt-get install -y wget fonts-liberation libappindicator3-1 libasound2 xdg-utils
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo dpkg -i google-chrome-stable_current_amd64.deb
+popd
+
+# install emacs
+pushd "${JM_SRC}"
+git clone https://github.com/emacs-mirror/emacs.git
 popd
 
 # packages clean-up
