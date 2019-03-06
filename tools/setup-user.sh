@@ -18,8 +18,11 @@ sudo apt-get install -y git
 # install manpages
 sudo apt-get install -y manpages-dev manpages-posix-dev
 
+# install compilation tools
+sudo apt-get install -y build-essential autogen autoconf automake meson
+
 # install programming tools
-sudo apt-get install -y build-essential cscope ripgrep locate
+sudo apt-get install -y cscope ripgrep locate
 
 # install terminal
 sudo apt-get install -y rxvt-unicode
@@ -54,7 +57,7 @@ find "${JM_CONFIG}/emacs/modules/jm-private/dotfiles/" -name ".*" -exec sh -c 'l
 
 # compile kernel
 pushd "${JM_SRC}"
-sudo apt-get install -y build-essential libncurses-dev flex bison libelf-dev libssl-dev bc
+sudo apt-get install -y libncurses-dev flex bison libelf-dev libssl-dev bc
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
 pushd linux
 make defconfig
