@@ -23,6 +23,8 @@
 ;;; Code:
 
 ;; controls commands
+(global-set-key [C-delete] 'delete-word)
+(global-set-key [C-backspace] 'backward-delete-word)
 (global-set-key (kbd "C-c <left>")  'windmove-left)
 (global-set-key (kbd "C-c <right>") 'windmove-right)
 (global-set-key (kbd "C-c <up>")    'windmove-up)

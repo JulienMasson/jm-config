@@ -206,6 +206,15 @@
     (forward-sexp (or arg 1))
     (delete-region opoint (point))))
 
+;; delete word
+(defun delete-word (arg)
+  (interactive "p")
+  (delete-region (point) (progn (forward-word arg) (point))))
+
+(defun backward-delete-word (arg)
+  (interactive "p")
+  (delete-word (- arg)))
+
 ;; interactive-align
 (require 'ialign)
 
