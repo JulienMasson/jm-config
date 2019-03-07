@@ -3,6 +3,8 @@
 cd ~
 JM_CONFIG=".config/jm"
 JM_SRC=".local/src"
+JM_SHARE=".local/share"
+
 
 # create directories
 mkdir bin Documents Downloads Pictures Music Desktop .config .cache .local
@@ -88,6 +90,14 @@ sudo apt-get install -y texinfo libgtk-3-dev libxpm-dev libjpeg-dev libgif-dev l
 pushd emacs
 ./autogen.sh
 make bootstrap -j$(nproc)
+popd
+popd
+
+# install rofi theme
+pushd "${JM_SHARE}"
+mkdir -p rofi/themes
+pushd rofi/themes
+wget https://raw.githubusercontent.com/DaveDavenport/rofi-themes/master/User%20Themes/flat-orange.rasi
 popd
 popd
 
