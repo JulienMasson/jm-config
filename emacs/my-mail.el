@@ -46,6 +46,13 @@
 		  (symbol-name mail-user-agent))))
     (intern (concat backend string))))
 
+;; mail client
+(defun mail-client ()
+  (interactive)
+  (let ((fun (get-mail-agent-function "")))
+    (when (symbol-function fun)
+	(funcall fun))))
+
 ;; accounts management
 (defvar mail-accounts-alist
   '(("Gmail"
