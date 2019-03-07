@@ -180,6 +180,7 @@
 
 ;; shell
 (define-key shell-mode-map (kbd "C-c l") 'shell-clear)
+(define-key shell-mode-map (kbd "C-M-m") nil)
 
 
 (provide 'my-keybindings)
