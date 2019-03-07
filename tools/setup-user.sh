@@ -5,6 +5,13 @@ JM_CONFIG=".config/jm"
 JM_SRC=".local/src"
 JM_SHARE=".local/share"
 
+pushd () {
+    command pushd "$@" > /dev/null
+}
+
+popd () {
+    command popd "$@" > /dev/null
+}
 
 # create directories
 mkdir bin Documents Downloads Pictures Music Desktop .config .cache .local
