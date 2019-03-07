@@ -48,6 +48,12 @@ sudo apt-get install -y eog
 # install mail sync
 sudo apt-get install -y offlineimap
 
+# install application launcher
+sudo apt-get install -y rofi
+
+# dbus notification daemon
+sudo apt-get install -y dunst
+
 # install jm-config
 read -s -p "Password (jm-config): " JM_PASSWORD
 echo
