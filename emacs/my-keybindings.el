@@ -42,6 +42,8 @@
 (global-set-key (kbd "C-c M-w") 'show-and-copy-buffer-filename)
 (global-set-key (kbd "C-M-d") 'my-delete-word)
 
+;; isearch
+(define-key isearch-mode-map (kbd "C-e") 'isearch-yank-line)
 ;; markdown
 (define-key markdown-mode-map (kbd "C-c <left>")  'windmove-left)
 (define-key markdown-mode-map (kbd "C-c <right>") 'windmove-right)
