@@ -44,6 +44,8 @@
 
 ;; isearch
 (define-key isearch-mode-map (kbd "C-e") 'isearch-yank-line)
+(define-key isearch-mode-map (kbd "C-f") 'isearch-yank-symbol-or-char)
+
 ;; markdown
 (define-key markdown-mode-map (kbd "C-c <left>")  'windmove-left)
 (define-key markdown-mode-map (kbd "C-c <right>") 'windmove-right)

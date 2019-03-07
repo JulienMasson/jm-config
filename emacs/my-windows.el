@@ -198,5 +198,16 @@
 (require 'move-lines)
 (move-lines-binding)
 
+;; isearch yank symbol
+(defun isearch-yank-symbol-or-char ()
+  (interactive)
+  (isearch-yank-internal
+   (lambda ()
+     (if (or (memq (char-syntax (or (char-after)  0)) '(?w ?_))
+	     (memq (char-syntax (or (char-after (1+ (point)))  0)) '(?w ?_)))
+	 (if (and (boundp 'subword-mode)  subword-mode) (subword-forward 1) (forward-symbol 1))
+       (forward-char 1))
+     (point))))
+
 
 (provide 'my-windows)
