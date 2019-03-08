@@ -74,9 +74,6 @@
 (global-set-key (kbd "C-c m") 'comment-region)
 (global-set-key (kbd "C-c u") 'uncomment-region)
 
-;; dired
-(global-set-key (kbd "C-c M-f") 'find-name-dired)
-
 ;; markdown
 (define-key markdown-mode-map (kbd "C-c <left>")  'windmove-left)
 (define-key markdown-mode-map (kbd "C-c <right>") 'windmove-right)
@@ -187,6 +184,7 @@
 (global-set-key (kbd "M-*") 'translate-at-point)
 
 ;; dired
+(global-set-key (kbd "C-c M-f") 'find-name-dired)
 (define-key dired-mode-map "=" 'dired-diff-files)
 (define-key dired-mode-map "r" 'dired-diff-directories)
 (define-key dired-mode-map "h" 'dired-do-hexl-find-file)
