@@ -199,14 +199,35 @@
 ;; default browser
 (setq browse-url-browser-function 'browse-url-chrome)
 
-;; delete word without save it in kill ring
-(defun my-delete-word (arg)
-  (interactive "p")
-  (let ((opoint (point)))
-    (forward-sexp (or arg 1))
-    (delete-region opoint (point))))
+;; interactive-align
+(require 'ialign)
 
-;; delete word
+;; right/left symbol
+(defun right-symbol ()
+  (interactive)
+  (forward-symbol 1))
+
+(defun left-symbol ()
+  (interactive)
+  (forward-symbol -1))
+
+;; right/left balanced expression
+(defun right-sexp ()
+  (interactive)
+  (forward-sexp 1))
+
+(defun left-sexp ()
+  (interactive)
+  (forward-sexp -1))
+
+;; kill commands
+(defun kill-word-or-region ()
+  (interactive)
+  (if (region-active-p)
+      (call-interactively 'kill-region)
+    (call-interactively 'kill-word)))
+
+;; delete commands
 (defun delete-word (arg)
   (interactive "p")
   (delete-region (point) (progn (forward-word arg) (point))))
@@ -215,8 +236,44 @@
   (interactive "p")
   (delete-word (- arg)))
 
-;; interactive-align
-(require 'ialign)
+(defun delete-char-or-region ()
+  (interactive)
+  (if (region-active-p)
+      (call-interactively 'delete-region)
+    (call-interactively 'delete-char)))
+
+(defun delete-sexp (&optional arg)
+  (interactive "p")
+  (let ((opoint (point)))
+    (forward-sexp (or arg 1))
+    (delete-region opoint (point))))
+
+;; isearch commands
+(defun isearch-yank-beginning (&optional arg)
+  (interactive "p")
+  (setq isearch-string "")
+  (setq isearch-message "")
+  (isearch-search-and-update))
+
+(defun isearch-delete-selection ()
+  (interactive)
+  (delete-region isearch-other-end (point))
+  (isearch-done))
+
+(defun isearch-kill-selection ()
+  (interactive)
+  (kill-region isearch-other-end (point))
+  (isearch-done))
+
+(defun isearch-yank-symbol-or-char ()
+  (interactive)
+  (isearch-yank-internal
+   (lambda ()
+     (if (or (memq (char-syntax (or (char-after)  0)) '(?w ?_))
+	     (memq (char-syntax (or (char-after (1+ (point)))  0)) '(?w ?_)))
+	 (if (and (boundp 'subword-mode)  subword-mode) (subword-forward 1) (forward-symbol 1))
+       (forward-char 1))
+     (point))))
 
 
 (provide 'my-system)

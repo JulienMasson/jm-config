@@ -22,29 +22,60 @@
 
 ;;; Code:
 
-;; controls commands
-(global-set-key [C-delete] 'delete-word)
-(global-set-key [C-backspace] 'backward-delete-word)
+;; movement windows
 (global-set-key (kbd "C-c <left>")  'windmove-left)
 (global-set-key (kbd "C-c <right>") 'windmove-right)
 (global-set-key (kbd "C-c <up>")    'windmove-up)
 (global-set-key (kbd "C-c <down>")  'windmove-down)
-(global-set-key (kbd "C-c l") 'goto-line)
-(global-set-key (kbd "C-c d") 'delete-rectangle)
-(global-set-key (kbd "C-c M-i") 'string-rectangle)
-(global-set-key (kbd "C-c M-d") 'delete-matching-lines)
-(global-set-key (kbd "C-c M-r") 'revert-buffer)
-(global-set-key (kbd "C-c m") 'comment-region)
-(global-set-key (kbd "C-c u") 'uncomment-region)
+
+;; movement right/left
+(global-set-key (kbd "C-<right>") 'right-word)
+(global-set-key (kbd "C-<left>") 'left-word)
+(global-set-key (kbd "M-<right>") 'right-symbol)
+(global-set-key (kbd "M-<left>") 'left-symbol)
+(global-set-key (kbd "C-M-<right>") 'right-sexp)
+(global-set-key (kbd "C-M-<left>") 'left-sexp)
+
+;; kill commands
+(global-set-key (kbd "C-w") 'kill-word-or-region)
+(global-set-key (kbd "M-w") 'kill-ring-save)
+(global-set-key (kbd "C-M-w") 'kill-sexp)
+(global-set-key (kbd "C-k") 'kill-line)
 (global-set-key (kbd "C-c k") 'kill-buffer-and-window)
-(global-set-key (kbd "C-c M-f") 'find-name-dired)
-(global-set-key (kbd "C-M-y") (lambda () (interactive) (yank-pop -1)))
+
+;; delete commands
+(global-set-key (kbd "C-d") 'delete-char-or-region)
+(global-set-key (kbd "M-d") 'delete-word)
+(global-set-key (kbd "C-M-d") 'delete-sexp)
+(global-set-key [C-delete] 'delete-word)
+(global-set-key [C-backspace] 'backward-delete-word)
+
+;; copy commands
 (global-set-key (kbd "C-c M-w") 'show-and-copy-buffer-filename)
-(global-set-key (kbd "C-M-d") 'my-delete-word)
 
 ;; isearch
+(define-key isearch-mode-map (kbd "C-a") 'isearch-yank-beginning)
 (define-key isearch-mode-map (kbd "C-e") 'isearch-yank-line)
+(define-key isearch-mode-map (kbd "C-M-d") 'isearch-delete-selection)
+(define-key isearch-mode-map (kbd "C-M-w") 'isearch-kill-selection)
 (define-key isearch-mode-map (kbd "C-f") 'isearch-yank-symbol-or-char)
+
+;; goto-line
+(global-set-key (kbd "C-c l") 'goto-line)
+
+;; rectangle commands
+(global-set-key (kbd "C-c d") 'delete-rectangle)
+(global-set-key (kbd "C-c M-i") 'string-rectangle)
+
+;; revert buffer
+(global-set-key (kbd "C-c M-r") 'revert-buffer)
+
+;; comment region
+(global-set-key (kbd "C-c m") 'comment-region)
+(global-set-key (kbd "C-c u") 'uncomment-region)
+
+;; dired
+(global-set-key (kbd "C-c M-f") 'find-name-dired)
 
 ;; markdown
 (define-key markdown-mode-map (kbd "C-c <left>")  'windmove-left)
