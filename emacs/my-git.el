@@ -39,35 +39,43 @@
 ;; ido on magit
 (setq magit-completing-read-function 'magit-ido-completing-read)
 
-;; blacklist slow git repository
-(setq magit-blacklist-repo '())
-(setq magit-status-headers-hook-saved magit-status-headers-hook)
-(setq magit-revision-sections-hook-saved magit-revision-sections-hook)
-
 ;; revert this change: `magit-visit-ref' behaves just like `magit-show-commit'
 (setq magit-visit-ref-behavior '(checkout-any focus-on-ref))
 
-(defun my-magit-status-headers ()
-  (let ((magit-insert-headers-hook
-	 (if (-contains? magit-blacklist-repo (magit-toplevel))
-	     ;; remove tag entry for magit status
-	     (remove 'magit-insert-tags-header magit-status-headers-hook-saved)
-	   magit-status-headers-hook-saved))
-	 wrapper)
-    (while (and (setq wrapper (pop magit-insert-headers-hook))
-		(= (point) (point-min)))
-      (funcall wrapper))))
+;; blacklist slow git repository
+(defvar magit-blacklist-repo '()
+  "list of blacklist repository")
 
-(defun my-magit-revision-sections (rev)
-  (let ((magit-revision-sections-hook
-	 (if (-contains? magit-blacklist-repo (magit-toplevel))
-	     ;; remove revision header in magit-diff
-	     (remove 'magit-insert-revision-headers magit-revision-sections-hook-saved)
-	   magit-revision-sections-hook-saved)))
-    (run-hook-with-args 'magit-revision-sections-hook rev)))
+(defvar magit-blacklist-status-headers-hook
+  (remove 'magit-insert-tags-header magit-status-headers-hook)
+  "Remove tags header from status headers")
 
-(setq magit-status-headers-hook '(my-magit-status-headers))
-(setq magit-revision-sections-hook '(my-magit-revision-sections))
+(defvar magit-blacklist-status-sections-hook
+  (seq-filter (lambda (elem)
+		(not (member elem '(magit-insert-unpushed-to-pushremote
+				    magit-insert-unpushed-to-upstream-or-recent
+				    magit-insert-unpulled-from-pushremote
+				    magit-insert-unpulled-from-upstream))))
+	      magit-status-sections-hook)
+  "Remove unpushed/unpulled from status section")
+
+(defvar magit-blacklist-revision-sections-hook
+  (remove 'magit-insert-revision-headers magit-revision-sections-hook)
+  "Remove revision header from revision section")
+
+(defun magit-blacklist-filter-hook (hook &rest args)
+  (nconc (if (-contains? magit-blacklist-repo (magit-toplevel))
+	     (cond ((member 'magit-status-sections-hook hook)
+		    (cl-replace hook '(magit-blacklist-status-sections-hook)))
+		   ((member 'magit-status-headers-hook hook)
+		    (cl-replace hook '(magit-blacklist-status-headers-hook)))
+		   ((member 'magit-revision-sections-hook hook)
+		    (cl-replace hook '(magit-blacklist-revision-sections-hook)))
+		   (t hook))
+	   hook)
+	 args))
+
+(advice-add 'magit-run-section-hook :filter-args #'magit-blacklist-filter-hook)
 
 ;; set signoff by default
 (setq magit-commit-arguments (quote ("--signoff")))
