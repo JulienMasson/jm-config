@@ -390,5 +390,13 @@
 				      (notmuch-maildir-folders))))
   (notmuch-tree (format "folder:\"%s\"" folder)))
 
+;; query unread at point
+(defun notmuch-unread-at-point ()
+  (interactive)
+  (let* ((button (get-char-property (point) 'button))
+	 (query (plist-get (cdr button) :notmuch-search-terms))
+	 (unread-query (concat query " and tag:unread")))
+    (notmuch-tree unread-query)))
+
 
 (provide 'my-notmuch)

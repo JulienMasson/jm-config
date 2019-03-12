@@ -144,7 +144,8 @@
 ;; notmuch
 (define-key notmuch-common-keymap "j" 'notmuch-jump-folder)
 (define-key notmuch-common-keymap "s" 'notmuch-tree)
-(define-key notmuch-common-keymap "u" 'notmuch-show-unread)
+(define-key notmuch-common-keymap "u" 'notmuch-unread-at-point)
+(define-key notmuch-common-keymap "U" 'notmuch-show-unread)
 (define-key notmuch-common-keymap "z" 'notmuch-search)
 (define-key notmuch-show-mode-map "n" 'my-notmuch-show-next-message)
 (define-key notmuch-show-mode-map "p" 'my-notmuch-show-prev-message)
