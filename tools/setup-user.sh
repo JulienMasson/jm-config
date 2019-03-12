@@ -45,8 +45,8 @@ sudo apt-get install -y evince
 # install image viewer
 sudo apt-get install -y eog
 
-# install mail sync
-sudo apt-get install -y offlineimap
+# install mail utils
+sudo apt-get install -y offlineimap msmtp
 
 # install application launcher
 sudo apt-get install -y rofi
