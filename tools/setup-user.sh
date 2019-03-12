@@ -13,6 +13,18 @@ popd () {
     command popd "$@" > /dev/null
 }
 
+function meson_install {
+    meson --prefix="/home/${USER}/.local/" "$@" build
+    ninja -j$(nproc) -C build
+    ninja -C build install
+}
+
+function autotools_install {
+    ./autogen.sh --prefix="/home/${USER}/.local/" "$@"
+    make -j$(nproc)
+    make install
+}
+
 # create directories
 mkdir bin Documents Downloads Pictures Music Desktop .config .cache .local
 mkdir .local/{bin,lib,pkgconfig,src,share}
@@ -112,6 +124,23 @@ pushd "${JM_SHARE}"
 mkdir -p rofi/themes
 pushd rofi/themes
 wget https://raw.githubusercontent.com/DaveDavenport/rofi-themes/master/User%20Themes/flat-orange.rasi
+popd
+popd
+
+# install wlroots
+pushd "${JM_SRC}"
+git clone https://github.com/swaywm/wlroots.git
+sudo apt-get install -y libgles2-mesa-dev libgbm-dev libinput-dev libx11-xcb-dev libxcb-xfixes0-dev libxcb-xinput-dev libxcb-composite0-dev libxcb-render0-dev
+pushd wlroots
+meson_install
+popd
+popd
+
+# install jwc
+pushd "${JM_SRC}"
+git clone https://github.com/JulienMasson/jwc.git
+pushd jwc
+make
 popd
 popd
 
