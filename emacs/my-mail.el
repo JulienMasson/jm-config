@@ -37,7 +37,7 @@
       message-send-mail-function 'message-send-mail-with-sendmail
       smtpmail-debug-info nil
       mail-setup-hook nil
-      sendmail-program "/usr/bin/msmtp")
+      sendmail-program (executable-find "msmtp"))
 
 ;; utils to get a mail agent function
 (defun get-mail-agent-function (string)
