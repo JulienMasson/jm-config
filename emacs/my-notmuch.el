@@ -244,13 +244,12 @@
 		 (unread (plist-get data :unread))
   		 (widget-push-button-prefix "")
   		 (widget-push-button-suffix ""))
-  	    (widget-insert "      ")
   	    (widget-create 'push-button
   			   :notify #'notmuch-hello-widget-search
   			   :notmuch-search-terms query
   			   :notmuch-search-oldest-first 'newest-first
   			   :notmuch-search-type 'tree
-  			   (format "%-20s" label))
+  			   (format "%-5s %-20s" " " label))
   	    (widget-insert (propertize
   			    (format "(%d/%d)\n" unread total)
   			    'face (if (> unread 0)
