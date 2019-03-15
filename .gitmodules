@@ -238,3 +238,9 @@
 [submodule "emacs/modules/notmuch"]
 	path = emacs/modules/notmuch
 	url = git://git.notmuchmail.org/git/notmuch
+[submodule "emacs/modules/dts-mode"]
+	path = emacs/modules/dts-mode
+	url = https://github.com/bgamari/dts-mode.git
+[submodule "emacs/modules/kconfig-mode"]
+	path = emacs/modules/kconfig-mode
+	url = https://github.com/delaanthonio/kconfig-mode.git

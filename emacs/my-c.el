@@ -135,5 +135,11 @@
   (let ((default-directory dir))
     (shell-command "/usr/bin/ctags -e -R .")))
 
+;; device tree mode
+(require 'dts-mode)
+
+;; kconfig mode
+(require 'kconfig-mode)
+
 
 (provide 'my-c)
