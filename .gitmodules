@@ -121,12 +121,6 @@
 [submodule "emacs/modules/memoize"]
 	path = emacs/modules/memoize
 	url = https://github.com/skeeto/emacs-memoize.git
-[submodule "emacs/modules/mu4e-maildirs-extension"]
-	path = emacs/modules/mu4e-maildirs-extension
-	url = https://github.com/agpchil/mu4e-maildirs-extension.git
-[submodule "emacs/modules/mu"]
-	path = emacs/modules/mu
-	url = https://github.com/djcb/mu.git
 [submodule "emacs/modules/ghub"]
 	path = emacs/modules/ghub
 	url = https://github.com/magit/ghub.git

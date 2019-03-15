@@ -135,12 +135,6 @@
 (global-set-key (kbd "C-x m") 'mail-compose-new)
 (global-set-key (kbd "C-M-m") 'mail-client)
 
-;; mu4e
-(define-key mu4e-view-mode-map (kbd "C-c C-s") 'mu4e-ido-save-attachments)
-(define-key mu4e-headers-mode-map (kbd "TAB") 'mail-headers-fold-unfold-thread)
-(define-key mu4e-headers-mode-map "f" 'mail-headers-fold-unfold-all)
-(define-key mu4e-headers-mode-map "G" 'mu4e-headers-toggle-sort-direction)
-
 ;; notmuch
 (define-key notmuch-common-keymap "j" 'notmuch-jump-folder)
 (define-key notmuch-common-keymap "s" 'notmuch-tree)

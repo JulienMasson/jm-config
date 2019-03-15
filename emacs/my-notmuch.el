@@ -75,12 +75,7 @@
     (setcdr (assq 'From (nth 2 args)) nil))
   args)
 
-(require 'mu4e-compose)
-(defun notmuch-compose-after (&rest _)
-  (mu4e~compose-remap-faces))
-
 (advice-add 'notmuch-mua-mail :filter-args #'notmuch-set-account-vars)
-(advice-add 'notmuch-mua-mail :after #'notmuch-compose-after)
 
 ;; refresh management
 (defvar notmuch-hello-buffer "*notmuch-hello*")
@@ -150,9 +145,14 @@
 				notmuch-tree-headers))))
 
 ;; notmuch tree custom visual
+(defface notmuch-header-highlight-face
+  '((t :inherit region :weight bold :underline t))
+  "Face for the header at point."
+  :group 'notmuch-faces)
+
 (defun notmuch-tree-custom-visual ()
   (notmuch-header-line-format)
-  (set (make-local-variable 'hl-line-face) 'mu4e-header-highlight-face))
+  (set (make-local-variable 'hl-line-face) 'notmuch-header-highlight-face))
 (advice-add 'notmuch-tree-refresh-view :after #'notmuch-tree-custom-visual)
 
 ;; use same buffer when display tree view
@@ -243,6 +243,16 @@
 	  data-list)
     maildir-assoc))
 
+(defface notmuch-unread-count-face
+  '((t :inherit font-lock-keyword-face :bold t))
+  "Face for number of unread message"
+  :group 'notmuch-faces)
+
+(defface notmuch-total-count-face
+  '((t :inherit default))
+  "Face for number of total message"
+  :group 'notmuch-faces)
+
 (defun notmuch-insert-maildir (maildir)
   (widget-insert (propertize
 		  (format "    * %s\n" (upcase (car maildir)))
@@ -264,14 +274,19 @@
   	    (widget-insert (propertize
   			    (format "(%d/%d)\n" unread total)
   			    'face (if (> unread 0)
-  				      'mu4e-unread-face
-  				    'mu4e-header-face)))))
+  				      'notmuch-unread-count-face
+  				    'notmuch-total-count-face)))))
   	(cdr maildir))
   (widget-insert "\n"))
 
+(defface notmuch-title-face
+  '((t :inherit font-lock-type-face :bold t))
+  "Face for a header title in the notmuch hello buffer"
+  :group 'notmuch-faces)
+
 (defun notmuch-insert-maildir-header ()
   (widget-insert "\n")
-  (widget-insert (propertize "  Accounts\n\n" 'face 'mu4e-title-face)))
+  (widget-insert (propertize "  Accounts\n\n" 'face 'notmuch-title-face)))
 
 (defun notmuch-hello-maildir ()
   (let* ((folders (notmuch-maildir-folders))
@@ -328,9 +343,8 @@
     (setq message-end (point-max-marker))
 
     ;; apply custom faces
-    (mu4e~compose-remap-faces)
     (apply-minimal-diff-face-buffer)
-    (mu4e~fontify-cited)
+    (mail-fontify-cited)
     (goto-char message-end)
     (local-set-key (kbd "C-c k") 'notmuch-bury-or-kill-this-buffer)
 

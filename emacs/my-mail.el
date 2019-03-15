@@ -179,8 +179,59 @@ Julien Masson
 	(mail-fold-one-thread)
 	(next-line)))))
 
+;; fontify cited part of the mail
+(defface mail-cited-1-face
+  '((t :inherit font-lock-builtin-face :bold nil :italic t))
+  "Face for cited message parts (level 1)."
+  :group 'faces)
+
+(defface mail-cited-2-face
+  '((t :inherit font-lock-preprocessor-face :bold nil :italic t))
+  "Face for cited message parts (level 2)."
+  :group 'faces)
+
+(defface mail-cited-3-face
+  '((t :inherit font-lock-variable-name-face :bold nil :italic t))
+  "Face for cited message parts (level 3)."
+  :group 'faces)
+
+(defface mail-cited-4-face
+  '((t :inherit font-lock-keyword-face :bold nil :italic t))
+  "Face for cited message parts (level 4)."
+  :group 'faces)
+
+(defface mail-cited-5-face
+  '((t :inherit font-lock-comment-face :bold nil :italic t))
+  "Face for cited message parts (level 5)."
+  :group 'faces)
+
+(defface mail-cited-6-face
+  '((t :inherit font-lock-comment-delimiter-face :bold nil :italic t))
+  "Face for cited message parts (level 6)."
+  :group 'faces)
+
+(defface mail-cited-7-face
+  '((t :inherit font-lock-type-face :bold nil :italic t))
+  "Face for cited message parts (level 7)."
+  :group 'faces)
+
+(defvar mail-cited-regexp
+  "^\\(\\([[:alpha:]]+\\)\\|\\( *\\)\\)\\(\\(>+ ?\\)+\\)")
+
+(defun mail-fontify-cited ()
+  (save-excursion
+    (goto-char (point-min))
+    (when (search-forward-regexp "^\n" nil t) ;; search the first empty line
+      (while (re-search-forward mail-cited-regexp nil t)
+	(let* ((level (string-width (replace-regexp-in-string
+				     "[^>]" "" (match-string 0))))
+	       (face  (unless (zerop level)
+			(intern-soft (format "mail-cited-%d-face" level)))))
+	  (when face
+	    (add-text-properties (line-beginning-position 1)
+				 (line-end-position 1) `(face ,face))))))))
+
 ;; default mail client
-(require 'my-mu4e)
 (require 'my-notmuch)
 
 
