@@ -173,10 +173,6 @@
 ;; hide lines
 (global-set-key (kbd "C-c h") 'hide-lines)
 
-;; anaconda
-(define-key anaconda-mode-map (kbd "M-,") 'anaconda-mode-go-back)
-(define-key anaconda-mode-map (kbd "M-=") 'anaconda-mode-find-assignments)
-
 ;; shell command with editor
 (global-set-key (kbd "M-&") 'with-editor-async-shell-command)
 (global-set-key (kbd "M-!") 'with-editor-shell-command)
@@ -211,6 +207,7 @@
 ;; shell
 (define-key shell-mode-map (kbd "C-c l") 'shell-clear)
 (define-key shell-mode-map (kbd "C-M-m") nil)
+(define-key shell-mode-map (kbd "C-c SPC") nil)
 
 
 (provide 'my-keybindings)
