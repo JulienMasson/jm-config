@@ -112,12 +112,23 @@
   (interactive)
   (notmuch-tree "tag:unread"))
 
-(defun notmuch-thread-remove-unread ()
+(defun notmuch-remove-unread-smart ()
   (interactive)
-  (notmuch-tree-tag-thread '("-unread"))
+  (cond ((region-active-p)
+	 (let ((beg (mark))
+	       (end (point)))
+	   (save-excursion
+	     (goto-char beg)
+	     (while (<= (point) end)
+	       (notmuch-tree-tag '("-unread"))
+	       (notmuch-tree-next-message)))
+	   (deactivate-mark)))
+	((not (notmuch-tree-get-prop :previous-subject))
+	 (notmuch-tree-tag-thread '("-unread")))
+	(t (notmuch-tree-tag '("-unread"))))
   (notmuch-refresh-this-buffer))
 
-(defun notmuch-thread-remove-unread-all ()
+(defun notmuch-remove-unread-all ()
   (interactive)
   (save-excursion
     (goto-char (point-min))
