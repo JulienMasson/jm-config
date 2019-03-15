@@ -135,6 +135,9 @@
   (let ((default-directory dir))
     (shell-command "/usr/bin/ctags -e -R .")))
 
+;; set gnu makefile mode when opening defconfig file
+(add-to-list 'auto-mode-alist '("_defconfig\\'" . makefile-gmake-mode))
+
 ;; device tree mode
 (require 'dts-mode)
 
