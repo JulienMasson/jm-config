@@ -24,7 +24,7 @@
 
 (deftheme jm "Julien Masson color theme")
 
-(defvar jm-colors-alist
+(defvar theme-colors-alist
   '(("background" . "#212121")
     ("black"      . "#000000")
     ("blue"       . "#528fd1")
@@ -38,37 +38,51 @@
     ("green"      . "#6aaf50")
     ("green-dark" . "#6a9550")
     ("orange"     . "#fb8512")
+    ("primary"    . "#fb8512")
     ("purple"     . "#9b55c3")
     ("red"        . "#CC5542")
     ("slate"      . "#2f4f4f")
+    ("white"      . "#ffffff")
     ("yellow"     . "#baba36")))
 
-(defmacro jm-with-color-variables (&rest body)
+(defmacro theme-colors-with (&rest body)
   (declare (indent 0))
   `(let ((class '((class color) (min-colors 89)))
          ,@(mapcar (lambda (cons)
                      (list (intern (car cons)) (cdr cons)))
-                   jm-colors-alist))
+                   theme-colors-alist))
      ,@body))
 
-(jm-with-color-variables
+(theme-colors-with
   (custom-theme-set-faces
    'jm
-;;;; global
-   `(cursor ((t (:foreground ,foreground :background ,orange))))
+;;;; default
    `(default ((t (:foreground ,foreground :background ,background))))
+
+;;;; status
+   `(success ((t (:foreground ,green :weight bold))))
+   `(warning ((t (:foreground ,orange :weight bold))))
    `(error ((t (:foreground ,red :weight bold))))
+
+;;;; region
+   `(region ((,class (:background ,gray))
+	     (t :inverse-video t)))
+;;;; cursor
+   `(cursor ((t (:foreground ,foreground :background ,primary))))
+
+;;;; border
    `(fringe ((t (:foreground ,foreground :background ,background))))
+   `(vertical-border ((t (:background ,black :foreground ,black))))
+
+;;;; header
    `(header-line ((t (:foreground ,brown :background ,gray-dark
 				  :box (:line-width -1 :style released-button)))))
-   `(link ((t (:foreground ,brown :underline t :weight bold))))
-   `(match ((t (:background ,gray-dark :foreground ,orange :weight bold))))
-   `(minibuffer-prompt ((t (:foreground ,brown :weight bold))))
-   `(region ((,class (:background ,gray))))
-   `(success ((t (:foreground ,green :weight bold))))
+
+;;;; match
+   `(match ((t (:background ,gray-dark :foreground ,primary :weight bold))))
+
+;;;; whitespace
    `(trailing-whitespace ((t (:background ,red))))
-   `(vertical-border ((t (:background ,black :foreground ,black))))
-   `(warning ((t (:foreground ,orange :weight bold))))
 
 ;;;; font lock
    `(font-lock-builtin-face ((t (:foreground ,foreground :weight bold))))
@@ -80,12 +94,18 @@
    `(font-lock-preprocessor-face ((t (:foreground ,blue-dark))))
    `(font-lock-string-face ((t (:foreground ,red))))
    `(font-lock-type-face ((t (:foreground ,blue))))
-   `(font-lock-variable-name-face ((t (:foreground ,orange))))
+   `(font-lock-variable-name-face ((t (:foreground ,primary))))
    `(font-lock-warning-face ((t (:foreground ,yellow :weight bold))))
+
+;;;; minibuffer
+   `(minibuffer-prompt ((t (:inherit font-lock-keyword-face))))
+
+;;;; link
+   `(link ((t (:inherit font-lock-keyword-face :underline t))))
 
 ;;;; mode-line
    `(mode-line ((,class (:foreground ,gray :background ,black
-				     :box (:line-width -1 :style released-button)))
+			 	     :box (:line-width -1 :style released-button)))
 		(t :inverse-video t)))
    `(mode-line-buffer-id ((t (:inherit font-lock-variable-name-face :weight bold))))
    `(mode-line-inactive ((t (:foreground ,gray-light :background ,gray-dark
@@ -99,37 +119,39 @@
 
 ;;;; ido-mode
    `(ido-first-match ((t (:inherit font-lock-variable-name-face :weight bold))))
-   `(ido-incomplete-regex ((t (:foreground ,red))))
+   `(ido-incomplete-regex ((t (:inherit error))))
    `(ido-only-match ((t (:inherit font-lock-comment-face :weight bold))))
    `(ido-subdir ((t (:inherit font-lock-type-face))))
 
 ;;;; show-paren
-   `(show-paren-match ((t (:foreground ,blue :background ,background :weight bold))))
-   `(show-paren-mismatch ((t (:foreground ,red :background ,background :weight bold))))
+   `(show-paren-match ((t (:inherit font-lock-type-face :weight bold))))
+   `(show-paren-mismatch ((t (:inherit error))))
 
 ;;;; isearch
-   `(isearch ((t (:foreground ,yellow :background ,background :weight bold))))
+   `(isearch ((t (:inherit font-lock-warning-face))))
+   `(isearch-fail ((t (:inherit error))))
    `(lazy-highlight ((t (:inherit isearch))))
 
 ;;;; compilation
    `(compilation-info ((t (:inherit font-lock-constant-face :underline t))))
    `(compilation-mode-line-exit ((t (:inherit font-lock-doc-face :weight bold))))
-   `(compilation-mode-line-fail ((t (:foreground ,red :weight bold))))
+   `(compilation-mode-line-fail ((t (:inherit error))))
    `(compilation-mode-line-run ((t (:inherit font-lock-keyword-face))))
 
 ;;;; company
    `(company-preview ((t (:background ,gray))))
-   `(company-preview-common ((t (:inherit company-preview :foreground ,orange))))
+   `(company-preview-common ((t (:inherit company-preview :foreground ,primary))))
    `(company-scrollbar-bg ((t (:inherit company-tooltip))))
    `(company-scrollbar-fg ((t (:inherit company-tooltip-selection))))
-   `(company-tooltip ((t (:background ,gray))))
-   `(company-tooltip-common ((t (:inherit company-tooltip :foreground ,orange))))
-   `(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :foreground ,orange))))
+   `(company-tooltip ((t (:inherit company-preview))))
+   `(company-tooltip-common ((t (:inherit company-tooltip :foreground ,primary))))
+   `(company-tooltip-common-selection ((t (:inherit company-tooltip-selection
+						    :foreground ,primary))))
    `(company-tooltip-selection ((t (:background ,gray-dark))))
 
 ;;;; diff
    `(diff-added ((t (:foreground ,forest :background nil))))
-   `(diff-file-header ((t (:background ,black :bold t))))
+   `(diff-file-header ((t (:background ,black :weight bold))))
    `(diff-header ((t (:background ,black))))
    `(diff-removed ((t (:foreground ,red :background nil))))
 
@@ -149,15 +171,16 @@
 ;;;; cscope
    `(cscope-file-face ((t (:inherit font-lock-constant-face))))
    `(cscope-function-face ((t (:inherit font-lock-type-face))))
-   `(cscope-line-number-face ((t :foreground ,red)))
-   `(cscope-separator-face ((t :bold t :overline t :underline t :foreground ,orange)))
+   `(cscope-line-number-face ((t (:inherit font-lock-string-face))))
+   `(cscope-separator-face ((t (:inherit font-lock-variable-name-face
+					 :weight bold))))
 
 ;;;;; message-mode
    `(message-cited-text ((t (:inherit font-lock-builtin-face))))
    `(message-header-bcc ((t (:inherit font-lock-variable-name-face))))
    `(message-header-cc ((t (:inherit font-lock-variable-name-face))))
    `(message-header-from ((t (:inherit font-lock-variable-name-face))))
-   `(message-header-name ((t (:inherit font-lock-comment-face :bold t))))
+   `(message-header-name ((t (:inherit font-lock-comment-face :weight bold))))
    `(message-header-other ((t (:inherit font-lock-type-face))))
    `(message-header-subject ((t (:inherit font-lock-builtin-face))))
    `(message-header-to ((t (:inherit font-lock-variable-name-face))))
@@ -168,17 +191,17 @@
    `(notmuch-tree-match-date-face ((t (:inherit font-lock-comment-face))))
 
 ;;;; org-mode
-   `(org-agenda-date-today ((t (:foreground "white" :slant italic :weight bold))))
+   `(org-agenda-date-today ((t (:foreground ,white :slant italic :weight bold))))
    `(org-agenda-structure ((t (:inherit font-lock-comment-face))))
    `(org-date ((t (:foreground ,blue :underline t))))
    `(org-done ((t (:bold t :weight bold :foreground ,green-dark))))
-   `(org-level-1 ((t (:foreground ,orange))))
+   `(org-level-1 ((t (:foreground ,primary))))
    `(org-level-2 ((t (:foreground ,forest))))
    `(org-level-3 ((t (:foreground ,blue))))
    `(org-level-4 ((t (:foreground ,yellow))))
    `(org-link ((t (:foreground ,yellow :underline t))))
    `(org-table ((t (:foreground ,green-dark))))
-   `(org-todo ((t (:bold t :foreground ,red :weight bold))))
+   `(org-todo ((t (:inherit font-lock-string-face :weight bold))))
    ))
 
 
