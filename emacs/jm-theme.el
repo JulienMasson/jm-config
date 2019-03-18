@@ -1,4 +1,4 @@
-;;; jm-theme.el --- My Custom Theme from zenburn
+;;; jm-theme.el --- My Custom Theme inspired from Zenburn Theme
 
 ;; Copyright (C) 2019 Julien Masson
 
