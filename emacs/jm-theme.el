@@ -202,7 +202,40 @@
    `(org-link ((t (:foreground ,yellow :underline t))))
    `(org-table ((t (:foreground ,green-dark))))
    `(org-todo ((t (:inherit font-lock-string-face :weight bold))))
+
+;;;;; erc
+   `(erc-action-face ((t (:inherit erc-default-face))))
+   `(erc-bold-face ((t (:weight bold))))
+   `(erc-current-nick-face ((t (:inherit font-lock-type-face :weight bold))))
+   `(erc-dangerous-host-face ((t (:inherit font-lock-warning-face))))
+   `(erc-default-face ((t (:foreground ,foreground))))
+   `(erc-direct-msg-face ((t (:inherit erc-default-face))))
+   `(erc-error-face ((t (:inherit font-lock-warning-face))))
+   `(erc-fool-face ((t (:inherit erc-default-face))))
+   `(erc-highlight-face ((t (:inherit font-lock-keyword-face))))
+   `(erc-input-face ((t (:inherit font-lock-keyword-face))))
+   `(erc-keyword-face ((t (:inherit font-lock-type-face :weight bold))))
+   `(erc-my-nick-face ((t (:inherit font-lock-string-face :weight bold))))
+   `(erc-nick-default-face ((t (:inherit font-lock-keyword-face))))
+   `(erc-nick-msg-face ((t (:inherit erc-default))))
+   `(erc-notice-face ((t (:inherit font-lock-comment-face))))
+   `(erc-pal-face ((t (:inherit font-lock-variable-name-face :weight bold))))
+   `(erc-prompt-face ((t (:inherit font-lock-variable-name-face :weight bold))))
+   `(erc-timestamp-face ((t (:inherit font-lock-doc-face))))
    ))
+
+;; set ansi color
+(theme-colors-with
+  (custom-theme-set-variables
+   'jm
+   `(ansi-color-names-vector [,black
+			      ,red
+			      ,green
+			      ,yellow
+			      ,blue
+			      "magenta3"
+			      "cyan3"
+			      ,foreground])))
 
 
 (provide-theme 'jm)
