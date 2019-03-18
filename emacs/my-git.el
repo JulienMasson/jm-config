@@ -29,6 +29,9 @@
 ;; forge
 (require 'forge)
 
+;; don't show magit popup warning
+(defun magit--magit-popup-warning ())
+
 ;; don’t show any indicators
 (setq magit-section-visibility-indicator nil)
 
