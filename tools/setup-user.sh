@@ -119,6 +119,11 @@ make bootstrap -j$(nproc)
 popd
 popd
 
+# compile emacs modules
+pushd "${JM_CONFIG}"
+git submodule foreach 'if [ -f Makefile ] && [ ! -f Cask ]; then make clean && make -j$(nproc); fi'
+popd
+
 # install rofi theme
 pushd "${JM_SHARE}"
 mkdir -p rofi/themes
