@@ -32,6 +32,9 @@
 ;; don't show magit popup warning
 (defun magit--magit-popup-warning ())
 
+;; displays the window at the bottom of the selected frame
+(setq transient-display-buffer-action '(display-buffer-below-selected))
+
 ;; don’t show any indicators
 (setq magit-section-visibility-indicator nil)
 
