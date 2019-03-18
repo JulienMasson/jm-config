@@ -70,9 +70,6 @@
 [submodule "emacs/modules/markdown-mode"]
 	path = emacs/modules/markdown-mode
 	url = https://github.com/jrblevin/markdown-mode.git
-[submodule "emacs/modules/intel-tools"]
-	path = emacs/modules/intel-tools
-	url = https://massonju@gitlab.com/makohoek/intel-tools.git
 [submodule "emacs/modules/pdf-tools"]
 	path = emacs/modules/pdf-tools
 	url = https://github.com/politza/pdf-tools.git
@@ -136,15 +133,9 @@
 [submodule "emacs/modules/deferred"]
 	path = emacs/modules/deferred
 	url = https://github.com/kiwanami/emacs-deferred.git
-[submodule "emacs/modules/circe"]
-	path = emacs/modules/circe
-	url = https://github.com/jorgenschaefer/circe.git
 [submodule "emacs/modules/oauth2"]
 	path = emacs/modules/oauth2
 	url = https://github.com/emacsmirror/oauth2.git
-[submodule "emacs/modules/slack"]
-	path = emacs/modules/slack
-	url = https://github.com/yuya373/emacs-slack.git
 [submodule "emacs/modules/websocket"]
 	path = emacs/modules/websocket
 	url = https://github.com/ahyatt/emacs-websocket.git
@@ -202,9 +193,6 @@
 [submodule "emacs/modules/wgrep"]
 	path = emacs/modules/wgrep
 	url = https://github.com/mhayashi1120/Emacs-wgrep.git
-[submodule "emacs/modules/magit-popup"]
-	path = emacs/modules/magit-popup
-	url = https://github.com/magit/magit-popup.git
 [submodule "emacs/modules/graphql"]
 	path = emacs/modules/graphql
 	url = https://github.com/vermiculus/graphql.el.git
@@ -238,3 +226,6 @@
 [submodule "emacs/modules/kconfig-mode"]
 	path = emacs/modules/kconfig-mode
 	url = https://github.com/delaanthonio/kconfig-mode.git
+[submodule "emacs/modules/transient"]
+	path = emacs/modules/transient
+	url = https://github.com/magit/transient.git

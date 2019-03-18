@@ -23,7 +23,7 @@
 ;;; Code:
 
 ;; intel lib
-(require 'intel-lib)
+(require 'utils)
 
 ;; global vars
 (defvar dmesg-backends '(("local" . "while true; do sudo dmesg -c; sleep 1; done")

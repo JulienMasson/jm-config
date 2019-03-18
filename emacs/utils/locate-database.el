@@ -24,7 +24,7 @@
 
 ;; required modules
 (require 'dired)
-(require 'intel-lib)
+(require 'utils)
 
 ;; locate database
 (defvar cmd-locate-database
