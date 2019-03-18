@@ -33,6 +33,9 @@
 ;; no Fcc header added
 (setq notmuch-fcc-dirs nil)
 
+;; discourages text/plain in favor of text/html
+(setq notmuch-multipart/alternative-discouraged '("text/plain" "text/html"))
+
 ;; tree result format
 (setq notmuch-tree-result-format `(("date" . "%-14s")
 				   ("authors" . "%-16s")
