@@ -113,8 +113,8 @@
 (defun notmuch-remove-unread-smart ()
   (interactive)
   (cond ((region-active-p)
-	 (let ((beg (mark))
-	       (end (point)))
+	 (let ((beg (region-beginning))
+	       (end (region-end)))
 	   (save-excursion
 	     (goto-char beg)
 	     (while (<= (point) end)
