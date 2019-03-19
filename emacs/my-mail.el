@@ -183,22 +183,22 @@ Julien Masson
 
 ;; fontify cited part of the mail
 (defface mail-cited-1-face
-  '((t :inherit font-lock-builtin-face :bold nil :italic t))
+  '((t :inherit font-lock-preprocessor-face :bold nil :italic t))
   "Face for cited message parts (level 1)."
   :group 'faces)
 
 (defface mail-cited-2-face
-  '((t :inherit font-lock-preprocessor-face :bold nil :italic t))
+  '((t :inherit font-lock-constant-face :bold nil :italic t))
   "Face for cited message parts (level 2)."
   :group 'faces)
 
 (defface mail-cited-3-face
-  '((t :inherit font-lock-variable-name-face :bold nil :italic t))
+  '((t :inherit font-lock-function-name-face :bold nil :italic t))
   "Face for cited message parts (level 3)."
   :group 'faces)
 
 (defface mail-cited-4-face
-  '((t :inherit font-lock-keyword-face :bold nil :italic t))
+  '((t :inherit font-lock-type-face :bold nil :italic t))
   "Face for cited message parts (level 4)."
   :group 'faces)
 
@@ -213,7 +213,7 @@ Julien Masson
   :group 'faces)
 
 (defface mail-cited-7-face
-  '((t :inherit font-lock-type-face :bold nil :italic t))
+  '((t :inherit font-lock-variable-name-face :bold nil :italic t))
   "Face for cited message parts (level 7)."
   :group 'faces)
 
@@ -222,16 +222,17 @@ Julien Masson
 
 (defun mail-fontify-cited ()
   (save-excursion
-    (goto-char (point-min))
-    (when (search-forward-regexp "^\n" nil t) ;; search the first empty line
-      (while (re-search-forward mail-cited-regexp nil t)
-	(let* ((level (string-width (replace-regexp-in-string
-				     "[^>]" "" (match-string 0))))
-	       (face  (unless (zerop level)
-			(intern-soft (format "mail-cited-%d-face" level)))))
-	  (when face
-	    (add-text-properties (line-beginning-position 1)
-				 (line-end-position 1) `(face ,face))))))))
+    (message-goto-body)
+    (while (re-search-forward mail-cited-regexp nil t)
+      (let* ((str (buffer-substring (line-beginning-position)
+				    (point)))
+	     (level (string-width (replace-regexp-in-string
+				   "[^>]" "" str)))
+	     (face  (unless (zerop level)
+		      (intern-soft (format "mail-cited-%d-face" level)))))
+	(when face
+	  (add-text-properties (line-beginning-position)
+			       (line-end-position) `(face ,face)))))))
 
 ;; default mail client
 (require 'my-notmuch)
