@@ -64,6 +64,23 @@
 	  user-list)
     (list to cc)))
 
+(defun get-uboot-address-components (patchs)
+  (let* ((files-str (mapconcat 'identity patchs " "))
+	 (cmd (concat "./scripts/get_maintainer.pl " files-str))
+	 (user-list (split-string
+		     (shell-command-to-string cmd) "\n"))
+	 (to '("u-boot@lists.denx.de"))
+	 cc)
+    (mapc (lambda (user)
+	    (save-match-data
+	      (when (string-match "\\(.*\\) \(\\(.*\\):.*" user)
+		(if (string-equal (match-string 2 user)
+				  "maintainer")
+		    (add-to-list 'cc (match-string 1 user))
+		  (add-to-list 'to (match-string 1 user))))))
+	  user-list)
+    (list to cc)))
+
 (defun kernel-patch-compose-mail (mail-buf patch to cc)
   (with-current-buffer mail-buf
     (erase-buffer)
@@ -173,8 +190,33 @@
       (when (> count 1)
 	(add-hook 'message-header-hook 'get-cover-letter-message-id)))))
 
+(defun uboot-patch-send (&optional version)
+  (interactive)
+  (let* ((default-directory (magit-toplevel))
+	 (remote-head (magit-get-upstream-ref))
+	 (range (format "%s..HEAD" remote-head))
+	 (count (length (magit-git-lines "log" "--oneline" range)))
+	 patchs)
+    (unless (zerop count)
+      (kernel-patch-cleanup-env)
+      (mapc #'delete-file (file-expand-wildcards "*.patch"))
+      (magit-run-git "format-patch" range
+		     (if version (format "-v%d" version))
+		     (if (> count 1) "--cover-letter"))
+      (setq patchs (file-expand-wildcards "*.patch"))
+      (cl-multiple-value-bind (to cc)
+	  (get-uboot-address-components patchs)
+	(setq kernel-mail-buffers (generate-kernel-mails patchs to cc)))
+      (process-kernel-mails)
+      (when (> count 1)
+	(add-hook 'message-header-hook 'get-cover-letter-message-id)))))
+
+(defun uboot-patch-new-version (version)
+  (interactive "nU-Boot Patch version: ")
+  (uboot-patch-send version))
+
 (defun kernel-patch-new-version (version)
-  (interactive "nPatch version: ")
+  (interactive "nKernel Patch version: ")
   (kernel-patch-send version))
 
 
