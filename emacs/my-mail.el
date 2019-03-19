@@ -234,6 +234,20 @@ Julien Masson
 	  (add-text-properties (line-beginning-position)
 			       (line-end-position) `(face ,face)))))))
 
+;; send kernel patchs
+(require 'kernel-patch)
+(setq kernel-patch-user-email "Julien Masson <jmasson@baylibre.com>")
+
+(defun mail-apply-kernel-patch ()
+  ;; diff face
+  (apply-minimal-diff-face-buffer)
+
+  ;; set default smtp settings
+  (setq-local message-sendmail-extra-arguments
+	      '("-a" "baylibre")))
+
+(add-hook 'kernel-patch-compose-hook 'mail-apply-kernel-patch)
+
 ;; default mail client
 (require 'my-notmuch)
 
