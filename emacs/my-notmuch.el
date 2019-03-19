@@ -42,7 +42,7 @@
 				   ((("tree" . "%s")("subject" . "%s")) . "%s")))
 
 ;; message headers
-(setq notmuch-message-headers '("From" "To" "Subject" "Date"))
+(setq notmuch-message-headers '("From" "To" "Cc" "Subject" "Date"))
 
 ;; message tree headers
 (setq notmuch-tree-headers '(("Date" . "%-14s")
