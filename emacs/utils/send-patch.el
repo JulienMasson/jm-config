@@ -177,6 +177,7 @@
   (send-patch-cleanup-env))
 
 (defun send-patch-cleanup-env ()
+  (mapc #'delete-file (file-expand-wildcards "*.patch"))
   (when patch-mail-buffers
     (mapc #'kill-buffer patch-mail-buffers)
     (setq patch-mail-buffers nil))
@@ -216,7 +217,6 @@
 	 patchs)
     (unless (zerop count)
       (send-patch-cleanup-env)
-      (mapc #'delete-file (file-expand-wildcards "*.patch"))
       (magit-run-git "format-patch" range
 		     (if version (format "-v%d" version))
 		     (if (> count 1) "--cover-letter"))
