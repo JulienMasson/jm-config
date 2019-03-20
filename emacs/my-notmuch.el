@@ -284,10 +284,11 @@
   			   :notmuch-search-type 'tree
   			   (format "%-5s %-20s" " " label))
   	    (widget-insert (propertize
-  			    (format "(%d/%d)\n" unread total)
+  			    (format "(%d/%d)" unread total)
   			    'face (if (> unread 0)
   				      'notmuch-unread-count-face
-  				    'notmuch-total-count-face)))))
+  				    'notmuch-total-count-face)))
+	    (widget-insert "\n")))
   	(cdr maildir))
   (widget-insert "\n"))
 
@@ -298,31 +299,31 @@
 
 (defun notmuch-insert-maildir-header ()
   (widget-insert "\n")
-  (widget-insert (propertize "  Accounts\n" 'face 'notmuch-title-face)))
+  (widget-insert (propertize "  Accounts\n" 'face 'notmuch-title-face))
+  (widget-insert "\n"))
+
+(defvar notmuch-custom-queries '(("Starred" . "tag:flagged")))
 
 (defun notmuch-insert-custom-queries()
-  (widget-insert "\n")
-  (let ((label "Starred")
-	(queries '("tag:flagged"))
-	(widget-push-button-prefix "")
-	(widget-push-button-suffix "")
-	unread total)
+  (let ((widget-push-button-prefix "")
+	(widget-push-button-suffix ""))
     (cl-multiple-value-bind (total-list unread-list)
-	(notmuch-get-total-unread queries)
-      (setq total (car total-list))
-      (setq unread (car unread-list))
-      (widget-create 'push-button
-		     :notify #'notmuch-hello-widget-search
-		     :notmuch-search-terms (car queries)
-		     :notmuch-search-oldest-first 'newest-first
-		     :notmuch-search-type 'tree
-		     (format "%-5s %-20s" " " label))
-      (widget-insert (propertize
-		      (format "(%d/%d)\n" unread total)
-		      'face (if (> unread 0)
-				'notmuch-unread-count-face
-			      'notmuch-total-count-face)))
-      (widget-insert "\n"))))
+	(notmuch-get-total-unread (mapcar #'cdr notmuch-custom-queries))
+      (cl-mapc (lambda (custom total unread)
+		 (widget-create 'push-button
+				:notify #'notmuch-hello-widget-search
+				:notmuch-search-terms (cdr custom)
+				:notmuch-search-oldest-first 'newest-first
+				:notmuch-search-type 'tree
+				(format "%-5s %-20s" " " (car custom)))
+		 (widget-insert (propertize
+				 (format "(%d/%d)" unread total)
+				 'face (if (> unread 0)
+					   'notmuch-unread-count-face
+					 'notmuch-total-count-face)))
+		 (widget-insert "\n"))
+	       notmuch-custom-queries total-list unread-list)))
+  (widget-insert "\n"))
 
 (defun notmuch-hello-maildir ()
   (let* ((folders (notmuch-maildir-folders))
