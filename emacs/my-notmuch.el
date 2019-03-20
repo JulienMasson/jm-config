@@ -298,7 +298,31 @@
 
 (defun notmuch-insert-maildir-header ()
   (widget-insert "\n")
-  (widget-insert (propertize "  Accounts\n\n" 'face 'notmuch-title-face)))
+  (widget-insert (propertize "  Accounts\n" 'face 'notmuch-title-face)))
+
+(defun notmuch-insert-custom-queries()
+  (widget-insert "\n")
+  (let ((label "Starred")
+	(queries '("tag:flagged"))
+	(widget-push-button-prefix "")
+	(widget-push-button-suffix "")
+	unread total)
+    (cl-multiple-value-bind (total-list unread-list)
+	(notmuch-get-total-unread queries)
+      (setq total (car total-list))
+      (setq unread (car unread-list))
+      (widget-create 'push-button
+		     :notify #'notmuch-hello-widget-search
+		     :notmuch-search-terms (car queries)
+		     :notmuch-search-oldest-first 'newest-first
+		     :notmuch-search-type 'tree
+		     (format "%-5s %-20s" " " label))
+      (widget-insert (propertize
+		      (format "(%d/%d)\n" unread total)
+		      'face (if (> unread 0)
+				'notmuch-unread-count-face
+			      'notmuch-total-count-face)))
+      (widget-insert "\n"))))
 
 (defun notmuch-hello-maildir ()
   (let* ((folders (notmuch-maildir-folders))
@@ -306,6 +330,7 @@
 	 (data-assoc (notmuch-create-data-assoc data-list)))
     (setq notmuch-maildir-data-cached data-assoc)
     (notmuch-insert-maildir-header)
+    (notmuch-insert-custom-queries)
     (mapc #'notmuch-insert-maildir data-assoc)))
 
 (setq notmuch-hello-sections (list #'notmuch-hello-maildir))
