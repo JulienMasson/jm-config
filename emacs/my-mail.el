@@ -235,10 +235,10 @@ Julien Masson
 			       (line-end-position) `(face ,face)))))))
 
 ;; send kernel patchs
-(require 'kernel-patch)
-(setq kernel-patch-user-email "Julien Masson <jmasson@baylibre.com>")
+(require 'send-patch)
+(setq send-patch-user-email "Julien Masson <jmasson@baylibre.com>")
 
-(defun mail-apply-kernel-patch ()
+(defun mail-apply-send-patch ()
   ;; diff face
   (apply-minimal-diff-face-buffer)
 
@@ -246,7 +246,7 @@ Julien Masson
   (setq-local message-sendmail-extra-arguments
 	      '("-a" "baylibre")))
 
-(add-hook 'kernel-patch-compose-hook 'mail-apply-kernel-patch)
+(add-hook 'send-patch-compose-hook 'mail-apply-send-patch)
 
 ;; default mail client
 (require 'my-notmuch)

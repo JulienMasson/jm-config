@@ -1,4 +1,4 @@
-;;; kernel-patch.el --- Kernel Patch Utils
+;;; send-patch.el --- Send Patch Utils
 
 ;; Copyright (C) 2019 Julien Masson
 
@@ -26,19 +26,19 @@
 (require 'message)
 (require 'sendmail)
 
-(defcustom kernel-patch-compose-hook nil
-  "Hook run when composing kernel patch mail."
+(defcustom send-patch-compose-hook nil
+  "Hook run when composing patch mail."
   :group 'message-various
   :type 'hook)
 
-(defcustom kernel-patch-user-email nil
+(defcustom send-patch-user-email nil
   "User Email added in Cc."
   :type 'string
   :safe 'stringp)
 
 ;; internal variables
-(defvar kernel-mail-buffers nil)
-(defvar kernel-cover-letter-message-id nil)
+(defvar patch-mail-buffers nil)
+(defvar cover-letter-message-id nil)
 
 (defun message-position-on (header afters)
   (interactive)
@@ -51,8 +51,8 @@
 	 (user-list (split-string
 		     (shell-command-to-string cmd) "\n"))
 	 (cc `("linux-kernel@vger.kernel.org"
-	       ,(if kernel-patch-user-email
-		    kernel-patch-user-email)))
+	       ,(if send-patch-user-email
+		    send-patch-user-email)))
 	 to)
     (mapc (lambda (user)
 	    (save-match-data
@@ -81,7 +81,7 @@
 	  user-list)
     (list to cc)))
 
-(defun kernel-patch-compose-mail (mail-buf patch to cc)
+(defun send-patch-compose-mail (mail-buf patch to cc)
   (with-current-buffer mail-buf
     (erase-buffer)
 
@@ -107,7 +107,7 @@
     (message-mode)
 
     ;; run compose hook
-    (run-hooks 'kernel-patch-compose-hook)
+    (run-hooks 'send-patch-compose-hook)
 
     ;; set buffer read only and not modified
     (setq buffer-read-only t)
@@ -115,18 +115,18 @@
 
     ;; redefine keybinding `C-c C-k'
     (define-key message-mode-map (kbd "C-c C-k")
-      'kernel-patch-kill-buffer)))
+      'send-patch-kill-buffer)))
 
-(defun generate-kernel-mails (patchs to cc)
+(defun generate-patch-mails (patchs to cc)
   (mapcar (lambda (patch)
 	    (let ((mail-buf (get-buffer-create
 			     (format "<mail-%s>" patch))))
-	      (kernel-patch-compose-mail mail-buf patch to cc)
+	      (send-patch-compose-mail mail-buf patch to cc)
 	      mail-buf))
 	  patchs))
 
-(defun process-kernel-mails ()
-  (let ((mail-buffer (pop kernel-mail-buffers)))
+(defun process-patch-mails ()
+  (let ((mail-buffer (pop patch-mail-buffers)))
     (if mail-buffer
 	(with-current-buffer mail-buffer
 	  (setq buffer-read-only nil)
@@ -140,36 +140,36 @@
 
 	  ;; add Reply-To and References header
 	  ;; if we have a cover letter
-	  (when kernel-cover-letter-message-id
+	  (when cover-letter-message-id
 	    (message-goto-reply-to)
-	    (insert kernel-cover-letter-message-id)
+	    (insert cover-letter-message-id)
 	    (message-position-on "References" "Reply-To")
-	    (insert kernel-cover-letter-message-id))
+	    (insert cover-letter-message-id))
 
 	  (set-buffer-modified-p nil)
 	  (switch-to-buffer mail-buffer))
-      (kernel-patch-cleanup-env))))
+      (send-patch-cleanup-env))))
 
 (defun get-cover-letter-message-id ()
   (let ((message-id (message-fetch-field "Message-ID")))
-    (setq kernel-cover-letter-message-id message-id)
+    (setq cover-letter-message-id message-id)
     (remove-hook 'message-header-hook 'get-cover-letter-message-id)
-    (add-hook 'message-sent-hook 'process-kernel-mails)))
+    (add-hook 'message-sent-hook 'process-patch-mails)))
 
-(defun kernel-patch-kill-buffer ()
+(defun send-patch-kill-buffer ()
   (interactive)
   (kill-current-buffer)
-  (kernel-patch-cleanup-env))
+  (send-patch-cleanup-env))
 
-(defun kernel-patch-cleanup-env ()
-  (when kernel-mail-buffers
-    (mapc #'kill-buffer kernel-mail-buffers)
-    (setq kernel-mail-buffers nil))
-  (setq kernel-cover-letter-message-id nil)
+(defun send-patch-cleanup-env ()
+  (when patch-mail-buffers
+    (mapc #'kill-buffer patch-mail-buffers)
+    (setq patch-mail-buffers nil))
+  (setq cover-letter-message-id nil)
   (remove-hook 'message-header-hook 'get-cover-letter-message-id)
-  (remove-hook 'message-sent-hook 'process-kernel-mails))
+  (remove-hook 'message-sent-hook 'process-patch-mails))
 
-(defun kernel-patch-send (&optional version)
+(defun send-patch (&optional version)
   (interactive)
   (let* ((default-directory (magit-toplevel))
 	 (last-tag (magit-git-string "describe" "--abbrev=0" "--tags"))
@@ -177,7 +177,7 @@
 	 (count (length (magit-git-lines "log" "--oneline" range)))
 	 patchs)
     (unless (zerop count)
-      (kernel-patch-cleanup-env)
+      (send-patch-cleanup-env)
       (mapc #'delete-file (file-expand-wildcards "*.patch"))
       (magit-run-git "format-patch" range
 		     (if version (format "-v%d" version))
@@ -185,8 +185,8 @@
       (setq patchs (file-expand-wildcards "*.patch"))
       (cl-multiple-value-bind (to cc)
 	  (get-kernel-address-components patchs)
-	(setq kernel-mail-buffers (generate-kernel-mails patchs to cc)))
-      (process-kernel-mails)
+	(setq patch-mail-buffers (generate-patch-mails patchs to cc)))
+      (process-patch-mails)
       (when (> count 1)
 	(add-hook 'message-header-hook 'get-cover-letter-message-id)))))
 
@@ -198,7 +198,7 @@
 	 (count (length (magit-git-lines "log" "--oneline" range)))
 	 patchs)
     (unless (zerop count)
-      (kernel-patch-cleanup-env)
+      (send-patch-cleanup-env)
       (mapc #'delete-file (file-expand-wildcards "*.patch"))
       (magit-run-git "format-patch" range
 		     (if version (format "-v%d" version))
@@ -206,8 +206,8 @@
       (setq patchs (file-expand-wildcards "*.patch"))
       (cl-multiple-value-bind (to cc)
 	  (get-uboot-address-components patchs)
-	(setq kernel-mail-buffers (generate-kernel-mails patchs to cc)))
-      (process-kernel-mails)
+	(setq patch-mail-buffers (generate-patch-mails patchs to cc)))
+      (process-patch-mails)
       (when (> count 1)
 	(add-hook 'message-header-hook 'get-cover-letter-message-id)))))
 
@@ -215,9 +215,9 @@
   (interactive "nU-Boot Patch version: ")
   (uboot-patch-send version))
 
-(defun kernel-patch-new-version (version)
-  (interactive "nKernel Patch version: ")
-  (kernel-patch-send version))
+(defun send-patch-new-version (version)
+  (interactive "nSend Patch version: ")
+  (send-patch version))
 
 
-(provide 'kernel-patch)
+(provide 'send-patch)
