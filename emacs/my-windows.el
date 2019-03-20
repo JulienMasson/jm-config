@@ -104,7 +104,7 @@
   (highlight-focus:check))
 
 ;; load jm theme
-(add-to-list 'custom-theme-load-path "~/jm-config/emacs")
+(add-to-list 'custom-theme-load-path my-emacs-root-path)
 (load-theme 'jm t)
 
 ;; change background color on focus window

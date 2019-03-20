@@ -1,4 +1,4 @@
-;;; my-config.el --- Starting Point of Dependencies tree
+;;; init.el --- Emacs Initialization File
 
 ;; Copyright (C) 2019 Julien Masson
 
@@ -22,6 +22,14 @@
 
 ;;; Code:
 
+;; my emacs root path
+(defvar my-emacs-root-path (file-name-directory load-file-name))
+
+;; add subdirs of emacs root path in load path
+(add-to-list 'load-path my-emacs-root-path)
+(let ((default-directory my-emacs-root-path))
+  (normal-top-level-add-subdirs-to-load-path))
+
 ;; windows config
 (require 'my-windows)
 
@@ -33,6 +41,3 @@
 
 ;; jm private
 (require 'jm-private)
-
-
-(provide 'my-config)
