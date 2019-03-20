@@ -234,7 +234,7 @@ Julien Masson
 	  (add-text-properties (line-beginning-position)
 			       (line-end-position) `(face ,face)))))))
 
-;; send kernel patchs
+;; send patch
 (require 'send-patch)
 (setq send-patch-user-email "Julien Masson <jmasson@baylibre.com>")
 
@@ -247,6 +247,16 @@ Julien Masson
 	      '("-a" "baylibre")))
 
 (add-hook 'send-patch-compose-hook 'mail-apply-send-patch)
+
+(send-patch-register-backend :name "Kernel"
+			     :url "git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"
+			     :get-range 'send-patch-get-range-from-last-tag
+			     :get-address 'get-address-kernel)
+
+(send-patch-register-backend :name "U-Boot"
+			     :url "git://git.denx.de/u-boot.git"
+			     :get-range 'send-patch-get-range-from-remote-head
+			     :get-address 'get-address-uboot)
 
 ;; default mail client
 (require 'my-notmuch)
