@@ -220,20 +220,20 @@
 	(push (string-to-number (buffer-substring (point) (point-at-eol)))
 	      unread-list)
 	(forward-line 1)))
-    (list total-list unread-list)))
+    (list (nreverse total-list) (nreverse unread-list))))
 
 (defun notmuch-maildir-get-data (folders)
   (let ((queries (mapcar (lambda (folder)
 			   (format "folder:\"%s\"" folder))
 			 folders))
 	data)
-  (cl-multiple-value-bind (total-list unread-list)
-      (notmuch-get-total-unread queries)
-    ;; set read/unread
-    (cl-mapc (lambda (folder total unread)
-	       (add-to-list 'data `(:folder ,folder :unread ,unread :total ,total) t))
-	     folders (nreverse total-list) (nreverse unread-list))
-    data)))
+    (cl-multiple-value-bind (total-list unread-list)
+	(notmuch-get-total-unread queries)
+      ;; set read/unread
+      (cl-mapc (lambda (folder total unread)
+		 (add-to-list 'data `(:folder ,folder :unread ,unread :total ,total) t))
+	       folders total-list unread-list)
+      data)))
 
 (defun notmuch-create-data-assoc (data-list)
   (let (maildir-assoc)
