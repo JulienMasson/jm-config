@@ -248,7 +248,8 @@
 ;; add Interactive backend by default
 (defun send-patch-prompt-range ()
   (let* ((assoc-range '(("Remote Head" . send-patch-get-range-from-remote-head)
-			("Last Tag" . send-patch-get-range-from-last-tag)))
+			("Last Tag" . send-patch-get-range-from-last-tag)
+			("Range" . (lambda () (read-string "Range: ")))))
 	 (choice (completing-read "From: " (mapcar #'car assoc-range))))
     (funcall (assoc-default choice assoc-range))))
 
