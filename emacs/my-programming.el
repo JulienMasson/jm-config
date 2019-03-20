@@ -84,7 +84,7 @@
 ;; company mode
 (require 'company)
 (setq company-backends nil)
-(add-hook 'after-init-hook 'global-company-mode)
+(global-company-mode)
 
 ;; don't message in echo area
 (defun company-echo-show (&optional getter))
@@ -93,7 +93,7 @@
 (require 'company-capf)
 (add-to-list 'company-backends 'company-capf)
 
-;; ;; files company
+;; files company
 (require 'company-files)
 (add-to-list 'company-backends 'company-files)
 
