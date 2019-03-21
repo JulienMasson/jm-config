@@ -31,11 +31,6 @@
   :group 'message-various
   :type 'hook)
 
-(defcustom send-patch-user-email nil
-  "User Email added in Cc."
-  :type 'string
-  :safe 'stringp)
-
 ;; internal variables
 (defvar patch-mail-buffers nil)
 (defvar cover-letter-message-id nil)
@@ -57,42 +52,6 @@
 
 (defun send-patch-get-range-from-remote-head ()
   (format "%s..HEAD" (magit-get-upstream-ref)))
-
-(defun get-address-kernel (patchs)
-  (let* ((files-str (mapconcat 'identity patchs " "))
-	 (cmd (concat "./scripts/get_maintainer.pl " files-str))
-	 (user-list (split-string
-		     (shell-command-to-string cmd) "\n"))
-	 (cc `("linux-kernel@vger.kernel.org"
-	       ,(if send-patch-user-email
-		    send-patch-user-email)))
-	 to)
-    (mapc (lambda (user)
-	    (save-match-data
-	      (when (string-match "\\(.*\\) \(\\(.*\\):.*" user)
-		(if (string-equal (match-string 2 user)
-				  "maintainer")
-		    (add-to-list 'to (match-string 1 user))
-		  (add-to-list 'cc (match-string 1 user))))))
-	  user-list)
-    (list to cc)))
-
-(defun get-address-uboot (patchs)
-  (let* ((files-str (mapconcat 'identity patchs " "))
-	 (cmd (concat "./scripts/get_maintainer.pl " files-str))
-	 (user-list (split-string
-		     (shell-command-to-string cmd) "\n"))
-	 (to '("u-boot@lists.denx.de"))
-	 cc)
-    (mapc (lambda (user)
-	    (save-match-data
-	      (when (string-match "\\(.*\\) \(\\(.*\\):.*" user)
-		(if (string-equal (match-string 2 user)
-				  "maintainer")
-		    (add-to-list 'cc (match-string 1 user))
-		  (add-to-list 'to (match-string 1 user))))))
-	  user-list)
-    (list to cc)))
 
 (defun send-patch-compose-mail (mail-buf patch to cc)
   (with-current-buffer mail-buf

@@ -143,10 +143,10 @@
 (define-key notmuch-common-keymap "z" 'notmuch-search)
 (define-key notmuch-show-mode-map "n" 'my-notmuch-show-next-message)
 (define-key notmuch-show-mode-map "p" 'my-notmuch-show-prev-message)
-(define-key notmuch-tree-mode-map "f" 'mail-headers-fold-unfold-all)
+(define-key notmuch-tree-mode-map "f" 'notmuch-tree-toggle-folding-thread-all)
 (define-key notmuch-tree-mode-map "m" 'notmuch-remove-unread-smart)
 (define-key notmuch-tree-mode-map "M" 'notmuch-remove-unread-all)
-(define-key notmuch-tree-mode-map (kbd "TAB") 'mail-headers-fold-unfold-thread)
+(define-key notmuch-tree-mode-map (kbd "TAB") 'notmuch-tree-toggle-folding-thread)
 
 ;; project manager
 (global-set-key (kbd "C-c i s") 'switch-project)

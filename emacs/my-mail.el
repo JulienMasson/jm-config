@@ -90,96 +90,24 @@ Julien Masson
 #+end_signature")
 (org-msg-mode)
 
-;; minimal diff face applied in current mail visited
+;; apply minimal diff face
 (defun apply-minimal-diff-face-buffer ()
-  (cl-flet ((apply-defface (min max face)
-			   (let ((overlay (make-overlay min max)))
-			     (overlay-put overlay 'face face))))
-    (save-excursion
-      (goto-char (point-max))
-      (while (re-search-backward "^diff \-\-git" nil t))
-      (while (not (eobp))
-	(let* ((beg (point))
-	       (end (line-end-position))
-	       (str (buffer-substring-no-properties beg end)))
-	  (cond ((string-match "^\\(---\\|\\+\\+\\+\\)" str)
-		 (apply-defface beg end 'diff-file-header))
-		((string-match "^@@" str)
-		 (apply-defface beg end 'diff-header))
-		((string-match "^\\+" str)
-		 (apply-defface beg end 'diff-added))
-		((string-match "^\\-" str)
-		 (apply-defface beg end 'diff-removed)))
-	  (forward-line))))))
-
-;; fold mail thread
-(require 'hide-lines)
-
-(defun mail-level-at-point ()
-  (let ((fun (get-mail-agent-function "-level-at-point")))
-    (if (symbol-function fun)
-	(funcall fun)
-      (error "`%s` not implemented !" fun))))
-
-(defun mail-range-thread ()
   (save-excursion
-    (cl-flet ((thread-pos (direction)
-			  (while (and (mail-level-at-point)
-				      (> (mail-level-at-point) 0))
-			    (funcall direction))
-			  (point)))
-      (beginning-of-line)
-      (let ((end (point))
-	    (begin (thread-pos 'previous-line)))
-	(next-line)
-	(when (> (mail-level-at-point) 0)
-	  (setq end (- (thread-pos 'forward-line) 1)))
-	(unless (= begin end)
-	  `(,begin ,end))))))
-
-(defun mail-find-overlay-at-point ()
-  (save-excursion
-    (move-end-of-line nil)
-    (seq-find (lambda (overlay)
-		(let ((pos (point))
-		      (end (overlay-end overlay)))
-		  (= pos end)))
-	      hide-lines-invisible-areas)))
-
-(defun mail-unfold-one-thread (overlay)
-  (setq hide-lines-invisible-areas
-	(delete overlay hide-lines-invisible-areas))
-  (delete-overlay overlay))
-
-(defun mail-fold-one-thread ()
-  (save-excursion
-    (let ((range (mail-range-thread)))
-      (when range
-	(cl-multiple-value-bind (begin end)
-	    range
-	  (goto-char begin)
-	  (hide-lines-add-overlay (line-end-position) end)
-	  (overlay-put (mail-find-overlay-at-point)
-		       'before-string
-		       (propertize " [...]" 'face
-				   'font-lock-keyword-face)))))))
-
-(defun mail-headers-fold-unfold-thread ()
-  (interactive)
-  (let ((overlay (mail-find-overlay-at-point)))
-    (if overlay
-	(mail-unfold-one-thread overlay)
-      (mail-fold-one-thread))))
-
-(defun mail-headers-fold-unfold-all ()
-  (interactive)
-  (save-excursion
-    (if hide-lines-invisible-areas
-	(hide-lines-show-all)
-      (goto-char (point-min))
-      (while (< (point) (point-max))
-	(mail-fold-one-thread)
-	(next-line)))))
+    (goto-char (point-max))
+    (while (re-search-backward "^diff \-\-git" nil t))
+    (while (not (eobp))
+      (let* ((start (point))
+	     (end (line-end-position))
+	     (str (buffer-substring-no-properties start end)))
+	(cond ((string-match "^\\(---\\|\\+\\+\\+\\)" str)
+	       (add-text-properties start end `(face diff-file-header)))
+	      ((string-match "^@@" str)
+	       (add-text-properties start end `(face diff-header)))
+	      ((string-match "^\\+" str)
+	       (add-text-properties start end `(face diff-added)))
+	      ((string-match "^\\-" str)
+	       (add-text-properties start end `(face diff-removed))))
+	(forward-line)))))
 
 ;; fontify cited part of the mail
 (defface mail-cited-1-face
@@ -236,27 +164,90 @@ Julien Masson
 
 ;; send patch
 (require 'send-patch)
-(setq send-patch-user-email "Julien Masson <jmasson@baylibre.com>")
 
-(defun mail-apply-send-patch ()
-  ;; diff face
-  (apply-minimal-diff-face-buffer)
+;; apply diff face in send patch buffer
+(add-hook 'send-patch-compose-hook 'apply-minimal-diff-face-buffer)
 
-  ;; set default smtp settings
-  (setq-local message-sendmail-extra-arguments
-	      '("-a" "baylibre")))
+;; auto detect sender account
+(defun mail-get-from-field ()
+  (save-excursion
+    (message-goto-from)
+    (message-beginning-of-line)
+    (buffer-substring (point) (line-end-position))))
 
-(add-hook 'send-patch-compose-hook 'mail-apply-send-patch)
+(defun mail-auto-set-account ()
+  (cl-multiple-value-bind (name mail)
+      (gnus-extract-address-components (mail-get-from-field))
+    (let ((account (seq-find (lambda (account)
+			       (string= mail (cadr (cadr account))))
+			     mail-accounts-alist)))
+      (when account
+	(mail-set-vars (car account))))))
+
+(add-hook 'send-patch-compose-hook 'mail-auto-set-account)
+
+;; register kernel backend for send-patch
+(defun patch-get-from-field (patch)
+  (with-temp-buffer
+    (insert-file-contents patch nil 0 256)
+    (goto-char (point-min))
+    (while (re-search-forward "^From: " nil t))
+    (buffer-substring (point) (line-end-position))))
+
+(defun get-address-kernel (patchs)
+  (let* ((files-str (mapconcat 'identity patchs " "))
+	 (cmd (concat "./scripts/get_maintainer.pl " files-str))
+	 (receivers (split-string
+		     (shell-command-to-string cmd) "\n"))
+	 (user (patch-get-from-field (car patchs)))
+	 (cc `("linux-kernel@vger.kernel.org" ,(if user user)))
+	 to)
+    (mapc (lambda (user)
+	    (save-match-data
+	      (when (string-match "\\(.*\\) \(\\(.*\\):.*" user)
+		(if (string-equal (match-string 2 user)
+				  "maintainer")
+		    (add-to-list 'to (match-string 1 user))
+		  (add-to-list 'cc (match-string 1 user))))))
+	  receivers)
+    (list to cc)))
 
 (send-patch-register-backend :name "Kernel"
 			     :url "git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"
 			     :get-range 'send-patch-get-range-from-last-tag
 			     :get-address 'get-address-kernel)
 
+;; register u-boot backend for send-patch
+(defun get-address-uboot (patchs)
+  (let* ((files-str (mapconcat 'identity patchs " "))
+	 (cmd (concat "./scripts/get_maintainer.pl " files-str))
+	 (receivers (split-string
+		     (shell-command-to-string cmd) "\n"))
+	 (to '("u-boot@lists.denx.de"))
+	 cc)
+    (mapc (lambda (user)
+	    (save-match-data
+	      (when (string-match "\\(.*\\) \(\\(.*\\):.*" user)
+		(if (string-equal (match-string 2 user)
+				  "maintainer")
+		    (add-to-list 'cc (match-string 1 user))
+		  (add-to-list 'to (match-string 1 user))))))
+	  receivers)
+    (list to cc)))
+
 (send-patch-register-backend :name "U-Boot"
 			     :url "git://git.denx.de/u-boot.git"
 			     :get-range 'send-patch-get-range-from-remote-head
 			     :get-address 'get-address-uboot)
+
+;; register notmuch backend for send-patch
+(defun get-address-notmuch (patchs)
+  (list '("notmuch@notmuchmail.org") nil))
+
+(send-patch-register-backend :name "Notmuch"
+			     :url "git://git.notmuchmail.org/git/notmuch"
+			     :get-range 'send-patch-get-range-from-remote-head
+			     :get-address 'get-address-notmuch)
 
 ;; default mail client
 (require 'my-notmuch)
