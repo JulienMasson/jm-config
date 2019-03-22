@@ -80,24 +80,23 @@
 
 (advice-add 'notmuch-mua-mail :filter-args #'notmuch-set-account-vars)
 
-;; refresh management
+;; mbsync
+(require 'mbsync)
+(setq mbsync-verbose 'quiet)
+(setq mbsync-args `("--all" "--config" ,(concat my-private-dotfiles-path ".mbsyncrc")))
+
+;; refresh management with mbsync
 (defvar notmuch-hello-buffer "*notmuch-hello*")
-(defvar notmuch-refresh-cmd "offlineimap")
 (defvar notmuch-refresh-timer nil)
 (defvar notmuch-refresh-every 60)
 
-(defun notmuch-refresh-done (process state)
-  (when (equal state "finished\n")
-    (with-current-buffer notmuch-hello-buffer
-      (notmuch-poll-and-refresh-this-buffer))))
-
-(defun notmuch-refresh ()
-  (let ((process (start-process-shell-command
-		  "notmuch-refresh" nil notmuch-refresh-cmd)))
-    (set-process-sentinel process #'notmuch-refresh-done)))
+(defun notmuch-fetch-done ()
+  (with-current-buffer notmuch-hello-buffer
+    (notmuch-poll-and-refresh-this-buffer)))
+(add-hook 'mbsync-exit-hook #'notmuch-fetch-done)
 
 (defun notmuch-refresh-hook ()
-  (setq notmuch-refresh-timer (run-at-time 1 notmuch-refresh-every 'notmuch-refresh)))
+  (setq notmuch-refresh-timer (run-at-time 1 notmuch-refresh-every 'mbsync)))
 (add-hook 'notmuch-hello-mode-hook #'notmuch-refresh-hook)
 
 (defun notmuch-refresh-cancel ()

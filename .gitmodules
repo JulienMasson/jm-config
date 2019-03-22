@@ -24,10 +24,6 @@
 	url = https://github.com/JulienMasson/status
 	ignore = untracked
 	branch = master
-[submodule "emacs/modules/offlineimap.el"]
-	path = emacs/modules/offlineimap
-	url = https://github.com/jd/offlineimap.el.git
-	ignore = untracked
 [submodule "emacs/modules/log-tools"]
 	path = emacs/modules/log-tools
 	url = https://github.com/JulienMasson/log-tools.git
@@ -229,3 +225,6 @@
 [submodule "emacs/modules/transient"]
 	path = emacs/modules/transient
 	url = https://github.com/magit/transient.git
+[submodule "emacs/modules/mbsync"]
+	path = emacs/modules/mbsync
+	url = https://github.com/dimitri/mbsync-el.git

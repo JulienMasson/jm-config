@@ -25,6 +25,10 @@
 ;; my emacs root path
 (defvar my-emacs-root-path (file-name-directory load-file-name))
 
+;; my private dotfiles path
+(defvar my-private-dotfiles-path (concat my-emacs-root-path
+					 "modules/jm-private/dotfiles/"))
+
 ;; add subdirs of emacs root path in load path
 (add-to-list 'load-path my-emacs-root-path)
 (let ((default-directory my-emacs-root-path))
