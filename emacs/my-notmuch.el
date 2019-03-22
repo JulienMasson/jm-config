@@ -95,8 +95,12 @@
     (notmuch-poll-and-refresh-this-buffer)))
 (add-hook 'mbsync-exit-hook #'notmuch-fetch-done)
 
+(defun notmuch-run-mbsync ()
+  (unless (mbsync-get-proc)
+    (mbsync)))
+
 (defun notmuch-refresh-hook ()
-  (setq notmuch-refresh-timer (run-at-time 1 notmuch-refresh-every 'mbsync)))
+  (setq notmuch-refresh-timer (run-at-time 1 notmuch-refresh-every 'notmuch-run-mbsync)))
 (add-hook 'notmuch-hello-mode-hook #'notmuch-refresh-hook)
 
 (defun notmuch-refresh-cancel ()
