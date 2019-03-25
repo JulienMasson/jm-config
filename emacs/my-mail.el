@@ -57,7 +57,7 @@
 (defvar mail-accounts-alist
   '(("Gmail"
      (user-mail-address "massonju.eseo@gmail.com")
-     (user-full-name "Masson, Julien")
+     (user-full-name "Julien Massson")
      (message-sendmail-extra-arguments ("-a" "perso")))))
 
 (defun mail-set-vars (account)
