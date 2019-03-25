@@ -110,6 +110,31 @@ Julien Masson
 	       (add-face-text-property start end 'diff-removed)))
 	(forward-line)))))
 
+;; apply diff face in message with font-lock keywords
+(defun diff-font-lock-make-header-matcher (regexp)
+  (let ((form `(lambda (limit)
+		 (let (diff-start)
+		   (save-excursion
+		     (goto-char (point-max))
+		     (while (re-search-backward "^diff \-\-git" nil t))
+		     (setq diff-start (point)))
+		   (and (> (point) diff-start)
+			(re-search-forward ,regexp limit t))))))
+    (if (featurep 'bytecomp)
+	(byte-compile form)
+      form)))
+
+(defvar my-diff-font-lock-keywords `((,(diff-font-lock-make-header-matcher "^\\(---\\|\\+\\+\\+\\).*")
+				      (0 'diff-file-header))
+				     (,(diff-font-lock-make-header-matcher "^@@.*")
+				      (0 'diff-header))
+				     (,(diff-font-lock-make-header-matcher "^\\+.*")
+				      (0 'diff-added))
+				     (,(diff-font-lock-make-header-matcher "^\\-.*")
+				      (0 'diff-removed))))
+
+(setq message-font-lock-keywords (append message-font-lock-keywords my-diff-font-lock-keywords))
+
 ;; fontify cited part of the mail
 (defface mail-cited-1-face
   '((t :inherit font-lock-preprocessor-face :bold nil :italic t))
@@ -165,9 +190,6 @@ Julien Masson
 
 ;; send patch
 (require 'send-patch)
-
-;; apply diff face in send patch buffer
-(add-hook 'send-patch-compose-hook 'apply-minimal-diff-face-buffer)
 
 ;; auto detect sender account
 (defun mail-get-from-field ()
