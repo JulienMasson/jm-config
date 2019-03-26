@@ -136,6 +136,11 @@ Julien Masson
 (setq message-font-lock-keywords (append message-font-lock-keywords my-diff-font-lock-keywords))
 
 ;; fontify cited part of the mail
+(defface mail-cited-0-face
+  '((t :inherit font-lock-variable-name-face :bold nil :italic t))
+  "Face for cited message parts (level 0)."
+  :group 'faces)
+
 (defface mail-cited-1-face
   '((t :inherit font-lock-preprocessor-face :bold nil :italic t))
   "Face for cited message parts (level 1)."
@@ -166,11 +171,6 @@ Julien Masson
   "Face for cited message parts (level 6)."
   :group 'faces)
 
-(defface mail-cited-7-face
-  '((t :inherit font-lock-variable-name-face :bold nil :italic t))
-  "Face for cited message parts (level 7)."
-  :group 'faces)
-
 (defvar mail-cited-regexp
   "^\\(\\([[:alpha:]]+\\)\\|\\( *\\)\\)\\(\\(>+ ?\\)+\\)")
 
@@ -180,13 +180,14 @@ Julien Masson
     (while (re-search-forward mail-cited-regexp nil t)
       (let* ((str (buffer-substring (line-beginning-position)
 				    (point)))
-	     (level (string-width (replace-regexp-in-string
-				   "[^>]" "" str)))
-	     (face  (unless (zerop level)
-		      (intern-soft (format "mail-cited-%d-face" level)))))
-	(when face
-	  (add-text-properties (line-beginning-position)
-			       (line-end-position) `(face ,face)))))))
+	     (level (mod (string-width (replace-regexp-in-string
+					"[^>]" "" str)) 7))
+	     (cited-face  (unless (zerop level)
+			    (intern-soft (format "mail-cited-%d-face" level)))))
+	(when cited-face
+	  (add-face-text-property (line-beginning-position)
+				  (line-end-position)
+				  cited-face))))))
 
 ;; send patch
 (require 'send-patch)
