@@ -119,23 +119,25 @@
 	      magit-status-sections-hook)
   "Remove unpushed/unpulled from status section")
 
-(defvar magit-blacklist-revision-sections-hook
-  (remove 'magit-insert-revision-headers magit-revision-sections-hook)
-  "Remove revision header from revision section")
-
 (defun magit-blacklist-filter-hook (hook &rest args)
   (nconc (if (-contains? magit-blacklist-repo (magit-toplevel))
 	     (cond ((member 'magit-status-sections-hook hook)
 		    (cl-replace hook '(magit-blacklist-status-sections-hook)))
 		   ((member 'magit-status-headers-hook hook)
 		    (cl-replace hook '(magit-blacklist-status-headers-hook)))
-		   ((member 'magit-revision-sections-hook hook)
-		    (cl-replace hook '(magit-blacklist-revision-sections-hook)))
 		   (t hook))
 	   hook)
 	 args))
 
 (advice-add 'magit-run-section-hook :filter-args #'magit-blacklist-filter-hook)
+
+(defun magit-blacklist-insert-revision-headers (old-fn &rest args)
+  (if (-contains? magit-blacklist-repo (magit-toplevel))
+      (let ((magit-revision-insert-related-refs nil))
+	(apply old-fn args))
+    (apply old-fn args)))
+
+(advice-add 'magit-insert-revision-headers :around #'magit-blacklist-insert-revision-headers)
 
 ;; set signoff by default
 (setq magit-commit-arguments (quote ("--signoff")))
