@@ -38,7 +38,6 @@
 
 ;; kill commands
 (global-set-key (kbd "C-w") 'kill-word-or-region)
-(global-set-key (kbd "M-w") 'kill-ring-save)
 (global-set-key (kbd "C-M-w") 'kill-sexp)
 (global-set-key (kbd "C-k") 'kill-line)
 (global-set-key (kbd "C-c k") 'kill-buffer-and-window)
@@ -51,6 +50,7 @@
 (global-set-key [C-backspace] 'backward-delete-word)
 
 ;; copy commands
+(global-set-key (kbd "M-w") 'kill-ring-save-or-copy-line)
 (global-set-key (kbd "C-c M-w") 'show-and-copy-buffer-filename)
 
 ;; isearch
@@ -59,6 +59,7 @@
 (define-key isearch-mode-map (kbd "C-M-d") 'isearch-delete-selection)
 (define-key isearch-mode-map (kbd "C-M-w") 'isearch-kill-selection)
 (define-key isearch-mode-map (kbd "C-f") 'isearch-yank-symbol-or-char)
+(define-key isearch-mode-map (kbd "M-w") 'isearch-kill-ring-save)
 
 ;; goto-line
 (global-set-key (kbd "C-c l") 'goto-line)
