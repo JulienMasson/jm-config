@@ -114,7 +114,6 @@
 (defvar magit-blacklist-status-sections-hook
   (seq-filter (lambda (elem)
 		(not (member elem '(magit-insert-unpushed-to-pushremote
-				    magit-insert-unpushed-to-upstream-or-recent
 				    magit-insert-unpulled-from-pushremote
 				    magit-insert-unpulled-from-upstream))))
 	      magit-status-sections-hook)
