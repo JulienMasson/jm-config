@@ -149,7 +149,7 @@
 (advice-add 'magit-branch-or-commit-at-point :around #'magit-blacklist-branch-or-commit-at-point)
 
 ;; set signoff by default
-(setq magit-commit-arguments (quote ("--signoff")))
+(setq transient-values '((magit-commit "--signoff")))
 
 ;; magit push gerrit
 (defun magit-git-push-gerrit (branch target args)
