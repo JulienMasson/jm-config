@@ -152,7 +152,9 @@
 ;; project manager
 (global-set-key (kbd "C-c i s") 'switch-project)
 (global-set-key (kbd "C-c i p") 'project-compile)
-(global-set-key (kbd "C-c f") 'project-find-file-subproject)
+(global-set-key (kbd "C-c i m") 'project-search)
+(global-set-key (kbd "C-c i d") 'project-debug)
+(global-set-key (kbd "C-c f") 'project-find-file)
 
 ;; grep
 (global-set-key (kbd "C-M-g") 'grep-at-point)
