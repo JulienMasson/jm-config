@@ -228,3 +228,6 @@
 [submodule "emacs/modules/mbsync"]
 	path = emacs/modules/mbsync
 	url = https://github.com/dimitri/mbsync-el.git
+[submodule "emacs/modules/surround"]
+	path = emacs/modules/surround
+	url = https://github.com/ganmacs/emacs-surround.git

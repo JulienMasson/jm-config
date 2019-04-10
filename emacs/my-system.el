@@ -295,5 +295,8 @@
   (isearch-done)
   (goto-char isearch-other-end))
 
+;; surround
+(require 'emacs-surround)
+
 
 (provide 'my-system)

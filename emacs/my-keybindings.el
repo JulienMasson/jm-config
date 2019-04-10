@@ -61,6 +61,9 @@
 (define-key isearch-mode-map (kbd "C-f") 'isearch-yank-symbol-or-char)
 (define-key isearch-mode-map (kbd "M-w") 'isearch-kill-ring-save)
 
+;; surround
+(global-set-key (kbd "C-q") 'emacs-surround)
+
 ;; goto-line
 (global-set-key (kbd "C-c l") 'goto-line)
 
