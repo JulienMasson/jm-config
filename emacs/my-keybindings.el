@@ -62,7 +62,7 @@
 (define-key isearch-mode-map (kbd "M-w") 'isearch-kill-ring-save)
 
 ;; surround
-(global-set-key (kbd "C-q") 'emacs-surround)
+(global-set-key (kbd "C-:") 'emacs-surround)
 
 ;; goto-line
 (global-set-key (kbd "C-c l") 'goto-line)
@@ -188,7 +188,6 @@
 (define-key dired-mode-map "h" 'dired-do-hexl-find-file)
 (define-key dired-mode-map (kbd "^")
   (lambda () (interactive) (find-alternate-file "..")))
-(define-key dired-mode-map "h" 'dired-do-hexl-find-file)
 (define-key dired-mode-map "L" 'locate-database)
 (define-key dired-mode-map "U" 'unmark-all-dired-buffer)
 (define-key dired-mode-map "K" 'kill-all-dired-buffer)

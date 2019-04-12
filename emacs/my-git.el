@@ -134,7 +134,7 @@
 (defun magit-blacklist-insert-revision-headers (old-fn &rest args)
   (if (-contains? magit-blacklist-repo (magit-toplevel))
       (let ((magit-revision-insert-related-refs nil))
-	(apply old-fn args))
+  	(apply old-fn args))
     (apply old-fn args)))
 
 (advice-add 'magit-insert-revision-headers :around #'magit-blacklist-insert-revision-headers)
@@ -142,8 +142,8 @@
 (defun magit-blacklist-branch-or-commit-at-point (old-fn &rest args)
   (if (-contains? magit-blacklist-repo (magit-toplevel))
       (let ((magit-buffer-refname (magit-section-case
-				    (commit (oref it value)))))
-	(apply old-fn args))
+  				    (commit (oref it value)))))
+  	(apply old-fn args))
     (apply old-fn args)))
 
 (advice-add 'magit-branch-or-commit-at-point :around #'magit-blacklist-branch-or-commit-at-point)
