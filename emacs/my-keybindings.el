@@ -54,6 +54,8 @@
 (global-set-key (kbd "C-c M-w") 'show-and-copy-buffer-filename)
 
 ;; isearch
+(global-set-key (kbd "C-s") 'isearch-forward-regexp)
+(global-set-key (kbd "C-r") 'isearch-backward-regexp)
 (define-key isearch-mode-map (kbd "C-a") 'isearch-yank-beginning)
 (define-key isearch-mode-map (kbd "C-e") 'isearch-yank-line)
 (define-key isearch-mode-map (kbd "C-M-d") 'isearch-delete-selection)
