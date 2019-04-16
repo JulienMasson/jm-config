@@ -49,14 +49,9 @@
       '((sequence "TODO" "WORKING" "UNMERGED" "|" "DONE")))
 
 ;; org faces
-(defface my-org-working-faces '((t (:foreground "yellow" :weight bold)))
-				    'convenience)
-(defface my-org-unmerged-faces '((t (:foreground "lightblue" :weight bold)))
-				    'convenience)
-(setq org-todo-keyword-faces
-      '(("TODO" . org-warning)
-	("WORKING" . my-org-working-faces)
-	("UNMERGED" . my-org-unmerged-faces)))
+(setq org-todo-keyword-faces '(("TODO" . org-todo)
+			       ("WORKING" . font-lock-warning-face)
+			       ("UNMERGED" . font-lock-type-face)))
 
 ;; Hook after sorting entries
 (add-hook 'org-after-sorting-entries-or-items-hook #'org-set-startup-visibility)
