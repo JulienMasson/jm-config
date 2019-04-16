@@ -41,6 +41,7 @@
     ("primary"    . "#fb8512")
     ("purple"     . "#9b55c3")
     ("red"        . "#CC5542")
+    ("salmon"     . "#ee8262")
     ("slate"      . "#2f4f4f")
     ("white"      . "#ffffff")
     ("yellow"     . "#baba36")))
@@ -65,7 +66,7 @@
    `(error ((t (:foreground ,red :weight bold))))
 
 ;;;; region
-   `(region ((,class (:background ,gray))
+   `(region ((,class (:background ,gray :weight bold))
 	     (t :inverse-video t)))
 ;;;; cursor
    `(cursor ((t (:foreground ,foreground :background ,primary))))
@@ -86,12 +87,16 @@
 
 ;;;; font lock
    `(font-lock-builtin-face ((t (:foreground ,foreground :weight bold))))
+   `(font-lock-comment-delimiter-face ((t (:foreground ,green))))
    `(font-lock-comment-face ((t (:foreground ,green))))
    `(font-lock-constant-face ((t (:foreground ,forest))))
    `(font-lock-doc-face ((t (:foreground ,green-dark))))
    `(font-lock-function-name-face ((t (:foreground ,purple))))
    `(font-lock-keyword-face ((t (:foreground ,brown :weight bold))))
+   `(font-lock-negation-char-face ((t (:foreground ,red))))
    `(font-lock-preprocessor-face ((t (:foreground ,blue-dark))))
+   `(font-lock-regexp-grouping-backslash ((t (:foreground ,green :weight bold))))
+   `(font-lock-regexp-grouping-construct ((t (:foreground ,yellow :weight bold))))
    `(font-lock-string-face ((t (:foreground ,red))))
    `(font-lock-type-face ((t (:foreground ,blue))))
    `(font-lock-variable-name-face ((t (:foreground ,primary))))
@@ -120,7 +125,7 @@
 ;;;; ido-mode
    `(ido-first-match ((t (:inherit font-lock-variable-name-face :weight bold))))
    `(ido-incomplete-regex ((t (:inherit error))))
-   `(ido-only-match ((t (:inherit font-lock-comment-face :weight bold))))
+   `(ido-only-match ((t (:inherit success :weight bold))))
    `(ido-subdir ((t (:inherit font-lock-type-face))))
 
 ;;;; show-paren
@@ -128,9 +133,16 @@
    `(show-paren-mismatch ((t (:inherit error))))
 
 ;;;; isearch
-   `(isearch ((t (:inherit font-lock-warning-face))))
+   `(isearch ((t (:foreground ,salmon :weight bold))))
    `(isearch-fail ((t (:inherit error))))
    `(lazy-highlight ((t (:inherit isearch))))
+
+;;;; visual-regexp
+   `(vr/match-0 ((t (:weight bold :underline t))))
+   `(vr/match-1 ((t (:inherit vr/match-0))))
+   `(vr/group-0 ((t (:foreground ,yellow))))
+   `(vr/group-1 ((t (:foreground ,blue))))
+   `(vr/group-2 ((t (:foreground ,green))))
 
 ;;;; compilation
    `(compilation-info ((t (:inherit font-lock-constant-face :underline t))))
