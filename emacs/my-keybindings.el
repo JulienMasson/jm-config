@@ -36,6 +36,9 @@
 (global-set-key (kbd "C-M-<right>") 'right-sexp)
 (global-set-key (kbd "C-M-<left>") 'left-sexp)
 
+;; return command
+(global-set-key (kbd "C-<return>") 'jump-newline-and-indent)
+
 ;; kill commands
 (global-set-key (kbd "C-w") 'kill-word-or-region)
 (global-set-key (kbd "C-M-w") 'kill-sexp)

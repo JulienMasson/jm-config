@@ -198,6 +198,12 @@
 ;; interactive-align
 (require 'ialign)
 
+;; jump to newline
+(defun jump-newline-and-indent ()
+  (interactive "*")
+  (end-of-line)
+  (newline-and-indent))
+
 ;; right/left symbol
 (defun right-symbol ()
   (interactive)
