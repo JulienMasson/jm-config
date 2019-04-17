@@ -67,7 +67,7 @@
 (define-key isearch-mode-map (kbd "M-w") 'isearch-kill-ring-save)
 
 ;; surround
-(global-set-key (kbd "C-:") 'emacs-surround)
+(global-set-key (kbd "C-;") 'emacs-surround)
 
 ;; goto-line
 (global-set-key (kbd "C-c l") 'goto-line)
@@ -84,16 +84,16 @@
 (global-set-key (kbd "C-c u") 'uncomment-region)
 
 ;; markdown
-(define-key markdown-mode-map (kbd "C-c <left>")  'windmove-left)
-(define-key markdown-mode-map (kbd "C-c <right>") 'windmove-right)
-(define-key markdown-mode-map (kbd "C-c <up>")    'windmove-up)
-(define-key markdown-mode-map (kbd "C-c <down>")  'windmove-down)
+(define-key markdown-mode-map (kbd "C-c <left>")  nil)
+(define-key markdown-mode-map (kbd "C-c <right>") nil)
+(define-key markdown-mode-map (kbd "C-c <up>")    nil)
+(define-key markdown-mode-map (kbd "C-c <down>")  nil)
 
 ;; visual-regexp
-(global-set-key (kbd "M-%") 'vr/query-replace)
+(global-set-key (kbd "C-\\") 'vr/query-replace)
 
 ;; interactive-align
-(global-set-key (kbd "M-@") 'ialign)
+(global-set-key (kbd "C-'") 'ialign)
 
 ;; goto virtual desktops
 (global-set-key (kbd "M-1") (lambda () (interactive) (virtual-desktops-goto 1)))
