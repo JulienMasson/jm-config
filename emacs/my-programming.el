@@ -81,6 +81,10 @@
 ;; ripgrep
 (require 'rg)
 
+;; wgrep
+(require 'wgrep)
+(setq wgrep-auto-save-buffer t)
+
 ;; company mode
 (require 'company)
 (setq company-backends nil)
