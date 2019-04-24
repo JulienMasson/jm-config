@@ -25,6 +25,18 @@
 ;; jump only on error compilation
 (setq compilation-skip-threshold 2)
 
+;; send command to compilation buffer
+(defun compilation-send-command ()
+  (interactive)
+  (if-let ((process (get-buffer-process (current-buffer)))
+	   (cmd (concat (read-string "Command: ") "\n"))
+	   (inhibit-read-only t))
+      (save-excursion
+	(goto-char (process-mark process))
+	(insert-before-markers cmd)
+	(process-send-string process cmd))
+    (error "Process not running")))
+
 ;; ansi color on compilation buffer
 (require 'ansi-color)
 (defun colorize-compilation-buffer ()

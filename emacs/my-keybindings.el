@@ -114,6 +114,7 @@
 (define-key magit-mode-map [remap magit-copy-buffer-revision] 'kill-ring-save)
 
 ;; compilation
+(define-key compilation-mode-map "e" 'compilation-send-command)
 (global-set-key (kbd "C-c SPC") (lambda () (interactive) (with-current-buffer "*compilation*" (recompile))))
 
 ;; open browser
