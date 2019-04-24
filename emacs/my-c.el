@@ -32,6 +32,10 @@
 (setq cscope-display-buffer-args nil)
 (cscope-setup)
 
+;; find cscope executable
+(defun find-cscope-program () (executable-find "cscope"))
+(setq cscope-program 'find-cscope-program)
+
 ;; cscope regenerate files after indexing
 (defvar cscope-files-cmd "find . -name \"*.[chxsS]\" > cscope.files")
 

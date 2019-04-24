@@ -80,6 +80,7 @@
 
 ;; ripgrep
 (require 'rg)
+(defun rg-executable () (executable-find "rg"))
 
 ;; wgrep
 (require 'wgrep)
