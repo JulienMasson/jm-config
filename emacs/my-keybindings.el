@@ -93,6 +93,7 @@
 (global-set-key (kbd "C-\\") 'vr/query-replace)
 
 ;; interactive-align
+(global-set-key (kbd "C-.") 'align)
 (global-set-key (kbd "C-'") 'ialign)
 
 ;; goto virtual desktops
