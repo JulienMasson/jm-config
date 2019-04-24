@@ -27,8 +27,7 @@
 
 ;; expand tramp remote path
 (require 'tramp-sh)
-(add-to-list 'tramp-remote-path "~/bin")
-(add-to-list 'exec-path "~/bin")
+(add-to-list 'tramp-remote-path "~/.local/bin")
 
 ;; auto revert remote files
 (setq auto-revert-remote-files t)
