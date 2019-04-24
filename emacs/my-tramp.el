@@ -29,6 +29,24 @@
 (require 'tramp-sh)
 (add-to-list 'tramp-remote-path "~/.local/bin")
 
+;; support executable-find over tramp
+(defun tramp-executable-find (command)
+  (with-parsed-tramp-file-name default-directory nil
+    (let ((buffer (tramp-get-connection-buffer v))
+	  (cmd (concat "which " command)))
+      (with-current-buffer buffer
+	(tramp-send-command v cmd)
+	(goto-char (point-min))
+	(when (looking-at "^\\(.*\\)")
+	  (match-string 1))))))
+
+(defun tramp-executable-find-around (old-fn &rest args)
+  (if (tramp-tramp-file-p default-directory)
+      (tramp-executable-find (car args))
+    (apply old-fn args)))
+
+(advice-add 'executable-find :around #'tramp-executable-find-around)
+
 ;; auto revert remote files
 (setq auto-revert-remote-files t)
 
