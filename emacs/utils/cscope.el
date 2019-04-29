@@ -25,7 +25,7 @@
 (require 'cscope-request)
 
 (cl-defstruct cscope-data
-  dir desc regexp start)
+  dir desc pattern regexp start)
 
 ;; mode
 (defvar cscope-mode-map
@@ -137,18 +137,20 @@
     (erase-buffer)))
 
 ;; find management
-(defun cscope-parse-line (line regexp)
-  (when (string-match regexp line)
-    (let ((file (substring line (match-beginning 1) (match-end 1)))
-	  (func (substring line (match-beginning 2) (match-end 2)))
-	  (line-nbr (substring line (match-beginning 3) (match-end 3)))
-	  (line-str (substring line (match-beginning 4) (match-end 4))))
-      (cons file `((:func ,func :line-nbr ,line-nbr :line-str ,line-str))))))
+(defun cscope-parse-line (line pattern regexp)
+  (if (functionp regexp)
+      (funcall regexp line pattern)
+    (when (string-match regexp line)
+      (let ((file (substring line (match-beginning 1) (match-end 1)))
+	    (func (substring line (match-beginning 2) (match-end 2)))
+	    (line-nbr (substring line (match-beginning 3) (match-end 3)))
+	    (line-str (substring line (match-beginning 4) (match-end 4))))
+	(cons file `((:func ,func :line-nbr ,line-nbr :line-str ,line-str)))))))
 
-(defun cscope-build-assoc-results (output regexp)
+(defun cscope-build-assoc-results (output pattern regexp)
   (let (results)
     (mapc (lambda (line)
-    	    (when-let ((result (cscope-parse-line line regexp)))
+    	    (when-let ((result (cscope-parse-line line pattern regexp)))
 	      (if-let ((data (assoc-default (car result) results)))
 	      	  (setcdr (assoc (car result) results)
 	      		  (add-to-list 'data (cadr result) t))
@@ -200,7 +202,8 @@
 
 (defun cscope-find-finish (data output)
   (let* ((regexp (cscope-data-regexp data))
-	 (results (cscope-build-assoc-results output regexp)))
+	 (pattern (cscope-data-pattern data))
+	 (results (cscope-build-assoc-results output pattern regexp)))
     (if results
 	(cscope-insert-results results)
       (cscope-insert " --- No matches were found ---\n\n"))
@@ -208,26 +211,27 @@
 			   (- (cscope-get-time-seconds)
 			      (cscope-data-start data))))))
 
-(defun cscope-create-request (dir desc cmd regexp start)
+(defun cscope-create-request (dir desc cmd pattern regexp start)
   (let ((data (make-cscope-data :dir dir
 				:desc desc
+				:pattern pattern
 				:regexp regexp)))
     (make-cscope-request :dir dir :cmd cmd
 			 :start start
 			 :finish 'cscope-find-finish
 			 :data data)))
 
-(defun cscope-find-command (desc cmd regexp)
+(defun cscope-find-command (desc cmd pattern regexp)
   (cscope-check-env)
   (cscope-check-database)
   (let* ((cmd (append (cscope-build-default-option) cmd))
 	 (first-request (list (cscope-create-request
 			       (car cscope-database-list)
-			       desc cmd regexp
+			       desc cmd pattern regexp
 			       'cscope-insert-initial-header)))
 	 (next-requests (mapcar (lambda (dir)
 				  (cscope-create-request
-				   dir desc cmd regexp
+				   dir desc cmd pattern regexp
 				   'cscope-insert-next-header))
 				(cdr cscope-database-list)))
 	 (requests (append first-request next-requests)))
@@ -246,7 +250,7 @@
 		       (propertize symbol 'face 'bold)))
 	 (cmd `("-d" "-L" "-0" ,symbol))
 	 (regexp cscope-default-regexp))
-    (cscope-find-command desc cmd regexp)))
+    (cscope-find-command desc cmd symbol regexp)))
 
 (defun cscope-find-function-definition (symbol)
   (interactive (list (cscope-prompt-for-symbol "Find function definition")))
@@ -254,7 +258,7 @@
 		       (propertize symbol 'face 'bold)))
 	 (cmd `("-d" "-L" "-1" ,symbol))
 	 (regexp cscope-default-regexp))
-    (cscope-find-command desc cmd regexp)))
+    (cscope-find-command desc cmd symbol regexp)))
 
 (defun cscope-find-function-calling (symbol)
   (interactive (list (cscope-prompt-for-symbol "Find function calling")))
@@ -262,7 +266,7 @@
 		       (propertize symbol 'face 'bold)))
 	 (cmd `("-d" "-L" "-3" ,symbol))
 	 (regexp cscope-default-regexp))
-    (cscope-find-command desc cmd regexp)))
+    (cscope-find-command desc cmd symbol regexp)))
 
 (defun cscope-find-text-string (symbol)
   (interactive (list (cscope-prompt-for-symbol "Find text string")))
@@ -270,7 +274,7 @@
 		       (propertize symbol 'face 'bold)))
 	 (cmd `("-d" "-L" "-4" ,symbol))
 	 (regexp cscope-default-regexp))
-    (cscope-find-command desc cmd regexp)))
+    (cscope-find-command desc cmd symbol regexp)))
 
 (defun cscope-find-symbol-assignment (symbol)
   (interactive (list (cscope-prompt-for-symbol "Find symbol assignment")))
@@ -278,7 +282,7 @@
 		       (propertize symbol 'face 'bold)))
 	 (cmd `("-d" "-L" "-9" ,symbol))
 	 (regexp cscope-default-regexp))
-    (cscope-find-command desc cmd regexp)))
+    (cscope-find-command desc cmd symbol regexp)))
 
 ;; database management
 (defun cscope-build-find-cmd ()
