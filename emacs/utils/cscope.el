@@ -252,9 +252,9 @@
 	 (regexp cscope-default-regexp))
     (cscope-find-command desc cmd symbol regexp)))
 
-(defun cscope-find-function-definition (symbol)
-  (interactive (list (cscope-prompt-for-symbol "Find function definition")))
-  (let* ((desc (format "Finding function definition: %s\n"
+(defun cscope-find-global-definition (symbol)
+  (interactive (list (cscope-prompt-for-symbol "Find global definition")))
+  (let* ((desc (format "Finding global definition: %s\n"
 		       (propertize symbol 'face 'bold)))
 	 (cmd `("-d" "-L" "-1" ,symbol))
 	 (regexp cscope-default-regexp))
