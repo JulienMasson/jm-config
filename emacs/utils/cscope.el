@@ -326,7 +326,8 @@
 				       :start 'cscope-insert-initial-header
 				       :finish 'cscope-database-finish
 				       :data data)))
-    (shell-command find-cmd)
+    (unless (file-exists-p cscope-index-file)
+      (shell-command find-cmd))
     (cscope-process-request request)))
 
 (defun cscope-check-database ()
