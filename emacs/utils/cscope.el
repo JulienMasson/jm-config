@@ -284,6 +284,26 @@
 	 (regexp cscope-default-regexp))
     (cscope-find-command desc cmd symbol regexp)))
 
+(defun cscope-struct-regexp-func (line pattern)
+  (when (string-match cscope-default-regexp line)
+    (let ((file (substring line (match-beginning 1) (match-end 1)))
+	  (func (substring line (match-beginning 2) (match-end 2)))
+	  (line-nbr (substring line (match-beginning 3) (match-end 3)))
+	  (line-str (substring line (match-beginning 4) (match-end 4))))
+      (cond ((string-match-p (format "struct %s {" pattern) line)
+	     (cons file `((:func ,func :line-nbr ,line-nbr :line-str ,line-str))))
+	    ((string-match (format "typedef struct \\(.*\\) %s" pattern) line)
+	     (cscope-find-struct-definition (match-string 1 line))
+	     (cons file `((:func ,func :line-nbr ,line-nbr :line-str ,line-str))))))))
+
+(defun cscope-find-struct-definition (symbol)
+  (interactive (list (cscope-prompt-for-symbol "Find struct definition")))
+  (let* ((desc (format "Finding struct definition: %s\n"
+		       (propertize symbol 'face 'bold)))
+	 (cmd `("-d" "-L" "-1" ,symbol))
+	 (regexp 'cscope-struct-regexp-func))
+    (cscope-find-command desc cmd symbol regexp)))
+
 ;; database management
 (defun cscope-build-find-cmd ()
   (concat "find . -name \"*.[chxsS]\" > " cscope-index-file))
