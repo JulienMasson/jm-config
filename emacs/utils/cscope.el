@@ -64,6 +64,10 @@
 	"-i" (eval cscope-index-file)
 	"-f" (eval cscope-database-file)))
 
+(defun cscope-point-max ()
+  (with-current-buffer cscope-buffer-name
+    (point-max)))
+
 (defun cscope-switch-to-buffer (buffer)
   (if (get-buffer-window-list buffer)
       (pop-to-buffer buffer)
@@ -165,32 +169,32 @@
   (mapc (lambda (result)
 	  (let* ((file (car result))
 		 (data (cdr result))
-		 (beg (point-max))
+		 (beg (cscope-point-max))
 		 (dir (cscope-request-dir cscope-current-request)))
 	    ;; insert file
 	    (cscope-insert (propertize (format "*** %s:" file)
 				       'face 'font-lock-constant-face))
-	    (cscope-propertize-line beg (point-max) (concat dir file) nil)
+	    (cscope-propertize-line beg (cscope-point-max) (concat dir file) nil)
 	    (cscope-insert "\n")
 
 	    ;; insert data
 	    (mapc (lambda (elem)
-		    (let ((func (plist-get elem :func))
-			  (line-nbr (plist-get elem :line-nbr))
-			  (line-str (plist-get elem :line-str))
-			  (beg (point-max))
-			  plist)
-		      (cscope-insert
-		       (format "%-35s %s"
-			       (format "%s[%s]"
-				       (propertize func 'face 'font-lock-type-face)
-				       (propertize line-nbr 'face 'font-lock-string-face))
-			       line-str))
-		      (cscope-propertize-line beg (point-max)
-					      (concat dir file)
-					      (string-to-number line-nbr))
-		      (cscope-insert "\n")))
-		  data)
+	    	    (let ((func (plist-get elem :func))
+	    		  (line-nbr (plist-get elem :line-nbr))
+	    		  (line-str (plist-get elem :line-str))
+	    		  (beg (cscope-point-max))
+	    		  plist)
+	    	      (cscope-insert
+	    	       (format "%-35s %s"
+	    		       (format "%s[%s]"
+	    			       (propertize func 'face 'font-lock-type-face)
+	    			       (propertize line-nbr 'face 'font-lock-string-face))
+	    		       line-str))
+	    	      (cscope-propertize-line beg (cscope-point-max)
+	    				      (concat dir file)
+	    				      (string-to-number line-nbr))
+	    	      (cscope-insert "\n")))
+	    	  data)
 	    (cscope-insert "\n")))
 	results))
 
