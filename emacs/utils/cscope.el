@@ -52,6 +52,7 @@
 (defvar cscope-database-file "cscope.out")
 (defvar cscope-default-regexp
   "^\\(.*\\)[ \t]+\\(.*\\)[ \t]+\\([0-9]+\\)[ \t]+\\(.*\\)")
+(defvar cscope-prompt-history nil)
 
 ;; utils
 (defun cscope-abort ()
@@ -250,7 +251,7 @@
     (read-string (concat prompt " ("
 			 (propertize symbol 'face 'success)
 			 "): ")
-		 nil nil symbol)))
+		 nil 'cscope-prompt-history symbol)))
 
 (defun cscope-find-symbol (symbol)
   (interactive (list (cscope-prompt-for-symbol "Find symbol")))
