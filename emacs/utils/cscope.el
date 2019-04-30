@@ -33,9 +33,13 @@
     (define-key map [return] 'cscope-enter)
     (define-key map "c" 'cscope-cancel-current-request)
     (define-key map "C" 'cscope-cancel-all-requests)
-    (define-key map "d" 'cscope-erase-search)
+    (define-key map "d" 'cscope-erase-request)
     (define-key map "D" 'cscope-erase-all)
+    (define-key map "n" 'cscope-next-file)
+    (define-key map "p" 'cscope-previous-file)
     (define-key map "q" 'cscope-quit)
+    (define-key map (kbd "C-n") 'cscope-next-request)
+    (define-key map (kbd "C-p") 'cscope-previous-request)
     map))
 
 (define-derived-mode cscope-mode fundamental-mode
@@ -47,7 +51,7 @@
 
 ;; Internal vars
 (defvar cscope-buffer-name "*cscope*")
-(defvar cscope-result-separator (concat (make-string 80 (string-to-char "=")) "\n"))
+(defvar cscope-result-separator (concat (make-string 80 (string-to-char "="))))
 (defvar cscope-file-entry "***")
 (defvar cscope-index-file "cscope.files")
 (defvar cscope-database-file "cscope.out")
@@ -94,8 +98,8 @@
 	(insert str)))))
 
 (defun cscope-insert-separator ()
-  (cscope-insert (propertize cscope-result-separator 'face
-			     'font-lock-comment-delimiter-face)))
+  (cscope-insert (propertize (concat cscope-result-separator "\n")
+			     'face 'font-lock-comment-delimiter-face)))
 
 (defun cscope-insert-header (dir desc)
   (cscope-insert (format "\n━▶ Default directory: %s\n"
@@ -125,20 +129,45 @@
   (interactive)
   (kill-buffer cscope-buffer-name))
 
-(defun cscope-erase-search ()
+(defun cscope-next-file ()
+  (interactive)
+  (with-current-buffer cscope-buffer-name
+    (end-of-line)
+    (search-forward cscope-file-entry nil t)
+    (beginning-of-line)))
+
+(defun cscope-previous-file ()
+  (interactive)
+  (with-current-buffer cscope-buffer-name
+    (beginning-of-line)
+    (search-backward cscope-file-entry nil t)
+    (beginning-of-line)))
+
+(defun cscope-next-request ()
+  (interactive)
+  (with-current-buffer cscope-buffer-name
+    (end-of-line)
+    (search-forward cscope-result-separator nil t)
+    (beginning-of-line)))
+
+(defun cscope-previous-request ()
+  (interactive)
+  (with-current-buffer cscope-buffer-name
+    (beginning-of-line)
+    (search-backward cscope-result-separator nil t)
+    (beginning-of-line)))
+
+(defun cscope-erase-request ()
   (interactive)
   (save-excursion
     (let ((inhibit-read-only t)
-	  beg end)
-      (setq beg (search-backward cscope-result-separator nil t))
-      (unless beg
-	(setq beg (point-min)))
-      (next-line)
-      (if (not (search-forward cscope-result-separator nil t))
-	  (setq end (point-max))
-	(previous-line)
-	(setq end (point)))
-      (delete-region beg end))))
+	  beg)
+      (cscope-previous-request)
+      (setq beg (point))
+      (cscope-next-request)
+      (if (eq (point) beg)
+	  (delete-region beg (point-max))
+	(delete-region beg (point))))))
 
 (defun cscope-erase-all ()
   (interactive)
