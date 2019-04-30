@@ -28,6 +28,7 @@
   dir
   cmd
   (start 'ignore)
+  (fail 'ignore)
   (finish 'ignore)
   (data nil))
 
@@ -45,16 +46,17 @@
   (if cscope-collect-data
       (delq nil (split-string cscope-collect-data "\n"))))
 
-(defun cscope-process-sentinel (process str)
-  (with-current-buffer (process-buffer process)
-    (when (string= str "finished\n")
-      (funcall (cscope-request-finish cscope-current-request)
-	       (cscope-request-data cscope-current-request)
-	       (cscope-data-list))
-      (setq cscope-current-request nil)
-      (setq cscope-collect-data nil)
-      (when cscope-requests
-	(cscope-process-request (pop cscope-requests))))))
+(defun cscope-process-sentinel (process status)
+  (let ((data (cscope-request-data cscope-current-request))
+	(output (cscope-data-list))
+	(func (if (eq (process-exit-status process) 0)
+		  (cscope-request-finish cscope-current-request)
+		(cscope-request-fail cscope-current-request))))
+    (funcall func output status data)
+    (setq cscope-current-request nil)
+    (setq cscope-collect-data nil)
+    (when cscope-requests
+      (cscope-process-request (pop cscope-requests)))))
 
 (defun cscope-process-filter (process str)
   (setq cscope-collect-data (concat cscope-collect-data str)))

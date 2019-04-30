@@ -78,6 +78,11 @@
     (with-current-buffer (get-buffer-create cscope-buffer-name)
       (cscope-mode))))
 
+(defun cscope-insert-request-fail (output error data)
+  (cscope-insert (concat (propertize "ERROR: " 'face 'error)
+			 error "\n"
+			 (mapconcat 'identity output "\n") "\n")))
+
 ;; buffer insertion
 (defun cscope-insert (str)
   (with-current-buffer cscope-buffer-name
@@ -200,7 +205,7 @@
 	    (cscope-insert "\n")))
 	results))
 
-(defun cscope-find-finish (data output)
+(defun cscope-find-finish (output error data)
   (let* ((regexp (cscope-data-regexp data))
 	 (pattern (cscope-data-pattern data))
 	 (results (cscope-build-assoc-results output pattern regexp)))
@@ -218,6 +223,7 @@
 				:regexp regexp)))
     (make-cscope-request :dir dir :cmd cmd
 			 :start start
+			 :fail 'cscope-insert-request-fail
 			 :finish 'cscope-find-finish
 			 :data data)))
 
@@ -308,7 +314,7 @@
 (defun cscope-build-find-cmd ()
   (concat "find . -name \"*.[chxsS]\" > " cscope-index-file))
 
-(defun cscope-database-finish (data output)
+(defun cscope-database-finish (output error data)
   (add-to-list 'cscope-database-list (cscope-data-dir data) t)
   (cscope-insert (format "Database created in %.2f seconds\n\n"
 			 (- (cscope-get-time-seconds)
@@ -324,6 +330,7 @@
 				 :desc desc))
 	 (request (make-cscope-request :dir dir :cmd cmd
 				       :start 'cscope-insert-initial-header
+				       :fail 'cscope-insert-request-fail
 				       :finish 'cscope-database-finish
 				       :data data)))
     (unless (file-exists-p cscope-index-file)
