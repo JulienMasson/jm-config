@@ -123,8 +123,13 @@
 ;; C source code
 (require 'my-c)
 
-;; python source code
-(require 'my-python)
+;; anaconda mode
+(require 'anaconda-mode)
+(add-hook 'python-mode-hook 'anaconda-mode)
+
+;; anaconda company
+(require 'company-anaconda)
+(add-to-list 'company-backends 'company-anaconda)
 
 ;; manual at point
 (defun man-get-index-list (pattern)
