@@ -61,8 +61,7 @@
   (string-to-number (format-time-string "%s.%3N" (current-time))))
 
 (defun cscope-build-default-option ()
-  (list "-k" "-q"
-	"-i" (eval cscope-index-file)
+  (list "-k" "-i" (eval cscope-index-file)
 	"-f" (eval cscope-database-file)))
 
 (defun cscope-point-max ()
@@ -255,7 +254,7 @@
   (interactive (list (cscope-prompt-for-symbol "Find symbol")))
   (let* ((desc (format "Finding symbol: %s\n"
 		       (propertize symbol 'face 'bold)))
-	 (cmd `("-d" "-L" "-0" ,symbol))
+	 (cmd `("-L" "-0" ,symbol))
 	 (regexp cscope-default-regexp))
     (cscope-find-command desc cmd symbol regexp)))
 
@@ -263,7 +262,7 @@
   (interactive (list (cscope-prompt-for-symbol "Find global definition")))
   (let* ((desc (format "Finding global definition: %s\n"
 		       (propertize symbol 'face 'bold)))
-	 (cmd `("-d" "-L" "-1" ,symbol))
+	 (cmd `("-L" "-1" ,symbol))
 	 (regexp cscope-default-regexp))
     (cscope-find-command desc cmd symbol regexp)))
 
@@ -271,7 +270,7 @@
   (interactive (list (cscope-prompt-for-symbol "Find function calling")))
   (let* ((desc (format "Finding function calling: %s\n"
 		       (propertize symbol 'face 'bold)))
-	 (cmd `("-d" "-L" "-3" ,symbol))
+	 (cmd `("-L" "-3" ,symbol))
 	 (regexp cscope-default-regexp))
     (cscope-find-command desc cmd symbol regexp)))
 
@@ -279,7 +278,7 @@
   (interactive (list (cscope-prompt-for-symbol "Find text string")))
   (let* ((desc (format "Finding text string: %s\n"
 		       (propertize symbol 'face 'bold)))
-	 (cmd `("-d" "-L" "-4" ,symbol))
+	 (cmd `("-L" "-4" ,symbol))
 	 (regexp cscope-default-regexp))
     (cscope-find-command desc cmd symbol regexp)))
 
@@ -287,7 +286,7 @@
   (interactive (list (cscope-prompt-for-symbol "Find symbol assignment")))
   (let* ((desc (format "Finding symbol assignment: %s\n"
 		       (propertize symbol 'face 'bold)))
-	 (cmd `("-d" "-L" "-9" ,symbol))
+	 (cmd `("-L" "-9" ,symbol))
 	 (regexp cscope-default-regexp))
     (cscope-find-command desc cmd symbol regexp)))
 
@@ -307,7 +306,7 @@
   (interactive (list (cscope-prompt-for-symbol "Find struct definition")))
   (let* ((desc (format "Finding struct definition: %s\n"
 		       (propertize symbol 'face 'bold)))
-	 (cmd `("-d" "-L" "-1" ,symbol))
+	 (cmd `("-L" "-1" ,symbol))
 	 (regexp 'cscope-struct-regexp-func))
     (cscope-find-command desc cmd symbol regexp)))
 
