@@ -128,7 +128,9 @@
   (save-excursion
     (let ((inhibit-read-only t)
 	  beg end)
-      (setq beg (search-backward cscope-result-separator))
+      (setq beg (search-backward cscope-result-separator nil t))
+      (unless beg
+	(setq beg (point-min)))
       (next-line)
       (if (not (search-forward cscope-result-separator nil t))
 	  (setq end (point-max))
