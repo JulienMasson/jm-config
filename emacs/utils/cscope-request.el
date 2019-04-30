@@ -72,13 +72,15 @@
     (set-process-filter process 'cscope-process-filter)
     (set-process-sentinel process 'cscope-process-sentinel)))
 
-(defun cscope-cancel-requests ()
+(defun cscope-cancel-current-request ()
   (interactive)
   (when-let ((process (get-buffer-process cscope-request-buffer)))
-    (kill-process process))
+    (kill-process process)))
+
+(defun cscope-cancel-all-requests ()
+  (interactive)
   (setq cscope-requests nil)
-  (setq cscope-current-request nil)
-  (setq cscope-collect-data nil))
+  (cscope-cancel-current-request))
 
 (defun cscope-process-request (request)
   (let ((cmd (cscope-request-cmd request)))

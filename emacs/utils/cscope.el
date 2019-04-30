@@ -31,7 +31,8 @@
 (defvar cscope-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map [return] 'cscope-enter)
-    (define-key map "c" 'cscope-cancel-requests)
+    (define-key map "c" 'cscope-cancel-current-request)
+    (define-key map "C" 'cscope-cancel-all-requests)
     (define-key map "d" 'cscope-erase-search)
     (define-key map "D" 'cscope-erase-all)
     (define-key map "q" 'cscope-quit)
