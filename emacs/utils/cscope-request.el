@@ -46,6 +46,12 @@
   (if cscope-collect-data
       (delq nil (split-string cscope-collect-data "\n"))))
 
+(defun cscope-next-request ()
+  (setq cscope-current-request nil)
+  (setq cscope-collect-data nil)
+  (when cscope-requests
+    (cscope-process-request (pop cscope-requests))))
+
 (defun cscope-process-sentinel (process status)
   (let ((data (cscope-request-data cscope-current-request))
 	(output (cscope-data-list))
@@ -53,24 +59,36 @@
 		  (cscope-request-finish cscope-current-request)
 		(cscope-request-fail cscope-current-request))))
     (funcall func output status data)
-    (setq cscope-current-request nil)
-    (setq cscope-collect-data nil)
-    (when cscope-requests
-      (cscope-process-request (pop cscope-requests)))))
+    (cscope-next-request)))
 
 (defun cscope-process-filter (process str)
   (setq cscope-collect-data (concat cscope-collect-data str)))
 
+(defun cscope-start-process (dir program cmd)
+  (let* ((default-directory dir)
+	 (buffer (get-buffer-create cscope-request-buffer))
+	 (process (apply 'start-file-process "cscope" buffer
+			 program  cmd)))
+    (set-process-filter process 'cscope-process-filter)
+    (set-process-sentinel process 'cscope-process-sentinel)))
+
+(defun cscope-raise-error (status)
+  (let ((data (cscope-request-data cscope-current-request))
+	(func (cscope-request-fail cscope-current-request)))
+    (funcall func nil status data)
+    (cscope-next-request)))
+
 (defun cscope-run-command (request)
   (funcall (cscope-request-start request)
 	   (cscope-request-data request))
-  (let* ((default-directory (cscope-request-dir request))
-	 (cmd (cscope-request-cmd request))
-	 (buffer (get-buffer-create cscope-request-buffer))
-	 (process (apply 'start-file-process "cscope" buffer
-			 (cscope-find-program) cmd)))
-    (set-process-filter process 'cscope-process-filter)
-    (set-process-sentinel process 'cscope-process-sentinel)))
+  (let ((dir (cscope-request-dir request))
+	(program (cscope-find-program))
+	(cmd (cscope-request-cmd request)))
+    (cond ((not (file-exists-p dir))
+	   (cscope-raise-error (concat dir " doesn't exist !")))
+	  ((string= "" program)
+	   (cscope-raise-error (concat "Cannot find: " cscope-program-name)))
+	  (t (cscope-start-process dir program cmd)))))
 
 (defun cscope-cancel-current-request ()
   (interactive)
