@@ -48,6 +48,7 @@
 ;; Internal vars
 (defvar cscope-buffer-name "*cscope*")
 (defvar cscope-result-separator (concat (make-string 80 (string-to-char "=")) "\n"))
+(defvar cscope-file-entry "***")
 (defvar cscope-index-file "cscope.files")
 (defvar cscope-database-file "cscope.out")
 (defvar cscope-default-regexp
@@ -145,6 +146,14 @@
     (erase-buffer)))
 
 ;; find management
+(defun cscope-jump-first-result ()
+  (with-current-buffer cscope-buffer-name
+    (goto-char (point-max))
+    (search-backward cscope-result-separator nil t)
+    (search-forward cscope-file-entry nil t)
+    (next-line)
+    (cscope-enter)))
+
 (defun cscope-parse-line (line pattern regexp)
   (if (functionp regexp)
       (funcall regexp line pattern)
@@ -182,7 +191,7 @@
 		 (beg (cscope-point-max))
 		 (dir (cscope-request-dir cscope-current-request)))
 	    ;; insert file
-	    (cscope-insert (propertize (format "*** %s:" file)
+	    (cscope-insert (propertize (format "%s %s:" cscope-file-entry file)
 				       'face 'font-lock-constant-face))
 	    (cscope-propertize-line beg (cscope-point-max) (concat dir file) nil)
 	    (cscope-insert "\n")
@@ -215,6 +224,8 @@
     (if results
 	(cscope-insert-results results)
       (cscope-insert " --- No matches were found ---\n\n"))
+    (when (eq (length results) 1)
+      (cscope-jump-first-result))
     (cscope-insert (format "Search time = %.2f seconds\n\n"
 			   (- (cscope-get-time-seconds)
 			      (cscope-data-start data))))))
