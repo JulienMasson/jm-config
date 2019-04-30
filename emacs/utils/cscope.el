@@ -22,6 +22,8 @@
 
 ;;; Code:
 
+(require 'subr-x)
+(require 'magit-git)
 (require 'cscope-request)
 
 (cl-defstruct cscope-data
