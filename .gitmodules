@@ -51,9 +51,6 @@
 [submodule "emacs/modules/with-editor"]
 	path = emacs/modules/with-editor
 	url = https://github.com/magit/with-editor.git
-[submodule "emacs/modules/xcscope"]
-	path = emacs/modules/xcscope
-	url = https://github.com/JulienMasson/xcscope.el.git
 [submodule "emacs/modules/visual-regexp"]
 	path = emacs/modules/visual-regexp
 	url = https://github.com/benma/visual-regexp.el.git

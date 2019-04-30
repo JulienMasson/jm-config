@@ -130,14 +130,20 @@
 (global-set-key (kbd "C-c e j") 'erc-chat-jump)
 
 ;; cscope
-(define-key cscope-minor-mode-keymap  "\C-csa" 'cscope-add-cscope-search-list)
-(define-key cscope-minor-mode-keymap  "\C-csr" 'cscope-reset-cscope-search-list)
+(global-set-key (kbd "C-c s s") 'cscope-find-symbol)
+(global-set-key (kbd "C-c s d") 'cscope-find-global-definition)
+(global-set-key (kbd "C-c s c") 'cscope-find-function-calling)
+(global-set-key (kbd "C-c s t") 'cscope-find-text-string)
+(global-set-key (kbd "C-c s =") 'cscope-find-symbol-assignment)
+(global-set-key (kbd "C-c s a") 'cscope-add-database)
+(global-set-key (kbd "C-c s r") 'cscope-reset-database)
+(global-set-key (kbd "C-c s S") 'cscope-find-struct-definition)
+(global-set-key (kbd "C-c s o") 'cscope-generate-from-objects)
+(global-set-key (kbd "C-c s D") 'cscope-dired-directory)
+(global-set-key (kbd "C-c s p") 'cscope-add-database-pycscope)
 
 ;; map TAB to company completion in shell mode
 (define-key shell-mode-map (kbd "TAB") #'company-manual-begin)
-
-;; pycscope
-(define-key cscope-minor-mode-keymap (kbd "C-c s p") 'cscope-pycscope)
 
 ;; manual at point
 (global-set-key (kbd "M-h") 'manual-at-point)

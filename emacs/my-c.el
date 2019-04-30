@@ -26,86 +26,22 @@
 (setq c-default-style '((c-mode . "linux") (other . "gnu")))
 
 ;; cscope
-(require 'xcscope)
-(setq cscope-option-use-inverted-index t)
-(setq cscope-option-kernel-mode t)
-(setq cscope-display-buffer-args nil)
-(cscope-setup)
+(require 'cscope)
+(require 'cscope-utils)
 
-;; find cscope executable
-(defun find-cscope-program () (executable-find "cscope"))
-(setq cscope-program 'find-cscope-program)
-
-;; cscope regenerate files after indexing
-(defvar cscope-files-cmd "find . -name \"*.[chxsS]\" > cscope.files")
-
-(defun cscope-regenerate-cscope-files (top-directory)
-  (let ((default-directory top-directory))
-    (shell-command cscope-files-cmd)))
-(advice-add 'cscope-index-files :after #'cscope-regenerate-cscope-files)
-
-;; cscope search list
-(defvar jm-cscope-search-list nil)
-(defun cscope-add-cscope-search-list (dir)
-  "Add cscope database to search list."
-  (interactive "DAdd database: ")
-  (add-to-list 'jm-cscope-search-list (list dir)))
-
-(defun cscope-reset-cscope-search-list ()
-  "Rest cscope search list"
-  (interactive)
-  (setq jm-cscope-search-list nil))
-
-;; clang company
-(require 'company-clang)
-(add-to-list 'company-backends 'company-clang)
+;; cscope company
+(require 'company-cscope)
+(add-to-list 'company-backends 'company-cscope)
 
 ;; c header company
 (require 'company-c-headers)
 (add-to-list 'company-backends 'company-c-headers)
 
-;; add extra args for clang based on cscope
-(defvar cscope-include-dirs-cached nil)
-
-(defun cscope-generate-include-dirs (dir)
-  (unless (assoc dir cscope-include-dirs-cached)
-    (let* ((default-directory dir)
-	   (search-regex "\\.\\/(.*[i|I]nclude\\/).*h$")
-	   (search-cmd (concat
-			"cat cscope.files |"
-			"perl -ne 'print \"$1\n\" if /"
-			search-regex
-			"/' |"
-			"sort | uniq"))
-	   (output-cmd (split-string (shell-command-to-string
-				      search-cmd)))
-	   (directories (mapcar
-			 (lambda (arg)
-			   (format "-I%s" (untramp-path
-					   (concat dir arg))))
-				output-cmd)))
-      (push (format "-I%s" dir) directories)
-      (add-to-list 'cscope-include-dirs-cached
-		   `(,dir . ,directories))))
-  (assoc-default dir cscope-include-dirs-cached))
-
-(defun extra-args-clang-company ()
-  (when jm-cscope-search-list
-      (setq-local company-clang-arguments
-		  (apply 'append
-			 (mapcar (lambda (arg)
-				   (cscope-generate-include-dirs (car arg)))
-				 jm-cscope-search-list)))))
-
 ;; global setting applied to specific c files
 (defvar c-global-settings-list nil)
 
 (defun apply-c-default-settings ()
-  (setq cscope-option-do-not-update-database nil)
-  (setq cscope-files-cmd "find . -name \"*.[chxsS]\" > cscope.files")
-  (setq magit-log-arguments '("-n256" "--graph" "--decorate"))
-  (when (string= major-mode "c-mode")
-    (extra-args-clang-company)))
+  (setq magit-log-arguments '("-n256" "--graph" "--decorate")))
 
 (defun apply-c-global-settings (&rest _)
   (let* ((filename (expand-file-name default-directory))
@@ -123,11 +59,7 @@
 (advice-add 'select-window :after #'apply-c-global-settings)
 
 (defun kernel-global-settings ()
-  (setq cscope-option-do-not-update-database t)
-  (setq cscope-files-cmd "find . -name \"*.[chxsS]\" > cscope.files")
-  (setq magit-log-arguments '("-n256" "--decorate"))
-  (when (string= major-mode "c-mode")
-    (extra-args-clang-company)))
+  (setq magit-log-arguments '("-n256" "--decorate")))
 
 (defun register-kernel-global-settings (path)
   (add-to-list 'magit-blacklist-repo path)
