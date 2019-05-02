@@ -255,7 +255,8 @@
     (if results
 	(cscope-insert-results results)
       (cscope-insert " --- No matches were found ---\n\n"))
-    (when (eq (length results) 1)
+    (when (and (eq (length results) 1)
+	       (eq (length (cdar results)) 1))
       (cscope-jump-first-result))
     (cscope-insert (format "Search time = %.2f seconds\n\n"
 			   (- (cscope-get-time-seconds)
