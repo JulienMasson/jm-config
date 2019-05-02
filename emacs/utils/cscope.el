@@ -61,7 +61,11 @@
   "^\\(.*\\)[ \t]+\\(.*\\)[ \t]+\\([0-9]+\\)[ \t]+\\(.*\\)")
 (defvar cscope-prompt-history nil)
 
-;; utils
+(defvar cscope-marker-ring-max 32)
+(defvar cscope-marker-ring nil)
+(defvar cscope-marker-index 0)
+
+;; common
 (defun cscope-abort ()
   (signal 'quit t))
 
@@ -93,12 +97,31 @@
 (defun cscope-check-env ()
   (unless (get-buffer cscope-buffer-name)
     (with-current-buffer (get-buffer-create cscope-buffer-name)
-      (cscope-mode))))
+      (cscope-mode))
+    (setq cscope-marker-ring (make-ring cscope-marker-ring-max))))
 
-(defun cscope-insert-request-fail (output error data)
-  (cscope-insert (concat (propertize "ERROR: " 'face 'error)
-			 error "\n"
-			 (mapconcat 'identity output "\n") "\n")))
+(defun cscope-save-marker ()
+  (setq cscope-marker-index 0)
+  (let ((marker (point-marker)))
+    (when-let ((index (ring-member cscope-marker-ring marker)))
+	(ring-remove cscope-marker-ring index))
+    (ring-insert cscope-marker-ring marker)))
+
+(defun cscope-get-next-marker ()
+  (unless (ring-empty-p cscope-marker-ring)
+    (let ((index cscope-marker-index)
+	  (length (ring-length cscope-marker-ring)))
+      (setq cscope-marker-index (mod (+ index 1) length))
+      (ring-ref cscope-marker-ring cscope-marker-index))))
+
+(defun cscope-pop-mark ()
+  (interactive)
+  (when-let* ((marker (cscope-get-next-marker))
+	      (buffer (marker-buffer marker))
+	      (pos (marker-position marker)))
+    (when (get-buffer buffer)
+      (cscope-switch-to-buffer buffer)
+      (goto-char pos))))
 
 ;; buffer insertion
 (defun cscope-insert (str)
@@ -127,14 +150,25 @@
   (cscope-switch-to-buffer cscope-buffer-name)
   (goto-char (point-max)))
 
+(defun cscope-insert-request-fail (output error data)
+  (cscope-insert (concat (propertize "ERROR: " 'face 'error)
+			 error "\n"
+			 (mapconcat 'identity output "\n") "\n")))
+
 ;; mode functions
 (defun cscope-enter ()
   (interactive)
   (let ((file (get-text-property (point) 'cscope-file))
+	(pattern (get-text-property (point) 'cscope-pattern))
 	(line (get-text-property (point) 'cscope-line)))
     (when file
       (cscope-switch-to-buffer (find-file-noselect file))
-      (if line (goto-line line)))))
+      (when line
+	(goto-line line)
+	(when pattern
+	  (end-of-line)
+	  (search-backward pattern nil t)))
+      (cscope-save-marker))))
 
 (defun cscope-quit ()
   (interactive)
