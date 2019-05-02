@@ -36,16 +36,20 @@
     (define-key map "c" 'cscope-cancel-current-request)
     (define-key map "C" 'cscope-cancel-all-requests)
     (define-key map "d" 'cscope-erase-request)
+    (define-key map "f" 'cscope-toggle-fast-symbol)
     (define-key map "D" 'cscope-erase-all)
     (define-key map "n" 'cscope-next-file)
     (define-key map "p" 'cscope-previous-file)
     (define-key map "q" 'cscope-quit)
+    (define-key map "u" 'cscope-toggle-auto-update)
+    (define-key map "U" 'cscope-recreate-database)
     (define-key map (kbd "C-n") 'cscope-next-request)
     (define-key map (kbd "C-p") 'cscope-previous-request)
     map))
 
 (define-derived-mode cscope-mode fundamental-mode
   "cscope"
+  (cscope-update-header-line)
   (toggle-read-only t))
 
 ;; External vars
@@ -57,6 +61,7 @@
 (defvar cscope-file-entry "***")
 (defvar cscope-index-file "cscope.files")
 (defvar cscope-database-file "cscope.out")
+(defvar cscope-database-fast-symbol-files '("cscope.out.in" "cscope.out.po"))
 (defvar cscope-default-regexp
   "^\\(.*\\)[ \t]+\\(.*\\)[ \t]+\\([0-9]+\\)[ \t]+\\(.*\\)")
 (defvar cscope-prompt-history nil)
@@ -64,6 +69,9 @@
 (defvar cscope-marker-ring-max 32)
 (defvar cscope-marker-ring nil)
 (defvar cscope-marker-index 0)
+
+(defvar cscope-auto-update t)
+(defvar cscope-fast-symbol nil)
 
 ;; common
 (defun cscope-abort ()
@@ -81,9 +89,21 @@
 (defun cscope-get-time-seconds ()
   (string-to-number (format-time-string "%s.%3N" (current-time))))
 
+(defun cscope-update-header-line ()
+  (let* ((fmt "%s: %s  ")
+	 (on (propertize "on" 'face 'success))
+	 (off (propertize "off" 'face 'error))
+	 (update (propertize "[auto-update]" 'face 'bold))
+	 (update-value (if cscope-auto-update on off))
+	 (fast (propertize "[fast-symbol]" 'face 'bold))
+	 (fast-value (if cscope-fast-symbol on off)))
+    (setq header-line-format (concat (format fmt update update-value)
+				     (format fmt fast fast-value)))))
+
 (defun cscope-build-default-option ()
-  (list "-k" "-i" (eval cscope-index-file)
-	"-f" (eval cscope-database-file)))
+  (append (list "-k" "-i" (eval cscope-index-file)
+		"-f" (eval cscope-database-file))
+	  (if cscope-fast-symbol '("-q"))))
 
 (defun cscope-point-max ()
   (with-current-buffer cscope-buffer-name
@@ -219,7 +239,27 @@
   (let ((inhibit-read-only t))
     (erase-buffer)))
 
+(defun cscope-toggle-auto-update ()
+  (interactive)
+  (setq cscope-auto-update (not cscope-auto-update))
+  (cscope-update-header-line))
+
+(defun cscope-toggle-fast-symbol ()
+  (interactive)
+  (setq cscope-fast-symbol (not cscope-fast-symbol))
+  (mapc #'cscope-database-remove-files cscope-database-list)
+  (mapc #'cscope-create-database cscope-database-list)
+  (cscope-update-header-line))
+
+(defun cscope-recreate-database ()
+  (interactive)
+  (mapc #'cscope-create-database cscope-database-list))
+
 ;; find management
+(defun cscope-find-default-option ()
+  (append (cscope-build-default-option)
+	  (unless cscope-auto-update '("-d"))))
+
 (defun cscope-jump-first-result ()
   (with-current-buffer cscope-buffer-name
     (goto-char (point-max))
@@ -269,12 +309,11 @@
     (cscope-insert (format fmt-line (format fmt-header func-prop nbr-prop)
 			   str-prop))))
 
-(defun cscope-insert-results (pattern results)
+(defun cscope-insert-results (dir pattern results)
   (mapc (lambda (result)
 	  (let* ((file (car result))
 		 (data (cdr result))
-		 (beg (cscope-point-max))
-		 (dir (cscope-request-dir cscope-current-request)))
+		 (beg (cscope-point-max)))
 	    ;; insert file
 	    (cscope-insert (propertize (format "%s %s:" cscope-file-entry file)
 				       'face 'font-lock-constant-face))
@@ -300,10 +339,11 @@
 
 (defun cscope-find-finish (output error data)
   (let* ((regexp (cscope-data-regexp data))
+	 (dir (cscope-data-dir data))
 	 (pattern (cscope-data-pattern data))
 	 (results (cscope-build-assoc-results output pattern regexp)))
     (if results
-	(cscope-insert-results pattern results)
+	(cscope-insert-results dir pattern results)
       (cscope-insert " --- No matches were found ---\n\n"))
     (when (and (eq (length results) 1)
 	       (eq (length (cdar results)) 1))
@@ -326,7 +366,7 @@
 (defun cscope-find-command (desc cmd pattern regexp)
   (cscope-check-env)
   (cscope-check-database)
-  (let* ((cmd (append (cscope-build-default-option) cmd))
+  (let* ((cmd (append (cscope-find-default-option) cmd))
 	 (first-request (list (cscope-create-request
 			       (car cscope-database-list)
 			       desc cmd pattern regexp
@@ -407,8 +447,19 @@
     (cscope-find-command desc cmd symbol regexp)))
 
 ;; database management
+(defun cscope-database-default-option ()
+  (append (cscope-build-default-option) '("-b")))
+
 (defun cscope-build-find-cmd ()
   (concat "find . -name \"*.[chxsS]\" > " cscope-index-file))
+
+(defun cscope-database-remove-files (dir)
+  (mapc (lambda (file)
+	  (let ((default-directory dir))
+	    (if (file-exists-p file)
+		(delete-file file))))
+	(append cscope-database-fast-symbol-files
+		(list (eval cscope-database-file)))))
 
 (defun cscope-database-finish (output error data)
   (add-to-list 'cscope-database-list (cscope-data-dir data) t)
@@ -420,8 +471,11 @@
   (cscope-check-env)
   (let* ((default-directory dir)
 	 (find-cmd (cscope-build-find-cmd))
-	 (cmd (append (cscope-build-default-option) '("-b")))
-	 (desc "Creating database cscope ...\n")
+	 (cmd (cscope-database-default-option))
+	 (desc (concat "Creating "
+		       (if cscope-fast-symbol
+			   (propertize "Fast Symbol " 'face 'bold))
+		       "cscope database ...\n"))
 	 (data (make-cscope-data :dir dir
 				 :desc desc))
 	 (request (make-cscope-request :dir dir :cmd cmd
