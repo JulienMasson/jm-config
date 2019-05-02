@@ -92,8 +92,9 @@
 
 (defun cscope-cancel-current-request ()
   (interactive)
-  (when-let ((process (get-buffer-process cscope-request-buffer)))
-    (kill-process process)))
+  (if-let ((process (get-buffer-process cscope-request-buffer)))
+      (kill-process process)
+    (setq cscope-current-request nil)))
 
 (defun cscope-cancel-all-requests ()
   (interactive)
