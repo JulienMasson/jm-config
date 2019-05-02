@@ -65,6 +65,15 @@
 (defun cscope-abort ()
   (signal 'quit t))
 
+(defun cscope-bold-string (str pattern)
+  (if (string-match pattern str)
+      (let ((beg (match-beginning 0))
+	    (end (match-end 0)))
+	(concat (substring str 0 beg)
+		(propertize pattern 'face 'bold)
+		(substring str end (length str))))
+    str))
+
 (defun cscope-get-time-seconds ()
   (string-to-number (format-time-string "%s.%3N" (current-time))))
 
@@ -206,16 +215,27 @@
 	  output)
     results))
 
-(defun cscope-propertize-line (beg end file line)
+(defun cscope-propertize-line (beg end file &optional pattern line)
   (with-current-buffer cscope-buffer-name
     (let ((inhibit-read-only t)
 	  plist)
       (setq plist (plist-put plist 'cscope-file file))
+      (when pattern
+	(setq plist (plist-put plist 'cscope-pattern pattern)))
       (when line
 	(setq plist (plist-put plist 'cscope-line line)))
       (add-text-properties beg (point-max) plist))))
 
-(defun cscope-insert-results (results)
+(defun cscope-insert-line-entry (pattern func nbr str)
+  (let ((func-prop (propertize func 'face 'font-lock-type-face))
+	(nbr-prop (propertize nbr 'face 'font-lock-string-face))
+	(str-prop (cscope-bold-string str pattern))
+	(fmt-line "%-35s %s")
+	(fmt-header "%s[%s]"))
+    (cscope-insert (format fmt-line (format fmt-header func-prop nbr-prop)
+			   str-prop))))
+
+(defun cscope-insert-results (pattern results)
   (mapc (lambda (result)
 	  (let* ((file (car result))
 		 (data (cdr result))
@@ -224,7 +244,7 @@
 	    ;; insert file
 	    (cscope-insert (propertize (format "%s %s:" cscope-file-entry file)
 				       'face 'font-lock-constant-face))
-	    (cscope-propertize-line beg (cscope-point-max) (concat dir file) nil)
+	    (cscope-propertize-line beg (cscope-point-max) (concat dir file))
 	    (cscope-insert "\n")
 
 	    ;; insert data
@@ -234,14 +254,10 @@
 	    		  (line-str (plist-get elem :line-str))
 	    		  (beg (cscope-point-max))
 	    		  plist)
-	    	      (cscope-insert
-	    	       (format "%-35s %s"
-	    		       (format "%s[%s]"
-	    			       (propertize func 'face 'font-lock-type-face)
-	    			       (propertize line-nbr 'face 'font-lock-string-face))
-	    		       line-str))
+		      (cscope-insert-line-entry pattern func line-nbr line-str)
 	    	      (cscope-propertize-line beg (cscope-point-max)
 	    				      (concat dir file)
+					      pattern
 	    				      (string-to-number line-nbr))
 	    	      (cscope-insert "\n")))
 	    	  data)
@@ -253,7 +269,7 @@
 	 (pattern (cscope-data-pattern data))
 	 (results (cscope-build-assoc-results output pattern regexp)))
     (if results
-	(cscope-insert-results results)
+	(cscope-insert-results pattern results)
       (cscope-insert " --- No matches were found ---\n\n"))
     (when (and (eq (length results) 1)
 	       (eq (length (cdar results)) 1))
