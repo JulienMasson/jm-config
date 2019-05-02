@@ -174,33 +174,33 @@
   (interactive)
   (kill-buffer cscope-buffer-name))
 
-(defun cscope-next-file ()
-  (interactive)
+(defun cscope-next-pattern (pattern)
   (with-current-buffer cscope-buffer-name
     (end-of-line)
-    (search-forward cscope-file-entry nil t)
+    (search-forward pattern nil t)
     (beginning-of-line)))
+
+(defun cscope-previous-pattern (pattern)
+  (with-current-buffer cscope-buffer-name
+    (beginning-of-line)
+    (search-backward pattern nil t)
+    (beginning-of-line)))
+
+(defun cscope-next-file ()
+  (interactive)
+  (cscope-next-pattern cscope-file-entry))
 
 (defun cscope-previous-file ()
   (interactive)
-  (with-current-buffer cscope-buffer-name
-    (beginning-of-line)
-    (search-backward cscope-file-entry nil t)
-    (beginning-of-line)))
+  (cscope-previous-pattern cscope-file-entry))
 
 (defun cscope-next-request ()
   (interactive)
-  (with-current-buffer cscope-buffer-name
-    (end-of-line)
-    (search-forward cscope-result-separator nil t)
-    (beginning-of-line)))
+  (cscope-next-pattern cscope-result-separator))
 
 (defun cscope-previous-request ()
   (interactive)
-  (with-current-buffer cscope-buffer-name
-    (beginning-of-line)
-    (search-backward cscope-result-separator nil t)
-    (beginning-of-line)))
+  (cscope-previous-pattern cscope-result-separator))
 
 (defun cscope-erase-request ()
   (interactive)
