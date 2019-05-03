@@ -380,7 +380,8 @@
     (mapc #'cscope-process-request requests)))
 
 (defun cscope-prompt-for-symbol (prompt)
-  (let ((symbol (symbol-name (symbol-at-point))))
+  (let ((symbol (substring-no-properties
+		 (symbol-name (symbol-at-point)))))
     (read-string (concat prompt " ("
 			 (propertize symbol 'face 'success)
 			 "): ")
