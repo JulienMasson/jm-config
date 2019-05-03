@@ -92,6 +92,7 @@
 
 (defun cscope-cancel-current-request ()
   (interactive)
+  (setq cscope-collect-data nil)
   (if-let ((process (get-buffer-process cscope-request-buffer)))
       (kill-process process)
     (setq cscope-current-request nil)))
