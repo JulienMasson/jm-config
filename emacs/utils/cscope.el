@@ -268,7 +268,7 @@
     (next-line)
     (cscope-enter)))
 
-(defun cscope-parse-line (line pattern regexp)
+(defun cscope-parse-line (line regexp &optional pattern)
   (if (functionp regexp)
       (funcall regexp line pattern)
     (when (string-match regexp line)
@@ -278,10 +278,10 @@
 	    (line-str (substring line (match-beginning 4) (match-end 4))))
 	(cons file `((:func ,func :line-nbr ,line-nbr :line-str ,line-str)))))))
 
-(defun cscope-build-assoc-results (output pattern regexp)
+(defun cscope-build-assoc-results (output regexp &optional pattern)
   (let (results)
     (mapc (lambda (line)
-    	    (when-let ((result (cscope-parse-line line pattern regexp)))
+    	    (when-let ((result (cscope-parse-line line regexp pattern)))
 	      (if-let ((data (assoc-default (car result) results)))
 	      	  (setcdr (assoc (car result) results)
 	      		  (add-to-list 'data (cadr result) t))
@@ -341,7 +341,7 @@
   (let* ((regexp (cscope-data-regexp data))
 	 (dir (cscope-data-dir data))
 	 (pattern (cscope-data-pattern data))
-	 (results (cscope-build-assoc-results output pattern regexp)))
+	 (results (cscope-build-assoc-results output regexp pattern)))
     (if results
 	(cscope-insert-results dir pattern results)
       (cscope-insert " --- No matches were found ---\n\n"))
