@@ -511,4 +511,116 @@
   (interactive)
   (setq cscope-database-list nil))
 
+;; tree management
+(defvar cscope-tree-depth-max 3)
+(defvar cscope-tree-patterns nil)
+(defvar cscope-tree-data-test nil)
+(defvar cscope-tree-data-current nil)
+(defvar cscope-tree-depth 0)
+
+(defun cscope-tree-insert-data ()
+  (mapc (lambda (elem)
+	  (cscope-insert (car elem))
+	  (cscope-insert "\n")
+	  (mapc (lambda (te)
+		  (cscope-insert (format "<-- %s\n" te)))
+		(cdr elem))
+	  (cscope-insert "\n"))
+      cscope-tree-data-test))
+
+(defun cscope-tree-next-finish (output error data)
+  (let* ((regexp (cscope-data-regexp data))
+	 (results (cscope-build-assoc-results output regexp)))
+    (cscope-tree-handle-results results data)))
+
+(defun cscope-tree-next-search (data)
+  ;; add current data
+  (setq cscope-tree-data-test (append cscope-tree-data-test
+				      cscope-tree-data-current))
+  ;; increase depth search
+  (setq cscope-tree-depth (+ cscope-tree-depth 1))
+
+  (let (patterns)
+
+    ;; join all patterns to search
+    (mapc (lambda (funcs)
+	    (setq patterns (append patterns (cdr funcs))))
+	  cscope-tree-data-current)
+
+    ;; reset current data
+    (setq cscope-tree-data-current nil)
+
+    ;; set new patterns
+    (setq cscope-tree-patterns patterns)
+
+    ;; create new requests
+    (mapc (lambda (pattern)
+	    (let* ((dir (cscope-data-dir data))
+		   (cmd (append (cscope-find-default-option) `("-L" "-3" ,pattern)))
+		   (request (make-cscope-request :dir dir :cmd cmd
+						 :finish 'cscope-tree-next-finish
+						 :data data)))
+	      (cscope-process-request request)))
+	  patterns)))
+
+(defun cscope-tree-handle-results (results data)
+  (let ((pattern (pop cscope-tree-patterns))
+	funcs)
+    ;; collect functions who called this pattern
+    (when results
+      (mapc (lambda (result)
+	      (mapc (lambda (elem)
+		      (if-let ((func (plist-get elem :func)))
+			(add-to-list 'funcs func t)))
+		    (cdr result)))
+	    results)
+      ;; add to current data at this tree depth
+      (add-to-list 'cscope-tree-data-current (cons pattern funcs) t))
+
+    ;; if we still have patterns, that means other data are coming
+    (unless cscope-tree-patterns
+      (if (< cscope-tree-depth cscope-tree-depth-max)
+	  (cscope-tree-next-search data)
+	(cscope-tree-insert-data)
+	(cscope-insert (format "Search time = %.2f seconds\n\n"
+			       (- (cscope-get-time-seconds)
+				  (cscope-data-start data))))))))
+
+(defun cscope-tree-finish (output error data)
+  (let* ((regexp (cscope-data-regexp data))
+	 (results (cscope-build-assoc-results output regexp)))
+    (if results
+	(cscope-tree-handle-results results data)
+      (cscope-insert " --- No matches were found ---\n\n")
+      (cscope-insert (format "Search time = %.2f seconds\n\n"
+			     (- (cscope-get-time-seconds)
+				(cscope-data-start data)))))))
+
+(defun cscope-tree-function-calling (symbol)
+  (interactive (list (cscope-prompt-for-symbol "Tree function calling")))
+
+  (cscope-check-env)
+  (cscope-check-database)
+
+  (setq cscope-tree-patterns nil)
+  (setq cscope-tree-data-test nil)
+  (setq cscope-tree-data-current nil)
+  (setq cscope-tree-depth 0)
+
+  (let* ((dir (car cscope-database-list))
+	 (desc (format "Tree function calling: %s\n"
+		       (propertize symbol 'face 'bold)))
+	 (cmd (append (cscope-find-default-option) `("-L" "-3" ,symbol)))
+	 (regexp cscope-default-regexp)
+	 (data (make-cscope-data :dir dir
+				 :desc desc
+				 :regexp regexp))
+	 (request (make-cscope-request :dir dir
+				       :cmd cmd
+				       :start 'cscope-insert-initial-header
+				       :finish 'cscope-tree-finish
+				       :data data)))
+    (add-to-list 'cscope-tree-patterns symbol t)
+    (cscope-process-request request)))
+
 (provide 'cscope)
