@@ -102,11 +102,10 @@
   (cscope-cancel-current-request))
 
 (defun cscope-process-request (request)
-  (let ((cmd (cscope-request-cmd request)))
-    (if cscope-current-request
-	(add-to-list 'cscope-requests request t)
-      (setq cscope-current-request request)
-      (setq cscope-collect-data nil)
-      (cscope-run-command request))))
+  (if cscope-current-request
+      (add-to-list 'cscope-requests request t)
+    (setq cscope-current-request request)
+    (setq cscope-collect-data nil)
+    (cscope-run-command request)))
 
 (provide 'cscope-request)
