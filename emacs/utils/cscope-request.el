@@ -49,8 +49,8 @@
 (defun cscope-next-request ()
   (setq cscope-current-request nil)
   (setq cscope-collect-data nil)
-  (when cscope-requests
-    (cscope-process-request (pop cscope-requests))))
+  (when-let ((request (pop cscope-requests)))
+    (cscope-process-request request)))
 
 (defun cscope-process-sentinel (process status)
   (let ((data (cscope-request-data cscope-current-request))
@@ -104,7 +104,7 @@
 
 (defun cscope-process-request (request)
   (if cscope-current-request
-      (add-to-list 'cscope-requests request t)
+      (setq cscope-requests (append cscope-requests (list request)))
     (setq cscope-current-request request)
     (setq cscope-collect-data nil)
     (cscope-run-command request)))
