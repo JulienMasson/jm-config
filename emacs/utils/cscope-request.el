@@ -39,8 +39,9 @@
 (defvar cscope-current-request nil)
 (defvar cscope-collect-data nil)
 
-(defun cscope-find-program ()
-  (executable-find cscope-program-name))
+(defun cscope-find-program (dir)
+  (let ((default-directory dir))
+    (executable-find cscope-program-name)))
 
 (defun cscope-data-list ()
   (if cscope-collect-data
@@ -81,9 +82,9 @@
 (defun cscope-run-command (request)
   (funcall (cscope-request-start request)
 	   (cscope-request-data request))
-  (let ((dir (cscope-request-dir request))
-	(program (cscope-find-program))
-	(cmd (cscope-request-cmd request)))
+  (let* ((dir (cscope-request-dir request))
+	 (program (cscope-find-program dir))
+	 (cmd (cscope-request-cmd request)))
     (cond ((not (file-exists-p dir))
 	   (cscope-raise-error (concat dir " doesn't exist !")))
 	  ((string= "" program)
