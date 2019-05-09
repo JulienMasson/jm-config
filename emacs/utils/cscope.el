@@ -590,8 +590,10 @@
 	  (assoc-default func cscope-tree-data-test))))
 
 (defun cscope-tree-insert (data)
-  (cscope-insert (format "\n%-15s " " "))
-  (cscope-tree-insert-data nil (caar cscope-tree-data-test) nil 0)
+  (if (not cscope-tree-data-test)
+      (cscope-insert "\n --- No matches were found ---\n")
+    (cscope-insert (format "\n%-15s " " "))
+    (cscope-tree-insert-data nil (caar cscope-tree-data-test) nil 0))
   (cscope-insert (format "\nSearch time = %.2f seconds\n\n"
 			 (- (cscope-get-time-seconds) cscope-tree-start))))
 
