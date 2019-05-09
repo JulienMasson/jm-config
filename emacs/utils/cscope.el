@@ -545,11 +545,12 @@
 		   (arrow "┗━▶ ")
 		   (length (+ (length arrow) (* depth 8)))
 		   (spaces (make-string length (string-to-char " "))))
-	      (cscope-insert (format fmt-line
-				     (propertize (file-name-nondirectory file)
-						 'face 'font-lock-constant-face)
-				     (concat spaces arrow)))
-	      (cscope-tree-insert-data beg (car func) file (+ 1 depth) line)))
+	      (when (< depth cscope-tree-depth-max)
+		(cscope-insert (format fmt-line
+				       (propertize (file-name-nondirectory file)
+						   'face 'font-lock-constant-face)
+				       (concat spaces arrow)))
+		(cscope-tree-insert-data beg (car func) file (+ 1 depth) line))))
 	  (assoc-default func cscope-tree-data-test))))
 
 (defun cscope-tree-insert (data)
