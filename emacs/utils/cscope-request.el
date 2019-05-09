@@ -46,7 +46,7 @@
   (if cscope-collect-data
       (delq nil (split-string cscope-collect-data "\n"))))
 
-(defun cscope-next-request ()
+(defun cscope-process-next-request ()
   (setq cscope-current-request nil)
   (setq cscope-collect-data nil)
   (when-let ((request (pop cscope-requests)))
@@ -59,7 +59,7 @@
 		  (cscope-request-finish cscope-current-request)
 		(cscope-request-fail cscope-current-request))))
     (funcall func output status data)
-    (cscope-next-request)))
+    (cscope-process-next-request)))
 
 (defun cscope-process-filter (process str)
   (setq cscope-collect-data (concat cscope-collect-data str)))
