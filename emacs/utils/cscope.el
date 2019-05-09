@@ -260,7 +260,6 @@
 (defun cscope-toggle-fast-symbol ()
   (interactive)
   (setq cscope-fast-symbol (not cscope-fast-symbol))
-  (mapc #'cscope-database-remove-files cscope-database-list)
   (mapc #'cscope-create-database cscope-database-list)
   (cscope-update-header-line))
 
@@ -503,6 +502,7 @@
 
 (defun cscope-create-database (dir)
   (cscope-check-env)
+  (cscope-database-remove-files dir)
   (let* ((default-directory dir)
 	 (find-cmd (cscope-build-find-cmd))
 	 (cmd (cscope-database-default-option))
@@ -527,10 +527,18 @@
 	(add-to-list 'cscope-database-list git-repo t)
       (call-interactively 'cscope-add-database)))
   (mapc (lambda (dir)
-	  (let ((path (concat dir cscope-database-file))
+	  (let ((database-file (concat dir cscope-database-file))
+		(fast-symbol-files (mapcar (lambda (file)
+					     (concat dir file))
+					   cscope-database-fast-symbol-files))
 		(fmt "Database (%s) doesn't exist, create it ? "))
-	    (unless (file-exists-p path)
-	      (if (yes-or-no-p (format fmt path))
+	    (if (file-exists-p database-file)
+		(if (or (and cscope-fast-symbol (cl-find-if-not #'file-exists-p
+								fast-symbol-files))
+			(and (not cscope-fast-symbol) (cl-find-if #'file-exists-p
+								  fast-symbol-files)))
+		    (cscope-create-database dir))
+	      (if (yes-or-no-p (format fmt database-file))
 		  (cscope-create-database dir)
 		(cscope-abort)))))
 	cscope-database-list))
