@@ -362,31 +362,39 @@
 			   (- (cscope-get-time-seconds)
 			      (cscope-data-start data))))))
 
-(defun cscope-create-request (dir desc cmd pattern regexp start)
+(defun cscope-create-request (dir desc cmd pattern regexp start fail finish)
   (let ((data (make-cscope-data :dir dir
 				:desc desc
 				:pattern pattern
 				:regexp regexp)))
     (make-cscope-request :dir dir :cmd cmd
 			 :start start
-			 :fail 'cscope-insert-request-fail
-			 :finish 'cscope-find-finish
+			 :fail fail
+			 :finish finish
 			 :data data)))
+
+(defun cscope-create-multi-request (desc cmd pattern regexp init next fail finish)
+  (let ((first-request (list (cscope-create-request
+			      (car cscope-database-list)
+			      desc cmd pattern regexp
+			      init fail finish)))
+	(next-requests (mapcar (lambda (dir)
+				 (cscope-create-request
+				  dir desc cmd pattern regexp
+				  next fail finish))
+			       (cdr cscope-database-list))))
+    (append first-request next-requests)))
 
 (defun cscope-find-command (desc cmd pattern regexp)
   (cscope-check-env)
   (cscope-check-database)
   (let* ((cmd (append (cscope-find-default-option) cmd))
-	 (first-request (list (cscope-create-request
-			       (car cscope-database-list)
-			       desc cmd pattern regexp
-			       'cscope-insert-initial-header)))
-	 (next-requests (mapcar (lambda (dir)
-				  (cscope-create-request
-				   dir desc cmd pattern regexp
-				   'cscope-insert-next-header))
-				(cdr cscope-database-list)))
-	 (requests (append first-request next-requests)))
+	 (requests (cscope-create-multi-request
+		    desc cmd pattern regexp
+		    'cscope-insert-initial-header
+		    'cscope-insert-next-header
+		    'cscope-insert-request-fail
+		    'cscope-find-finish)))
     (mapc #'cscope-process-request requests)))
 
 (defun cscope-prompt-for-symbol (prompt)
