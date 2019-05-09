@@ -675,15 +675,18 @@
   (cscope-switch-to-buffer cscope-buffer-name)
   (goto-char (point-max)))
 
-(defun cscope-tree-function-calling (symbol)
-  (interactive (list (cscope-prompt-for-symbol "Tree function calling")))
-  (cscope-check-env)
-  (cscope-check-database)
+(defun cscope-tree-reset ()
   (setq cscope-tree-patterns nil)
   (setq cscope-tree-data-test nil)
   (setq cscope-tree-data-current nil)
   (setq cscope-tree-depth 0)
-  (setq cscope-tree-start nil)
+  (setq cscope-tree-start nil))
+
+(defun cscope-tree-function-calling (symbol)
+  (interactive (list (cscope-prompt-for-symbol "Tree function calling")))
+  (cscope-check-env)
+  (cscope-check-database)
+  (cscope-tree-reset)
   (let* ((dir (car cscope-database-list))
 	 (desc (format "Tree function calling: %s\n"
 		       (propertize symbol 'face 'bold)))
