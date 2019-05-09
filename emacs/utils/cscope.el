@@ -521,6 +521,14 @@
       (shell-command find-cmd))
     (cscope-process-request request)))
 
+(defun cscope-check-database-fast-symbol (dir)
+  (let ((fast-symbol-files (mapcar (lambda (file)
+				     (concat dir file))
+				   cscope-database-fast-symbol-files)))
+    (if cscope-fast-symbol
+	(cl-find-if #'file-exists-p fast-symbol-files)
+      (cl-find-if-not #'file-exists-p fast-symbol-files))))
+
 (defun cscope-check-database ()
   (unless cscope-database-list
     (if-let ((git-repo (magit-toplevel)))
@@ -528,16 +536,10 @@
       (call-interactively 'cscope-add-database)))
   (mapc (lambda (dir)
 	  (let ((database-file (concat dir cscope-database-file))
-		(fast-symbol-files (mapcar (lambda (file)
-					     (concat dir file))
-					   cscope-database-fast-symbol-files))
 		(fmt "Database (%s) doesn't exist, create it ? "))
 	    (if (file-exists-p database-file)
-		(if (or (and cscope-fast-symbol (cl-find-if-not #'file-exists-p
-								fast-symbol-files))
-			(and (not cscope-fast-symbol) (cl-find-if #'file-exists-p
-								  fast-symbol-files)))
-		    (cscope-create-database dir))
+		(unless (cscope-check-database-fast-symbol dir)
+		  (cscope-create-database dir))
 	      (if (yes-or-no-p (format fmt database-file))
 		  (cscope-create-database dir)
 		(cscope-abort)))))
@@ -545,7 +547,8 @@
 
 (defun cscope-add-database (dir)
   (interactive "DAdd database: ")
-  (if (file-exists-p (concat dir cscope-database-file))
+  (if (and (file-exists-p (concat dir cscope-database-file))
+	   (cscope-check-database-fast-symbol dir))
       (add-to-list 'cscope-database-list dir t)
     (cscope-create-database dir)))
 
