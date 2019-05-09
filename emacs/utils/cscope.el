@@ -249,8 +249,9 @@
 
 (defun cscope-erase-all ()
   (interactive)
-  (let ((inhibit-read-only t))
-    (erase-buffer)))
+  (with-current-buffer cscope-buffer-name
+    (let ((inhibit-read-only t))
+      (erase-buffer))))
 
 (defun cscope-toggle-auto-update ()
   (interactive)
