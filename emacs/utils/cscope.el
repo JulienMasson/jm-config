@@ -41,6 +41,7 @@
     (define-key map "n" 'cscope-next-file)
     (define-key map "p" 'cscope-previous-file)
     (define-key map "q" 'cscope-quit)
+    (define-key map "s" 'cscope-toggle-keep-history)
     (define-key map "t" 'cscope-tree-set-depth-max)
     (define-key map "u" 'cscope-toggle-auto-update)
     (define-key map "U" 'cscope-recreate-database)
@@ -73,6 +74,7 @@
 
 (defvar cscope-auto-update t)
 (defvar cscope-fast-symbol nil)
+(defvar cscope-keep-history t)
 
 ;; common
 (defun cscope-abort ()
@@ -98,11 +100,14 @@
 	 (update-value (if cscope-auto-update on off))
 	 (fast (propertize "[fast-symbol]" 'face 'bold))
 	 (fast-value (if cscope-fast-symbol on off))
+	 (keep (propertize "[keep-history]" 'face 'bold))
+	 (keep-value (if cscope-keep-history on off))
 	 (depth-max (propertize "[Tree depth-max]" 'face 'bold))
 	 (depth-max-value (propertize (number-to-string cscope-tree-depth-max)
 				      'face 'warning)))
     (setq header-line-format (concat (format fmt update update-value)
 				     (format fmt fast fast-value)
+				     (format fmt keep keep-value)
 				     (format fmt depth-max depth-max-value)))))
 
 (defun cscope-build-default-option ()
@@ -120,7 +125,9 @@
     (switch-to-buffer-other-window buffer)))
 
 (defun cscope-check-env ()
-  (unless (get-buffer cscope-buffer-name)
+  (if (get-buffer cscope-buffer-name)
+      (unless cscope-keep-history
+	(cscope-erase-all))
     (with-current-buffer (get-buffer-create cscope-buffer-name)
       (cscope-mode))
     (setq cscope-marker-ring (make-ring cscope-marker-ring-max))))
@@ -254,6 +261,13 @@
   (setq cscope-fast-symbol (not cscope-fast-symbol))
   (mapc #'cscope-database-remove-files cscope-database-list)
   (mapc #'cscope-create-database cscope-database-list)
+  (cscope-update-header-line))
+
+(defun cscope-toggle-keep-history ()
+  (interactive)
+  (setq cscope-keep-history (not cscope-keep-history))
+  (unless cscope-keep-history
+    (cscope-erase-all))
   (cscope-update-header-line))
 
 (defun cscope-tree-set-depth-max (depth)
