@@ -529,15 +529,41 @@
 (defvar cscope-tree-data-current nil)
 (defvar cscope-tree-depth 0)
 
-(defun cscope-tree-insert-data ()
-  (mapc (lambda (elem)
-	  (cscope-insert (car elem))
-	  (cscope-insert "\n")
-	  (mapc (lambda (te)
-		  (cscope-insert (format "<-- %s\n" te)))
-		(cdr elem))
-	  (cscope-insert "\n"))
-      cscope-tree-data-test))
+(defun cscope-tree-insert-data (beg func file depth &optional line)
+  (cscope-insert (concat (propertize func 'face 'font-lock-type-face)
+			 (when line
+			   (format "[%s]" (propertize line 'face 'font-lock-string-face)))))
+  (when file
+    (cscope-propertize-line beg (cscope-point-max) file func (string-to-number line)))
+  (cscope-insert "\n")
+  (when (assoc func cscope-tree-data-test)
+    (mapc (lambda (func)
+	    (let* ((beg (cscope-point-max))
+		   (file (cadr func))
+		   (line (caddr func))
+		   (fmt-line "%-15s %s")
+		   (arrow "┗━▶ ")
+		   (length (+ (length arrow) (* depth 8)))
+		   (spaces (make-string length (string-to-char " "))))
+	      (cscope-insert (format fmt-line
+				     (propertize (file-name-nondirectory file)
+						 'face 'font-lock-constant-face)
+				     (concat spaces arrow)))
+	      (cscope-tree-insert-data beg (car func) file (+ 1 depth) line)))
+	  (assoc-default func cscope-tree-data-test))))
+
+(defun cscope-tree-insert (data)
+  (cscope-insert (format "%-15s " " "))
+  (cscope-tree-insert-data nil (caar cscope-tree-data-test) nil 0)
+  (cscope-insert (format "\nSearch time = %.2f seconds\n\n"
+			 (- (cscope-get-time-seconds)
+			    (cscope-data-start data)))))
+
+(defun cscope-tree-fail (output error data)
+  (cscope-insert (concat (propertize "ERROR: " 'face 'error)
+			 error "\n"
+			 (mapconcat 'identity output "\n") "\n"))
+  (cscope-tree-insert data))
 
 (defun cscope-tree-next-finish (output error data)
   (let* ((regexp (cscope-data-regexp data))
@@ -555,7 +581,10 @@
 
     ;; join all patterns to search
     (mapc (lambda (funcs)
-	    (setq patterns (append patterns (cdr funcs))))
+	    (mapc (lambda (func)
+		    (unless (assoc func cscope-tree-data-test)
+		      (add-to-list 'patterns func t)))
+		  (mapcar #'car (cdr funcs))))
 	  cscope-tree-data-current)
 
     ;; reset current data
@@ -565,37 +594,43 @@
     (setq cscope-tree-patterns patterns)
 
     ;; create new requests
-    (mapc (lambda (pattern)
-	    (let* ((dir (cscope-data-dir data))
-		   (cmd (append (cscope-find-default-option) `("-L" "-3" ,pattern)))
-		   (request (make-cscope-request :dir dir :cmd cmd
-						 :finish 'cscope-tree-next-finish
-						 :data data)))
-	      (cscope-process-request request)))
-	  patterns)))
+    (if cscope-tree-patterns
+	(mapc (lambda (pattern)
+		(let* ((dir (cscope-data-dir data))
+		       (cmd (append (cscope-find-default-option) `("-L" "-3" ,pattern)))
+		       (request (make-cscope-request :dir dir :cmd cmd
+						     :fail 'cscope-tree-fail
+						     :finish 'cscope-tree-next-finish
+						     :data data)))
+		  (cscope-process-request request)))
+	      patterns)
+      (cscope-tree-insert data))))
 
 (defun cscope-tree-handle-results (results data)
   (let ((pattern (pop cscope-tree-patterns))
+	(dir (cscope-data-dir data))
 	funcs)
     ;; collect functions who called this pattern
     (when results
       (mapc (lambda (result)
 	      (mapc (lambda (elem)
-		      (if-let ((func (plist-get elem :func)))
-			(add-to-list 'funcs func t)))
+		      (when-let ((func (plist-get elem :func))
+				 (line (plist-get elem :line-nbr))
+				 (file (concat dir (car result))))
+			(unless (assoc func funcs)
+			  (add-to-list 'funcs (cons func (list file line)) t))))
 		    (cdr result)))
 	    results)
+
       ;; add to current data at this tree depth
       (add-to-list 'cscope-tree-data-current (cons pattern funcs) t))
 
     ;; if we still have patterns, that means other data are coming
     (unless cscope-tree-patterns
-      (if (< cscope-tree-depth cscope-tree-depth-max)
+      (if (and (< cscope-tree-depth cscope-tree-depth-max)
+	       cscope-tree-data-current)
 	  (cscope-tree-next-search data)
-	(cscope-tree-insert-data)
-	(cscope-insert (format "Search time = %.2f seconds\n\n"
-			       (- (cscope-get-time-seconds)
-				  (cscope-data-start data))))))))
+	(cscope-tree-insert data)))))
 
 (defun cscope-tree-finish (output error data)
   (let* ((regexp (cscope-data-regexp data))
@@ -629,6 +664,7 @@
 	 (request (make-cscope-request :dir dir
 				       :cmd cmd
 				       :start 'cscope-insert-initial-header
+				       :fail 'cscope-insert-request-fail
 				       :finish 'cscope-tree-finish
 				       :data data)))
     (add-to-list 'cscope-tree-patterns symbol t)
