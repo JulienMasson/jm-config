@@ -33,6 +33,13 @@
 (require 'semantic)
 (semantic-mode)
 
+(defun semantic-set-include-path-from-toplevel (includes)
+  (let* ((top (magit-toplevel))
+	 (dirs (mapcar (lambda (dir) (concat top dir)) includes)))
+    (setq-mode-local c-mode
+		     semantic-dependency-system-include-path
+		     (if (tramp-tramp-file-p top) nil dirs))))
+
 ;; company semantic
 (require 'company-semantic)
 (add-to-list 'company-backends 'company-semantic)
@@ -59,17 +66,9 @@
 (advice-add 'select-window :after #'apply-c-global-settings)
 
 ;; kernel global settings
-(defun kernel-change-semantic-include-path ()
-  (let* ((top (magit-toplevel))
-	 (includes '("include/" "arch/arm64/include/"))
-	 (dirs (mapcar (lambda (dir) (concat top dir)) includes)))
-    (setq-mode-local c-mode
-		     semantic-dependency-system-include-path
-		     (if (tramp-tramp-file-p top) nil dirs))))
-
 (defun kernel-global-settings ()
   (setq magit-log-arguments '("-n256" "--decorate"))
-  (kernel-change-semantic-include-path))
+  (semantic-set-include-path-from-toplevel '("include/" "arch/arm64/include/")))
 
 (defun register-kernel-global-settings (path)
   (add-to-list 'magit-blacklist-repo path)
