@@ -69,9 +69,6 @@
 [submodule "emacs/modules/company-mode"]
 	path = emacs/modules/company-mode
 	url = https://github.com/company-mode/company-mode.git
-[submodule "emacs/modules/company-c-headers"]
-	path = emacs/modules/company-c-headers
-	url = https://github.com/randomphrase/company-c-headers.git
 [submodule "emacs/modules/async"]
 	path = emacs/modules/async
 	url = https://github.com/jwiegley/emacs-async.git

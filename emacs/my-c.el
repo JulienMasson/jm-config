@@ -29,13 +29,13 @@
 (require 'cscope)
 (require 'cscope-utils)
 
-;; cscope company
-(require 'company-cscope)
-(add-to-list 'company-backends 'company-cscope)
+;; semantic
+(require 'semantic)
+(semantic-mode)
 
-;; c header company
-(require 'company-c-headers)
-(add-to-list 'company-backends 'company-c-headers)
+;; company semantic
+(require 'company-semantic)
+(add-to-list 'company-backends 'company-semantic)
 
 ;; global setting applied to specific c files
 (defvar c-global-settings-list nil)
@@ -58,8 +58,18 @@
 (add-hook 'magit-status-mode-hook 'apply-c-global-settings)
 (advice-add 'select-window :after #'apply-c-global-settings)
 
+;; kernel global settings
+(defun kernel-change-semantic-include-path ()
+  (let* ((top (magit-toplevel))
+	 (includes '("include/" "arch/arm64/include/"))
+	 (dirs (mapcar (lambda (dir) (concat top dir)) includes)))
+    (setq-mode-local c-mode
+		     semantic-dependency-system-include-path
+		     (if (tramp-tramp-file-p top) nil dirs))))
+
 (defun kernel-global-settings ()
-  (setq magit-log-arguments '("-n256" "--decorate")))
+  (setq magit-log-arguments '("-n256" "--decorate"))
+  (kernel-change-semantic-include-path))
 
 (defun register-kernel-global-settings (path)
   (add-to-list 'magit-blacklist-repo path)
