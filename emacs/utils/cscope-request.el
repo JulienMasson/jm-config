@@ -25,97 +25,138 @@
 (require 'cl-macs)
 (require 'cl-seq)
 
+(defgroup cscope-request nil
+  "Cscope Request Management"
+  :group 'tools)
+
 (cl-defstruct cscope-request
-  dir
-  args
-  (start 'ignore)
-  (fail 'ignore)
-  (finish 'ignore)
-  (data nil))
+  (dir    nil     :read-only t)
+  (args   nil     :read-only t)
+  (start  'ignore :read-only t)
+  (fail   'ignore :read-only t)
+  (finish 'ignore :read-only t)
+  (data   nil     :read-only nil))
 
-;; Internal vars
-(defvar cscope-program-name "cscope")
-(defvar cscope-request-buffer "*cscope-process*")
-(defvar cscope-requests nil)
-(defvar cscope-current-request nil)
-(defvar cscope-collect-data nil)
+;;; Customization
 
-(defun cscope-find-program (dir)
+(defcustom cscope-request-program-name "cscope"
+  "Cscope program name"
+  :type 'string
+  :group 'cscope-request)
+
+(defcustom cscope-request-buffer-name "*cscope-process*"
+  "Cscope Request buffer name"
+  :type 'string
+  :group 'cscope-request)
+
+;;; Internal Variables
+
+(defvar cscope-request--pending nil
+  "List of pending cscope request")
+
+(defvar cscope-request--current nil
+  "Current cscope request")
+
+(defvar cscope-request--output nil
+  "Data collected of the current cscope request")
+
+;;; Internal Functions
+
+(defun cscope-request--find-program (dir)
+  "Find `cscope-request-program-name' executable"
   (let ((default-directory dir))
-    (executable-find cscope-program-name)))
+    (executable-find cscope-request-program-name)))
 
-(defun cscope-data-list ()
-  (if cscope-collect-data
-      (delq nil (split-string cscope-collect-data "\n"))))
+(defun cscope-request--get-output ()
+  "Return a list of data collected from current cscope request"
+  (if cscope-request--output
+      (delq nil (split-string cscope-request--output "\n"))))
 
-(defun cscope-process-next-request ()
-  (setq cscope-current-request nil)
-  (setq cscope-collect-data nil)
-  (when-let ((request (pop cscope-requests)))
-    (cscope-process-request request)))
+(defun cscope-request--process-next ()
+  "Process next cscope request"
+  (setq cscope-request--current nil)
+  (when-let ((request (pop cscope-request--pending)))
+    (cscope-request--exec request)))
 
-(defun cscope-funcall (func &rest args)
+(defun cscope-request--funcall (func &rest args)
+  "Print error message when corresponding funcall failed"
   (condition-case-unless-debug err
       (apply func args)
     (error (message "Error %s: %S" (symbol-name func) err))))
 
-(defun cscope-process-sentinel (process status)
-  (let ((data (cscope-request-data cscope-current-request))
-	(output (cscope-data-list))
-	(func (if (eq (process-exit-status process) 0)
-		  (cscope-request-finish cscope-current-request)
-		(cscope-request-fail cscope-current-request))))
-    (cscope-funcall func output status data)
-    (cscope-process-next-request)))
+(defun cscope-request--process-sentinel (process status)
+  "Cscope request sentinel process"
+  (let ((data (cscope-request-data cscope-request--current))
+	(output (cscope-request--get-output))
+    	(func (if (eq (process-exit-status process) 0)
+    		  (cscope-request-finish cscope-request--current)
+    		(cscope-request-fail cscope-request--current))))
+    (cscope-request--funcall func output status data)
+    (setq cscope-request--output nil)
+    (cscope-request--process-next)))
 
-(defun cscope-process-filter (process str)
-  (setq cscope-collect-data (concat cscope-collect-data str)))
+(defun cscope-request--process-filter (process str)
+  "Collect data from the current cscope request process"
+  (setq cscope-request--output (concat cscope-request--output str)))
 
-(defun cscope-start-process (dir program args)
+(defun cscope-request--start-process (dir program args)
+  "Start the cscope request process"
   (let* ((default-directory dir)
-	 (buffer (get-buffer-create cscope-request-buffer))
+	 (buffer (get-buffer-create cscope-request-buffer-name))
 	 (process (apply 'start-file-process "cscope" buffer
 			 program  args)))
-    (set-process-filter process 'cscope-process-filter)
-    (set-process-sentinel process 'cscope-process-sentinel)))
+    (set-process-filter process 'cscope-request--process-filter)
+    (set-process-sentinel process 'cscope-request--process-sentinel)))
 
-(defun cscope-raise-error (status)
-  (let ((data (cscope-request-data cscope-current-request))
-	(func (cscope-request-fail cscope-current-request)))
-    (cscope-funcall func nil status data)
-    (cscope-next-request)))
+(defun cscope-request--raise-error (request status)
+  "Raise an error and process next request"
+  (let ((data (cscope-request-data request))
+	(func (cscope-request-fail request)))
+    (cscope-request--funcall func nil status data)
+    (cscope-request--process-next)))
 
-(defun cscope-run-command (request)
-  (cscope-funcall (cscope-request-start request)
-	   (cscope-request-data request))
+(defun cscope-request--exec (request)
+  "Execute the cscope request"
+  (setq cscope-request--current request)
+  (cscope-request--funcall (cscope-request-start request)
+			   (cscope-request-data request))
   (let* ((dir (cscope-request-dir request))
-	 (program (cscope-find-program dir))
+	 (program (cscope-request--find-program dir))
 	 (args (cscope-request-args request)))
     (cond ((not (file-exists-p dir))
-	   (cscope-raise-error (concat dir " doesn't exist !")))
+	   (cscope-request--raise-error
+	    request (concat dir " doesn't exist !")))
 	  ((string= "" program)
-	   (cscope-raise-error (concat "Cannot find: " cscope-program-name)))
+	   (cscope-request--raise-error
+	    request (concat "Cannot find: " cscope-program-name)))
 	  ((or (not (listp args)) (cl-member nil args))
-	   (cscope-raise-error "Incorrect arguments format"))
-	  (t (cscope-start-process dir program args)))))
+	   (cscope-request--raise-error
+	    request "Incorrect arguments format"))
+	  (t (cscope-request--start-process dir program args)))))
 
-(defun cscope-cancel-current-request ()
+;;; External Functions
+
+(defun cscope-request-cancel-current ()
+  "Cancel current cscope request"
   (interactive)
-  (setq cscope-collect-data nil)
-  (if-let ((process (get-buffer-process cscope-request-buffer)))
+  (setq cscope-request--output nil)
+  (if-let ((process (get-buffer-process cscope-request-buffer-name)))
       (kill-process process)
-    (setq cscope-current-request nil)))
+    (cscope-request--process-next)))
 
-(defun cscope-cancel-all-requests ()
+(defun cscope-request-cancel-all ()
+  "Cancel all cscope request"
   (interactive)
-  (setq cscope-requests nil)
-  (cscope-cancel-current-request))
+  (setq cscope-request--pending nil)
+  (cscope-request-cancel-current))
 
-(defun cscope-process-request (request)
-  (if cscope-current-request
-      (setq cscope-requests (append cscope-requests (list request)))
-    (setq cscope-current-request request)
-    (setq cscope-collect-data nil)
-    (cscope-run-command request)))
+(defun cscope-request-run (request)
+  "Run the cscope request if we don't have any pending cscope request.
+
+Otherwise the cscope request is added to `cscope-request--pending' and will run later."
+  (if cscope-request--current
+      (setq cscope-request--pending (append cscope-request--pending
+					    (list request)))
+    (cscope-request--exec request)))
 
 (provide 'cscope-request)
