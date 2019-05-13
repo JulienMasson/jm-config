@@ -29,6 +29,16 @@
 (require 'cscope)
 (require 'cscope-utils)
 
+;; cscope custom index file
+(defvar cscope-custom-index-file-cmds nil)
+
+(defun cscope-custom-index-file (dir)
+  (if-let ((func (assoc-default dir cscope-custom-index-file-cmds)))
+      (funcall func dir)
+    (funcall 'cscope-index-file-shell-command dir)))
+
+(setq cscope-generate-index-file 'cscope-custom-index-file)
+
 ;; semantic
 (require 'semantic)
 (semantic-mode)
@@ -66,12 +76,16 @@
 (advice-add 'select-window :after #'apply-c-global-settings)
 
 ;; kernel global settings
+(defun cscope-kernel-index-file (dir)
+  (funcall 'cscope-generate-from-objects dir))
+
 (defun kernel-global-settings ()
   (setq magit-log-arguments '("-n256" "--decorate"))
   (semantic-set-include-path-from-toplevel '("include/" "arch/arm64/include/")))
 
 (defun register-kernel-global-settings (path)
   (add-to-list 'magit-blacklist-repo path)
+  (add-to-list 'cscope-custom-index-file-cmds `(,path . cscope-kernel-index-file))
   (add-to-list 'c-global-settings-list `(,path . kernel-global-settings)))
 
 ;; ctags
