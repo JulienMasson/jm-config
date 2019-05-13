@@ -54,13 +54,18 @@
   (when-let ((request (pop cscope-requests)))
     (cscope-process-request request)))
 
+(defun cscope-funcall (func &rest args)
+  (condition-case-unless-debug err
+      (apply func args)
+    (error (message "Error %s: %S" (symbol-name func) err))))
+
 (defun cscope-process-sentinel (process status)
   (let ((data (cscope-request-data cscope-current-request))
 	(output (cscope-data-list))
 	(func (if (eq (process-exit-status process) 0)
 		  (cscope-request-finish cscope-current-request)
 		(cscope-request-fail cscope-current-request))))
-    (funcall func output status data)
+    (cscope-funcall func output status data)
     (cscope-process-next-request)))
 
 (defun cscope-process-filter (process str)
@@ -77,11 +82,11 @@
 (defun cscope-raise-error (status)
   (let ((data (cscope-request-data cscope-current-request))
 	(func (cscope-request-fail cscope-current-request)))
-    (funcall func nil status data)
+    (cscope-funcall func nil status data)
     (cscope-next-request)))
 
 (defun cscope-run-command (request)
-  (funcall (cscope-request-start request)
+  (cscope-funcall (cscope-request-start request)
 	   (cscope-request-data request))
   (let* ((dir (cscope-request-dir request))
 	 (program (cscope-find-program dir))
