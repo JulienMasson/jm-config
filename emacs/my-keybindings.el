@@ -142,6 +142,7 @@
 (global-set-key (kbd "C-c s D") 'cscope-dired-directory)
 (global-set-key (kbd "C-c s p") 'cscope-add-database-pycscope)
 (global-set-key (kbd "C-c s T") 'cscope-tree-function-calling)
+(global-set-key (kbd "C-c s u") 'cscope-pop-mark)
 
 ;; map TAB to company completion in shell mode
 (define-key shell-mode-map (kbd "TAB") #'company-manual-begin)
