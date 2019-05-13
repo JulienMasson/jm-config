@@ -26,7 +26,7 @@
 
 (cl-defstruct cscope-request
   dir
-  cmd
+  args
   (start 'ignore)
   (fail 'ignore)
   (finish 'ignore)
@@ -65,11 +65,11 @@
 (defun cscope-process-filter (process str)
   (setq cscope-collect-data (concat cscope-collect-data str)))
 
-(defun cscope-start-process (dir program cmd)
+(defun cscope-start-process (dir program args)
   (let* ((default-directory dir)
 	 (buffer (get-buffer-create cscope-request-buffer))
 	 (process (apply 'start-file-process "cscope" buffer
-			 program  cmd)))
+			 program  args)))
     (set-process-filter process 'cscope-process-filter)
     (set-process-sentinel process 'cscope-process-sentinel)))
 
@@ -84,12 +84,12 @@
 	   (cscope-request-data request))
   (let* ((dir (cscope-request-dir request))
 	 (program (cscope-find-program dir))
-	 (cmd (cscope-request-cmd request)))
+	 (args (cscope-request-args request)))
     (cond ((not (file-exists-p dir))
 	   (cscope-raise-error (concat dir " doesn't exist !")))
 	  ((string= "" program)
 	   (cscope-raise-error (concat "Cannot find: " cscope-program-name)))
-	  (t (cscope-start-process dir program cmd)))))
+	  (t (cscope-start-process dir program args)))))
 
 (defun cscope-cancel-current-request ()
   (interactive)

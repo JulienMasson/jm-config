@@ -105,11 +105,11 @@
   (cscope-check-env)
   (let* ((default-directory dir)
 	 (cscope-program-name "pycscope")
-	 (cmd '("-D" "-R"))
+	 (args '("-D" "-R"))
 	 (desc "Creating database cscope with pycscope ...\n")
 	 (data (make-cscope-data :dir dir
 				 :desc desc))
-	 (request (make-cscope-request :dir dir :cmd cmd
+	 (request (make-cscope-request :dir dir :args args
 				       :start 'cscope-insert-initial-header
 				       :fail 'cscope-insert-request-fail
 				       :finish 'cscope-database-finish

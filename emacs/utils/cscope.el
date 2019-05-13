@@ -113,7 +113,7 @@
 				       (format fmt keep keep-value)
 				       (format fmt depth-max depth-max-value))))))
 
-(defun cscope-build-default-option ()
+(defun cscope-build-default-args ()
   (append (list "-k" "-i" (eval cscope-index-file)
 		"-f" (eval cscope-database-file))
 	  (if cscope-fast-symbol '("-q"))))
@@ -283,8 +283,8 @@
   (mapc #'cscope-create-database cscope-database-list))
 
 ;; find management
-(defun cscope-find-default-option ()
-  (append (cscope-build-default-option)
+(defun cscope-find-default-args ()
+  (append (cscope-build-default-args)
 	  (unless cscope-auto-update '("-d"))))
 
 (defun cscope-jump-first-result ()
@@ -379,36 +379,36 @@
 			   (- (cscope-get-time-seconds)
 			      (cscope-data-start data))))))
 
-(defun cscope-create-request (dir desc cmd pattern regexp start fail finish)
+(defun cscope-create-request (dir desc args pattern regexp start fail finish)
   (let ((data (make-cscope-data :dir dir
 				:desc desc
 				:pattern pattern
 				:regexp regexp)))
-    (make-cscope-request :dir dir :cmd cmd
+    (make-cscope-request :dir dir :args args
 			 :start start
 			 :fail fail
 			 :finish finish
 			 :data data)))
 
-(defun cscope-create-multi-request (desc cmd pattern regexp init next fail finish)
+(defun cscope-create-multi-request (desc args pattern regexp init next fail finish)
   (let ((first-request (list (cscope-create-request
 			      (car cscope-database-list)
-			      desc cmd pattern regexp
+			      desc args pattern regexp
 			      init fail finish)))
 	(next-requests (mapcar (lambda (dir)
 				 (cscope-create-request
-				  dir desc cmd pattern regexp
+				  dir desc args pattern regexp
 				  next fail finish))
 			       (cdr cscope-database-list))))
     (append first-request next-requests)))
 
-(defun cscope-find-command (desc cmd pattern regexp)
+(defun cscope-find-command (desc args pattern regexp)
   (cscope-check-env)
   (cscope-check-database)
   (cscope-save-marker)
-  (let* ((cmd (append (cscope-find-default-option) cmd))
+  (let* ((args (append (cscope-find-default-args) args))
 	 (requests (cscope-create-multi-request
-		    desc cmd pattern regexp
+		    desc args pattern regexp
 		    'cscope-insert-initial-header
 		    'cscope-insert-next-header
 		    'cscope-insert-request-fail
@@ -427,57 +427,57 @@
   (interactive (list (cscope-prompt-for-symbol "Find symbol")))
   (let* ((desc (format "Finding symbol: %s\n"
 		       (propertize symbol 'face 'bold)))
-	 (cmd `("-L" "-0" ,symbol))
+	 (args `("-L" "-0" ,symbol))
 	 (regexp cscope-default-regexp))
-    (cscope-find-command desc cmd symbol regexp)))
+    (cscope-find-command desc args symbol regexp)))
 
 (defun cscope-find-global-definition (symbol)
   (interactive (list (cscope-prompt-for-symbol "Find global definition")))
   (let* ((desc (format "Finding global definition: %s\n"
 		       (propertize symbol 'face 'bold)))
-	 (cmd `("-L" "-1" ,symbol))
+	 (args `("-L" "-1" ,symbol))
 	 (regexp cscope-default-regexp))
-    (cscope-find-command desc cmd symbol regexp)))
+    (cscope-find-command desc args symbol regexp)))
 
 (defun cscope-find-function-calling (symbol)
   (interactive (list (cscope-prompt-for-symbol "Find function calling")))
   (let* ((desc (format "Finding function calling: %s\n"
 		       (propertize symbol 'face 'bold)))
-	 (cmd `("-L" "-3" ,symbol))
+	 (args `("-L" "-3" ,symbol))
 	 (regexp cscope-default-regexp))
-    (cscope-find-command desc cmd symbol regexp)))
+    (cscope-find-command desc args symbol regexp)))
 
 (defun cscope-find-text-string (symbol)
   (interactive (list (cscope-prompt-for-symbol "Find text string")))
   (let* ((desc (format "Finding text string: %s\n"
 		       (propertize symbol 'face 'bold)))
-	 (cmd `("-L" "-4" ,symbol))
+	 (args `("-L" "-4" ,symbol))
 	 (regexp cscope-default-regexp))
-    (cscope-find-command desc cmd symbol regexp)))
+    (cscope-find-command desc args symbol regexp)))
 
 (defun cscope-find-egrep (symbol)
   (interactive (list (cscope-prompt-for-symbol "Find text with egrep")))
   (let* ((desc (format "Finding text with egrep: %s\n"
 		       (propertize symbol 'face 'bold)))
-	 (cmd `("-L" "-6" ,symbol))
+	 (args `("-L" "-6" ,symbol))
 	 (regexp cscope-default-regexp))
-    (cscope-find-command desc cmd symbol regexp)))
+    (cscope-find-command desc args symbol regexp)))
 
 (defun cscope-find-file (symbol)
   (interactive (list (cscope-prompt-for-symbol "Find file")))
   (let* ((desc (format "Finding file: %s\n"
 		       (propertize symbol 'face 'bold)))
-	 (cmd `("-L" "-7" ,symbol))
+	 (args `("-L" "-7" ,symbol))
 	 (regexp cscope-default-regexp))
-    (cscope-find-command desc cmd symbol regexp)))
+    (cscope-find-command desc args symbol regexp)))
 
 (defun cscope-find-symbol-assignment (symbol)
   (interactive (list (cscope-prompt-for-symbol "Find symbol assignment")))
   (let* ((desc (format "Finding symbol assignment: %s\n"
 		       (propertize symbol 'face 'bold)))
-	 (cmd `("-L" "-9" ,symbol))
+	 (args `("-L" "-9" ,symbol))
 	 (regexp cscope-default-regexp))
-    (cscope-find-command desc cmd symbol regexp)))
+    (cscope-find-command desc args symbol regexp)))
 
 (defun cscope-struct-regexp-func (line pattern)
   (when (string-match cscope-default-regexp line)
@@ -495,13 +495,13 @@
   (interactive (list (cscope-prompt-for-symbol "Find struct definition")))
   (let* ((desc (format "Finding struct definition: %s\n"
 		       (propertize symbol 'face 'bold)))
-	 (cmd `("-L" "-1" ,symbol))
+	 (args `("-L" "-1" ,symbol))
 	 (regexp 'cscope-struct-regexp-func))
-    (cscope-find-command desc cmd symbol regexp)))
+    (cscope-find-command desc args symbol regexp)))
 
 ;; database management
-(defun cscope-database-default-option ()
-  (append (cscope-build-default-option) '("-b")))
+(defun cscope-database-default-args ()
+  (append (cscope-build-default-args) '("-b")))
 
 (defun cscope-build-find-cmd ()
   (concat "find . -name \"*.[chxsS]\" > " cscope-index-file))
@@ -529,14 +529,14 @@
   (cscope-check-env)
   (cscope-database-remove-files dir)
   (let* ((default-directory dir)
-	 (cmd (cscope-database-default-option))
+	 (args (cscope-database-default-args))
 	 (desc (concat "Creating "
 		       (if cscope-fast-symbol
 			   (propertize "Fast Symbol " 'face 'bold))
 		       "cscope database ...\n"))
 	 (data (make-cscope-data :dir dir
 				 :desc desc))
-	 (request (make-cscope-request :dir dir :cmd cmd
+	 (request (make-cscope-request :dir dir :args args
 				       :start 'cscope-insert-initial-header
 				       :fail 'cscope-insert-request-fail
 				       :finish 'cscope-database-finish
@@ -657,10 +657,10 @@
     (if cscope-tree-patterns
 	(mapc (lambda (pattern)
 		(let* ((dir (cscope-data-dir data))
-		       (cmd (append (cscope-find-default-option) `("-L" "-3" ,pattern)))
+		       (args (append (cscope-find-default-args) `("-L" "-3" ,pattern)))
 		       (regexp cscope-default-regexp)
 		       (requests (cscope-create-multi-request
-				  nil cmd pattern regexp
+				  nil args pattern regexp
 				  'ignore
 				  'ignore
 				  'cscope-tree-fail
@@ -728,10 +728,10 @@
   (let* ((dir (car cscope-database-list))
 	 (desc (format "Tree function calling: %s\n"
 		       (propertize symbol 'face 'bold)))
-	 (cmd (append (cscope-find-default-option) `("-L" "-3" ,symbol)))
+	 (args (append (cscope-find-default-args) `("-L" "-3" ,symbol)))
 	 (regexp cscope-default-regexp)
 	 (requests (cscope-create-multi-request
-		    desc cmd symbol regexp
+		    desc args symbol regexp
 		    'cscope-tree-insert-initial
 		    'cscope-tree-insert-next
 		    'cscope-insert-request-fail
