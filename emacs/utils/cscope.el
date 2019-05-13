@@ -455,6 +455,22 @@
 	 (regexp cscope-default-regexp))
     (cscope-find-command desc cmd symbol regexp)))
 
+(defun cscope-find-egrep (symbol)
+  (interactive (list (cscope-prompt-for-symbol "Find text with egrep")))
+  (let* ((desc (format "Finding text with egrep: %s\n"
+		       (propertize symbol 'face 'bold)))
+	 (cmd `("-L" "-6" ,symbol))
+	 (regexp cscope-default-regexp))
+    (cscope-find-command desc cmd symbol regexp)))
+
+(defun cscope-find-file (symbol)
+  (interactive (list (cscope-prompt-for-symbol "Find file")))
+  (let* ((desc (format "Finding file: %s\n"
+		       (propertize symbol 'face 'bold)))
+	 (cmd `("-L" "-7" ,symbol))
+	 (regexp cscope-default-regexp))
+    (cscope-find-command desc cmd symbol regexp)))
+
 (defun cscope-find-symbol-assignment (symbol)
   (interactive (list (cscope-prompt-for-symbol "Find symbol assignment")))
   (let* ((desc (format "Finding symbol assignment: %s\n"
