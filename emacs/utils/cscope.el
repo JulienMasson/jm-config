@@ -61,7 +61,6 @@
 (defvar cscope-buffer-name "*cscope*")
 (defvar cscope-result-separator (concat (make-string 80 (string-to-char "="))))
 (defvar cscope-file-entry "***")
-(defvar cscope-index-file "cscope.files")
 (defvar cscope-database-file "cscope.out")
 (defvar cscope-database-fast-symbol-files '("cscope.out.in" "cscope.out.po"))
 (defvar cscope-default-regexp
@@ -75,6 +74,9 @@
 (defvar cscope-auto-update t)
 (defvar cscope-fast-symbol nil)
 (defvar cscope-keep-history t)
+
+(defvar cscope-index-file "cscope.files")
+(defvar cscope-generate-index-file 'cscope-index-file-shell-command)
 
 ;; common
 (defun cscope-abort ()
@@ -487,6 +489,11 @@
 (defun cscope-build-find-cmd ()
   (concat "find . -name \"*.[chxsS]\" > " cscope-index-file))
 
+(defun cscope-index-file-shell-command (dir)
+  (let ((default-directory dir)
+	(inhibit-message t))
+    (shell-command (cscope-build-find-cmd))))
+
 (defun cscope-database-remove-files (dir)
   (mapc (lambda (file)
 	  (let ((default-directory dir))
@@ -505,7 +512,6 @@
   (cscope-check-env)
   (cscope-database-remove-files dir)
   (let* ((default-directory dir)
-	 (find-cmd (cscope-build-find-cmd))
 	 (cmd (cscope-database-default-option))
 	 (desc (concat "Creating "
 		       (if cscope-fast-symbol
@@ -519,7 +525,7 @@
 				       :finish 'cscope-database-finish
 				       :data data)))
     (unless (file-exists-p cscope-index-file)
-      (shell-command find-cmd))
+      (funcall cscope-generate-index-file dir))
     (cscope-process-request request)))
 
 (defun cscope-check-database-fast-symbol (dir)
