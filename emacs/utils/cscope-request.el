@@ -23,6 +23,7 @@
 ;;; Code:
 
 (require 'cl-macs)
+(require 'cl-seq)
 
 (cl-defstruct cscope-request
   dir
@@ -89,6 +90,8 @@
 	   (cscope-raise-error (concat dir " doesn't exist !")))
 	  ((string= "" program)
 	   (cscope-raise-error (concat "Cannot find: " cscope-program-name)))
+	  ((or (not (listp args)) (cl-member nil args))
+	   (cscope-raise-error "Incorrect arguments format"))
 	  (t (cscope-start-process dir program args)))))
 
 (defun cscope-cancel-current-request ()
