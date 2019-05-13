@@ -405,6 +405,7 @@
 (defun cscope-find-command (desc cmd pattern regexp)
   (cscope-check-env)
   (cscope-check-database)
+  (cscope-save-marker)
   (let* ((cmd (append (cscope-find-default-option) cmd))
 	 (requests (cscope-create-multi-request
 		    desc cmd pattern regexp
@@ -721,6 +722,7 @@
 		    'cscope-tree-finish)))
     (setq cscope-tree-patterns (make-list (length cscope-database-list)
 					  symbol))
+    (cscope-save-marker)
     (mapc #'cscope-process-request requests)))
 
 (provide 'cscope)
