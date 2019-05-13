@@ -93,11 +93,18 @@
       (save-buffer))))
 
 ;; add database with pycscope
+(defun cscope-python-build-find-cmd ()
+  (concat "find . -name \"*.py\" > " cscope-index-file))
+
+(defun cscope-python-index-file-shell-command (dir)
+  (let ((default-directory dir)
+	(inhibit-message t))
+    (shell-command (cscope-python-build-find-cmd))))
+
 (defun cscope-create-database-pycscope (dir)
   (cscope-check-env)
   (let* ((default-directory dir)
 	 (cscope-program-name "pycscope")
-	 (find-cmd (concat "find . -name \"*.py\" > " cscope-index-file))
 	 (cmd '("-D" "-R"))
 	 (desc "Creating database cscope with pycscope ...\n")
 	 (data (make-cscope-data :dir dir
@@ -108,7 +115,7 @@
 				       :finish 'cscope-database-finish
 				       :data data)))
     (unless (file-exists-p cscope-index-file)
-      (shell-command find-cmd))
+      (cscope-python-index-file-shell-command dir))
     (cscope-process-request request)))
 
 (defun cscope-add-database-pycscope (dir)
