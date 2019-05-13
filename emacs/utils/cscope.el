@@ -493,7 +493,7 @@
 	    (if (file-exists-p file)
 		(delete-file file))))
 	(append cscope-database-fast-symbol-files
-		(list (eval cscope-database-file)))))
+		(list cscope-index-file cscope-database-file))))
 
 (defun cscope-database-finish (output error data)
   (add-to-list 'cscope-database-list (cscope-data-dir data) t)
