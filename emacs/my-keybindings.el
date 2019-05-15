@@ -129,22 +129,8 @@
 (global-set-key (kbd "C-c e c") 'bitlbee-chat)
 (global-set-key (kbd "C-c e j") 'erc-chat-jump)
 
-;; cscope
-(global-set-key (kbd "C-c s =") 'cscope-find-symbol-assignment)
-(global-set-key (kbd "C-c s D") 'cscope-dired-directory)
-(global-set-key (kbd "C-c s S") 'cscope-find-struct-definition)
-(global-set-key (kbd "C-c s T") 'cscope-tree-function-calling)
-(global-set-key (kbd "C-c s a") 'cscope-add-database)
-(global-set-key (kbd "C-c s c") 'cscope-find-function-calling)
-(global-set-key (kbd "C-c s d") 'cscope-find-global-definition)
-(global-set-key (kbd "C-c s e") 'cscope-find-egrep)
-(global-set-key (kbd "C-c s f") 'cscope-find-file)
-(global-set-key (kbd "C-c s o") 'cscope-generate-from-objects)
-(global-set-key (kbd "C-c s p") 'cscope-add-database-pycscope)
-(global-set-key (kbd "C-c s r") 'cscope-reset-database)
-(global-set-key (kbd "C-c s s") 'cscope-find-symbol)
-(global-set-key (kbd "C-c s t") 'cscope-find-text-string)
-(global-set-key (kbd "C-c s u") 'cscope-pop-mark)
+;; acscope
+(define-key acscope-mode-map (kbd "C-c s o") 'cscope-generate-from-objects)
 
 ;; map TAB to company completion in shell mode
 (define-key shell-mode-map (kbd "TAB") #'company-manual-begin)

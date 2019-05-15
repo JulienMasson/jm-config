@@ -158,7 +158,7 @@
 (require 'status)
 (setq status-separator  " | ")
 (status-add-to-left 'status-compilation)
-(status-add-to-left 'status-cscope)
+(status-add-to-left 'status-acscope)
 (status-add-to-left 'status-project-manager)
 (status-add-to-left 'status-virtual-desktops)
 (status-add-to-right 'status-erc)

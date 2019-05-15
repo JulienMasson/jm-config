@@ -225,3 +225,6 @@
 [submodule "emacs/modules/surround"]
 	path = emacs/modules/surround
 	url = https://github.com/ganmacs/emacs-surround.git
+[submodule "emacs/modules/acscope"]
+	path = emacs/modules/acscope
+	url = https://github.com/JulienMasson/acscope.git
