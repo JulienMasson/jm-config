@@ -28,6 +28,8 @@
 ;; acscope
 (require 'acscope)
 (require 'acscope-kernel)
+(setq acscope-find-auto-update nil)
+(setq acscope-database-fast-symbol t)
 (acscope-global-setup)
 
 ;; semantic
