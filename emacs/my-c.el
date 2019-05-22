@@ -27,70 +27,8 @@
 
 ;; acscope
 (require 'acscope)
+(require 'acscope-kernel)
 (acscope-global-setup)
-
-;; generate cscope files from objects files path
-(defvar cscope-objects-excluded '("vmlinux.o" ".tmp_kallsyms*"))
-
-(defun cscope-objects-list (dir)
-  (let* ((cmd "find . -name \"*.o\"")
-	 (str (shell-command-to-string cmd))
-	 (objects (split-string str "\n"))
-	 (regexp (format "\\(%s\\)"
-			 (mapconcat 'identity cscope-objects-excluded
-				    "\\|"))))
-    (cl-remove-if (lambda (object)
-		    (string-match-p regexp object))
-		  objects)))
-
-(defun cscope-get-dirs-from-objects (objects)
-  (let (dirs)
-    (mapc (lambda (object)
-	    (add-to-list 'dirs (file-name-directory object) t))
-	  objects)
-    dirs))
-
-(defun cscope-headers-list (dirs)
-  (let (headers)
-    (mapc (lambda (dir)
-	    (let* ((cmd (format "find %s -name \"*.h\"" dir))
-		   (str (shell-command-to-string cmd))
-		   (results (split-string str "\n")))
-	      (setq headers (append results headers))))
-	  dirs)
-    headers))
-
-(defun cscope-default-headers-list ()
-  (let* ((cmd "find ./include -name \"*.h\"")
-	 (str (shell-command-to-string cmd)))
-    (split-string str "\n")))
-
-(defun cscope-generate-from-objects (dir)
-  (interactive "DAdd database from objects: ")
-  (let* ((objects (cscope-objects-list dir))
-	 (dirs (cscope-get-dirs-from-objects objects))
-	 (headers (cscope-headers-list dirs))
-	 (default-headers (cscope-default-headers-list)))
-    (with-current-buffer (find-file-noselect acscope-database-source-file)
-      (erase-buffer)
-      (mapc (lambda (object)
-	      (insert (replace-regexp-in-string "\.o$" ".c" object))
-	      (insert "\n"))
-	    objects)
-      (mapc (lambda (header)
-	      (insert (concat header "\n")))
-	    (append headers default-headers))
-      (save-buffer))))
-
-;; cscope custom index file
-(defvar cscope-custom-source-file-cmds nil)
-
-(defun cscope-custom-source-file-cmd (dir)
-  (if-let ((func (assoc-default dir cscope-custom-source-file-cmds)))
-      (funcall func dir)
-    (funcall 'acscope-database-default-source-file-cmd dir)))
-
-(setq acscope-database-source-file-cmd 'cscope-custom-source-file-cmd)
 
 ;; semantic
 (require 'semantic)
@@ -138,7 +76,6 @@
 
 (defun register-kernel-global-settings (path)
   (add-to-list 'magit-blacklist-repo path)
-  (add-to-list 'cscope-custom-source-file-cmds `(,path . cscope-kernel-source-file))
   (add-to-list 'c-global-settings-list `(,path . kernel-global-settings)))
 
 ;; ctags

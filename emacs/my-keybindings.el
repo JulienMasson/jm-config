@@ -130,7 +130,7 @@
 (global-set-key (kbd "C-c e j") 'erc-chat-jump)
 
 ;; acscope
-(define-key acscope-mode-map (kbd "C-c s o") 'cscope-generate-from-objects)
+(define-key acscope-mode-map (kbd "C-c s k") 'acscope-database-add-kernel)
 
 ;; map TAB to company completion in shell mode
 (define-key shell-mode-map (kbd "TAB") #'company-manual-begin)
