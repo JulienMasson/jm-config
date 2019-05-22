@@ -39,7 +39,7 @@
 	 (dirs (mapcar (lambda (dir) (concat top dir)) includes)))
     (setq-mode-local c-mode
 		     semantic-dependency-system-include-path
-		     (if (tramp-tramp-file-p top) nil dirs))))
+		     dirs)))
 
 ;; company semantic
 (require 'company-semantic)
@@ -72,7 +72,8 @@
 
 (defun kernel-global-settings ()
   (setq magit-log-arguments '("-n256" "--decorate"))
-  (semantic-set-include-path-from-toplevel '("include/" "arch/arm64/include/")))
+  (unless (tramp-tramp-file-p default-directory)
+    (semantic-set-include-path-from-toplevel '("include/" "arch/arm64/include/"))))
 
 (defun register-kernel-global-settings (path)
   (add-to-list 'magit-blacklist-repo path)
