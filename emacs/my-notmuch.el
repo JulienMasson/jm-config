@@ -459,5 +459,9 @@
 	 (unread-query (concat query " and tag:unread")))
     (notmuch-tree unread-query)))
 
+;; attach files from dired marked files
+(defun notmuch-attach-dired-files ()
+  (interactive)
+  (mapc #'mml-attach-file (dired-get-all-marked)))
 
 (provide 'my-notmuch)

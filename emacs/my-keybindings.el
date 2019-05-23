@@ -154,6 +154,7 @@
 (define-key notmuch-tree-mode-map "m" 'notmuch-remove-unread-smart)
 (define-key notmuch-tree-mode-map "M" 'notmuch-remove-unread-all)
 (define-key notmuch-tree-mode-map (kbd "TAB") 'notmuch-tree-toggle-folding-thread)
+(define-key notmuch-message-mode-map (kbd "C-c a") 'notmuch-attach-dired-files)
 
 ;; project manager
 (global-set-key (kbd "C-c i s") 'switch-project)
