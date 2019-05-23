@@ -3,17 +3,17 @@
 # dbus
 export $(dbus-launch)
 
-# check if we are in dual screen
-DUAL_SCREEN=`xrandr -q | grep -E -e "VGA-1 connected" -e "HDMI-1 connected" | wc -l)`
-if [ "$DUAL_SCREEN" -eq 2 ]; then
-    xrandr --output HDMI1 --mode 1920x1200 --pos 1920x0 --rotate normal --output VIRTUAL1 --off --output DP1 --off --output eDP1 --off --output VGA1 --mode 1920x1200 --pos 0x0 --rotate normal
+# check if we are docked
+DOCKED=`xrandr -q | grep -c "DP-1-1 connected"`
+if [ "$DOCKED" -eq 1 ]; then
+    sh ~/.screenlayout/docked.sh
 else
-    xrandr --output HDMI1 --off --output VIRTUAL1 --off --output DP1 --off --output eDP1 --mode 1366x768 --pos 0x0 --rotate normal --output VGA1 --off
-fi
+    sh ~/.screenlayout/laptop.sh
 
-# Change ctrl
-setxkbmap -option ctrl:swapcaps
-setxkbmap -option ctrl:nocaps
+    # Change ctrl
+    setxkbmap -option ctrl:swapcaps
+    setxkbmap -option ctrl:nocaps
+fi
 
 # Start jwm
 exec jwm
