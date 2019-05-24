@@ -42,7 +42,8 @@
 							  "kernel.out.po"))
   "Kernel cscope Fast symbol files name")
 
-(defvar acscope-database--kernel-objects-excluded '("vmlinux.o" ".tmp_kallsyms*"))
+(defvar acscope-database--kernel-objects-excluded '("vmlinux\.o" "built-in\.o"
+						    "\.tmp_kallsyms[0-9]\.o"))
 
 ;;; Internal Functions
 
@@ -50,7 +51,7 @@
   (let* ((cmd "find . -name \"*.o\"")
 	 (str (shell-command-to-string cmd))
 	 (objects (split-string str "\n"))
-	 (regexp (format "\\(%s\\)"
+	 (regexp (format "^\./\\(%s\\)$"
 			 (mapconcat 'identity
 				    acscope-database--kernel-objects-excluded
 				    "\\|"))))
