@@ -83,12 +83,17 @@
 
 (defun acscope-database--kernel-source-file-cmd (dir)
   "Create cscope files based on object files found"
+  (message (concat "Generating "
+		   (propertize acscope-database--kernel-source-file
+			       'face 'warning)
+		   ", it takes some time ..."))
   (let* ((default-directory dir)
 	 (objects (acscope-database--kernel-objects-list dir))
 	 (dirs (acscope-database--kernel-dirs-from-objects objects))
 	 (headers (acscope-database--kernel-headers-list dirs))
-	 (default-headers (acscope-database--kernel-default-headers-list)))
-    (with-current-buffer (find-file-noselect acscope-database--kernel-source-file)
+	 (default-headers (acscope-database--kernel-default-headers-list))
+	 (save-silently t))
+    (with-current-buffer (find-file-noselect acscope-database--kernel-source-file t)
       (erase-buffer)
       (mapc (lambda (object)
 	      (insert (replace-regexp-in-string "\.o$" ".c" object))
@@ -97,7 +102,8 @@
       (mapc (lambda (header)
 	      (insert (concat header "\n")))
 	    (append headers default-headers))
-      (save-buffer))))
+      (save-buffer))
+    (message nil)))
 
 (defun acscope-database--kernel-args ()
   "Kernel cscope arguments following database options"
