@@ -207,9 +207,6 @@
 [submodule "emacs/modules/multi-term-plus"]
 	path = emacs/modules/multi-term-plus
 	url = https://github.com/aborn/multi-term-plus.git
-[submodule "emacs/modules/notmuch"]
-	path = emacs/modules/notmuch
-	url = git://git.notmuchmail.org/git/notmuch
 [submodule "emacs/modules/dts-mode"]
 	path = emacs/modules/dts-mode
 	url = https://github.com/bgamari/dts-mode.git
@@ -228,3 +225,6 @@
 [submodule "emacs/modules/acscope"]
 	path = emacs/modules/acscope
 	url = https://github.com/JulienMasson/acscope.git
+[submodule "emacs/modules/notmuch"]
+	path = emacs/modules/notmuch
+	url = https://github.com/JulienMasson/notmuch.git
