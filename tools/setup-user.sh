@@ -115,7 +115,8 @@ git clone https://github.com/emacs-mirror/emacs.git
 sudo apt-get install -y texinfo libgtk-3-dev libxpm-dev libjpeg-dev libgif-dev libtiff5-dev libgnutls28-dev libmagick++-dev
 pushd emacs
 ./autogen.sh
-make bootstrap -j$(nproc)
+./configure --with-modules
+make -j$(nproc)
 popd
 popd
 
