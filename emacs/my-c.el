@@ -81,12 +81,6 @@
   (add-to-list 'magit-blacklist-repo path)
   (add-to-list 'c-global-settings-list `(,path . kernel-global-settings)))
 
-;; ctags
-(defun create-ctags-tag (dir)
-  (interactive "DDirectory: ")
-  (let ((default-directory dir))
-    (shell-command "/usr/bin/ctags -e -R .")))
-
 ;; checkpatch
 (defun checkpatch ()
   (interactive)
