@@ -125,7 +125,7 @@ pushd "${JM_CONFIG}"
 git submodule foreach 'git reset --hard'
 git submodule foreach 'git checkout master'
 git submodule foreach 'git pull --rebase'
-git submodule foreach 'if [ -f Makefile ] && [ ! -f Cask ]; then make clean && make -j$(nproc); fi'
+git submodule foreach 'if [ -f Makefile ] && [ ! -f Cask ]; then make clean ; make -j$(nproc); fi'
 git submodule foreach 'git clean -f'
 popd
 
