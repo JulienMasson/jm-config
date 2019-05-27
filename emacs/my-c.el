@@ -50,8 +50,12 @@
 ;; global setting applied to specific c files
 (defvar c-global-settings-list nil)
 
+(defvar transient-default-log-arguments
+  '((magit-log:magit-log-mode "--graph" "-n256" "--decorate")))
+
 (defun apply-c-default-settings ()
-  (setq magit-log-arguments '("-n256" "--graph" "--decorate")))
+  (setq transient-values (append transient-default-values
+				 transient-default-log-arguments)))
 
 (defun apply-c-global-settings (&rest _)
   (let* ((filename (expand-file-name default-directory))
@@ -69,11 +73,15 @@
 (advice-add 'select-window :after #'apply-c-global-settings)
 
 ;; kernel global settings
+(defvar transient-kernel-log-arguments
+  '((magit-log:magit-log-mode "-n256" "--decorate")))
+
 (defun cscope-kernel-source-file (dir)
   (funcall 'cscope-generate-from-objects dir))
 
 (defun kernel-global-settings ()
-  (setq magit-log-arguments '("-n256" "--decorate"))
+  (setq transient-values (append transient-default-values
+				 transient-kernel-log-arguments))
   (unless (tramp-tramp-file-p default-directory)
     (semantic-set-include-path-from-toplevel '("include/" "arch/arm64/include/"))))
 

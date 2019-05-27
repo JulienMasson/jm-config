@@ -149,18 +149,18 @@
 (advice-add 'magit-branch-or-commit-at-point :around #'magit-blacklist-branch-or-commit-at-point)
 
 ;; set signoff by default
-(setq transient-values '((magit-commit "--signoff")))
+(defvar transient-default-values '((magit-commit "--signoff")))
+(setq transient-values transient-default-values)
 
 ;; magit log from HEAD to last Tag found
 (defun magit-log-from-head-to-last-tag (&optional args files)
   "Show log from `HEAD' to last Tag found."
   (interactive (magit-log-arguments))
-  (let ((last-tag (magit-git-string "describe" "--abbrev=0" "--tags")))
-    (when last-tag
-      (magit-log (list (format "%s..HEAD" last-tag)) args files))))
+  (when-let ((last-tag (magit-git-string "describe" "--abbrev=0" "--tags")))
+      (magit-git-log (list (format "%s..HEAD" last-tag)) args files)))
 
-(magit-define-popup-action 'magit-log-popup
-  ?t "Log from HEAD to last Tag" 'magit-log-from-head-to-last-tag)
+(transient-append-suffix 'magit-log "h"
+  '("t" "HEAD to last Tag" magit-log-from-head-to-last-tag))
 
 
 (provide 'my-git)
