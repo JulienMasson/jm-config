@@ -228,3 +228,6 @@
 [submodule "emacs/modules/notmuch"]
 	path = emacs/modules/notmuch
 	url = https://github.com/JulienMasson/notmuch.git
+[submodule "emacs/modules/libegit2"]
+	path = emacs/modules/libegit2
+	url = https://github.com/magit/libegit2.git
