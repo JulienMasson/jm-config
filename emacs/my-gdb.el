@@ -45,12 +45,9 @@
 
 ;; gdb get pid
 (defun gdb-get-pid (process-name)
-  (let* ((user (shell-command-to-string "echo -n $USER"))
-	 (regexp (format "^(?:%s|root)\s*(\\d+).*%s$"
-			 user process-name))
-	 (cmd (format "ps aux | perl -ne 'print \"$1\" if /%s/'"
-		      regexp)))
-    (shell-command-to-string cmd)))
+  (let* ((cmd (format "ps -C %s -o pid=" process-name))
+	 (str (shell-command-to-string cmd)))
+    (string-trim str)))
 
 ;; gdb
 (defvar gdb-default-cmd "gdb")
