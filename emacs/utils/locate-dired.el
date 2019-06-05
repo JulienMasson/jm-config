@@ -65,9 +65,10 @@
 (defun locate-dired--insert (buffer str)
   "Insert SRT in locate dired BUFFER."
   (with-current-buffer buffer
-    (let ((inhibit-read-only t))
-      (goto-char (point-max))
-      (insert str))))
+    (save-excursion
+      (let ((inhibit-read-only t))
+	(goto-char (point-max))
+	(insert str)))))
 
 (defun locate-dired--switch-to-buffer (buffer)
   "Custom `switch-to-buffer' command."
@@ -122,9 +123,14 @@
 	      (locate-dired--create-search ,database ,pattern)))
       (locate-dired--switch-to-buffer (current-buffer)))))
 
-(defun locate-dired--locate-args (database pattern)
+(defun locate-dired--locate-args (locate database pattern)
   "Return list of locate arguments."
-  (list "--basename" (concat "--database=" database) pattern))
+  (let* ((dir (file-name-directory database))
+	 (locate-cmd (format "%s --basename --database=%s %s"
+			     locate database pattern))
+	 (xargs-cmd (concat "xargs -r ls " locate-dired-switches))
+	 (sed-cmd (format "sed 's,^\\(.*\\)%s\\(.*\\),  \\1\\2,g'" dir)))
+  (mapconcat 'identity (list locate-cmd xargs-cmd sed-cmd) " | ")))
 
 (defun locate-dired--updatedb-args (database)
   "Return list of updatedb arguments."
@@ -138,46 +144,21 @@
 	      (format "--prunepaths=\"%s\"" prunepaths))
 	  (concat "--output=" database))))
 
-(defun locate-dired--move-to-search ()
-  "Move point to search results."
-  (goto-char (point-min))
-  (search-forward locate-dired--search-header nil t)
-  (forward-line)
-  (skip-chars-forward " \t\n"))
-
-(defun locate-dired--get-files ()
-  "Parse each line from point and return a list of files."
-  (let (files)
-    (save-excursion
-      (while (null (eobp))
-	(let* ((dir (expand-file-name default-directory))
-	       (beg (line-beginning-position))
-	       (end (line-end-position))
-	       (line (buffer-substring-no-properties beg end))
-	       (local-dir (locate-dired--untramp-path dir))
-	       (file (replace-regexp-in-string local-dir "" line)))
-	  (add-to-list 'files file t))
-	(forward-line)))
-    files))
+(defun locate-dired--move-to-search (buffer)
+  "Move point to search results in BUFFER."
+  (with-current-buffer buffer
+    (goto-char (point-min))
+    (search-forward locate-dired--search-header nil t)
+    (forward-line)
+    (skip-chars-forward " \t\n")))
 
 (defun locate-dired--process-sentinel (process status)
   "Process results when the process has finished."
-  (with-current-buffer (process-buffer process)
-    (save-excursion
-      (locate-dired--move-to-search)
-      (let ((files (locate-dired--get-files))
-	    (beg (point))
-	    (inhibit-read-only t))
-	(delete-region beg (point-max))
-	(insert "\n")
-	(if files
-      	    (apply 'process-file "ls" nil (current-buffer) nil
-      		   locate-dired-switches files)
-      	  (insert "--- No files found ---\n"))
-	(insert (concat "\nLocate finished at " (current-time-string)))
-	(indent-rigidly beg (point-max) 2)))
-    (dired-next-line 1)
-    (recenter)))
+  (let ((buffer (process-buffer process)))
+    (when (with-current-buffer buffer (equal (point) (point-max)))
+      (locate-dired--insert buffer "  --- No files found ---\n"))
+    (locate-dired--insert buffer (concat "\n  Locate finished at "
+					 (current-time-string)))))
 
 (defun locate-dired--process-filter (process str)
   "Insert result in the PROCESS buffer."
@@ -189,13 +170,13 @@
     (if-let ((locate (locate-dired--find-program locate-dired--locate)))
 	(let* ((local-database (locate-dired--untramp-path
 				(expand-file-name database)))
-	       (args (locate-dired--locate-args local-database pattern))
-	       (process (apply 'start-file-process "locate" buffer
-			       locate args)))
+	       (args (locate-dired--locate-args locate local-database pattern))
+	       (process (start-file-process "bash" buffer "bash" "-c" args)))
 	  (locate-dired--insert buffer (concat locate-dired--search-header
-					       pattern "\n"))
+					       pattern "\n\n"))
 	  (set-process-filter process 'locate-dired--process-filter)
-	  (set-process-sentinel process 'locate-dired--process-sentinel))
+	  (set-process-sentinel process 'locate-dired--process-sentinel)
+	  (locate-dired--move-to-search buffer))
       (locate-dired--insert buffer (concat locate-dired--locate " not found !")))))
 
 (defun locate-dired--process-create-sentinel (process status)
