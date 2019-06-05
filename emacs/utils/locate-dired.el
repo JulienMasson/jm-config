@@ -154,11 +154,12 @@
 
 (defun locate-dired--process-sentinel (process status)
   "Process results when the process has finished."
-  (let ((buffer (process-buffer process)))
-    (when (with-current-buffer buffer (equal (point) (point-max)))
-      (locate-dired--insert buffer "  --- No files found ---\n"))
-    (locate-dired--insert buffer (concat "\n  Locate finished at "
-					 (current-time-string)))))
+  (when (eq (process-exit-status process) 0)
+    (let ((buffer (process-buffer process)))
+      (when (with-current-buffer buffer (equal (point) (point-max)))
+	(locate-dired--insert buffer "  --- No files found ---\n"))
+      (locate-dired--insert buffer (concat "\n  Locate finished at "
+					   (current-time-string))))))
 
 (defun locate-dired--process-filter (process str)
   "Insert result in the PROCESS buffer."
@@ -181,14 +182,15 @@
 
 (defun locate-dired--process-create-sentinel (process status)
   "Remove text inserted when creating database and search pattern."
-  (with-current-buffer (process-buffer process)
-    (let ((database (get-text-property (point-min) 'locate-database))
-	  (pattern (get-text-property (point-min) 'locate-pattern))
-	  (inhibit-read-only t))
-      (goto-char (point-min))
-      (search-forward locate-dired--create-header nil t)
-      (delete-region (point) (point-max))
-      (locate-dired--search database pattern))))
+  (when (eq (process-exit-status process) 0)
+    (with-current-buffer (process-buffer process)
+      (let ((database (get-text-property (point-min) 'locate-database))
+	    (pattern (get-text-property (point-min) 'locate-pattern))
+	    (inhibit-read-only t))
+	(goto-char (point-min))
+	(search-forward locate-dired--create-header nil t)
+	(delete-region (point) (point-max))
+	(locate-dired--search database pattern)))))
 
 (defun locate-dired--create-search (database pattern)
   "Create locate DATABASE and search PATTERN."
