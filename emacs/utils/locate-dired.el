@@ -163,17 +163,20 @@
 (defun locate-dired--process-sentinel (process status)
   "Process results when the process has finished."
   (with-current-buffer (process-buffer process)
-    (locate-dired--move-to-search)
-    (let ((files (locate-dired--get-files))
-	  (beg (point))
-	  (inhibit-read-only t))
-      (delete-region beg (point-max))
-      (if files
-      	  (apply 'process-file "ls" nil (current-buffer) nil
-      		 locate-dired-switches files)
-      	(insert "--- No files found ---\n"))
-      (insert (concat "\nLocate finished at " (current-time-string)))
-      (indent-rigidly beg (point-max) 2))))
+    (save-excursion
+      (locate-dired--move-to-search)
+      (let ((files (locate-dired--get-files))
+	    (beg (point))
+	    (inhibit-read-only t))
+	(delete-region beg (point-max))
+	(insert "\n")
+	(if files
+      	    (apply 'process-file "ls" nil (current-buffer) nil
+      		   locate-dired-switches files)
+      	  (insert "--- No files found ---\n"))
+	(insert (concat "\nLocate finished at " (current-time-string)))
+	(indent-rigidly beg (point-max) 2)))
+    (dired-next-line 1)))
 
 (defun locate-dired--process-filter (process str)
   "Insert result in the PROCESS buffer."
@@ -189,7 +192,7 @@
 	       (process (apply 'start-file-process "locate" buffer
 			       locate args)))
 	  (locate-dired--insert buffer (concat locate-dired--search-header
-					       pattern "\n\n"))
+					       pattern "\n"))
 	  (set-process-filter process 'locate-dired--process-filter)
 	  (set-process-sentinel process 'locate-dired--process-sentinel))
       (locate-dired--insert buffer (concat locate-dired--locate " not found !")))))
