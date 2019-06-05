@@ -176,7 +176,8 @@
       	  (insert "--- No files found ---\n"))
 	(insert (concat "\nLocate finished at " (current-time-string)))
 	(indent-rigidly beg (point-max) 2)))
-    (dired-next-line 1)))
+    (dired-next-line 1)
+    (recenter)))
 
 (defun locate-dired--process-filter (process str)
   "Insert result in the PROCESS buffer."
