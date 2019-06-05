@@ -91,7 +91,7 @@
 (defvar notmuch-refresh-every 60)
 
 (defun notmuch-fetch-done ()
-  (with-current-buffer notmuch-hello-buffer
+  (with-current-buffer-safe notmuch-hello-buffer
     (notmuch-poll-and-refresh-this-buffer)))
 (add-hook 'mbsync-exit-hook #'notmuch-fetch-done)
 
@@ -104,7 +104,7 @@
 (add-hook 'notmuch-hello-mode-hook #'notmuch-refresh-hook)
 
 (defun notmuch-refresh-cancel ()
-  (when (string= (buffer-name (current-buffer)) notmuch-hello-buffer)
+  (with-current-buffer-safe notmuch-hello-buffer
     (cancel-timer notmuch-refresh-timer)))
 (advice-add 'notmuch-bury-or-kill-this-buffer :before #'notmuch-refresh-cancel)
 
