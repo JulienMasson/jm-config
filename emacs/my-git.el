@@ -157,7 +157,7 @@
   "Show log from `HEAD' to last Tag found."
   (interactive (magit-log-arguments))
   (when-let ((last-tag (magit-git-string "describe" "--abbrev=0" "--tags")))
-      (magit-git-log (list (format "%s..HEAD" last-tag)) args files)))
+    (magit-log-setup-buffer (list (format "%s..HEAD" last-tag)) args files)))
 
 (transient-append-suffix 'magit-log "h"
   '("t" "HEAD to last Tag" magit-log-from-head-to-last-tag))
