@@ -46,27 +46,37 @@
 (defconst locate-dired--database "locate.db"
   "Locate database file name")
 
-(defconst locate-dired--search-header "━▶ Locate search: "
+(defconst locate-dired--search-header "  ━▶ Locate search: "
   "Message inserted when searching pattern")
+
+(defconst locate-dired--create-header "  ━▶ Creating locate database ..."
+  "Message inserted when creating locate database")
 
 (defvar locate-dired--search--history nil)
 
 ;;; Internal Functions
 
 (defun locate-dired--untramp-path (path)
-  "Return localname of PATH"
+  "Return localname of PATH."
   (if (tramp-tramp-file-p path)
       (tramp-file-name-localname (tramp-dissect-file-name path))
     path))
 
+(defun locate-dired--insert (buffer str)
+  "Insert SRT in locate dired BUFFER."
+  (with-current-buffer buffer
+    (let ((inhibit-read-only t))
+      (goto-char (point-max))
+      (insert str))))
+
 (defun locate-dired--switch-to-buffer (buffer)
-  "Custom `switch-to-buffer' command"
+  "Custom `switch-to-buffer' command."
   (if (get-buffer-window-list buffer)
       (pop-to-buffer buffer)
     (switch-to-buffer-other-window buffer)))
 
 (defun locate-dired--find-program (program-name)
-  "Find PROGRAM-NAME executable in `default-directory'"
+  "Find PROGRAM-NAME executable in `default-directory'."
   (if (tramp-tramp-file-p default-directory)
       (with-parsed-tramp-file-name default-directory nil
 	(let ((buffer (tramp-get-connection-buffer v))
@@ -78,62 +88,65 @@
 	      (match-string 1)))))
     (executable-find program-name)))
 
-(defun locate-dired--find-buffer (dir)
-  "Return buffer of locate dired buffer"
+(defun locate-dired--find-buffer (database pattern)
+  "Return buffer of locate dired buffer."
   (seq-find (lambda (buffer)
 	      (with-current-buffer buffer
-		(and (string= major-mode "dired-mode")
-		     (string= default-directory dir)
-		     (string-match-p "^\*locate:" (buffer-name)))))
+		(let ((dtb (get-text-property (point-min) 'locate-database))
+		      (pat (get-text-property (point-min) 'locate-pattern)))
+		  (and (string= major-mode "dired-mode")
+		       (string= database dtb)
+		       (string= pattern pat)))))
 	    (buffer-list)))
 
-;; (regexp-quote "*locate:")
-
-(defun locate-dired--generate-buffer-name (pattern)
-  "Generate locate buffer name"
-  (if-let ((buffer (locate-dired--find-buffer default-directory)))
+(defun locate-dired--buffer-name (database pattern)
+  "Generate locate buffer name."
+  (if-let ((buffer (locate-dired--find-buffer database pattern)))
       (buffer-name buffer)
     (generate-new-buffer-name (format "*locate: %s*" pattern))))
 
-(defun locate-dired--create-buffer (name database pattern)
-  "Create a locate dired buffer"
-  (with-current-buffer (get-buffer-create name)
-    (let ((inhibit-read-only t))
+(defun locate-dired--create-buffer (database pattern)
+  "Create a locate dired buffer."
+  (let ((plist `(locate-database ,database locate-pattern ,pattern))
+	(buffer-name (locate-dired--buffer-name database pattern))
+	(inhibit-read-only t))
+    (with-current-buffer (get-buffer-create buffer-name)
       (erase-buffer)
-      (insert (concat (file-name-directory database) ":\n\n"))
-      (insert (concat locate-dired--search-header pattern "\n\n"))
+      (insert (format "  %s:\n\n" (file-name-directory database)))
+      (add-text-properties (point-min) (point-max) plist)
       (dired-mode default-directory locate-dired-switches)
       (set (make-local-variable 'dired-subdir-alist)
 	   (list (cons default-directory (point-min-marker))))
       (set (make-local-variable 'revert-buffer-function)
 	   `(lambda (ignore-auto noconfirm)
-	      (locate-dired--create-database)
-	      (locate-dired ,pattern)))
+	      (locate-dired--create-search ,database ,pattern)))
       (locate-dired--switch-to-buffer (current-buffer)))))
 
 (defun locate-dired--locate-args (database pattern)
-  "Return list of locate arguments"
+  "Return list of locate arguments."
   (list "--basename" (concat "--database=" database) pattern))
 
-(defun locate-dired--updatedb-args (dir database)
-  "Return list of updatedb arguments"
-  (list (concat "--localpaths=" dir)
-	(concat "--output=" database)
-	(if locate-dired-prunepaths
-	    (format "--prunepaths=\"%s\""
-		    (mapconcat (lambda (elem)
-				 (concat dir elem))
-			       locate-dired-prunepaths " ")))))
+(defun locate-dired--updatedb-args (database)
+  "Return list of updatedb arguments."
+  (let* ((dir (file-name-directory database))
+	 (prunepaths (if locate-dired-prunepaths
+			 (mapconcat (lambda (elem)
+				      (concat dir elem))
+				    locate-dired-prunepaths " "))))
+    (list (concat "--localpaths=" dir)
+	  (if prunepaths
+	      (format "--prunepaths=\"%s\"" prunepaths))
+	  (concat "--output=" database))))
 
 (defun locate-dired--move-to-search ()
-  "Move point to search results"
+  "Move point to search results."
   (goto-char (point-min))
   (search-forward locate-dired--search-header nil t)
   (forward-line)
   (skip-chars-forward " \t\n"))
 
 (defun locate-dired--get-files ()
-  "Parse each line from point and return a list of files"
+  "Parse each line from point and return a list of files."
   (let (files)
     (save-excursion
       (while (null (eobp))
@@ -148,72 +161,76 @@
     files))
 
 (defun locate-dired--process-sentinel (process status)
-  "Process results when the process has finished"
+  "Process results when the process has finished."
   (with-current-buffer (process-buffer process)
     (locate-dired--move-to-search)
     (let ((files (locate-dired--get-files))
+	  (beg (point))
 	  (inhibit-read-only t))
-      (delete-region (point) (point-max))
+      (delete-region beg (point-max))
       (if files
-	  (apply 'process-file "ls" nil (current-buffer) nil
-		 locate-dired-switches files)
-	(insert "--- No files found ---\n"))
+      	  (apply 'process-file "ls" nil (current-buffer) nil
+      		 locate-dired-switches files)
+      	(insert "--- No files found ---\n"))
       (insert (concat "\nLocate finished at " (current-time-string)))
-      (indent-rigidly (point-min) (point-max) 2))))
+      (indent-rigidly beg (point-max) 2))))
 
 (defun locate-dired--process-filter (process str)
-  "Insert result in the PROCESS buffer"
-  (with-current-buffer (process-buffer process)
-    (let ((inhibit-read-only t))
-      (goto-char (point-max))
-      (insert str))))
+  "Insert result in the PROCESS buffer."
+  (locate-dired--insert (process-buffer process) str))
 
 (defun locate-dired--search (database pattern)
-  "Search PATTERN in DATABASE"
-  (if-let ((locate (locate-dired--find-program locate-dired--locate)))
-      (let* ((buffer-name (locate-dired--generate-buffer-name pattern))
-	     (buffer (locate-dired--create-buffer buffer-name database pattern))
-	     (local-database (locate-dired--untramp-path database))
-	     (args (locate-dired--locate-args local-database pattern))
-	     (process (apply 'start-file-process "locate" buffer
-			     locate args)))
-	(set-process-filter process 'locate-dired--process-filter)
-	(set-process-sentinel process 'locate-dired--process-sentinel))
-    (message (concat locate-dired--locate " not found !"))))
+  "Search PATTERN in DATABASE."
+  (let ((buffer (locate-dired--create-buffer database pattern)))
+    (if-let ((locate (locate-dired--find-program locate-dired--locate)))
+	(let* ((local-database (locate-dired--untramp-path
+				(expand-file-name database)))
+	       (args (locate-dired--locate-args local-database pattern))
+	       (process (apply 'start-file-process "locate" buffer
+			       locate args)))
+	  (locate-dired--insert buffer (concat locate-dired--search-header
+					       pattern "\n\n"))
+	  (set-process-filter process 'locate-dired--process-filter)
+	  (set-process-sentinel process 'locate-dired--process-sentinel))
+      (locate-dired--insert buffer (concat locate-dired--locate " not found !")))))
 
-(defun locate-dired--create-database ()
-  "Create locate database in `default-directory' and return the database path."
-  (if-let ((updatedb (locate-dired--find-program locate-dired--updatedb)))
-      (let* ((dir (expand-file-name default-directory))
-	     (local-dir (locate-dired--untramp-path dir))
-	     (database (concat local-dir locate-dired--database))
-	     (args (locate-dired--updatedb-args local-dir database)))
-	(message "Creating locate database ...")
-	(apply 'process-file updatedb nil nil nil args)
-	(message nil)
-	(concat dir locate-dired--database))
-    (message (concat locate-dired--updatedb " not found !"))
-    nil))
+(defun locate-dired--process-create-sentinel (process status)
+  "Remove text inserted when creating database and search pattern."
+  (with-current-buffer (process-buffer process)
+    (let ((database (get-text-property (point-min) 'locate-database))
+	  (pattern (get-text-property (point-min) 'locate-pattern))
+	  (inhibit-read-only t))
+      (goto-char (point-min))
+      (search-forward locate-dired--create-header nil t)
+      (delete-region (point) (point-max))
+      (locate-dired--search database pattern))))
 
-(defun locate-dired--find-database ()
-  "Return database found in `default-directory' or create new one."
-  (let* ((database (expand-file-name
-		    (concat default-directory locate-dired--database)))
-	 (prompt (format "Create locate database (%s): "
-			 (propertize database 'face 'success))))
-    (if (file-exists-p database)
-	database
-      (when (yes-or-no-p prompt)
-	(locate-dired--create-database)))))
+(defun locate-dired--create-search (database pattern)
+  "Create locate DATABASE and search PATTERN."
+  (let ((buffer (locate-dired--create-buffer database pattern)))
+    (if-let ((updatedb (locate-dired--find-program locate-dired--updatedb)))
+	(let* ((local-database (locate-dired--untramp-path
+				(expand-file-name database)))
+	       (args (locate-dired--updatedb-args local-database))
+	       (process (apply 'start-file-process "updatedb" buffer
+			       updatedb args)))
+	  (locate-dired--insert buffer locate-dired--create-header)
+	  (set-process-sentinel process 'locate-dired--process-create-sentinel))
+      (locate-dired--insert buffer (concat locate-dired--updatedb " not found !")))))
 
 ;;; External Functions
 
 (defun locate-dired (pattern)
   "Search PATTERN from current `default-directory'.
-If no database is found, we ask to create one."
+If no database is found, we ask to create one and process the request."
   (interactive (list (read-string "Locate search: " nil
 				  'locate-dired--search--history)))
-  (when-let ((database (locate-dired--find-database)))
-    (locate-dired--search database pattern)))
+  (let* ((database (concat default-directory locate-dired--database))
+	 (prompt (format "Create locate database (%s): "
+			 (propertize database 'face 'success))))
+    (if (file-exists-p database)
+	(locate-dired--search database pattern)
+      (when (yes-or-no-p prompt)
+	(locate-dired--create-search database pattern)))))
 
 (provide 'locate-dired)
