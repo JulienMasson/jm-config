@@ -25,6 +25,10 @@
 (require 'ls-lisp)
 (require 'dired)
 
+;; locate dired
+(require 'locate-dired)
+
+;; sort dired buffer
 (defun ls-lisp-format-file-size (file-size human-readable)
   "This is a redefinition of the function from `dired.el'. This
 fixes the formatting of file sizes in dired mode, to support very

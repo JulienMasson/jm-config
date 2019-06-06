@@ -131,7 +131,6 @@
 (require 'tail)
 (require 'nmcli)
 (require 'dmesg)
-(require 'locate-database)
 (require 'process)
 
 ;; Project manager
