@@ -34,7 +34,14 @@
 
 ;; semantic
 (require 'semantic)
+(setq semantic-default-c-path '("/usr/include/" "/usr/local/include/"
+				"/usr/include/x86_64-linux-gnu/"))
 (semantic-mode)
+
+(defun semantic-set-default-include-path ()
+  (setq-mode-local c-mode
+  		   semantic-dependency-system-include-path
+  		   semantic-default-c-path))
 
 (defun semantic-set-include-path-from-toplevel (includes)
   (let* ((top (magit-toplevel))
@@ -55,7 +62,8 @@
 
 (defun apply-c-default-settings ()
   (setq transient-values (append transient-default-values
-				 transient-default-log-arguments)))
+				 transient-default-log-arguments))
+  (semantic-set-default-include-path))
 
 (defun apply-c-global-settings (&rest _)
   (let* ((filename (expand-file-name default-directory))
@@ -82,7 +90,8 @@
 (defun kernel-global-settings ()
   (setq transient-values (append transient-default-values
 				 transient-kernel-log-arguments))
-  (unless (tramp-tramp-file-p default-directory)
+  (if (tramp-tramp-file-p default-directory)
+      (semantic-set-default-include-path)
     (semantic-set-include-path-from-toplevel '("include/" "arch/arm64/include/"))))
 
 (defun register-kernel-global-settings (path)
