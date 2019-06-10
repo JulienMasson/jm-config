@@ -35,6 +35,11 @@
 ;; displays the window at the bottom of the selected frame
 (setq transient-display-buffer-action '(display-buffer-below-selected))
 
+;; redefine magit-diff-visit-file
+(defun magit-diff-visit-file (file)
+  (interactive (list (magit-file-at-point t t)))
+  (magit-diff-visit-file--internal file nil #'switch-to-buffer-other-window))
+
 ;; WORKAROUND: transient reduce only the current magit window
 (defvar my-window-sibling nil)
 
