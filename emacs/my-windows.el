@@ -37,8 +37,9 @@
 
 ;; disable menubar, toolbar and scrollbar
 (menu-bar-mode -1)
-(toggle-scroll-bar -1)
-(tool-bar-mode -1)
+(when (display-graphic-p)
+  (toggle-scroll-bar -1)
+  (tool-bar-mode -1))
 
 ;; windows size
 (setq default-frame-alist '((width . 80) (height . 40)))
