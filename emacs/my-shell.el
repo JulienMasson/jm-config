@@ -25,6 +25,10 @@
 ;; set default shell
 (setq explicit-shell-file-name "/bin/bash")
 
+;; use emacsclient as the $EDITOR
+(require 'with-editor)
+(add-hook 'shell-mode-hook 'with-editor-export-editor)
+
 ;; clear shell screen
 (defun shell-clear ()
   (interactive)

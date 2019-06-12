@@ -98,10 +98,6 @@
 ;; don’t show any indicators
 (setq magit-section-visibility-indicator nil)
 
-;; use emacsclient as the $EDITOR
-(require 'with-editor)
-(add-hook 'shell-mode-hook 'with-editor-export-editor)
-
 ;; ido on magit
 (setq magit-completing-read-function 'magit-ido-completing-read)
 
