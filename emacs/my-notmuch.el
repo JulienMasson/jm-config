@@ -90,9 +90,15 @@
 (defvar notmuch-refresh-timer nil)
 (defvar notmuch-refresh-every 60)
 
+(defmacro with-hello-buffer (&rest body)
+  (declare (indent 1) (debug t))
+  `(when (get-buffer notmuch-hello-buffer)
+     (with-current-buffer notmuch-hello-buffer
+       ,@body)))
+
 (defun notmuch-fetch-done ()
-  (with-current-buffer-safe notmuch-hello-buffer
-    (notmuch-poll-and-refresh-this-buffer)))
+  (with-hello-buffer
+      (notmuch-poll-and-refresh-this-buffer)))
 (add-hook 'mbsync-exit-hook #'notmuch-fetch-done)
 
 (defun notmuch-run-mbsync ()
@@ -104,8 +110,8 @@
 (add-hook 'notmuch-hello-mode-hook #'notmuch-refresh-hook)
 
 (defun notmuch-refresh-cancel ()
-  (with-current-buffer-safe notmuch-hello-buffer
-    (cancel-timer notmuch-refresh-timer)))
+  (with-hello-buffer
+      (cancel-timer notmuch-refresh-timer)))
 (advice-add 'notmuch-bury-or-kill-this-buffer :before #'notmuch-refresh-cancel)
 
 ;; show unread messages
