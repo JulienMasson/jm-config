@@ -44,5 +44,11 @@
 (setq multi-term-program explicit-shell-file-name)
 (defalias 'term 'multi-term)
 
+;; shell enter
+(defun shell-press-ret ()
+  (interactive)
+  (if (get-buffer-process (current-buffer))
+      (comint-send-input)
+    (shell (current-buffer))))
 
 (provide 'my-shell)

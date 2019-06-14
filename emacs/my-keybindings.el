@@ -132,8 +132,9 @@
 ;; acscope
 (define-key acscope-mode-map (kbd "C-c s k") 'acscope-database-add-kernel)
 
-;; map TAB to company completion in shell mode
+;; shell mode
 (define-key shell-mode-map (kbd "TAB") #'company-manual-begin)
+(define-key shell-mode-map (kbd "RET") #'shell-press-ret)
 
 ;; manual at point
 (global-set-key (kbd "M-h") 'manual-at-point)
