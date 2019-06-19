@@ -163,9 +163,15 @@
 
 ;;;; diff
    `(diff-added ((t (:foreground ,forest :background nil))))
+   `(diff-indicator-added ((t :inherit diff-added)))
    `(diff-file-header ((t (:background ,black :weight bold))))
    `(diff-header ((t (:background ,black))))
    `(diff-removed ((t (:foreground ,red :background nil))))
+   `(diff-indicator-removed ((t :inherit diff-removed)))
+   `(diff-refine-added ((t :inherit default :weight bold
+			   :box (:line-width 1 :color ,forest))))
+   `(diff-refine-removed ((t :inherit default :weight bold
+			     :box (:line-width 1 :color ,red))))
 
 ;;;; magit
    `(magit-diff-added ((t :inherit diff-added)))
