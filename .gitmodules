@@ -183,9 +183,6 @@
 [submodule "emacs/modules/wgrep"]
 	path = emacs/modules/wgrep
 	url = https://github.com/mhayashi1120/Emacs-wgrep.git
-[submodule "emacs/modules/graphql"]
-	path = emacs/modules/graphql
-	url = https://github.com/vermiculus/graphql.el.git
 [submodule "emacs/modules/treepy"]
 	path = emacs/modules/treepy
 	url = https://github.com/volrath/treepy.el.git
@@ -234,3 +231,6 @@
 [submodule "emacs/modules/locate-dired"]
 	path = emacs/modules/locate-dired
 	url = https://github.com/JulienMasson/locate-dired.git
+[submodule "emacs/modules/mu"]
+	path = emacs/modules/mu
+	url = https://github.com/JulienMasson/mu.git
