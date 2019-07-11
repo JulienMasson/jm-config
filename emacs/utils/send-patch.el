@@ -35,6 +35,7 @@
 (defvar patch-mail-buffers nil)
 (defvar cover-letter-message-id nil)
 (defvar send-patch-backends nil)
+(defvar auto-send-patch nil)
 
 (cl-defstruct send-patch
   (name        nil :read-only t :type 'string)
@@ -52,6 +53,33 @@
 
 (defun send-patch-get-range-from-remote-head ()
   (format "%s..HEAD" (magit-get-upstream-ref)))
+
+(defmacro foreach-send-patchs (&rest body)
+  `(let ((inhibit-read-only t))
+     (dolist (patch patch-mail-buffers)
+       (with-current-buffer patch
+	 ,@body
+	 (set-buffer-modified-p nil)))))
+
+(defun send-patch-update-fields ()
+  (interactive)
+  (let ((to (message-fetch-field "To"))
+	(cc (message-fetch-field "Cc")))
+    (foreach-send-patchs
+     (cl-flet ((goto-begin ()
+	         (message-beginning-of-header visual-line-mode)
+	         (delete-region (point) (line-end-position))))
+       (message-position-on "To" "From")
+       (goto-begin)
+       (if to (insert to))
+       (message-position-on "Cc" "To")
+       (goto-begin)
+       (if cc (insert cc))))))
+
+(defun send-patch-all ()
+  (interactive)
+  (setq auto-send-patch t)
+  (message-send-and-exit))
 
 (defun send-patch-compose-mail (mail-buf patch to cc)
   (with-current-buffer mail-buf
@@ -87,9 +115,13 @@
     (setq buffer-read-only t)
     (set-buffer-modified-p nil)
 
-    ;; redefine keybinding `C-c C-k'
+    ;; define custom keybindings
     (define-key message-mode-map (kbd "C-c C-k")
-      'send-patch-kill-buffer)))
+      'send-patch-kill-buffer)
+    (define-key message-mode-map (kbd "C-c C-r")
+      'send-patch-update-fields)
+    (define-key message-mode-map (kbd "C-c C-p")
+      'send-patch-all)))
 
 (defun generate-patch-mails (patchs to cc)
   (mapcar (lambda (patch)
@@ -121,7 +153,9 @@
 	    (insert cover-letter-message-id))
 
 	  (set-buffer-modified-p nil)
-	  (switch-to-buffer mail-buffer))
+	  (if auto-send-patch
+	      (message-send-and-exit)
+	    (switch-to-buffer mail-buffer)))
       (send-patch-cleanup-env))))
 
 (defun get-cover-letter-message-id ()
@@ -136,6 +170,7 @@
   (send-patch-cleanup-env))
 
 (defun send-patch-cleanup-env ()
+  (setq auto-send-patch nil)
   (mapc #'delete-file (file-expand-wildcards "*.patch"))
   (when patch-mail-buffers
     (mapc #'kill-buffer patch-mail-buffers)
@@ -202,7 +237,7 @@
 				:url url
 				:get-range get-range
 				:get-address get-address)
-	       nil 'send-patch-backend-eq))
+	       t 'send-patch-backend-eq))
 
 ;; add Interactive backend by default
 (defun send-patch-prompt-range ()
