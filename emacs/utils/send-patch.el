@@ -112,12 +112,12 @@
 	  (insert (format-time-string
 		   "%a, %e %b %Y %T %z" (current-time)))
 
-	  ;; add Reply-To and References header
+	  ;; add In-Reply-To and References header
 	  ;; if we have a cover letter
 	  (when cover-letter-message-id
-	    (message-goto-reply-to)
+	    (message-position-on "In-Reply-To" "Subject")
 	    (insert cover-letter-message-id)
-	    (message-position-on "References" "Reply-To")
+	    (message-position-on "References" "In-Reply-To")
 	    (insert cover-letter-message-id))
 
 	  (set-buffer-modified-p nil)
