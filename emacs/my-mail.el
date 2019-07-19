@@ -277,5 +277,21 @@ Julien Masson
 ;; default mail client
 (require 'my-notmuch)
 
+;; jmail
+(require 'jmail)
+
+;; set top maildir
+(setq jmail-top-maildir "~/Maildir")
+
+;; auto-fill queries from top maildir
+(setq jmail-queries (jmail-autofill-maildir-queries jmail-top-maildir))
+
+;; add custom queries
+(add-to-list 'jmail-queries '(nil . (("Starred"   . "flag:flagged"))))
+
+;; remove drafts, sent and trash from queries
+(assoc-delete-all "drafts" jmail-queries)
+(assoc-delete-all "sent" jmail-queries)
+(assoc-delete-all "trash" jmail-queries)
 
 (provide 'my-mail)
