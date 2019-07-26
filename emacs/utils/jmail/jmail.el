@@ -32,24 +32,29 @@
   "Mail reader for Emacs."
   :group 'mail)
 
-(define-derived-mode jmail-mode fundamental-mode
-  "jmail"
-  (jmail--update-header-line jmail--default-header)
-  (toggle-read-only t))
+;;; Mode
 
 (defvar jmail-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map [return] 'jmail-enter)
+    (define-key map "U"      'jmail-unread-all)
     (define-key map "g"      'jmail-update-buffer)
+    (define-key map "j"      'jmail-jump-to-maildir)
     (define-key map "n"      'jmail-next-query)
-    (define-key map [down]   'jmail-next-query)
     (define-key map "p"      'jmail-previous-query)
-    (define-key map [up]     'jmail-previous-query)
     (define-key map "q"      'jmail-quit)
     (define-key map "u"      'jmail-unread)
-    (define-key map "U"      'jmail-unread-all)
+    (define-key map [down]   'jmail-next-query)
+    (define-key map [return] 'jmail-enter)
+    (define-key map [up]     'jmail-previous-query)
     map)
   "Keymap for `jmail-mode'")
+
+(define-derived-mode jmail-mode fundamental-mode
+  "jmail"
+  (jmail--update-header-line jmail--default-header)
+  (jmail--insert-header)
+  (jmail--insert-queries)
+  (toggle-read-only t))
 
 ;;; Faces
 
@@ -84,6 +89,17 @@
   :type 'hook
   :group 'jmail)
 
+(defcustom jmail-sync-config-file nil
+  "Path to the config file used by `jmail-sync-program'"
+  :type 'string
+  :group 'jmail)
+
+;;; External Variables
+
+(defconst jmail-index-program "mu")
+
+(defconst jmail-sync-program "mbsync")
+
 ;;; Internal Variables
 
 (defconst jmail--buffer-name "*jmail*")
@@ -102,6 +118,31 @@
 
 ;;; Internal Functions
 
+(defun jmail--insert-header ()
+  (insert "\n")
+  (insert (propertize "  Queries\n" 'face 'jmail-queries-face))
+  (insert "\n"))
+
+(defun jmail--insert-query (query)
+  (insert (propertize (format "%-5s %-18s" " " query) 'face 'bold)))
+
+(defun jmail--insert-queries ()
+  (mapc (lambda (data)
+	  (let ((account (car data))
+		(queries (cdr data)))
+	    (when account
+	      (insert (propertize (format "    * %s \n" (upcase account))
+				  'face 'jmail-account-face)))
+	    (mapc (lambda (query)
+		    (let ((beg (point)))
+		      (jmail--insert-query (car query))
+		      (insert jmail--unknown-count)
+		      (put-text-property beg (point) 'jmail (cdr query))
+		      (insert "\n")))
+		  queries)
+	    (insert "\n")))
+	jmail-queries))
+
 (defmacro with-jmail-buffer (&rest body)
   `(when (get-buffer jmail--buffer-name)
      (with-current-buffer jmail--buffer-name
@@ -113,39 +154,12 @@
    (setq header-line-format str)
    (force-mode-line-update)))
 
-(defun jmail--setup-buffer ()
-  (if (get-buffer jmail--buffer-name)
-      (jmail--update-header-line jmail--default-header)
-    (with-current-buffer (get-buffer-create jmail--buffer-name)
-      (jmail-mode))))
-
-(defun jmail--insert-header ()
-  (with-jmail-buffer
-   (erase-buffer)
-   (insert "\n")
-   (insert (propertize "  Queries\n" 'face 'jmail-queries-face))
-   (insert "\n")))
-
-(defun jmail--insert-query (query)
-  (insert (propertize (format "%-5s %-18s" " " query) 'face 'bold)))
-
-(defun jmail--insert-queries ()
-  (with-jmail-buffer
-   (mapc (lambda (data)
-	   (let ((account (car data))
-		 (queries (cdr data)))
-	     (when account
-	       (insert (propertize (format "    * %s \n" (upcase account))
-				   'face 'jmail-account-face)))
-	     (mapc (lambda (query)
-		     (let ((beg (point)))
-		       (jmail--insert-query (car query))
-		       (insert jmail--unknown-count)
-		       (put-text-property beg (point) 'jmail (cdr query))
-		       (insert "\n")))
-		   queries)
-	     (insert "\n")))
-	 jmail-queries)))
+(defun jmail--setup ()
+  (with-current-buffer (get-buffer-create jmail--buffer-name)
+    (jmail-mode))
+  (when jmail-update-buffer-every
+    (jmail--restart-update-timer))
+  (jmail--goto-first-query))
 
 (defun jmail--move-to-query (forward)
   (with-jmail-buffer
@@ -251,6 +265,13 @@
    (jmail--stop-update-timer)
    (jmail--start-update-timer))
 
+(defun jmail--maildir-name-list ()
+  (let (maildir)
+    (jmail--foreach-query line query
+      (when (string-match "maildir:/\\(.*\\)" query)
+	(add-to-list 'maildir (match-string 1 query))))
+    maildir))
+
 (defun jmail--global-check ()
   (if jmail-top-maildir
       (unless (file-exists-p jmail-top-maildir)
@@ -258,8 +279,10 @@
     (jmail-abort "Please set `jmail-top-maildir'"))
   (unless jmail-queries
     (jmail-abort "Please set `jmail-queries'"))
-  ;; TODO: check all progams found: mu and mbsync
-  )
+  (unless (jmail-find-program-from-top jmail-index-program)
+    (jmail-abort (concat "Please install " jmail-index-program)))
+  (unless (jmail-find-program-from-top jmail-sync-program)
+    (jmail-abort (concat "Please install " jmail-sync-program))))
 
 ;;; External Functions
 
@@ -288,6 +311,11 @@
   (if-let ((prop (get-text-property (point) 'jmail)))
       (jmail-search prop t nil)))
 
+(defun jmail-jump-to-maildir (query)
+  (interactive (list (completing-read "Jump to: "
+				      (jmail--maildir-name-list))))
+  (jmail-search (concat "maildir:/" query) t nil))
+
 (defun jmail-unread-all ()
   (interactive)
   (jmail-search "flag:unread" t nil))
@@ -301,15 +329,9 @@
 (defun jmail ()
   (interactive)
   (jmail--global-check)
-  (if (get-buffer jmail--buffer-name)
-      (jmail-switch-to-buffer jmail--buffer-name)
-    (jmail--setup-buffer)
-    (jmail-switch-to-buffer jmail--buffer-name)
-    (jmail--insert-header)
-    (jmail--insert-queries)
-    (when jmail-update-buffer-every
-      (jmail--restart-update-timer))
-    (jmail--goto-first-query))
-  (jmail--get-counts))
+  (unless (get-buffer jmail--buffer-name)
+    (jmail--setup))
+  (jmail--get-counts)
+  (jmail-switch-to-buffer jmail--buffer-name))
 
 (provide 'jmail)

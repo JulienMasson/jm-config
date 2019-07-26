@@ -284,7 +284,7 @@ Julien Masson
 (setq jmail-top-maildir "~/Maildir")
 
 ;; set mbsync config file
-(setq jmail-update-sync-config (concat my-private-dotfiles-path ".mbsyncrc"))
+(setq jmail-sync-config-file (concat my-private-dotfiles-path ".mbsyncrc"))
 
 ;; auto-fill queries from top maildir
 (setq jmail-queries (jmail-autofill-maildir-queries jmail-top-maildir))

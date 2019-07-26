@@ -141,7 +141,7 @@
 
 ;; mail
 (global-set-key (kbd "C-x m") 'mail-compose-new)
-(global-set-key (kbd "C-M-m") 'mail-client)
+(global-set-key (kbd "C-M-m") 'jmail)
 
 ;; notmuch
 (define-key notmuch-common-keymap "j" 'notmuch-jump-folder)

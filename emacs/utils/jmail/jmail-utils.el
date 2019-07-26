@@ -75,6 +75,11 @@
 	(jmail-tramp-executable-find dir program-name)
       (executable-find program-name))))
 
+(defun jmail-find-program-from-top (program-name)
+  (if jmail-top-maildir
+      (jmail-find-program jmail-top-maildir program-name)
+    (jmail-abort "Please set `jmail-top-maildir'")))
+
 (defun jmail-find-visible-character (from forward)
   (save-excursion
     (goto-char from)

@@ -23,12 +23,6 @@
 
 ;;; Code:
 
-;;; External Variables
-
-(defvar jmail-update-sync-cmd "mbsync")
-
-(defvar jmail-update-sync-config nil)
-
 ;;; Internal Variables
 
 (defconst jmail-update--buffer-name "*jmail-update*")
@@ -59,7 +53,7 @@
     (jmail-update--reset-env)))
 
 (defun jmail-update--index ()
-  (let* ((program (jmail-process--find-program default-directory "mu"))
+  (let* ((program (jmail-find-program-from-top jmail-index-program))
 	 (maildir (concat "--maildir=" jmail-top-maildir))
 	 (args (list "index" "--nocolor" maildir))
 	 (buffer (get-buffer jmail-update--buffer-name))
@@ -77,13 +71,12 @@
     (jmail-update--reset-env)))
 
 (defun jmail-update--get-sync-args ()
-  (if jmail-update-sync-config
-      (list "--all" "--config" jmail-update-sync-config)
+  (if jmail-sync-config-file
+      (list "--all" "--config" jmail-sync-config-file)
     (list "--all")))
 
 (defun jmail-update--sync ()
-  (let* ((program (jmail-process--find-program default-directory
-					       jmail-update-sync-cmd))
+  (let* ((program (jmail-find-program-from-top jmail-sync-program))
 	 (args (jmail-update--get-sync-args))
 	 (buffer (get-buffer-create jmail-update--buffer-name))
 	 (process (apply 'start-file-process "jmail-update" buffer
