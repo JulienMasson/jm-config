@@ -221,13 +221,13 @@
 (defun jmail-search-quit ()
   (interactive)
   (jmail-process-kill-all)
-  (when jmail-search--need-index
-    (jmail-update-index))
+  ;; (when jmail-search--need-index
+  ;;   (jmail-update-index))
   (jmail-view-quit)
   (jmail-search--delete-all-overlays)
   (with-jmail-search-buffer
    (kill-buffer))
-  (jmail-menu))
+  (jmail))
 
 (defun jmail-search-enter ()
   (interactive)

@@ -23,6 +23,13 @@
 
 ;;; Code:
 
+;;; Faces
+
+(defface jmail-bold-region-face
+  '((t :inherit font-lock-keyword-face :bold t))
+  "Face used when bold region"
+  :group 'jmail)
+
 ;;; External Functions
 
 (defun jmail-abort (msg)
@@ -37,6 +44,20 @@
   (if (get-buffer-window-list buffer)
       (pop-to-buffer buffer)
     (switch-to-buffer buffer)))
+
+(defun jmail-bold-region (beg end)
+  (save-excursion
+    (when-let* ((extract (delete-and-extract-region beg end))
+		(str (substring-no-properties extract)))
+      (goto-char beg)
+      (insert (propertize str 'face 'jmail-bold-region-face)))))
+
+(defun jmail-unbold-region (beg end)
+  (save-excursion
+    (when-let* ((extract (delete-and-extract-region beg end))
+		(str (substring-no-properties extract)))
+      (goto-char beg)
+      (insert str))))
 
 (defun jmail-tramp-executable-find (dir program-name)
   (with-parsed-tramp-file-name dir nil

@@ -283,6 +283,9 @@ Julien Masson
 ;; set top maildir
 (setq jmail-top-maildir "~/Maildir")
 
+;; set mbsync config file
+(setq jmail-update-sync-config (concat my-private-dotfiles-path ".mbsyncrc"))
+
 ;; auto-fill queries from top maildir
 (setq jmail-queries (jmail-autofill-maildir-queries jmail-top-maildir))
 
@@ -293,5 +296,9 @@ Julien Masson
 (assoc-delete-all "drafts" jmail-queries)
 (assoc-delete-all "sent" jmail-queries)
 (assoc-delete-all "trash" jmail-queries)
+
+;; refresh every 60 seconds
+(setq jmail-update-buffer-every 60)
+
 
 (provide 'my-mail)

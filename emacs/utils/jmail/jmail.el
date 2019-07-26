@@ -24,6 +24,8 @@
 ;;; Code:
 
 (require 'jmail-count)
+(require 'jmail-search)
+(require 'jmail-update)
 (require 'jmail-utils)
 
 (defgroup jmail nil
@@ -32,15 +34,20 @@
 
 (define-derived-mode jmail-mode fundamental-mode
   "jmail"
-  (setq header-line-format "       Welcome to Jmail !")
+  (jmail--update-header-line jmail--default-header)
   (toggle-read-only t))
 
 (defvar jmail-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "n"    'jmail-next-query)
-    (define-key map [down] 'jmail-next-query)
-    (define-key map "p"    'jmail-previous-query)
-    (define-key map [up]   'jmail-previous-query)
+    (define-key map [return] 'jmail-enter)
+    (define-key map "g"      'jmail-update-buffer)
+    (define-key map "n"      'jmail-next-query)
+    (define-key map [down]   'jmail-next-query)
+    (define-key map "p"      'jmail-previous-query)
+    (define-key map [up]     'jmail-previous-query)
+    (define-key map "q"      'jmail-quit)
+    (define-key map "u"      'jmail-unread)
+    (define-key map "U"      'jmail-unread-all)
     map)
   "Keymap for `jmail-mode'")
 
@@ -60,10 +67,21 @@
 
 (defcustom jmail-top-maildir nil
   "Path to the top of the maildir"
+  :type 'string
   :group 'jmail)
 
 (defcustom jmail-queries nil
   "Queries displayed in menu"
+  :group 'jmail)
+
+(defcustom jmail-update-buffer-every nil
+  "Update buffer every X seconds, if nil don't refresh"
+  :type 'integer
+  :group 'jmail)
+
+(defcustom jmail-unread-count-hook nil
+  "Functions called when counting unread message"
+  :type 'hook
   :group 'jmail)
 
 ;;; Internal Variables
@@ -72,25 +90,32 @@
 
 (defconst jmail--unknown-count "(/)")
 
+(defconst jmail--default-header "       Welcome to Jmail !")
+
+(defconst jmail--update-ongoing (propertize 	"       Update ongoing ..."
+						'face 'warning))
+
+(defconst jmail--update-error (propertize 	"       Update Failed !"
+						'face 'error))
+
+(defvar jmail--update-timer nil)
+
 ;;; Internal Functions
 
 (defmacro with-jmail-buffer (&rest body)
-  `(let ((inhibit-read-only t))
+  `(when (get-buffer jmail--buffer-name)
      (with-current-buffer jmail--buffer-name
-       ,@body)))
+       (let ((inhibit-read-only t))
+	 ,@body))))
 
-(defun jmail--global-check ()
-  (if jmail-top-maildir
-      (unless (file-exists-p jmail-top-maildir)
-	(jmail-abort (concat "Cannot find: " jmail-top-maildir)))
-    (jmail-abort "Please set `jmail-top-maildir'"))
-  (unless jmail-queries
-    (jmail-abort "Please set `jmail-queries'"))
-  ;; TODO: check all progams found: mu and mbsync
-  )
+(defun jmail--update-header-line (str)
+  (with-jmail-buffer
+   (setq header-line-format str)
+   (force-mode-line-update)))
 
 (defun jmail--setup-buffer ()
-  (unless (get-buffer jmail--buffer-name)
+  (if (get-buffer jmail--buffer-name)
+      (jmail--update-header-line jmail--default-header)
     (with-current-buffer (get-buffer-create jmail--buffer-name)
       (jmail-mode))))
 
@@ -185,15 +210,56 @@
   (with-jmail-buffer
    (save-excursion
      (goto-line data)
+     (run-hook-with-args 'jmail-unread-count-hook
+     			 (get-text-property (point) 'jmail)
+     			 count)
      (end-of-line)
      (when (re-search-backward "(.*/\\(.*\\))$" nil t)
-       (replace-match (format "(%d/\\1)" count))))))
+       (let ((beg (point)))
+	 (replace-match (format "(%d/\\1)" count))
+	 (if (> count 0)
+	     (jmail-bold-region beg (point))
+	   (jmail-unbold-region beg (point))))))))
 
 (defun jmail--get-counts ()
   (jmail--foreach-query line query
     (jmail-count-get query #'jmail--count-total-handler line)
     (jmail-count-get (concat query " flag:unread")
     		     #'jmail--count-unread-handler line)))
+
+(defun jmail--update-buffer-success ()
+  (jmail--update-header-line jmail--default-header)
+  (jmail--get-counts))
+
+(defun jmail--update-buffer-error ()
+  (jmail--update-header-line jmail--update-error))
+
+(defun jmail--start-update-buffer ()
+  (jmail--update-header-line jmail--update-ongoing)
+  (jmail-update #'jmail--update-buffer-success
+		#'jmail--update-buffer-error))
+
+(defun jmail--stop-update-timer ()
+  (when jmail--update-timer
+    (cancel-timer jmail--update-timer)))
+
+(defun jmail--start-update-timer ()
+  (setq jmail--update-timer (run-at-time 1 jmail-update-buffer-every
+					 'jmail--start-update-buffer)))
+
+(defun jmail--restart-update-timer ()
+   (jmail--stop-update-timer)
+   (jmail--start-update-timer))
+
+(defun jmail--global-check ()
+  (if jmail-top-maildir
+      (unless (file-exists-p jmail-top-maildir)
+	(jmail-abort (concat "Cannot find: " jmail-top-maildir)))
+    (jmail-abort "Please set `jmail-top-maildir'"))
+  (unless jmail-queries
+    (jmail-abort "Please set `jmail-queries'"))
+  ;; TODO: check all progams found: mu and mbsync
+  )
 
 ;;; External Functions
 
@@ -205,14 +271,45 @@
   (interactive)
   (jmail--move-to-query t))
 
+(defun jmail-update-buffer ()
+  (interactive)
+  (if jmail-update-buffer-every
+      (jmail--restart-update-timer)
+    (jmail--start-update-buffer)))
+
+(defun jmail-quit ()
+  (interactive)
+  (with-jmail-buffer
+   (jmail--stop-update-timer)
+   (kill-this-buffer)))
+
+(defun jmail-enter ()
+  (interactive)
+  (if-let ((prop (get-text-property (point) 'jmail)))
+      (jmail-search prop t nil)))
+
+(defun jmail-unread-all ()
+  (interactive)
+  (jmail-search "flag:unread" t nil))
+
+(defun jmail-unread ()
+  (interactive)
+  (if-let* ((prop (get-text-property (point) 'jmail))
+	    (unread (concat prop " flag:unread")))
+      (jmail-search unread t nil)))
+
 (defun jmail ()
   (interactive)
   (jmail--global-check)
-  (jmail--setup-buffer)
-  (jmail-switch-to-buffer jmail--buffer-name)
-  (jmail--insert-header)
-  (jmail--insert-queries)
-  (jmail--get-counts)
-  (jmail--goto-first-query))
+  (if (get-buffer jmail--buffer-name)
+      (jmail-switch-to-buffer jmail--buffer-name)
+    (jmail--setup-buffer)
+    (jmail-switch-to-buffer jmail--buffer-name)
+    (jmail--insert-header)
+    (jmail--insert-queries)
+    (when jmail-update-buffer-every
+      (jmail--restart-update-timer))
+    (jmail--goto-first-query))
+  (jmail--get-counts))
 
 (provide 'jmail)
