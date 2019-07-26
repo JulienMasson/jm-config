@@ -161,7 +161,7 @@
 (status-add-to-left 'status-project-manager)
 (status-add-to-left 'status-virtual-desktops)
 (status-add-to-right 'status-erc)
-(status-add-to-right 'status-notmuch)
+(status-add-to-right 'status-jmail)
 (turn-on-status)
 
 ;; never request confirmation when opening large file

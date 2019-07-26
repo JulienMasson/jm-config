@@ -300,5 +300,18 @@ Julien Masson
 ;; refresh every 60 seconds
 (setq jmail-update-buffer-every 60)
 
+;; cached unread data
+(defvar jmail-unread-data-cached nil)
+
+(defun jmail--cache-unread-data (query count)
+  (if (> count 0)
+    (if (assoc query jmail-unread-data-cached)
+	(setcdr (assoc query jmail-unread-data-cached) count)
+      (add-to-list 'jmail-unread-data-cached (cons query count)))
+    (when (assoc query jmail-unread-data-cached)
+      (setq jmail-unread-data-cached
+	    (assoc-delete-all query jmail-unread-data-cached #'string=)))))
+
+(add-hook 'jmail-unread-count-hook #'jmail--cache-unread-data)
 
 (provide 'my-mail)
