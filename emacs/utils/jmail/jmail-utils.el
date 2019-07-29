@@ -23,6 +23,13 @@
 
 ;;; Code:
 
+;;; Customization
+
+(defcustom jmail-split-window-size 20
+  "Upper window size line"
+  :type 'integer
+  :group 'jmail)
+
 ;;; Faces
 
 (defface jmail-bold-region-face
@@ -44,6 +51,10 @@
   (if (get-buffer-window-list buffer)
       (pop-to-buffer buffer)
     (switch-to-buffer buffer)))
+
+(defun jmail-split-window-below (buffer)
+  (with-current-buffer buffer
+    (split-window-below jmail-split-window-size)))
 
 (defun jmail-bold-region (beg end)
   (save-excursion

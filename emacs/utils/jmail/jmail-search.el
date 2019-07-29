@@ -232,9 +232,11 @@
 
 (defun jmail-search-enter ()
   (interactive)
-  (when-let ((object (text-properties-at (point))))
-    (jmail-view object jmail-search--buffer-name)
-    (jmail-search--mark-as-read (line-beginning-position))))
+  (with-jmail-search-buffer
+   (when-let* ((object (text-properties-at (point)))
+	       (path (plist-get object :path)))
+     (jmail-view path (current-buffer))
+     (jmail-search--mark-as-read (line-beginning-position)))))
 
 (defun jmail-search-next ()
   (interactive)
