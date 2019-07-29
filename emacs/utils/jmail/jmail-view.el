@@ -30,6 +30,7 @@
     (define-key map "n" 'jmail-search-next)
     (define-key map "p" 'jmail-search-previous)
     (define-key map "q" 'jmail-view-quit)
+    (define-key map "t" 'jmail-view-toggle-html)
     map)
   "Keymap for `jmail-view-mode'")
 
@@ -81,6 +82,10 @@
 (defconst jmail-view--cited-regexp
   "^\\(\\([[:alpha:]]+\\)\\|\\( *\\)\\)\\(\\(>+ ?\\)+\\)")
 
+(defvar-local jmail-view--data nil)
+
+(defvar-local jmail-view--html-view nil)
+
 ;;; Internal Functions
 
 (defmacro with-jmail-view-buffer (&rest body)
@@ -123,12 +128,6 @@
 			      'message-header-name)
       (add-face-text-property (+ beg (match-end 0)) end
 			      'message-header-subject))
-     ;; match Newsgroup field
-     ((string-match "^\\([Nn]ewsgroups\\|Followup-[Tt]o\\):" str)
-      (add-face-text-property beg (+ beg (match-end 0))
-			      'message-header-name)
-      (add-face-text-property (+ beg (match-end 0)) end
-			      'message-header-newsgroups))
      ;; match other
      ((string-match "^[A-Z][^: \n\t]+:" str)
       (add-face-text-property beg (+ beg (match-end 0))
@@ -181,11 +180,91 @@
 	       (add-face-text-property start end 'diff-removed)))
 	(forward-line)))))
 
-(defun jmail-view--insert-mail (path)
-  (apply #'process-file jmail-index-program nil t nil
-	 (list "view" "--nocolor" path)))
+(defun jmail-view--insert-html (html)
+  (let ((beg (point)))
+    (insert html)
+    (shr-render-region beg (point))))
+
+(defun jmail-view--address-str (field)
+  (when-let ((data (plist-get jmail-view--data field)))
+    (mapconcat (lambda (elem)
+		 (message-make-from (car elem)
+				    (cdr elem)))
+	       data ", ")))
+
+(defun jmail-view--date-str ()
+  (when-let ((date (plist-get jmail-view--data :date)))
+    (format-time-string "%a, %e %b %Y %T %z" date)))
+
+(defun jmail-view--insert-contents ()
+  (let ((from (jmail-view--address-str :from))
+	(to (jmail-view--address-str :from))
+	(cc (jmail-view--address-str :cc))
+	(mailing-list (plist-get jmail-view--data :mailing-list))
+	(subject (plist-get jmail-view--data :subject))
+	(date (jmail-view--date-str))
+	(plain-text (plist-get jmail-view--data :body-txt))
+	(html (plist-get jmail-view--data :body-html)))
+    (goto-char (point-min))
+    (cl-macrolet ((insert-header (field)
+		   `(when ,field
+		      (message-insert-header ',field ,field)
+		      (insert "\n"))))
+      (insert-header from)
+      (insert-header to)
+      (insert-header cc)
+      (insert-header mailing-list)
+      (insert-header subject)
+      (insert-header date))
+    (if jmail-view--html-view
+	(if html (jmail-view--insert-html html))
+      (if plain-text (insert plain-text)))))
+
+(defun jmail-view--insert-mail ()
+  (when jmail-view--data
+    (with-jmail-view-buffer
+     (erase-buffer)
+     (jmail-view--insert-contents)
+     (jmail-view--set-header-faces)
+     (unless jmail-view--html-view
+       (jmail-view--clean-body)
+       (jmail-view--fontify-cited)
+       (jmail-view--minimal-diff-face))
+     (set-buffer-modified-p nil)
+     (goto-char (point-min)))))
+
+(defun jmail-view--process-sentinel (process status)
+  (when (eq (process-exit-status process) 0)
+    (let* ((buffer (process-buffer process))
+	   (object (jmail-extract-sexp-object buffer)))
+      (kill-buffer buffer)
+      (with-jmail-view-buffer
+       (setq jmail-view--data object)
+       (jmail-view--insert-mail)))))
+
+(defun jmail-view--process-filter (process str)
+  (with-current-buffer (process-buffer process)
+    (goto-char (point-max))
+    (insert str)))
+
+(defun jmail-view--get-mail-data (path)
+  (when-let* ((program (jmail-find-program-from-top jmail-index-program))
+	      (args (list "view" "--nocolor" "--format=sexp" path))
+	      (buffer (get-buffer-create "*jmail-view-process*"))
+	      (process (apply 'start-file-process "jmail-view" buffer
+			      program args)))
+    (with-current-buffer buffer
+      (erase-buffer))
+    (set-process-filter process 'jmail-view--process-filter)
+    (set-process-sentinel process 'jmail-view--process-sentinel)))
 
 ;;; External Functions
+
+(defun jmail-view-toggle-html ()
+  (interactive)
+  (with-jmail-view-buffer
+   (setq jmail-view--html-view (not jmail-view--html-view))
+   (jmail-view--insert-mail)))
 
 (defun jmail-view-quit ()
   (interactive)
@@ -197,14 +276,6 @@
   (if (get-buffer jmail-view--buffer-name)
       (switch-to-buffer-other-window jmail-view--buffer-name)
     (jmail-view--setup-buffer buffer))
-  (with-jmail-view-buffer
-   (erase-buffer)
-   (jmail-view--insert-mail path)
-   (jmail-view--set-header-faces)
-   (jmail-view--clean-body)
-   (jmail-view--fontify-cited)
-   (jmail-view--minimal-diff-face)
-   (set-buffer-modified-p nil)
-   (goto-char (point-min))))
+  (jmail-view--get-mail-data path))
 
 (provide 'jmail-view)

@@ -126,4 +126,14 @@
 	    subdirs)
       queries)))
 
+(defun jmail-extract-sexp-object (buffer)
+  (with-current-buffer buffer
+    (goto-char (point-min))
+    (when (re-search-forward "^(" nil t)
+      (backward-char)
+      (when-let* ((end (ignore-errors (scan-sexps (point) 1)))
+		  (str (buffer-substring (point) end)))
+	(delete-region (point-min) end)
+	(car (read-from-string str))))))
+
 (provide 'jmail-utils)
