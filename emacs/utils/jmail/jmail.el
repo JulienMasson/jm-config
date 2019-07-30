@@ -43,6 +43,7 @@
     (define-key map "n"      'jmail-next-query)
     (define-key map "p"      'jmail-previous-query)
     (define-key map "q"      'jmail-quit)
+    (define-key map "s"      'jmail-search-prompt)
     (define-key map "u"      'jmail-unread)
     (define-key map [down]   'jmail-next-query)
     (define-key map [return] 'jmail-enter)
@@ -311,22 +312,26 @@
 (defun jmail-enter ()
   (interactive)
   (if-let ((prop (get-text-property (point) 'jmail)))
-      (jmail-search prop t nil)))
+      (jmail-search prop)))
 
 (defun jmail-jump-to-maildir (query)
   (interactive (list (completing-read "Jump to: "
 				      (jmail--maildir-name-list))))
-  (jmail-search (concat "maildir:/" query) t nil))
+  (jmail-search (concat "maildir:/" query)))
 
 (defun jmail-unread-all ()
   (interactive)
-  (jmail-search "flag:unread" t nil))
+  (jmail-search "flag:unread"))
 
 (defun jmail-unread ()
   (interactive)
   (if-let* ((prop (get-text-property (point) 'jmail))
 	    (unread (concat prop " flag:unread")))
-      (jmail-search unread t nil)))
+      (jmail-search unread)))
+
+(defun jmail-search-prompt (query)
+  (interactive "sSearch: ")
+  (jmail-search query))
 
 (defun jmail ()
   (interactive)

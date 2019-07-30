@@ -30,7 +30,9 @@
 
 (defvar jmail-search-mode-map
   (let ((map (make-sparse-keymap)))
+    (define-key map "D" 'jmail-search-delete-message)
     (define-key map "M" 'jmail-search-mark-all-as-read)
+    (define-key map "T" 'jmail-search-only-this-thread)
     (define-key map "g" 'jmail-search-refresh)
     (define-key map "m" 'jmail-search-mark-as-read)
     (define-key map "n" 'jmail-search-next)
@@ -38,6 +40,8 @@
     (define-key map "q" 'jmail-search-quit)
     (define-key map "r" 'jmail-search-toggle-related)
     (define-key map "t" 'jmail-search-toggle-thread)
+    (define-key map (kbd "M-<left>") 'jmail-search-previous-query)
+    (define-key map (kbd "M-<right>") 'jmail-search-next-query)
     (define-key map [return] 'jmail-search-enter)
     map)
   "Keymap for `jmail-search-mode'")
@@ -61,9 +65,13 @@
 
 (defconst jmail-search--format "%s %-11s %-16s  %s")
 
-(defvar jmail-search--current nil)
+(defvar-local jmail-search--current nil)
 
-(defvar jmail-search--overlays nil)
+(defvar-local jmail-search--overlays nil)
+
+(defvar jmail-search--saved nil)
+
+(defvar jmail-search--saved-index 0)
 
 ;;; Internal Functions
 
@@ -183,7 +191,7 @@
      (unless (string= path new-path)
        (jmail-search--set-property :path new-path)
        (rename-file path new-path)))))
-  
+
 (defun jmail-search--args (query thread related)
   (let ((option "find")
 	(default-args (list "--reverse" "--format=sexp" query)))
@@ -193,6 +201,22 @@
       (push "--include-related" default-args))
     (push option default-args)))
 
+(defun jmail-search--run (query thread related save)
+  (with-jmail-search-buffer
+   (jmail-search--delete-all-overlays)
+   (erase-buffer)
+   (setq truncate-lines t)
+   (setq jmail-search--current `(:query ,query
+				 :thread ,thread
+				 :related ,related))
+   (when save
+     (push jmail-search--current jmail-search--saved))
+   (switch-to-buffer (current-buffer)))
+  (jmail-process (make-jprocess :dir default-directory
+				:program "mu"
+				:args (jmail-search--args query thread related)
+				:cb 'jmail-search--process-results)))
+
 ;;; External Functions
 
 (defun jmail-search-refresh ()
@@ -201,7 +225,7 @@
     (let ((query (plist-get jmail-search--current :query))
 	  (thread (plist-get jmail-search--current :thread))
 	  (related (plist-get jmail-search--current :related)))
-      (jmail-search query thread related))))
+      (jmail-search--run query thread related nil))))
 
 (defun jmail-search-toggle-related ()
   (interactive)
@@ -209,7 +233,7 @@
     (let ((query (plist-get jmail-search--current :query))
 	  (thread (plist-get jmail-search--current :thread))
 	  (related (not (plist-get jmail-search--current :related))))
-    (jmail-search query thread related))))
+    (jmail-search--run query thread related nil))))
 
 (defun jmail-search-toggle-thread ()
   (interactive)
@@ -217,7 +241,7 @@
     (let ((query (plist-get jmail-search--current :query))
 	  (thread (not (plist-get jmail-search--current :thread)))
 	  (related (plist-get jmail-search--current :related)))
-    (jmail-search query thread related))))
+    (jmail-search--run query thread related nil))))
 
 (defun jmail-search-quit ()
   (interactive)
@@ -251,6 +275,43 @@
    (previous-line)
    (jmail-search-enter)))
 
+(defun jmail-search-next-query ()
+  (interactive)
+  (let* ((size (length jmail-search--saved))
+	 (index (if (zerop jmail-search--saved-index)
+		    (- size 1)
+		  (- jmail-search--saved-index 1)))
+	 (search (nth index jmail-search--saved)))
+    (setq jmail-search--current search)
+    (setq jmail-search--saved-index index)
+    (jmail-search-refresh)))
+
+(defun jmail-search-previous-query ()
+  (interactive)
+  (let* ((size (length jmail-search--saved))
+	 (index (mod (+ jmail-search--saved-index 1) size))
+	 (search (nth index jmail-search--saved)))
+    (setq jmail-search--current search)
+    (setq jmail-search--saved-index index)
+    (jmail-search-refresh)))
+
+(defun jmail-search-delete-message ()
+  (interactive)
+  (with-jmail-search-buffer
+   (when-let* ((object (text-properties-at (point)))
+	       (path (plist-get object :path)))
+     (delete-file path)
+     (jmail-search-refresh))))
+
+(defun jmail-search-only-this-thread ()
+  (interactive)
+  (with-jmail-search-buffer
+   (when-let* ((object (text-properties-at (point)))
+	       (message-id (plist-get object :message-id))
+	       (query (concat "msgid:" message-id)))
+     (setq jmail-search--saved-index 0)
+     (jmail-search--run query t t t))))
+
 (defun jmail-search-mark-as-read ()
   (interactive)
   (if (region-active-p)
@@ -269,18 +330,8 @@
   (mark-whole-buffer)
   (jmail-search-mark-as-read))
 
-(defun jmail-search (query thread related)
-  (with-jmail-search-buffer
-   (jmail-search--delete-all-overlays)
-   (erase-buffer)
-   (setq-local truncate-lines t)
-   (setq-local jmail-search--current `(:query ,query
-				       :thread ,thread
-				       :related ,related))
-   (switch-to-buffer (current-buffer)))
-  (jmail-process (make-jprocess :dir default-directory
-				:program "mu"
-				:args (jmail-search--args query thread related)
-				:cb 'jmail-search--process-results)))
+(defun jmail-search (query)
+  (setq jmail-search--saved-index 0)
+  (jmail-search--run query t nil t))
 
 (provide 'jmail-search)
