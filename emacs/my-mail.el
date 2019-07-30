@@ -29,6 +29,9 @@
 (setq message-citation-line-format "On %a %d %b %Y at %R, %f wrote:\n")
 (setq message-citation-line-function 'message-insert-formatted-citation-line)
 
+;; hide In-Reply-To field
+(add-to-list 'message-hidden-headers "^In-Reply-To:")
+
 ;; message buffer will be killed after sending a message
 (setq message-kill-buffer-on-exit t)
 
@@ -37,7 +40,8 @@
       message-send-mail-function 'message-send-mail-with-sendmail
       smtpmail-debug-info nil
       mail-setup-hook nil
-      sendmail-program (executable-find "msmtp"))
+      sendmail-program (executable-find "msmtp")
+      message-sendmail-extra-arguments '("--read-envelope-from"))
 
 ;; utils to get a mail agent function
 (defun get-mail-agent-function (string)
@@ -305,9 +309,9 @@ Julien Masson
 
 (defun jmail--cache-unread-data (query count)
   (if (> count 0)
-    (if (assoc query jmail-unread-data-cached)
-	(setcdr (assoc query jmail-unread-data-cached) count)
-      (add-to-list 'jmail-unread-data-cached (cons query count)))
+      (if (assoc query jmail-unread-data-cached)
+	  (setcdr (assoc query jmail-unread-data-cached) count)
+	(add-to-list 'jmail-unread-data-cached (cons query count)))
     (when (assoc query jmail-unread-data-cached)
       (setq jmail-unread-data-cached
 	    (assoc-delete-all query jmail-unread-data-cached #'string=)))))

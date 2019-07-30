@@ -49,7 +49,7 @@
 (defun jmail-update--index-process-sentinel (process status)
   (when (and (eq (process-exit-status process) 0)
   	     (buffer-live-p (process-buffer process)))
-    (jmail-process--funcall jmail-update--success-cb)
+    (jmail-funcall jmail-update--success-cb)
     (jmail-update--reset-env)))
 
 (defun jmail-update--index ()
@@ -67,7 +67,7 @@
   (if (and (eq (process-exit-status process) 0)
   	   (buffer-live-p (process-buffer process)))
       (jmail-update--index)
-    (jmail-process--funcall jmail-update--error-cb)
+    (jmail-funcall jmail-update--error-cb)
     (jmail-update--reset-env)))
 
 (defun jmail-update--get-sync-args ()

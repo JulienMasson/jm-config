@@ -23,6 +23,8 @@
 
 ;;; Code:
 
+(require 'cl-macs)
+
 (cl-defstruct jcount
   (query nil :read-only t)
   (cb    nil :read-only t)

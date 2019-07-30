@@ -23,6 +23,8 @@
 
 ;;; Code:
 
+(require 'tramp)
+
 ;;; Customization
 
 (defcustom jmail-split-window-size 20

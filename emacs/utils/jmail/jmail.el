@@ -23,6 +23,7 @@
 
 ;;; Code:
 
+(require 'subr-x)
 (require 'jmail-count)
 (require 'jmail-search)
 (require 'jmail-update)
@@ -302,6 +303,7 @@
 
 (defun jmail-quit ()
   (interactive)
+  (jmail-search-quit)
   (with-jmail-buffer
    (jmail--stop-update-timer)
    (kill-this-buffer)))

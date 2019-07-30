@@ -23,6 +23,8 @@
 
 ;;; Code:
 
+(require 'cl-macs)
+
 (cl-defstruct jprocess
   (dir     nil     :read-only t)
   (program nil     :read-only t)
@@ -37,41 +39,10 @@
 
 ;;; Internal Functions
 
-(defun jmail-process--funcall (func &rest args)
-  (condition-case-unless-debug err
-      (apply func args)
-    (error (message "Error %s: %S" (symbol-name func) err))))
-
-(defun jmail-process--tramp-executable-find (dir program-name)
-  (with-parsed-tramp-file-name dir nil
-    (let ((buffer (tramp-get-connection-buffer v))
-	  (cmd (concat "which " program-name)))
-      (with-current-buffer buffer
-	(tramp-send-command v cmd)
-	(goto-char (point-min))
-	(when (looking-at "^\\(.+\\)")
-	  (match-string 1))))))
-
-(defun jmail-process--find-program (dir program-name)
-  (let ((default-directory dir))
-    (if (tramp-tramp-file-p dir)
-	(jmail-process--tramp-executable-find dir program-name)
-      (executable-find program-name))))
-
-(defun jmail-process--extract-object (buffer)
-  (with-current-buffer buffer
-    (goto-char (point-min))
-    (when (re-search-forward "^(" nil t)
-      (backward-char)
-      (when-let* ((end (ignore-errors (scan-sexps (point) 1)))
-		  (str (buffer-substring (point) end)))
-	(delete-region (point-min) end)
-	(car (read-from-string str))))))
-
 (defun jmail-process--process-objects (buffer)
   (let (object)
-    (while (setq object (jmail-process--extract-object buffer))
-      (jmail-process--funcall (jprocess-cb jmail-process--current) object))))
+    (while (setq object (jmail-extract-sexp-object buffer))
+      (jmail-funcall (jprocess-cb jmail-process--current) object))))
 
 (defun jmail-process--process-sentinel (process status)
   (when (and (eq (process-exit-status process) 0)
@@ -96,7 +67,7 @@
 	      (program-name (jprocess-program jprocess))
 	      (args (jprocess-args jprocess))
 	      (default-directory dir)
-	      (program (jmail-process--find-program dir program-name))
+	      (program (jmail-find-program dir program-name))
 	      (buffer (get-buffer-create jmail-process--buffer-name))
 	      (process (apply 'start-file-process "jmail-process" buffer
 			      program args)))

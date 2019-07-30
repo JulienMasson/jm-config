@@ -26,33 +26,44 @@
 (require 'jmail-process)
 (require 'jmail-view)
 
+;;; Mode
+
+(defvar jmail-search-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "M" 'jmail-search-mark-all-as-read)
+    (define-key map "g" 'jmail-search-refresh)
+    (define-key map "m" 'jmail-search-mark-as-read)
+    (define-key map "n" 'jmail-search-next)
+    (define-key map "p" 'jmail-search-previous)
+    (define-key map "q" 'jmail-search-quit)
+    (define-key map "r" 'jmail-search-toggle-related)
+    (define-key map "t" 'jmail-search-toggle-thread)
+    (define-key map [return] 'jmail-search-enter)
+    map)
+  "Keymap for `jmail-search-mode'")
+
 (define-derived-mode jmail-search-mode fundamental-mode
   "jmail search"
   (jmail-search--insert-header-line)
-  (setq-local hl-line-face 'notmuch-header-highlight-face)
+  (setq-local hl-line-face 'jmail-search-hl-line)
   (toggle-read-only t))
 
-(define-key jmail-search-mode-map [return] 'jmail-search-enter)
-(define-key jmail-search-mode-map "g" 'jmail-search-refresh)
-(define-key jmail-search-mode-map "m" 'jmail-search-mark-as-read)
-(define-key jmail-search-mode-map "M" 'jmail-search-mark-all-as-read)
-(define-key jmail-search-mode-map "n" 'jmail-search-next)
-(define-key jmail-search-mode-map "p" 'jmail-search-previous)
-(define-key jmail-search-mode-map "q" 'jmail-search-quit)
-(define-key jmail-search-mode-map "r" 'jmail-search-toggle-related)
-(define-key jmail-search-mode-map "t" 'jmail-search-toggle-thread)
+;;; Faces
 
-(defvar jmail-search--format "%s %-11s %-16s  %s")
+(defface jmail-search-hl-line
+  '((t :inherit region :weight bold :underline t))
+  "Face with which to highlight the current line in `jmail-search-mode'"
+  :group 'jmail)
 
 ;;; Internal Variables
 
 (defconst jmail-search--buffer-name "*jmail-search*")
 
+(defconst jmail-search--format "%s %-11s %-16s  %s")
+
 (defvar jmail-search--current nil)
 
 (defvar jmail-search--overlays nil)
-
-(defvar jmail-search--need-index nil)
 
 ;;; Internal Functions
 
@@ -119,19 +130,9 @@
 		   (>= (overlay-end ov) pos)))
 	    jmail-search--overlays))
 
-(defun jmail-search--delete-overlay (pos)
-  (when-let ((overlay (jmail-search--find-overlay pos)))
-    (delete-overlay overlay)
-    (when jmail-search--overlays
-      (delete overlay jmail-search--overlays))))
-
 (defun jmail-search--delete-all-overlays ()
   (with-jmail-search-buffer
-   (save-excursion
-     (goto-char (point-min))
-     (while (not (eobp))
-       (jmail-search--delete-overlay (line-beginning-position))
-       (next-line)))
+   (delete-all-overlays)
    (setq jmail-search--overlays nil)))
 
 (defun jmail-search--insert-flag (start object)
@@ -181,8 +182,7 @@
        (setq new-path (replace-regexp-in-string ",$" ",S" new-path)))
      (unless (string= path new-path)
        (jmail-search--set-property :path new-path)
-       (rename-file path new-path)
-       (setq jmail-search--need-index t)))))
+       (rename-file path new-path)))))
   
 (defun jmail-search--args (query thread related)
   (let ((option "find")
@@ -222,8 +222,6 @@
 (defun jmail-search-quit ()
   (interactive)
   (jmail-process-kill-all)
-  ;; (when jmail-search--need-index
-  ;;   (jmail-update-index))
   (jmail-view-quit)
   (jmail-search--delete-all-overlays)
   (with-jmail-search-buffer
@@ -233,10 +231,9 @@
 (defun jmail-search-enter ()
   (interactive)
   (with-jmail-search-buffer
-   (when-let* ((object (text-properties-at (point)))
-	       (path (plist-get object :path)))
-     (jmail-view path (current-buffer))
-     (jmail-search--mark-as-read (line-beginning-position)))))
+   (when-let ((object (text-properties-at (point))))
+     (jmail-search--mark-as-read (line-beginning-position))
+     (jmail-view (plist-get object :path) (current-buffer)))))
 
 (defun jmail-search-next ()
   (interactive)
@@ -273,7 +270,6 @@
   (jmail-search-mark-as-read))
 
 (defun jmail-search (query thread related)
-  (setq jmail-search--need-index nil)
   (with-jmail-search-buffer
    (jmail-search--delete-all-overlays)
    (erase-buffer)
