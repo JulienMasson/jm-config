@@ -49,11 +49,12 @@
     (jmail-funcall cb count data)))
 
 (defun jmail-count--process-sentinel (process status)
-  (if (and (eq (process-exit-status process) 0)
+  (when (eq (process-status process) 'exit)
+    (if (and (eq (process-exit-status process) 0)
   	     (buffer-live-p (process-buffer process)))
-    (with-current-buffer (process-buffer process)
-      (jmail-count--call-cb (- (line-number-at-pos (point-max)) 1)))
-    (jmail-count--call-cb 0))
+	(with-current-buffer (process-buffer process)
+	  (jmail-count--call-cb (- (line-number-at-pos (point-max)) 1)))
+      (jmail-count--call-cb 0)))
   (if jmail-count--queues
       (jmail-count--process (pop jmail-count--queues))
     (setq jmail-count--current nil)
@@ -65,7 +66,7 @@
     (insert str)))
 
 (defun jmail-count--process (jcount)
-  (when-let* ((program (jmail-find-program-from-top jmail-index-program))
+  (when-let* ((program (jmail-find-program jmail-index-program))
 	      (query (jcount-query jcount))
 	      (args (jmail-count--get-args query))
 	      (buffer (get-buffer-create jmail-count--buffer-name))
@@ -78,6 +79,10 @@
     (set-process-sentinel process 'jmail-count--process-sentinel)))
 
 ;;; External Functions
+
+(defun jmail-count-quit ()
+  (setq jmail-count--queues nil)
+  (jmail-terminate-process-buffer jmail-count--buffer-name))
 
 (defun jmail-count-get (query cb data)
   (let ((jcount (make-jcount :query query

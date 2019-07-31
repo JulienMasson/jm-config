@@ -41,6 +41,17 @@
 
 ;;; External Functions
 
+(defun jmail-untramp-path (path)
+  (if (tramp-tramp-file-p path)
+      (tramp-file-name-localname (tramp-dissect-file-name path))
+    path))
+
+(defun jmail-common-host (path1 path2)
+  (cl-flet ((get-host (path)
+	     (when (tramp-tramp-file-p path)
+	       (tramp-file-name-host (tramp-dissect-file-name path)))))
+    (eq (get-host path1) (get-host path2))))
+
 (defun jmail-abort (msg)
   (error (substring-no-properties msg)))
 
@@ -48,6 +59,12 @@
   (condition-case-unless-debug err
       (apply func args)
     (error (message "Error %s: %S" (symbol-name func) err))))
+
+(defun jmail-terminate-process-buffer (buffer)
+  (when-let* ((process (get-buffer-process buffer))
+	      (status (process-status process)))
+    (when (eq status 'run)
+      (interrupt-process process))))
 
 (defun jmail-switch-to-buffer (buffer)
   (if (get-buffer-window-list buffer)
@@ -72,8 +89,8 @@
       (goto-char beg)
       (insert str))))
 
-(defun jmail-tramp-executable-find (dir program-name)
-  (with-parsed-tramp-file-name dir nil
+(defun jmail-tramp-executable-find (program-name)
+  (with-parsed-tramp-file-name default-directory nil
     (let ((buffer (tramp-get-connection-buffer v))
 	  (cmd (concat "which " program-name)))
       (with-current-buffer buffer
@@ -82,16 +99,10 @@
 	(when (looking-at "^\\(.+\\)")
 	  (match-string 1))))))
 
-(defun jmail-find-program (dir program-name)
-  (let ((default-directory dir))
-    (if (tramp-tramp-file-p dir)
-	(jmail-tramp-executable-find dir program-name)
-      (executable-find program-name))))
-
-(defun jmail-find-program-from-top (program-name)
-  (if jmail-top-maildir
-      (jmail-find-program jmail-top-maildir program-name)
-    (jmail-abort "Please set `jmail-top-maildir'")))
+(defun jmail-find-program (program-name)
+  (if (tramp-tramp-file-p default-directory)
+      (jmail-tramp-executable-find program-name)
+    (executable-find program-name)))
 
 (defun jmail-find-visible-character (from forward)
   (save-excursion

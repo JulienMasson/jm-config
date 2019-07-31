@@ -45,7 +45,7 @@
 
 (defun jmail-attachment--process (path args)
   (when-let* ((default-directory path)
-	      (program (jmail-find-program-from-top jmail-index-program))
+	      (program (jmail-find-program jmail-index-program))
 	      (buffer (get-buffer-create jmail-attachment--buffer-name))
 	      (process (apply 'start-file-process "jmail-attachment" buffer
 			      program args)))

@@ -274,17 +274,21 @@
 	(add-to-list 'maildir (match-string 1 query))))
     maildir))
 
-(defun jmail--global-check ()
-  (if jmail-top-maildir
-      (unless (file-exists-p jmail-top-maildir)
-	(jmail-abort (concat "Cannot find: " jmail-top-maildir)))
-    (jmail-abort "Please set `jmail-top-maildir'"))
-  (unless jmail-queries
-    (jmail-abort "Please set `jmail-queries'"))
-  (unless (jmail-find-program-from-top jmail-index-program)
+(defun jmail--check-programs ()
+  (unless (jmail-find-program jmail-index-program)
     (jmail-abort (concat "Please install " jmail-index-program)))
-  (unless (jmail-find-program-from-top jmail-sync-program)
+  (unless (jmail-find-program jmail-sync-program)
     (jmail-abort (concat "Please install " jmail-sync-program))))
+
+(defun jmail--check-vars ()
+  (unless jmail-top-maildir
+    (jmail-abort "Please set `jmail-top-maildir'"))
+  (unless jmail-sync-config-file
+    (jmail-abort "Please set `jmail-sync-config-file'"))
+  (unless (jmail-common-host jmail-top-maildir jmail-sync-config-file)
+    (jmail-abort "`jmail-top-maildir' and `jmail-sync-config-file' doesn't have common host"))
+  (unless jmail-queries
+    (jmail-abort "Please set `jmail-queries'")))
 
 ;;; External Functions
 
@@ -305,8 +309,10 @@
 (defun jmail-quit ()
   (interactive)
   (jmail-search-quit)
+  (jmail--stop-update-timer)
+  (jmail-update-quit)
+  (jmail-count-quit)
   (with-jmail-buffer
-   (jmail--stop-update-timer)
    (kill-this-buffer)))
 
 (defun jmail-enter ()
@@ -335,10 +341,12 @@
 
 (defun jmail ()
   (interactive)
-  (jmail--global-check)
-  (unless (get-buffer jmail--buffer-name)
-    (jmail--setup))
-  (jmail--get-counts)
-  (jmail-switch-to-buffer jmail--buffer-name))
+  (jmail--check-vars)
+  (let ((default-directory jmail-top-maildir))
+    (jmail--check-programs)
+    (unless (get-buffer jmail--buffer-name)
+      (jmail--setup))
+    (jmail--get-counts)
+    (jmail-switch-to-buffer jmail--buffer-name)))
 
 (provide 'jmail)

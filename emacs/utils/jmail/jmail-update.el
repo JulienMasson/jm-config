@@ -45,16 +45,26 @@
   (setq jmail-update--success-cb nil)
   (setq jmail-update--error-cb nil))
 
+(defmacro when-jmail-update-process-success (process &rest body)
+  (declare (indent 2))
+  `(if (and (zerop (process-exit-status ,process))
+  	    (buffer-live-p (process-buffer ,process)))
+       (progn ,@body)
+     (if (eq (process-status ,process) 'exit)
+	 (jmail-funcall jmail-update--error-cb)
+       (kill-buffer (process-buffer process)))
+     (jmail-update--reset-env)))
+
 ;; index
 (defun jmail-update--index-process-sentinel (process status)
-  (when (and (eq (process-exit-status process) 0)
-  	     (buffer-live-p (process-buffer process)))
-    (jmail-funcall jmail-update--success-cb)
-    (jmail-update--reset-env)))
+  (when-jmail-update-process-success process
+      (jmail-funcall jmail-update--success-cb)
+      (kill-buffer (process-buffer process))
+      (jmail-update--reset-env)))
 
 (defun jmail-update--index ()
-  (let* ((program (jmail-find-program-from-top jmail-index-program))
-	 (maildir (concat "--maildir=" jmail-top-maildir))
+  (let* ((program (jmail-find-program jmail-index-program))
+	 (maildir (concat "--maildir=" (jmail-untramp-path jmail-top-maildir)))
 	 (args (list "index" "--nocolor" maildir))
 	 (buffer (get-buffer jmail-update--buffer-name))
 	 (process (apply 'start-file-process "jmail-update" buffer
@@ -64,19 +74,16 @@
 
 ;; sync
 (defun jmail-update--sync-process-sentinel (process status)
-  (if (and (eq (process-exit-status process) 0)
-  	   (buffer-live-p (process-buffer process)))
-      (jmail-update--index)
-    (jmail-funcall jmail-update--error-cb)
-    (jmail-update--reset-env)))
+  (when-jmail-update-process-success process
+    (jmail-update--index)))
 
 (defun jmail-update--get-sync-args ()
   (if jmail-sync-config-file
-      (list "--all" "--config" jmail-sync-config-file)
+      (list "--all" "--config" (jmail-untramp-path jmail-sync-config-file))
     (list "--all")))
 
 (defun jmail-update--sync ()
-  (let* ((program (jmail-find-program-from-top jmail-sync-program))
+  (let* ((program (jmail-find-program jmail-sync-program))
 	 (args (jmail-update--get-sync-args))
 	 (buffer (get-buffer-create jmail-update--buffer-name))
 	 (process (apply 'start-file-process "jmail-update" buffer
@@ -87,6 +94,9 @@
       (set-process-sentinel process 'jmail-update--sync-process-sentinel)))
 
 ;;; External Functions
+
+(defun jmail-update-quit ()
+  (jmail-terminate-process-buffer jmail-update--buffer-name))
 
 (defun jmail-update (success error)
   (interactive)

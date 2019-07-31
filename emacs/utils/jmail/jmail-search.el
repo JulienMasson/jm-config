@@ -77,7 +77,6 @@
 
 (defvar jmail-search--saved-index 0)
 
-
 ;;; Internal Functions
 
 (defmacro with-jmail-search-buffer (&rest body)
@@ -211,11 +210,12 @@
 (defun jmail-search--process-sentinel (process status)
   (when (and (eq (process-exit-status process) 0)
   	     (buffer-live-p (process-buffer process)))
-    (jmail-search--process-objects (process-buffer process))
-    (kill-buffer (process-buffer process)))
-  (when jmail-search--process-next
-    (jmail-search--process-run jmail-search--process-next)
-    (setq jmail-search--process-next nil)))
+    (jmail-search--process-objects (process-buffer process)))
+  (if jmail-search--process-next
+      (progn
+	(jmail-search--process-run jmail-search--process-next)
+	(setq jmail-search--process-next nil))
+    (kill-buffer (process-buffer process))))
 
 (defun jmail-search--process-filter (process str)
   (unless (eq (process-status process) 'signal)
@@ -225,7 +225,7 @@
       (jmail-search--process-objects (current-buffer)))))
 
 (defun jmail-search--process-run (args)
-  (when-let* ((program (jmail-find-program-from-top jmail-index-program))
+  (when-let* ((program (jmail-find-program jmail-index-program))
 	      (buffer (get-buffer-create jmail-search--process-buffer-name))
 	      (process (apply 'start-file-process "jmail-search-process" buffer
 			      program args)))
@@ -234,18 +234,12 @@
     (set-process-filter process 'jmail-search--process-filter)
     (set-process-sentinel process 'jmail-search--process-sentinel)))
 
-(defun jmail-search--process-kill-if-running ()
-  (when-let* ((process (get-buffer-process jmail-search--process-buffer-name))
-	      (status (process-status process)))
-    (when (eq status 'run)
-      (interrupt-process process))))
-
-(defun jmail-search--process-kill-all ()
+(defun jmail-search--stop-process ()
   (setq jmail-search--process-next nil)
-  (jmail-search--process-kill-if-running))
+  (jmail-terminate-process-buffer jmail-search--process-buffer-name))
 
 (defun jmail-search--process (args)
-  (if (jmail-search--process-kill-if-running)
+  (if (jmail-terminate-process-buffer jmail-search--process-buffer-name)
       (setq jmail-search--process-next args)
     (jmail-search--process-run args)))
 
@@ -292,7 +286,7 @@
 
 (defun jmail-search-quit ()
   (interactive)
-  (jmail-search--process-kill-all)
+  (jmail-search--stop-process)
   (jmail-view-quit)
   (jmail-search--delete-all-overlays)
   (with-jmail-search-buffer
