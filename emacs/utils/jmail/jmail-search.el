@@ -23,7 +23,6 @@
 
 ;;; Code:
 
-(require 'jmail-process)
 (require 'jmail-view)
 
 ;;; Mode
@@ -50,6 +49,7 @@
   "jmail search"
   (jmail-search--insert-header-line)
   (setq-local hl-line-face 'jmail-search-hl-line)
+  (setq truncate-lines t)
   (toggle-read-only t))
 
 ;;; Faces
@@ -60,6 +60,10 @@
   :group 'jmail)
 
 ;;; Internal Variables
+
+(defconst jmail-search--process-buffer-name "*jmail-search-process*")
+
+(defvar jmail-search--process-next nil)
 
 (defconst jmail-search--buffer-name "*jmail-search*")
 
@@ -73,15 +77,13 @@
 
 (defvar jmail-search--saved-index 0)
 
+
 ;;; Internal Functions
 
 (defmacro with-jmail-search-buffer (&rest body)
-  `(let ((inhibit-read-only t))
-     (if (get-buffer jmail-search--buffer-name)
-	 (with-current-buffer jmail-search--buffer-name
-	          ,@body)
-       (with-current-buffer (get-buffer-create jmail-search--buffer-name)
-	 (jmail-search-mode)
+  `(when (get-buffer jmail-search--buffer-name)
+     (with-current-buffer jmail-search--buffer-name
+       (let ((inhibit-read-only t))
 	 ,@body))))
 
 (defun jmail-search--insert-header-line ()
@@ -201,21 +203,66 @@
       (push "--include-related" default-args))
     (push option default-args)))
 
+(defun jmail-search--process-objects (buffer)
+  (let (object)
+    (while (setq object (jmail-extract-sexp-object buffer))
+      (jmail-search--process-results object))))
+
+(defun jmail-search--process-sentinel (process status)
+  (when (and (eq (process-exit-status process) 0)
+  	     (buffer-live-p (process-buffer process)))
+    (jmail-search--process-objects (process-buffer process))
+    (kill-buffer (process-buffer process)))
+  (when jmail-search--process-next
+    (jmail-search--process-run jmail-search--process-next)
+    (setq jmail-search--process-next nil)))
+
+(defun jmail-search--process-filter (process str)
+  (unless (eq (process-status process) 'signal)
+    (with-current-buffer (process-buffer process)
+      (goto-char (point-max))
+      (insert str)
+      (jmail-search--process-objects (current-buffer)))))
+
+(defun jmail-search--process-run (args)
+  (when-let* ((program (jmail-find-program-from-top jmail-index-program))
+	      (buffer (get-buffer-create jmail-search--process-buffer-name))
+	      (process (apply 'start-file-process "jmail-search-process" buffer
+			      program args)))
+    (with-current-buffer buffer
+      (erase-buffer))
+    (set-process-filter process 'jmail-search--process-filter)
+    (set-process-sentinel process 'jmail-search--process-sentinel)))
+
+(defun jmail-search--process-kill-if-running ()
+  (when-let* ((process (get-buffer-process jmail-search--process-buffer-name))
+	      (status (process-status process)))
+    (when (eq status 'run)
+      (interrupt-process process))))
+
+(defun jmail-search--process-kill-all ()
+  (setq jmail-search--process-next nil)
+  (jmail-search--process-kill-if-running))
+
+(defun jmail-search--process (args)
+  (if (jmail-search--process-kill-if-running)
+      (setq jmail-search--process-next args)
+    (jmail-search--process-run args)))
+
 (defun jmail-search--run (query thread related save)
+  (unless (get-buffer jmail-search--buffer-name)
+    (with-current-buffer (get-buffer-create jmail-search--buffer-name)
+      (jmail-search-mode)))
   (with-jmail-search-buffer
    (jmail-search--delete-all-overlays)
    (erase-buffer)
-   (setq truncate-lines t)
    (setq jmail-search--current `(:query ,query
 				 :thread ,thread
 				 :related ,related))
    (when save
      (push jmail-search--current jmail-search--saved))
    (switch-to-buffer (current-buffer)))
-  (jmail-process (make-jprocess :dir default-directory
-				:program "mu"
-				:args (jmail-search--args query thread related)
-				:cb 'jmail-search--process-results)))
+  (jmail-search--process (jmail-search--args query thread related)))
 
 ;;; External Functions
 
@@ -245,7 +292,7 @@
 
 (defun jmail-search-quit ()
   (interactive)
-  (jmail-process-kill-all)
+  (jmail-search--process-kill-all)
   (jmail-view-quit)
   (jmail-search--delete-all-overlays)
   (with-jmail-search-buffer
