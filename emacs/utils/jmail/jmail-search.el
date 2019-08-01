@@ -29,9 +29,12 @@
 
 (defvar jmail-search-mode-map
   (let ((map (make-sparse-keymap)))
+    (define-key map "A" 'jmail-search-apply-patch-series)
     (define-key map "D" 'jmail-search-delete-message)
     (define-key map "M" 'jmail-search-mark-all-as-read)
     (define-key map "T" 'jmail-search-only-this-thread)
+    (define-key map "a" 'jmail-search-apply-patch)
+    (define-key map "f" 'jmail-search-toggle-folding-thread-all)
     (define-key map "g" 'jmail-search-refresh)
     (define-key map "m" 'jmail-search-mark-as-read)
     (define-key map "n" 'jmail-search-next)
@@ -39,8 +42,11 @@
     (define-key map "q" 'jmail-search-quit)
     (define-key map "r" 'jmail-search-toggle-related)
     (define-key map "t" 'jmail-search-toggle-thread)
+    (define-key map (kbd "C-<up>") 'jmail-search-previous-thread)
+    (define-key map (kbd "C-<down>") 'jmail-search-next-thread)
     (define-key map (kbd "M-<left>") 'jmail-search-previous-query)
     (define-key map (kbd "M-<right>") 'jmail-search-next-query)
+    (define-key map (kbd "TAB") 'jmail-search-toggle-folding-thread)
     (define-key map [return] 'jmail-search-enter)
     map)
   "Keymap for `jmail-search-mode'")
@@ -59,6 +65,11 @@
   "Face with which to highlight the current line in `jmail-search-mode'"
   :group 'jmail)
 
+(defface jmail-search-overlay-fold-face
+  '((t :inherit 'font-lock-keyword-face))
+  "Default face used to display `jmail-search--overlay-string'"
+  :group 'jmail)
+
 ;;; Internal Variables
 
 (defconst jmail-search--process-buffer-name "*jmail-search-process*")
@@ -72,6 +83,10 @@
 (defvar-local jmail-search--current nil)
 
 (defvar-local jmail-search--overlays nil)
+
+(defvar-local jmail-search--fold-overlays nil)
+
+(defconst jmail-search--overlay-string " [...]")
 
 (defvar jmail-search--saved nil)
 
@@ -142,6 +157,7 @@
 (defun jmail-search--delete-all-overlays ()
   (with-jmail-search-buffer
    (delete-all-overlays)
+   (setq jmail-search--fold-overlays nil)
    (setq jmail-search--overlays nil)))
 
 (defun jmail-search--insert-flag (start object)
@@ -258,7 +274,118 @@
    (switch-to-buffer (current-buffer)))
   (jmail-search--process (jmail-search--args query thread related)))
 
+(defun jmail-search--thread-level-at-point ()
+  (with-jmail-search-buffer
+   (when-let* ((object (text-properties-at (point)))
+	       (thread (plist-get object :thread)))
+     (plist-get thread :level))))
+
+(defun jmail-search--goto-root-thread ()
+  (when-let* ((object (text-properties-at (point)))
+	      (thread (plist-get object :thread))
+	      (level (plist-get thread :level)))
+    (unless (zerop level)
+      (previous-line)
+      (jmail-search--goto-root-thread))))
+
+(defmacro jmail-search--foreach-line-thread (&rest body)
+  `(with-jmail-search-buffer
+    (save-excursion
+      (jmail-search--goto-root-thread)
+      (next-line)
+      (while (and (jmail-search--thread-level-at-point)
+		  (not (zerop (jmail-search--thread-level-at-point))))
+	,@body
+	(next-line)))))
+
+(defun jmail-search--thread-range ()
+  (if-let ((level (jmail-search--thread-level-at-point)))
+      (let ((start (line-end-position))
+	    end)
+	(save-excursion
+	  (forward-line)
+	  (while (and (< level (jmail-search--thread-level-at-point))
+		      (not (eobp)))
+	    (forward-line))
+	  (setq end (- (point) 1)))
+	(list start end))
+    (list (point) (point))))
+
+(defun jmail-search--find-fold-overlay (start end)
+  (cl-find-if (lambda (ov)
+		(and (<= (overlay-start ov) start)
+		     (>= (overlay-end ov) end)))
+	      jmail-search--fold-overlays))
+
+(defun jmail-search--remove-fold-overlay (overlay)
+  (setq jmail-search--fold-overlays (remove overlay jmail-search--fold-overlays))
+  (delete-overlay overlay))
+
+(defun jmail-search--add-fold-overlay (start end)
+  (let ((overlay (make-overlay start end)))
+    (add-to-list 'jmail-search--fold-overlays overlay)
+    (overlay-put overlay 'invisible t)
+    (overlay-put overlay 'before-string
+		 (propertize jmail-search--overlay-string
+			     'face 'jmail-search-overlay-fold-face))))
+
 ;;; External Functions
+
+(defun jmail-search-apply-patch-series (dir)
+  (interactive "DApply patch series: ")
+  (jmail-search--foreach-line-thread
+      (when-let* ((object (text-properties-at (point)))
+		  (thread (plist-get object :thread))
+		  (level (plist-get thread :level))
+		  (msg (plist-get object :path))
+		  (subject (plist-get object :subject))
+		  (default-directory dir))
+	(when (and (string-match "^\\[PATCH " subject)
+		   (= level 1))
+	  (shell-command (concat "git am " msg))))))
+
+(defun jmail-search-apply-patch (dir)
+  (interactive "DApply patch: ")
+  (with-jmail-search-buffer
+   (when-let* ((object (text-properties-at (point)))
+	       (msg (plist-get object :path))
+	       (subject (plist-get object :subject))
+	       (default-directory dir))
+     (when (string-match "^\\[PATCH " subject)
+       (shell-command (concat "git am " msg))))))
+
+(defun jmail-search-previous-thread ()
+  (interactive)
+  (previous-line)
+  (jmail-search--goto-root-thread))
+
+(defun jmail-search-next-thread ()
+  (interactive)
+  (next-line)
+  (let ((level (jmail-search--thread-level-at-point)))
+    (while (not (zerop level))
+      (next-line)
+      (setq level (jmail-search--thread-level-at-point)))))
+
+(defun jmail-search-toggle-folding-thread ()
+  (interactive)
+  (cl-multiple-value-bind (start end)
+      (jmail-search--thread-range)
+    (unless (= start end)
+      (if-let ((overlay (jmail-search--find-fold-overlay start end)))
+	  (jmail-search--remove-fold-overlay overlay)
+	(jmail-search--add-fold-overlay start end)))))
+
+(defun jmail-search-toggle-folding-thread-all ()
+  (interactive)
+  (if jmail-search--fold-overlays
+      (mapc #'jmail-search--remove-fold-overlay
+	    jmail-search--fold-overlays)
+    (save-excursion
+      (goto-char (point-min))
+      (while (< (point) (point-max))
+	(jmail-search-toggle-folding-thread)
+	(line-move 1)))))
 
 (defun jmail-search-refresh ()
   (interactive)
