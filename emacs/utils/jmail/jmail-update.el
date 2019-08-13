@@ -78,9 +78,7 @@
     (jmail-update--index)))
 
 (defun jmail-update--get-sync-args ()
-  (if jmail-sync-config-file
-      (list "--all" "--config" (jmail-untramp-path jmail-sync-config-file))
-    (list "--all")))
+  (list "--all" "--config" (jmail-untramp-path jmail-sync-config-file)))
 
 (defun jmail-update--sync ()
   (let* ((program (jmail-find-program jmail-sync-program))

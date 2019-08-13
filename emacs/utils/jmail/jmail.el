@@ -24,6 +24,7 @@
 ;;; Code:
 
 (require 'subr-x)
+(require 'jmail-compose)
 (require 'jmail-count)
 (require 'jmail-search)
 (require 'jmail-update)
@@ -93,6 +94,11 @@
 
 (defcustom jmail-sync-config-file nil
   "Path to the config file used by `jmail-sync-program'"
+  :type 'string
+  :group 'jmail)
+
+(defcustom jmail-smtp-config-file nil
+  "Path to the smtp config file"
   :type 'string
   :group 'jmail)
 
@@ -287,6 +293,10 @@
     (jmail-abort "Please set `jmail-sync-config-file'"))
   (unless (jmail-common-host jmail-top-maildir jmail-sync-config-file)
     (jmail-abort "`jmail-top-maildir' and `jmail-sync-config-file' doesn't have common host"))
+  (unless jmail-smtp-config-file
+    (jmail-abort "Please set `jmail-smtp-config-file'"))
+  (unless (jmail-common-host jmail-top-maildir jmail-smtp-config-file)
+    (jmail-abort "`jmail-top-maildir' and `jmail-smtp-config-file' doesn't have common host"))
   (unless jmail-queries
     (jmail-abort "Please set `jmail-queries'")))
 

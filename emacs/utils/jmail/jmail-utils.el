@@ -149,4 +149,33 @@
 	(delete-region (point-min) end)
 	(car (read-from-string str))))))
 
+(defun jmail-get-account-infos ()
+  (let (from user)
+    (save-excursion
+      (when (re-search-forward "^from[[:space:]]*" nil t)
+	(setq from (buffer-substring (point) (line-end-position)))))
+    (save-excursion
+      (when (re-search-forward "^user[[:space:]]*" nil t)
+	(setq user (buffer-substring (point) (line-end-position)))))
+    (when user
+      (cons user from))))
+
+(defun jmail-get-accounts (file)
+  (let (accounts)
+    (with-temp-buffer
+      (insert-file-contents file)
+      (goto-char (point-min))
+      (while (re-search-forward "^account[[:space:]]*" nil t)
+	(when-let ((account (buffer-substring (point) (line-end-position)))
+		   (infos (jmail-get-account-infos)))
+	  (add-to-list 'accounts (cons account infos) t))))
+    accounts))
+
+(defun jmail-make-address-str (elem)
+  (let ((name (car elem))
+	(address (format "<%s>" (cdr elem))))
+    (if name
+	(format "%s %s" name address)
+      address)))
+
 (provide 'jmail-utils)

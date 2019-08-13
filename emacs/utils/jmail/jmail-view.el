@@ -25,6 +25,7 @@
 
 (require 'message)
 (require 'jmail-attachment)
+(require 'jmail-compose)
 
 ;;; Mode
 
@@ -192,16 +193,9 @@
     (insert html)
     (shr-render-region beg (point))))
 
-(defun jmail-view--make-address-str (elem)
-  (let ((name (car elem))
-	(address (format "<%s>" (cdr elem))))
-    (if name
-	(format "%s %s" name address)
-      address)))
-
 (defun jmail-view--address-str (field)
   (when-let ((data (plist-get jmail-view--data field)))
-    (mapconcat #'jmail-view--make-address-str data ", ")))
+    (mapconcat #'jmail-make-address-str data ", ")))
 
 (defun jmail-view--date-str ()
   (when-let ((date (plist-get jmail-view--data :date)))
@@ -299,31 +293,22 @@
       (jmail-view--clean-body)
       (message-indent-citation beg (point)))))
 
-(defun jmail-view--get-accounts ()
-  (let ((accounts))
-    (with-temp-buffer
-      (insert-file-contents jmail-sync-config-file)
-      (goto-char (point-min))
-      (while (re-search-forward "^User " nil t)
-	(add-to-list 'accounts (buffer-substring
-				(point) (line-end-position)))))
-    accounts))
-
 (defun jmail-view--autodetect-from ()
-  (when-let* ((accounts (jmail-view--get-accounts))
+  (when-let* ((accounts (jmail-get-accounts jmail-smtp-config-file))
+	      (accounts-address (mapcar #'cddr accounts))
 	      (to (plist-get jmail-view--data :to))
 	      (to-address (mapcar #'cdr to))
-	      (account (car (cl-intersection accounts to-address
+	      (address (car (cl-intersection accounts-address to-address
 					     :test #'string=)))
-	      (from (seq-find (lambda (elem)
-				(string= account (cdr elem)))
-			      to)))
-    (jmail-view--make-address-str from)))
+	      (account (seq-find (lambda (elem)
+				   (string= address (cddr elem)))
+				 accounts)))
+    (jmail-make-address-str (cdr account))))
 
 (defun jmail-view--reply-get-to (from)
   (when-let ((to (append (plist-get jmail-view--data :from)
 			 (plist-get jmail-view--data :to)))
-	     (to-list (mapcar #'jmail-view--make-address-str to)))
+	     (to-list (mapcar #'jmail-make-address-str to)))
     (mapconcat 'identity (seq-remove (lambda (elem)
 				       (string= from elem))
 				     to-list) ", ")))
@@ -340,6 +325,7 @@
 	  (plain-text (plist-get jmail-view--data :body-txt))
 	  (in-reply-to (plist-get jmail-view--data :in-reply-to)))
      (message-pop-to-buffer (message-buffer-name "reply" to))
+     (jmail-compose-mode)
      (message-setup `((From . ,from)
 		      (To . ,to)
 		      (Cc . ,cc)
