@@ -27,8 +27,17 @@
 
 ;;; Mode
 
+(defvar jmail-compose-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c a") 'jmail-compose-attach-dired-files)
+    map)
+  "Keymap for `jmail-compose-mode'")
+
 (define-derived-mode jmail-compose-mode message-mode
   "jmail compose"
+  (setq-local send-mail-function 'message-send-mail-with-sendmail)
+  (setq-local message-send-mail-function 'message-send-mail-with-sendmail)
+  (setq-local sendmail-program (jmail-find-program "msmtp"))
   (jmail-company-setup))
 
 ;;; Internal Functions
@@ -39,14 +48,26 @@
 
 ;;; External Functions
 
+(defun jmail-compose-attach-dired-files ()
+  (interactive)
+  (mapc #'mml-attach-file (dired-get-all-marked)))
+
+(defun jmail-compose-set-extra-arguments (account email)
+  (setq-local message-sendmail-extra-arguments
+	      (list (concat "--file=" jmail-smtp-config-file)
+		    (concat "--account=" account)
+		    (concat "--user=" email))))
+
 (defun jmail-compose (account)
   (interactive (list (completing-read "Compose with: "
 				      (jmail-compose--account-list))))
   (let* ((accounts (jmail-get-accounts jmail-smtp-config-file))
 	 (from (assoc-default account accounts))
+	 (from-email (cdr from))
 	 (buffer (message-buffer-name "mail")))
     (with-current-buffer (get-buffer-create buffer)
       (jmail-compose-mode)
+      (jmail-compose-set-extra-arguments account from-email)
       (message-setup `((From . ,(jmail-make-address-str from))
 		       (To . "")
 		       (Subject . "")))

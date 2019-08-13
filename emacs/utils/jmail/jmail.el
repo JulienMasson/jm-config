@@ -295,8 +295,6 @@
     (jmail-abort "`jmail-top-maildir' and `jmail-sync-config-file' doesn't have common host"))
   (unless jmail-smtp-config-file
     (jmail-abort "Please set `jmail-smtp-config-file'"))
-  (unless (jmail-common-host jmail-top-maildir jmail-smtp-config-file)
-    (jmail-abort "`jmail-top-maildir' and `jmail-smtp-config-file' doesn't have common host"))
   (unless jmail-queries
     (jmail-abort "Please set `jmail-queries'")))
 

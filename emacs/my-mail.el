@@ -38,55 +38,6 @@
 ;; message buffer will be killed after sending a message
 (setq message-kill-buffer-on-exit t)
 
-;; default config when sending mail
-(setq send-mail-function 'message-send-mail-with-sendmail
-      message-send-mail-function 'message-send-mail-with-sendmail
-      smtpmail-debug-info nil
-      mail-setup-hook nil
-      sendmail-program (executable-find "msmtp")
-      message-sendmail-extra-arguments '("--read-envelope-from"))
-
-;; org msg
-(require 'org-msg)
-(setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil \\n:t")
-(setq org-msg-startup "hidestars noindent inlineimages")
-(setq org-msg-greeting-fmt "\nHi %s,\n\n")
-(setq org-msg-greeting-fmt-mailto t)
-(setq org-msg-signature "
-
-Regards,
-
-#+begin_signature
---\n
-Julien Masson
-#+end_signature")
-(org-msg-mode)
-
-;; apply diff face in message with font-lock keywords
-(defun diff-font-lock-make-header-matcher (regexp)
-  (let ((form `(lambda (limit)
-		 (let (diff-start)
-		   (save-excursion
-		     (goto-char (point-max))
-		     (while (re-search-backward "^diff \-\-git" nil t))
-		     (setq diff-start (point)))
-		   (and (> (point) diff-start)
-			(re-search-forward ,regexp limit t))))))
-    (if (featurep 'bytecomp)
-	(byte-compile form)
-      form)))
-
-(defvar my-diff-font-lock-keywords `((,(diff-font-lock-make-header-matcher "^\\(---\\|\\+\\+\\+\\).*")
-				      (0 'diff-file-header))
-				     (,(diff-font-lock-make-header-matcher "^@@.*")
-				      (0 'diff-header))
-				     (,(diff-font-lock-make-header-matcher "^\\+.*")
-				      (0 'diff-added))
-				     (,(diff-font-lock-make-header-matcher "^\\-.*")
-				      (0 'diff-removed))))
-
-(setq message-font-lock-keywords (append message-font-lock-keywords my-diff-font-lock-keywords))
-
 ;; jmail
 (require 'jmail)
 
@@ -126,6 +77,31 @@ Julien Masson
 	    (assoc-delete-all query jmail-unread-data-cached #'string=)))))
 
 (add-hook 'jmail-unread-count-hook #'jmail--cache-unread-data)
+
+;; apply diff face in message with font-lock keywords
+(defun diff-font-lock-make-header-matcher (regexp)
+  (let ((form `(lambda (limit)
+		 (let (diff-start)
+		   (save-excursion
+		     (goto-char (point-max))
+		     (while (re-search-backward "^diff \-\-git" nil t))
+		     (setq diff-start (point)))
+		   (and (> (point) diff-start)
+			(re-search-forward ,regexp limit t))))))
+    (if (featurep 'bytecomp)
+	(byte-compile form)
+      form)))
+
+(defvar my-diff-font-lock-keywords `((,(diff-font-lock-make-header-matcher "^\\(---\\|\\+\\+\\+\\).*")
+				      (0 'diff-file-header))
+				     (,(diff-font-lock-make-header-matcher "^@@.*")
+				      (0 'diff-header))
+				     (,(diff-font-lock-make-header-matcher "^\\+.*")
+				      (0 'diff-added))
+				     (,(diff-font-lock-make-header-matcher "^\\-.*")
+				      (0 'diff-removed))))
+
+(setq message-font-lock-keywords (append message-font-lock-keywords my-diff-font-lock-keywords))
 
 ;; send patch
 (require 'send-patch)
@@ -183,5 +159,22 @@ Julien Masson
 			     :url "git://git.denx.de/u-boot.git"
 			     :get-range 'send-patch-get-range-from-remote-head
 			     :get-address 'get-address-uboot)
+
+;; org msg
+(require 'org-msg)
+(setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil \\n:t")
+(setq org-msg-startup "hidestars noindent inlineimages")
+(setq org-msg-greeting-fmt "\nHi %s,\n\n")
+(setq org-msg-greeting-fmt-mailto t)
+(setq org-msg-signature "
+
+Regards,
+
+#+begin_signature
+--\n
+Julien Masson
+#+end_signature")
+(org-msg-mode)
+
 
 (provide 'my-mail)
