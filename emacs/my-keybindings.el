@@ -139,23 +139,9 @@
 ;; manual at point
 (global-set-key (kbd "M-h") 'manual-at-point)
 
-;; mail
-(global-set-key (kbd "C-x m") 'mail-compose-new)
+;; jmail
 (global-set-key (kbd "C-M-m") 'jmail)
-
-;; notmuch
-(define-key notmuch-common-keymap "j" 'notmuch-jump-folder)
-(define-key notmuch-common-keymap "s" 'notmuch-tree)
-(define-key notmuch-common-keymap "u" 'notmuch-unread-at-point)
-(define-key notmuch-common-keymap "U" 'notmuch-show-unread)
-(define-key notmuch-common-keymap "z" 'notmuch-search)
-(define-key notmuch-show-mode-map "n" 'my-notmuch-show-next-message)
-(define-key notmuch-show-mode-map "p" 'my-notmuch-show-prev-message)
-(define-key notmuch-tree-mode-map "f" 'notmuch-tree-toggle-folding-thread-all)
-(define-key notmuch-tree-mode-map "m" 'notmuch-remove-unread-smart)
-(define-key notmuch-tree-mode-map "M" 'notmuch-remove-unread-all)
-(define-key notmuch-tree-mode-map (kbd "TAB") 'notmuch-tree-toggle-folding-thread)
-(define-key notmuch-message-mode-map (kbd "C-c a") 'notmuch-attach-dired-files)
+(global-set-key (kbd "C-x m") 'jmail-compose)
 
 ;; project manager
 (global-set-key (kbd "C-c i s") 'switch-project)

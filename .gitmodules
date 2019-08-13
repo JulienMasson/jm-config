@@ -222,15 +222,9 @@
 [submodule "emacs/modules/acscope"]
 	path = emacs/modules/acscope
 	url = https://github.com/JulienMasson/acscope.git
-[submodule "emacs/modules/notmuch"]
-	path = emacs/modules/notmuch
-	url = https://github.com/JulienMasson/notmuch.git
 [submodule "emacs/modules/libegit2"]
 	path = emacs/modules/libegit2
 	url = https://github.com/magit/libegit2.git
 [submodule "emacs/modules/locate-dired"]
 	path = emacs/modules/locate-dired
 	url = https://github.com/JulienMasson/locate-dired.git
-[submodule "emacs/modules/mu"]
-	path = emacs/modules/mu
-	url = https://github.com/JulienMasson/mu.git

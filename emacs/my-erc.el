@@ -59,7 +59,7 @@
 (setq erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"))
 
 ;; autojoin channel
-(setq erc-autojoin-channels-alist '(("freenode.net" "#wayland" "#sway-devel" "#linux-amlogic" "#notmuch")))
+(setq erc-autojoin-channels-alist '(("freenode.net" "#wayland" "#sway-devel" "#linux-amlogic")))
 
 ;; logging
 (erc-log-mode)

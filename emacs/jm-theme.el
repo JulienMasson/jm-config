@@ -204,10 +204,6 @@
    `(message-header-to ((t (:inherit font-lock-variable-name-face))))
    `(message-separator ((t (:inherit font-lock-comment))))
 
-;;;;; notmuch
-   `(notmuch-tree-match-author-face ((t (:inherit font-lock-variable-name-face))))
-   `(notmuch-tree-match-date-face ((t (:inherit font-lock-comment-face))))
-
 ;;;; org-mode
    `(org-agenda-date-today ((t (:foreground ,white :slant italic :weight bold))))
    `(org-agenda-structure ((t (:inherit font-lock-comment-face))))

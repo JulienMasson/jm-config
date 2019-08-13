@@ -29,6 +29,9 @@
 (setq message-citation-line-format "On %a %d %b %Y at %R, %f wrote:\n")
 (setq message-citation-line-function 'message-insert-formatted-citation-line)
 
+;; default message signature
+(setq message-signature "Julien Masson")
+
 ;; hide In-Reply-To field
 (add-to-list 'message-hidden-headers "^In-Reply-To:")
 
@@ -42,42 +45,6 @@
       mail-setup-hook nil
       sendmail-program (executable-find "msmtp")
       message-sendmail-extra-arguments '("--read-envelope-from"))
-
-;; utils to get a mail agent function
-(defun get-mail-agent-function (string)
-  (let ((backend (replace-regexp-in-string
-		  "-user-agent" ""
-		  (symbol-name mail-user-agent))))
-    (intern (concat backend string))))
-
-;; mail client
-(defun mail-client ()
-  (interactive)
-  (let ((fun (get-mail-agent-function "")))
-    (when (symbol-function fun)
-	(funcall fun))))
-
-;; accounts management
-(defvar mail-accounts-alist
-  '(("Gmail"
-     (user-mail-address "massonju.eseo@gmail.com")
-     (user-full-name "Julien Massson")
-     (message-signature "Julien Masson")
-     (message-sendmail-extra-arguments ("-a" "perso")))))
-
-(defun mail-set-vars (account)
-  (mapc (lambda (var)
-	  (set (car var) (cadr var)))
-	(assoc-default account mail-accounts-alist)))
-
-(defun mail-compose-new (account)
-  (interactive (list (completing-read "Compose with account: "
-				      (mapcar #'car mail-accounts-alist))))
-  (let ((fun (get-mail-agent-function "-compose-new")))
-    (mail-set-vars account)
-    (if (symbol-function fun)
-	(funcall fun)
-      (compose-mail))))
 
 ;; org msg
 (require 'org-msg)
@@ -94,26 +61,6 @@ Regards,
 Julien Masson
 #+end_signature")
 (org-msg-mode)
-
-;; apply minimal diff face
-(defun apply-minimal-diff-face-buffer ()
-  (save-excursion
-    (goto-char (point-max))
-    (while (re-search-backward "^diff \-\-git" nil t))
-    (while (not (eobp))
-      (let* ((start (point))
-	     (end (line-end-position))
-	     (str (buffer-substring-no-properties start end))
-	     (inhibit-read-only t))
-	(cond ((string-match "^\\(---\\|\\+\\+\\+\\)" str)
-	       (add-face-text-property start end 'diff-file-header))
-	      ((string-match "^@@" str)
-	       (add-face-text-property start end 'diff-header))
-	      ((string-match "^\\+" str)
-	       (add-face-text-property start end 'diff-added))
-	      ((string-match "^\\-" str)
-	       (add-face-text-property start end 'diff-removed)))
-	(forward-line)))))
 
 ;; apply diff face in message with font-lock keywords
 (defun diff-font-lock-make-header-matcher (regexp)
@@ -140,80 +87,48 @@ Julien Masson
 
 (setq message-font-lock-keywords (append message-font-lock-keywords my-diff-font-lock-keywords))
 
-;; fontify cited part of the mail
-(defface mail-cited-0-face
-  '((t :inherit font-lock-variable-name-face :bold nil :italic t))
-  "Face for cited message parts (level 0)."
-  :group 'faces)
+;; jmail
+(require 'jmail)
 
-(defface mail-cited-1-face
-  '((t :inherit font-lock-preprocessor-face :bold nil :italic t))
-  "Face for cited message parts (level 1)."
-  :group 'faces)
+;; set top maildir
+(setq jmail-top-maildir "~/.cache/mails")
 
-(defface mail-cited-2-face
-  '((t :inherit font-lock-constant-face :bold nil :italic t))
-  "Face for cited message parts (level 2)."
-  :group 'faces)
+;; set mbsync config file
+(setq jmail-sync-config-file (concat my-private-dotfiles-path ".mbsyncrc"))
 
-(defface mail-cited-3-face
-  '((t :inherit font-lock-function-name-face :bold nil :italic t))
-  "Face for cited message parts (level 3)."
-  :group 'faces)
+;; set msmtp config file
+(setq jmail-smtp-config-file (concat my-private-dotfiles-path ".msmtprc"))
 
-(defface mail-cited-4-face
-  '((t :inherit font-lock-type-face :bold nil :italic t))
-  "Face for cited message parts (level 4)."
-  :group 'faces)
+;; auto-fill queries from top maildir
+(setq jmail-queries (jmail-autofill-maildir-queries jmail-top-maildir))
 
-(defface mail-cited-5-face
-  '((t :inherit font-lock-comment-face :bold nil :italic t))
-  "Face for cited message parts (level 5)."
-  :group 'faces)
+;; add custom queries
+(add-to-list 'jmail-queries '(nil . (("Starred"   . "flag:flagged"))))
 
-(defface mail-cited-6-face
-  '((t :inherit font-lock-comment-delimiter-face :bold nil :italic t))
-  "Face for cited message parts (level 6)."
-  :group 'faces)
+;; remove drafts, sent and trash from queries
+(assoc-delete-all "drafts" jmail-queries)
+(assoc-delete-all "sent" jmail-queries)
+(assoc-delete-all "trash" jmail-queries)
 
-(defvar mail-cited-regexp
-  "^\\(\\([[:alpha:]]+\\)\\|\\( *\\)\\)\\(\\(>+ ?\\)+\\)")
+;; refresh every 60 seconds
+(setq jmail-update-buffer-every 60)
 
-(defun mail-fontify-cited ()
-  (save-excursion
-    (message-goto-body)
-    (while (re-search-forward mail-cited-regexp nil t)
-      (let* ((str (buffer-substring (line-beginning-position)
-				    (point)))
-	     (level (mod (string-width (replace-regexp-in-string
-					"[^>]" "" str)) 7))
-	     (cited-face  (unless (zerop level)
-			    (intern-soft (format "mail-cited-%d-face" level)))))
-	(when cited-face
-	  (add-face-text-property (line-beginning-position)
-				  (line-end-position)
-				  cited-face))))))
+;; cached unread data
+(defvar jmail-unread-data-cached nil)
+
+(defun jmail--cache-unread-data (query count)
+  (if (> count 0)
+      (if (assoc query jmail-unread-data-cached)
+	  (setcdr (assoc query jmail-unread-data-cached) count)
+	(add-to-list 'jmail-unread-data-cached (cons query count)))
+    (when (assoc query jmail-unread-data-cached)
+      (setq jmail-unread-data-cached
+	    (assoc-delete-all query jmail-unread-data-cached #'string=)))))
+
+(add-hook 'jmail-unread-count-hook #'jmail--cache-unread-data)
 
 ;; send patch
 (require 'send-patch)
-
-;; auto detect sender account
-(defun mail-get-from-field ()
-  (save-excursion
-    (message-goto-from)
-    (message-beginning-of-line)
-    (buffer-substring (point) (line-end-position))))
-
-(defun mail-auto-set-account ()
-  (cl-multiple-value-bind (name mail)
-      (gnus-extract-address-components (mail-get-from-field))
-    (let ((account (seq-find (lambda (account)
-			       (string= mail (cadr (cadr account))))
-			     mail-accounts-alist)))
-      (when account
-	(mail-set-vars (car account))))))
-
-(add-hook 'send-patch-compose-hook 'mail-auto-set-account)
 
 ;; register kernel backend for send-patch
 (defun patch-get-from-field (patch)
@@ -268,54 +183,5 @@ Julien Masson
 			     :url "git://git.denx.de/u-boot.git"
 			     :get-range 'send-patch-get-range-from-remote-head
 			     :get-address 'get-address-uboot)
-
-;; register notmuch backend for send-patch
-(defun get-address-notmuch (patchs)
-  (list '("notmuch@notmuchmail.org") nil))
-
-(send-patch-register-backend :name "Notmuch"
-			     :url "git://git.notmuchmail.org/git/notmuch"
-			     :get-range 'send-patch-get-range-from-remote-head
-			     :get-address 'get-address-notmuch)
-
-;; default mail client
-(require 'my-notmuch)
-
-;; jmail
-(require 'jmail)
-
-;; set top maildir
-(setq jmail-top-maildir "~/Maildir")
-
-;; set mbsync config file
-(setq jmail-sync-config-file (concat my-private-dotfiles-path ".mbsyncrc"))
-
-;; auto-fill queries from top maildir
-(setq jmail-queries (jmail-autofill-maildir-queries jmail-top-maildir))
-
-;; add custom queries
-(add-to-list 'jmail-queries '(nil . (("Starred"   . "flag:flagged"))))
-
-;; remove drafts, sent and trash from queries
-(assoc-delete-all "drafts" jmail-queries)
-(assoc-delete-all "sent" jmail-queries)
-(assoc-delete-all "trash" jmail-queries)
-
-;; refresh every 60 seconds
-(setq jmail-update-buffer-every 60)
-
-;; cached unread data
-(defvar jmail-unread-data-cached nil)
-
-(defun jmail--cache-unread-data (query count)
-  (if (> count 0)
-      (if (assoc query jmail-unread-data-cached)
-	  (setcdr (assoc query jmail-unread-data-cached) count)
-	(add-to-list 'jmail-unread-data-cached (cons query count)))
-    (when (assoc query jmail-unread-data-cached)
-      (setq jmail-unread-data-cached
-	    (assoc-delete-all query jmail-unread-data-cached #'string=)))))
-
-(add-hook 'jmail-unread-count-hook #'jmail--cache-unread-data)
 
 (provide 'my-mail)
