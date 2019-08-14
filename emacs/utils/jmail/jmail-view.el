@@ -81,6 +81,13 @@
   "Face for cited message parts (level 6)."
   :group 'jmail)
 
+;;; Customization
+
+(defcustom jmail-view-html-default-view nil
+  "If non nil, we display the html part of the email by default"
+  :type 'boolean
+  :group 'jmail)
+
 ;;; Internal Variables
 
 (defconst jmail-view--buffer-name "*jmail-view*")
@@ -241,9 +248,18 @@
       (insert-header subject)
       (insert-header date)
       (insert-header attachments))
-    (if jmail-view--html-view
-	(if html (jmail-view--insert-html html))
-      (if plain-text (insert plain-text)))))
+    (cond ((and html plain-text)
+	   (if jmail-view--html-view
+	       (jmail-view--insert-html html)
+	     (insert plain-text)))
+	  ((and html (not plain-text))
+	   (unless jmail-view--html-view
+	     (setq jmail-view--html-view t))
+	   (jmail-view--insert-html html))
+	  ((and (not html) plain-text)
+	   (when jmail-view--html-view
+	     (setq jmail-view--html-view nil))
+	   (insert plain-text)))))
 
 (defun jmail-view--insert-mail ()
   (when jmail-view--data
@@ -367,6 +383,8 @@
   (if (get-buffer jmail-view--buffer-name)
       (switch-to-buffer-other-window jmail-view--buffer-name)
     (jmail-view--setup-buffer buffer))
+  (with-jmail-view-buffer
+   (setq jmail-view--html-view jmail-view-html-default-view))
   (jmail-view--get-mail-data path))
 
 (provide 'jmail-view)
