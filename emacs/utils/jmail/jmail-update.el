@@ -98,10 +98,11 @@
 
 (defun jmail-update (success error)
   (interactive)
-  (unless jmail-update--ongoing
-    (setq jmail-update--ongoing t)
-    (setq jmail-update--success-cb success)
-    (setq jmail-update--error-cb error)
-    (jmail-update--sync)))
+  (let ((default-directory jmail-top-maildir))
+    (unless jmail-update--ongoing
+      (setq jmail-update--ongoing t)
+      (setq jmail-update--success-cb success)
+      (setq jmail-update--error-cb error)
+      (jmail-update--sync))))
 
 (provide 'jmail-update)
