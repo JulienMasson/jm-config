@@ -505,9 +505,9 @@
   (with-jmail-search-buffer
    (if (button-at (point))
        (push-button)
+     (jmail-search--mark-as-read (line-beginning-position))
      (when-let* ((object (text-properties-at (point)))
 		 (path (plist-get object :path)))
-       (jmail-search--mark-as-read (line-beginning-position))
        (jmail-view path (current-buffer))))))
 
 (defun jmail-search-next ()
