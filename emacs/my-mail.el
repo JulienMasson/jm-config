@@ -106,7 +106,21 @@
 ;; send patch
 (require 'send-patch)
 
-;; register kernel backend for send-patch
+;; setup jmail env when sending patchs
+(defun send-patch-setup-jmail-env ()
+  (when-let ((accounts (jmail-get-accounts jmail-smtp-config-file))
+	     (from (message-fetch-field "From")))
+    (cl-multiple-value-bind (name email)
+	(gnus-extract-address-components from)
+      (when-let ((account (seq-find (lambda (elem)
+				      (string= email (cddr elem)))
+				    accounts)))
+	(jmail-compose-mode)
+	(jmail-compose-set-extra-arguments (car account) email)))))
+
+(add-hook 'send-patch-compose-hook 'send-patch-setup-jmail-env)
+
+;; add kernel recipients function
 (defun patch-get-from-field (patch)
   (with-temp-buffer
     (insert-file-contents patch nil 0 256)
@@ -114,7 +128,7 @@
     (while (re-search-forward "^From: " nil t))
     (buffer-substring (point) (line-end-position))))
 
-(defun get-address-kernel (patchs)
+(defun send-patch-get-recipients-kernel (patchs)
   (let* ((files-str (mapconcat 'identity patchs " "))
 	 (cmd (concat "./scripts/get_maintainer.pl " files-str))
 	 (receivers (split-string
@@ -132,13 +146,11 @@
 	  receivers)
     (list to cc)))
 
-(send-patch-register-backend :name "Kernel"
-			     :url "git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"
-			     :get-range 'send-patch-get-range-from-last-tag
-			     :get-address 'get-address-kernel)
+(add-to-list 'send-patch-get-recipients-funcs
+	     (cons "Kernel" 'send-patch-get-recipients-kernel) t)
 
-;; register u-boot backend for send-patch
-(defun get-address-uboot (patchs)
+;; add uboot recipients function
+(defun send-patch-get-recipients-uboot (patchs)
   (let* ((files-str (mapconcat 'identity patchs " "))
 	 (cmd (concat "./scripts/get_maintainer.pl " files-str))
 	 (receivers (split-string
@@ -155,10 +167,8 @@
 	  receivers)
     (list to cc)))
 
-(send-patch-register-backend :name "U-Boot"
-			     :url "git://git.denx.de/u-boot.git"
-			     :get-range 'send-patch-get-range-from-remote-head
-			     :get-address 'get-address-uboot)
+(add-to-list 'send-patch-get-recipients-funcs
+	     (cons "U-Boot" 'send-patch-get-recipients-kernel) t)
 
 ;; org msg
 (require 'org-msg)
