@@ -66,7 +66,8 @@
     (insert str)))
 
 (defun jmail-count--process (jcount)
-  (when-let* ((program (jmail-find-program jmail-index-program))
+  (when-let* ((default-directory jmail-top-maildir)
+	      (program (jmail-find-program jmail-index-program))
 	      (query (jcount-query jcount))
 	      (args (jmail-count--get-args query))
 	      (buffer (get-buffer-create jmail-count--buffer-name))

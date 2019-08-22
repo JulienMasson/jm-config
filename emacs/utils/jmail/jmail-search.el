@@ -303,7 +303,8 @@
       (jmail-search--process-objects (current-buffer)))))
 
 (defun jmail-search--process-run (args)
-  (when-let* ((program (jmail-find-program jmail-index-program))
+  (when-let* ((default-directory jmail-top-maildir)
+	      (program (jmail-find-program jmail-index-program))
 	      (buffer (get-buffer-create jmail-search--process-buffer-name))
 	      (process (apply 'start-file-process "jmail-search-process" buffer
 			      program args)))

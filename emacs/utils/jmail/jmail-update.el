@@ -1,4 +1,4 @@
-;;; jmail-menu.el --- XXXX
+;;; jmail-update.el --- XXXX
 
 ;; Copyright (C) 2019 Julien Masson.
 
@@ -63,7 +63,8 @@
       (jmail-update--reset-env)))
 
 (defun jmail-update--index ()
-  (let* ((program (jmail-find-program jmail-index-program))
+  (let* ((default-directory jmail-top-maildir)
+	 (program (jmail-find-program jmail-index-program))
 	 (maildir (concat "--maildir=" (jmail-untramp-path jmail-top-maildir)))
 	 (args (list "index" "--nocolor" maildir))
 	 (buffer (get-buffer jmail-update--buffer-name))
@@ -81,15 +82,16 @@
   (list "--all" "--config" (jmail-untramp-path jmail-sync-config-file)))
 
 (defun jmail-update--sync ()
-  (let* ((program (jmail-find-program jmail-sync-program))
+  (let* ((default-directory jmail-top-maildir)
+	 (program (jmail-find-program jmail-sync-program))
 	 (args (jmail-update--get-sync-args))
 	 (buffer (get-buffer-create jmail-update--buffer-name))
 	 (process (apply 'start-file-process "jmail-update" buffer
 			 program args)))
-      (with-current-buffer buffer
-	(erase-buffer))
-      (set-process-filter process 'jmail-update--process-filter)
-      (set-process-sentinel process 'jmail-update--sync-process-sentinel)))
+    (with-current-buffer buffer
+      (erase-buffer))
+    (set-process-filter process 'jmail-update--process-filter)
+    (set-process-sentinel process 'jmail-update--sync-process-sentinel)))
 
 ;;; External Functions
 
@@ -98,11 +100,10 @@
 
 (defun jmail-update (success error)
   (interactive)
-  (let ((default-directory jmail-top-maildir))
-    (unless jmail-update--ongoing
-      (setq jmail-update--ongoing t)
-      (setq jmail-update--success-cb success)
-      (setq jmail-update--error-cb error)
-      (jmail-update--sync))))
+  (unless jmail-update--ongoing
+    (setq jmail-update--ongoing t)
+    (setq jmail-update--success-cb success)
+    (setq jmail-update--error-cb error)
+    (jmail-update--sync)))
 
 (provide 'jmail-update)
