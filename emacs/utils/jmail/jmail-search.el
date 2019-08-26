@@ -29,9 +29,9 @@
 
 (defvar jmail-search-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "+" 'jmail-search-more-history-limit)
     (define-key map "A" 'jmail-search-apply-patch-series)
     (define-key map "D" 'jmail-search-delete-message)
+    (define-key map "L" 'jmail-search-display-all)
     (define-key map "M" 'jmail-search-mark-all-as-read)
     (define-key map "T" 'jmail-search-only-this-thread)
     (define-key map "a" 'jmail-search-apply-patch)
@@ -57,6 +57,8 @@
   (jmail-search--insert-header-line)
   (setq-local hl-line-face 'jmail-search-hl-line)
   (setq truncate-lines t)
+  (add-hook 'window-scroll-functions #'jmail-search--after-scroll nil t)
+  (add-hook 'isearch-mode-hook #'jmail-search-display-all nil t)
   (toggle-read-only t))
 
 ;;; Faces
@@ -76,13 +78,6 @@
   "Default face used to display results footer"
   :group 'jmail)
 
-;;; Customization
-
-(defcustom jmail-search-limit nil
-  "Limit to a number of search results, if nil no limit"
-  :type 'integer
-  :group 'jmail)
-
 ;;; Internal Variables
 
 (defconst jmail-search--process-buffer-name "*jmail-search-process*")
@@ -95,9 +90,11 @@
 
 (defvar-local jmail-search--current nil)
 
-(defvar-local jmail-search--parsed-objects nil)
+(defvar jmail-search--objects-thread nil)
 
 (defvar-local jmail-search--saved-objects nil)
+
+(defvar-local jmail-search--done nil)
 
 (defvar-local jmail-search--overlays nil)
 
@@ -188,14 +185,15 @@
 	  (t (jmail-search--insert-overlay start (+ start 2) "  ")))))
 
 (defun jmail-search--process-results (object)
-  (cl-multiple-value-bind (date from subject)
-      (jmail-search--parse-object object)
-    (save-excursion
-      (goto-char (point-max))
-      (insert (format jmail-search--format " " date from subject))
-      (add-text-properties (line-beginning-position) (line-end-position) object)
-      (jmail-search--insert-flag (line-beginning-position) object)
-      (insert "\n"))))
+  (with-jmail-search-buffer
+   (cl-multiple-value-bind (date from subject)
+       (jmail-search--parse-object object)
+     (save-excursion
+       (goto-char (point-max))
+       (insert (format jmail-search--format " " date from subject))
+       (add-text-properties (line-beginning-position) (line-end-position) object)
+       (jmail-search--insert-flag (line-beginning-position) object)
+       (insert "\n")))))
 
 (defun jmail-search--remove-flag (pos)
   (when-let ((overlay (jmail-search--find-overlay pos)))
@@ -234,66 +232,91 @@
       (push "--include-related" default-args))
     (push option default-args)))
 
-(defun jmail-search--insert-more-history-button ()
-  (with-jmail-search-buffer
-   (save-excursion
-     (goto-char (point-max))
-     (unless (button-at (- (point-max) 1))
-       (insert-text-button
-	(substitute-command-keys
-	 (format "Type \\<%s>\\[%s] to show more history"
-		 'jmail-search-mode-map
-		 'jmail-search-more-history-limit))
-	'action (lambda (_button)
-		  (jmail-search-more-history-limit)))))))
-
-(defun jmail-search--delete-more-history-button ()
-  (with-jmail-search-buffer
-   (save-excursion
-     (goto-char (- (point-max) 1))
-     (when (button-at (point))
-       (delete-region (line-beginning-position) (point-max))))))
-
-(defun jmail-search--insert-end-of-results ()
-  (insert (propertize (if (eq (point-min) (point-max))
-			  "No results found !!!!"
-			"End of search results.")
-		      'face 'jmail-search-results-footer-face)))
-
 (defun jmail-search--insert-footer ()
   (with-jmail-search-buffer
-   (save-excursion
-     (goto-char (point-max))
-     (if (not jmail-search--saved-objects)
-	 (jmail-search--insert-end-of-results)
-       (jmail-search--insert-more-history-button)))))
+   (when (and jmail-search--done
+	      (not jmail-search--saved-objects))
+     (save-excursion
+       (goto-char (point-max))
+       (if (and (eq (point-min) (point-max))
+		(not (eq (cadr (text-properties-at (point-min)))
+			 'jmail-search-results-footer-face)))
+	   (insert (propertize "No results found !!!!"
+			       'face 'jmail-search-results-footer-face))
+	 (unless (eq (cadr (text-properties-at (- (point-max) 1)))
+		     'jmail-search-results-footer-face)
+	   (insert (propertize "End of search results."
+			       'face 'jmail-search-results-footer-face))))))))
 
-(defun jmail-search--process-objects (buffer)
+(defun jmail-search--after-scroll (win _start)
+  (jmail-search--display-saved-objects))
+
+(defun jmail-search--save-objects-handler ()
+  (with-jmail-search-buffer
+   (let (object)
+     (while (setq object (jmail-extract-sexp-object
+			  jmail-search--process-buffer-name))
+       (add-to-list 'jmail-search--saved-objects object t))))
+  (when jmail-search--done
+    (kill-buffer jmail-search--process-buffer-name)))
+
+(defun jmail-search--save-objects ()
+  (unless (and jmail-search--objects-thread
+	       (thread-live-p jmail-search--objects-thread))
+    (setq jmail-search--objects-thread
+	  (make-thread #'jmail-search--save-objects-handler))))
+
+(defun jmail-search--display-saved-objects ()
+  (with-jmail-search-buffer
+   (while (and jmail-search--saved-objects
+	       (< (count-lines (window-start) (point-max))
+		  (window-total-height)))
+     (jmail-search--process-results (pop jmail-search--saved-objects))))
+  (jmail-search--insert-footer))
+
+(defun jmail-search-display-all ()
+  (interactive)
+  (with-jmail-search-buffer
+   (when jmail-search--saved-objects
+     (let ((total (length jmail-search--saved-objects)))
+       (while jmail-search--saved-objects
+	 (jmail-search--process-results (pop jmail-search--saved-objects))
+	 (message "Display all results: %d%%"
+		  (/ (* (- total (length jmail-search--saved-objects)) 100)
+		     total))))
+     (jmail-search--insert-footer))))
+
+(defun jmail-search--display-objects (buffer)
   (let (object)
     (while (setq object (jmail-extract-sexp-object buffer))
-      (with-jmail-search-buffer
-       (cond ((and jmail-search-limit
-		   (= jmail-search--parsed-objects jmail-search-limit))
-	      (add-to-list 'jmail-search--saved-objects object t)
-	      (jmail-search--insert-more-history-button))
-	     ((and jmail-search-limit
-		   (> jmail-search--parsed-objects jmail-search-limit))
-	      (add-to-list 'jmail-search--saved-objects object t))
-	     (t (jmail-search--process-results object)))
-       (setq jmail-search--parsed-objects
-	     (+ jmail-search--parsed-objects 1))))))
+      (jmail-search--process-results object))))
+
+(defun jmail-search--process-objects (buffer)
+  (with-jmail-search-buffer
+   (if (>= (count-lines (window-start (get-buffer-window (current-buffer)))
+		       (point-max))
+	   (window-total-height))
+       (jmail-search--save-objects)
+     (jmail-search--display-objects buffer)
+     (when (and jmail-search--done
+		(or (not jmail-search--objects-thread)
+		    (not (thread-live-p jmail-search--objects-thread))))
+       (kill-buffer jmail-search--process-buffer-name)))))
+
+(defun jmail-search--process-done ()
+  (with-jmail-search-buffer
+   (setq jmail-search--done t)))
 
 (defun jmail-search--process-sentinel (process status)
+  (jmail-search--process-done)
   (when (and (eq (process-exit-status process) 0)
   	     (buffer-live-p (process-buffer process)))
     (jmail-search--process-objects (process-buffer process)))
   (jmail-search--insert-footer)
-  (if jmail-search--process-next
-      (progn
-	(jmail-search--setup-env)
-	(jmail-search--process-run jmail-search--process-next)
-	(setq jmail-search--process-next nil))
-    (kill-buffer (process-buffer process))))
+  (when jmail-search--process-next
+    (jmail-search--setup-env)
+    (jmail-search--process-run jmail-search--process-next)
+    (setq jmail-search--process-next nil)))
 
 (defun jmail-search--process-filter (process str)
   (unless (eq (process-status process) 'signal)
@@ -326,7 +349,7 @@
   (with-jmail-search-buffer
    (jmail-search--delete-all-overlays)
    (erase-buffer)
-   (setq jmail-search--parsed-objects 0)
+   (setq jmail-search--done nil)
    (setq jmail-search--saved-objects nil)))
 
 (defun jmail-search--run (query thread related &optional save)
@@ -400,17 +423,6 @@
 			     'face 'jmail-search-overlay-fold-face))))
 
 ;;; External Functions
-
-(defun jmail-search-more-history-limit ()
-  (interactive)
-  (with-jmail-search-buffer
-   (when (button-at (- (point-max) 1))
-     (jmail-search--delete-more-history-button)
-     (let ((count 0))
-       (while (< count jmail-search-limit)
-	 (jmail-search--process-results (pop jmail-search--saved-objects))
-	 (setq count (+ count 1))))
-     (jmail-search--insert-footer))))
 
 (defun jmail-search-apply-patch-series (dir)
   (interactive "DApply patch series: ")
@@ -504,12 +516,10 @@
 (defun jmail-search-enter ()
   (interactive)
   (with-jmail-search-buffer
-   (if (button-at (point))
-       (push-button)
-     (jmail-search--mark-as-read (line-beginning-position))
-     (when-let* ((object (text-properties-at (point)))
-		 (path (plist-get object :path)))
-       (jmail-view path (current-buffer))))))
+   (jmail-search--mark-as-read (line-beginning-position))
+   (when-let* ((object (text-properties-at (point)))
+	       (path (plist-get object :path)))
+     (jmail-view path (current-buffer)))))
 
 (defun jmail-search-next ()
   (interactive)

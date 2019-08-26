@@ -284,9 +284,10 @@
        (jmail-view--insert-mail)))))
 
 (defun jmail-view--process-filter (process str)
-  (with-current-buffer (process-buffer process)
-    (goto-char (point-max))
-    (insert str)))
+  (when (buffer-live-p (process-buffer process))
+    (with-current-buffer (process-buffer process)
+      (goto-char (point-max))
+      (insert str))))
 
 (defun jmail-view--get-mail-data (path)
   (when-let* ((default-directory jmail-top-maildir)
