@@ -139,6 +139,13 @@
 	    subdirs)
       queries)))
 
+(defun jmail-maildirs (top)
+  (when (file-exists-p top)
+    (when-let ((dirs (directory-files-recursively top "cur$" t)))
+      (mapcar (lambda (dir)
+  		(replace-regexp-in-string (format "%s\\(.*\\)/cur" top)
+  					  "\\1" dir)) dirs))))
+
 (defun jmail-extract-sexp-object (buffer)
   (with-current-buffer buffer
     (goto-char (point-min))
@@ -170,6 +177,11 @@
 		   (infos (jmail-get-account-infos)))
 	  (add-to-list 'accounts (cons account infos) t))))
     accounts))
+
+(defun jmail-get-top-maildir ()
+  (when jmail-top-maildir
+    (file-name-as-directory
+     (expand-file-name jmail-top-maildir))))
 
 (defun jmail-make-address-str (elem)
   (let ((name (car elem))

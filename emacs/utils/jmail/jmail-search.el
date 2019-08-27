@@ -29,26 +29,43 @@
 
 (defvar jmail-search-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "A" 'jmail-search-apply-patch-series)
-    (define-key map "D" 'jmail-search-delete-message)
-    (define-key map "L" 'jmail-search-display-all)
-    (define-key map "M" 'jmail-search-mark-all-as-read)
-    (define-key map "T" 'jmail-search-only-this-thread)
-    (define-key map "a" 'jmail-search-apply-patch)
-    (define-key map "f" 'jmail-search-toggle-folding-thread-all)
+    (define-key map "a" 'jmail-search-action-at-point-or-region)
+    (define-key map "A" 'jmail-search-action-thread)
+
+    (define-key map "d" 'jmail-search-delete-at-point-or-region)
+    (define-key map "D" 'jmail-search-delete-thread)
+
+    (define-key map "m" 'jmail-search-mark-at-point-or-region)
+    (define-key map "M" 'jmail-search-mark-thread)
+
+    (define-key map "p" 'jmail-search-apply-patch)
+    (define-key map "P" 'jmail-search-apply-patch-series)
+
+    (define-key map "r" 'jmail-search-move-at-point-or-region)
+    (define-key map "R" 'jmail-search-move-thread)
+
+    (define-key map "t" 'jmail-search-toggle-thread)
+    (define-key map "T" 'jmail-search-toggle-related)
+
+    (define-key map (kbd "TAB") 'jmail-search-fold-unfold-thread)
+    (define-key map (kbd "C-TAB") 'jmail-search-fold-unfold-all-thread)
+
     (define-key map "g" 'jmail-search-refresh)
-    (define-key map "m" 'jmail-search-mark-as-read)
+
+    (define-key map "L" 'jmail-search-display-all)
+
     (define-key map "n" 'jmail-search-next)
     (define-key map "p" 'jmail-search-previous)
-    (define-key map "q" 'jmail-search-quit)
-    (define-key map "r" 'jmail-search-toggle-related)
-    (define-key map "t" 'jmail-search-toggle-thread)
     (define-key map (kbd "C-<down>") 'jmail-search-next-thread)
     (define-key map (kbd "C-<up>") 'jmail-search-previous-thread)
-    (define-key map (kbd "M-<left>") 'jmail-search-previous-query)
     (define-key map (kbd "M-<right>") 'jmail-search-next-query)
-    (define-key map (kbd "TAB") 'jmail-search-toggle-folding-thread)
+    (define-key map (kbd "M-<left>") 'jmail-search-previous-query)
+
     (define-key map [return] 'jmail-search-enter)
+    (define-key map (kbd "<C-return>") 'jmail-search-show-this-thread)
+
+    (define-key map "q" 'jmail-search-quit)
+
     map)
   "Keymap for `jmail-search-mode'")
 
@@ -76,6 +93,21 @@
 (defface jmail-search-results-footer-face
   '((t :slant italic))
   "Default face used to display results footer"
+  :group 'jmail)
+
+;;; Customization
+
+(defcustom jmail-search-actions nil
+  "Alist of actions to apply at point or region or thread"
+  :type 'alist
+  :group 'jmail)
+
+(defcustom jmail-search-mark-flags '(("read"      . jmail-search--mark-as-read)
+				     ("unread"    . jmail-search--mark-as-unread)
+				     ("flagged"   . jmail-search--mark-as-flagged)
+				     ("unflagged" . jmail-search--mark-as-unflagged))
+  "Alist of flags used to mark messages"
+  :type 'alist
   :group 'jmail)
 
 ;;; Internal Variables
@@ -199,27 +231,87 @@
   (when-let ((overlay (jmail-search--find-overlay pos)))
     (overlay-put overlay 'before-string "  ")))
 
+(defun jmail-search--set-flag (pos value)
+  (when-let ((overlay (jmail-search--find-overlay pos)))
+    (overlay-put overlay 'before-string value)))
+
 (defun jmail-search--set-property (prop value)
   (put-text-property (line-beginning-position)
 		     (line-end-position)
 		     prop value))
 
-(defun jmail-search--mark-as-read (point)
+(defun jmail-search--funcall-object-at (func)
+  (when-let ((object (text-properties-at (point))))
+    (funcall func object)))
+
+(defun jmail-search--mark-as-read ()
   (with-jmail-search-buffer
-   (when-let* ((object (text-properties-at point))
+   (when-let* ((point (line-beginning-position))
+	       (object (text-properties-at point))
 	       (path (plist-get object :path))
 	       (flags (plist-get object :flags))
 	       (new-path path))
-     (jmail-search--remove-flag point)
      (when (member 'new flags)
        (setq flags (remove 'new flags))
        (jmail-search--set-property :flags flags)
        (setq new-path (replace-regexp-in-string "new" "cur" new-path)))
      (when (member 'unread flags)
+       (jmail-search--remove-flag point)
        (setq flags (remove 'unread flags))
        (jmail-search--set-property :flags flags)
        (setq new-path (replace-regexp-in-string ",$" ",S" new-path)))
      (unless (string= path new-path)
+       (jmail-search--set-property :path new-path)
+       (rename-file path new-path)))))
+
+(defun jmail-search--mark-as-unread ()
+  (with-jmail-search-buffer
+   (when-let* ((point (line-beginning-position))
+	       (object (text-properties-at point))
+	       (path (plist-get object :path))
+	       (flags (plist-get object :flags))
+	       (str (propertize "U " 'face 'error))
+	       (new-path path))
+     (unless (member 'unread flags)
+       (jmail-search--set-flag point str)
+       (push 'unread flags)
+       (jmail-search--set-property :flags flags)
+       (setq new-path (replace-regexp-in-string ",\\([A-Z]*\\)S$"
+						",\\1"
+						new-path))
+       (jmail-search--set-property :path new-path)
+       (rename-file path new-path)))))
+
+(defun jmail-search--mark-as-flagged ()
+  (with-jmail-search-buffer
+   (when-let* ((point (line-beginning-position))
+	       (object (text-properties-at point))
+	       (path (plist-get object :path))
+	       (flags (plist-get object :flags))
+	       (str (propertize "S " 'face 'font-lock-warning-face))
+	       (new-path path))
+     (unless (member 'flagged flags)
+       (jmail-search--set-flag point str)
+       (push 'flagged flags)
+       (jmail-search--set-property :flags flags)
+       (setq new-path (replace-regexp-in-string ",\\([A-Z]*\\)"
+						",F\\1" new-path))
+       (jmail-search--set-property :path new-path)
+       (rename-file path new-path)))))
+
+(defun jmail-search--mark-as-unflagged ()
+  (with-jmail-search-buffer
+   (when-let* ((point (line-beginning-position))
+	       (object (text-properties-at point))
+	       (path (plist-get object :path))
+	       (flags (plist-get object :flags))
+	       (new-path path))
+     (when (member 'flagged flags)
+       (jmail-search--remove-flag point)
+       (setq flags (remove 'flagged flags))
+       (jmail-search--set-property :flags flags)
+       (setq new-path (replace-regexp-in-string ",F\\([A-Z]*\\)$"
+						",\\1" new-path))
        (jmail-search--set-property :path new-path)
        (rename-file path new-path)))))
 
@@ -273,18 +365,6 @@
 		  (window-total-height)))
      (jmail-search--process-results (pop jmail-search--saved-objects))))
   (jmail-search--insert-footer))
-
-(defun jmail-search-display-all ()
-  (interactive)
-  (with-jmail-search-buffer
-   (when jmail-search--saved-objects
-     (let ((total (length jmail-search--saved-objects)))
-       (while jmail-search--saved-objects
-	 (jmail-search--process-results (pop jmail-search--saved-objects))
-	 (message "Display all results: %d%%"
-		  (/ (* (- total (length jmail-search--saved-objects)) 100)
-		     total))))
-     (jmail-search--insert-footer))))
 
 (defun jmail-search--display-objects (buffer)
   (let (object)
@@ -384,11 +464,24 @@
   `(with-jmail-search-buffer
     (save-excursion
       (jmail-search--goto-root-thread)
+      ,@body
       (next-line)
       (while (and (jmail-search--thread-level-at-point)
 		  (not (zerop (jmail-search--thread-level-at-point))))
 	,@body
 	(next-line)))))
+
+(defmacro jmail-search--foreach-line-region (&rest body)
+  `(with-jmail-search-buffer
+    (save-excursion
+      (when (region-active-p)
+	(lexical-let ((beg (region-beginning))
+		      (end (region-end)))
+	  (deactivate-mark)
+	  (goto-char beg)
+	  (while (<= (point) end)
+	    ,@body
+	    (next-line)))))))
 
 (defun jmail-search--thread-range ()
   (if-let ((level (jmail-search--thread-level-at-point)))
@@ -422,7 +515,110 @@
 		 (propertize jmail-search--overlay-string
 			     'face 'jmail-search-overlay-fold-face))))
 
+(defun jmail-search--remove-current-line ()
+  (save-excursion
+    (beginning-of-line)
+    (when-let ((overlay (jmail-search--find-overlay (point))))
+      (setq jmail-search--overlays (remove overlay jmail-search--overlays))
+      (delete-overlay overlay))
+    (delete-region (point) (+ (line-end-position) 1))))
+
+(defun jmail-search--delete-message ()
+  (interactive)
+  (with-jmail-search-buffer
+   (when-let* ((object (text-properties-at (point)))
+	       (path (plist-get object :path)))
+     (delete-file path)
+     (jmail-search--remove-current-line))))
+
+(defun jmail-search--read-uidvalidity (dir)
+  (when-let* ((default-directory dir)
+	      (data (with-temp-buffer
+		      (insert-file-contents ".uidvalidity")
+		      (split-string (buffer-string) "\n" t))))
+    (string-to-number (cadr data))))
+
+(defun jmail-search--write-uidvalidity (dir val)
+  (let ((default-directory dir)
+	(message-log-max nil))
+    (with-current-buffer (find-file-noselect ".uidvalidity")
+      (goto-char (- (point-max) 1))
+      (delete-region (line-beginning-position)
+		     (line-end-position))
+      (insert (number-to-string val))
+      (save-buffer)
+      (kill-buffer))))
+
+(defun jmail-search--move-message (dest-dir)
+  (with-jmail-search-buffer
+   (when-let* ((object (text-properties-at (point)))
+	       (path (plist-get object :path))
+	       (src-dir (expand-file-name (concat path "/../../")))
+	       (dest-uid (jmail-search--read-uidvalidity dest-dir))
+	       (new-path (replace-regexp-in-string
+			  ".*/\\(cur\\|new\\|tmp\\)\\(.*U=\\)[0-9]+\\(:.*\\)"
+			  (format "%s/\\1\\2%d\\3" dest-dir (+ dest-uid 1))
+			  path)))
+     (jmail-search--set-property :path new-path)
+     (jmail-search--write-uidvalidity dest-dir (+ dest-uid 1))
+     (rename-file path new-path))))
+
 ;;; External Functions
+
+(defun jmail-search-action-at-point-or-region (action)
+  (interactive (list (completing-read (if (region-active-p)
+					  "Apply action on region: "
+					"Apply action at point: ")
+				      'jmail-search-actions)))
+  (if (region-active-p)
+      (jmail-search--foreach-line-region
+       (jmail-search--funcall-object-at
+	(assoc-default action jmail-search-actions)))
+    (jmail-search--funcall-object-at
+     (assoc-default action jmail-search-actions))))
+
+(defun jmail-search-action-thread (action)
+  (interactive (list (completing-read "Apply action on thread: "
+				      'jmail-search-actions)))
+  (jmail-search--foreach-line-thread
+   (jmail-search--funcall-object-at
+    (assoc-default action jmail-search-actions))))
+
+(defun jmail-search-delete-at-point-or-region (confirm)
+  (interactive (list (yes-or-no-p (if (region-active-p)
+				      "Delete all messages from region: "
+				    "Delete message: "))))
+  (when confirm
+    (if (region-active-p)
+	(jmail-search--foreach-line-region
+	 (jmail-search--delete-message))
+      (jmail-search--delete-message))
+    (jmail-update-buffer)))
+
+(defun jmail-search-delete-thread (confirm)
+  (interactive (list (yes-or-no-p "Delete whole thread: ")))
+  (when confirm
+    (jmail-search--foreach-line-thread
+     (jmail-search--delete-message))
+    (jmail-update-buffer)))
+
+(defun jmail-search-mark-at-point-or-region (flag)
+  (interactive (list (completing-read (if (region-active-p)
+					  "Mark on region as: "
+					"Mark at point as: ")
+				      (mapcar #'car jmail-search-mark-flags))))
+  (if (region-active-p)
+      (jmail-search--foreach-line-region
+       (funcall (assoc-default flag jmail-search-mark-flags)))
+    (funcall (assoc-default flag jmail-search-mark-flags)))
+  (jmail-update-buffer))
+
+(defun jmail-search-mark-thread (flag)
+  (interactive (list (completing-read "Mark whole thread as: "
+				      (mapcar #'car jmail-search-mark-flags))))
+  (jmail-search--foreach-line-thread
+   (funcall (assoc-default flag jmail-search-mark-flags)))
+  (jmail-update-buffer))
 
 (defun jmail-search-apply-patch-series (dir)
   (interactive "DApply patch series: ")
@@ -447,20 +643,41 @@
      (when (string-match "^\\[PATCH " subject)
        (shell-command (concat "git am " msg))))))
 
-(defun jmail-search-previous-thread ()
-  (interactive)
-  (previous-line)
-  (jmail-search--goto-root-thread))
+(defun jmail-search-move-at-point-or-region (maildir)
+  (interactive (list (completing-read (if (region-active-p)
+					  "Move region to: "
+					"Move to: ")
+				      (jmail-maildirs (jmail-get-top-maildir)))))
+  (if (region-active-p)
+      (jmail-search--foreach-line-region
+       (jmail-search--move-message (concat (jmail-get-top-maildir) maildir)))
+    (jmail-search--move-message (concat (jmail-get-top-maildir) maildir)))
+  (jmail-update-buffer))
 
-(defun jmail-search-next-thread ()
-  (interactive)
-  (next-line)
-  (when-let ((level (jmail-search--thread-level-at-point)))
-    (while (and level (not (zerop level)))
-      (next-line)
-      (setq level (jmail-search--thread-level-at-point)))))
+(defun jmail-search-move-thread (maildir)
+  (interactive (list (completing-read "Move whole thread to: "
+				      (jmail-maildirs (jmail-get-top-maildir)))))
+  (jmail-search--foreach-line-thread
+   (jmail-search--move-message (concat (jmail-get-top-maildir) maildir)))
+  (jmail-update-buffer))
 
-(defun jmail-search-toggle-folding-thread ()
+(defun jmail-search-toggle-thread ()
+  (interactive)
+  (when jmail-search--current
+    (let ((query (plist-get jmail-search--current :query))
+	  (thread (not (plist-get jmail-search--current :thread)))
+	  (related (plist-get jmail-search--current :related)))
+    (jmail-search--run query thread related))))
+
+(defun jmail-search-toggle-related ()
+  (interactive)
+  (when jmail-search--current
+    (let ((query (plist-get jmail-search--current :query))
+	  (thread (plist-get jmail-search--current :thread))
+	  (related (not (plist-get jmail-search--current :related))))
+    (jmail-search--run query thread related))))
+
+(defun jmail-search-fold-unfold-thread ()
   (interactive)
   (cl-multiple-value-bind (start end)
       (jmail-search--thread-range)
@@ -469,7 +686,7 @@
 	  (jmail-search--remove-fold-overlay overlay)
 	(jmail-search--add-fold-overlay start end)))))
 
-(defun jmail-search-toggle-folding-thread-all ()
+(defun jmail-search-fold-unfold-all-thread ()
   (interactive)
   (if jmail-search--fold-overlays
       (mapc #'jmail-search--remove-fold-overlay
@@ -488,38 +705,17 @@
 	  (related (plist-get jmail-search--current :related)))
       (jmail-search--run query thread related))))
 
-(defun jmail-search-toggle-related ()
-  (interactive)
-  (when jmail-search--current
-    (let ((query (plist-get jmail-search--current :query))
-	  (thread (plist-get jmail-search--current :thread))
-	  (related (not (plist-get jmail-search--current :related))))
-    (jmail-search--run query thread related))))
-
-(defun jmail-search-toggle-thread ()
-  (interactive)
-  (when jmail-search--current
-    (let ((query (plist-get jmail-search--current :query))
-	  (thread (not (plist-get jmail-search--current :thread)))
-	  (related (plist-get jmail-search--current :related)))
-    (jmail-search--run query thread related))))
-
-(defun jmail-search-quit ()
-  (interactive)
-  (jmail-search--stop-process)
-  (jmail-view-quit)
-  (jmail-search--delete-all-overlays)
-  (with-jmail-search-buffer
-   (kill-buffer))
-  (jmail))
-
-(defun jmail-search-enter ()
+(defun jmail-search-display-all ()
   (interactive)
   (with-jmail-search-buffer
-   (jmail-search--mark-as-read (line-beginning-position))
-   (when-let* ((object (text-properties-at (point)))
-	       (path (plist-get object :path)))
-     (jmail-view path (current-buffer)))))
+   (when jmail-search--saved-objects
+     (let ((total (length jmail-search--saved-objects)))
+       (while jmail-search--saved-objects
+	 (jmail-search--process-results (pop jmail-search--saved-objects))
+	 (message "Display all results: %d%%"
+		  (/ (* (- total (length jmail-search--saved-objects)) 100)
+		     total))))
+     (jmail-search--insert-footer))))
 
 (defun jmail-search-next ()
   (interactive)
@@ -536,6 +732,19 @@
   (with-jmail-search-buffer
    (previous-line)
    (jmail-search-enter)))
+
+(defun jmail-search-next-thread ()
+  (interactive)
+  (next-line)
+  (when-let ((level (jmail-search--thread-level-at-point)))
+    (while (and level (not (zerop level)))
+      (next-line)
+      (setq level (jmail-search--thread-level-at-point)))))
+
+(defun jmail-search-previous-thread ()
+  (interactive)
+  (previous-line)
+  (jmail-search--goto-root-thread))
 
 (defun jmail-search-next-query ()
   (interactive)
@@ -557,15 +766,15 @@
     (setq jmail-search--saved-index index)
     (jmail-search-refresh)))
 
-(defun jmail-search-delete-message ()
+(defun jmail-search-enter ()
   (interactive)
   (with-jmail-search-buffer
+   (jmail-search--mark-as-read)
    (when-let* ((object (text-properties-at (point)))
 	       (path (plist-get object :path)))
-     (delete-file path)
-     (jmail-search-refresh))))
+     (jmail-view path (current-buffer)))))
 
-(defun jmail-search-only-this-thread ()
+(defun jmail-search-show-this-thread ()
   (interactive)
   (with-jmail-search-buffer
    (when-let* ((object (text-properties-at (point)))
@@ -574,23 +783,14 @@
      (setq jmail-search--saved-index 0)
      (jmail-search--run query t t t))))
 
-(defun jmail-search-mark-as-read ()
+(defun jmail-search-quit ()
   (interactive)
-  (if (region-active-p)
-      (let ((beg (region-beginning))
-	    (end (region-end)))
-	(deactivate-mark)
-	(save-excursion
-	  (goto-char beg)
-	  (while (<= (point) end)
-	    (jmail-search--mark-as-read (line-beginning-position))
-	    (next-line))))
-    (jmail-search--mark-as-read (line-beginning-position))))
-
-(defun jmail-search-mark-all-as-read ()
-  (interactive)
-  (mark-whole-buffer)
-  (jmail-search-mark-as-read))
+  (jmail-search--stop-process)
+  (jmail-view-quit)
+  (jmail-search--delete-all-overlays)
+  (with-jmail-search-buffer
+   (kill-buffer))
+  (jmail))
 
 (defun jmail-search (query)
   (setq jmail-search--saved-index 0)
