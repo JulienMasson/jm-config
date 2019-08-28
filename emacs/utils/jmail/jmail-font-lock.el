@@ -83,7 +83,7 @@
 (defun jmail-font-lock--cited-face ()
   (when-let* ((str (buffer-substring (line-beginning-position) (point)))
 	      (level (mod (string-width (replace-regexp-in-string
-					 "[^>]" "" str)) 7)))
+					 "^\\(>*\\).*" "\\1" str)) 7)))
     (intern-soft (format "jmail-font-lock-cited-%d-face" level))))
 
 
