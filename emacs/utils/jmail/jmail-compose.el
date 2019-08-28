@@ -24,6 +24,7 @@
 ;;; Code:
 
 (require 'jmail-company)
+(require 'jmail-font-lock)
 
 ;;; Mode
 
@@ -35,6 +36,7 @@
 
 (define-derived-mode jmail-compose-mode message-mode
   "jmail compose"
+  (setq-local font-lock-defaults '(jmail-font-lock t))
   (setq-local send-mail-function 'message-send-mail-with-sendmail)
   (setq-local message-send-mail-function 'message-send-mail-with-sendmail)
   (setq-local sendmail-program (jmail-find-program "msmtp"))

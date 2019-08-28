@@ -190,4 +190,7 @@
 	(format "%s %s" name address)
       address)))
 
+(defun jmail-eoh-mail-point ()
+  (save-excursion (rfc822-goto-eoh)))
+
 (provide 'jmail-utils)

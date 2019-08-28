@@ -26,6 +26,7 @@
 (require 'message)
 (require 'jmail-attachment)
 (require 'jmail-compose)
+(require 'jmail-font-lock)
 
 ;;; Mode
 
@@ -44,43 +45,6 @@
   "jmail view"
   (toggle-read-only t))
 
-;;; Faces
-
-(defface jmail-view-0-face
-  '((t :inherit font-lock-variable-name-face :bold nil :italic t))
-  "Face for cited message parts (level 0)."
-  :group 'jmail)
-
-(defface jmail-view-1-face
-  '((t :inherit font-lock-preprocessor-face :bold nil :italic t))
-  "Face for cited message parts (level 1)."
-  :group 'jmail)
-
-(defface jmail-view-2-face
-  '((t :inherit font-lock-constant-face :bold nil :italic t))
-  "Face for cited message parts (level 2)."
-  :group 'jmail)
-
-(defface jmail-view-3-face
-  '((t :inherit font-lock-function-name-face :bold nil :italic t))
-  "Face for cited message parts (level 3)."
-  :group 'jmail)
-
-(defface jmail-view-4-face
-  '((t :inherit font-lock-type-face :bold nil :italic t))
-  "Face for cited message parts (level 4)."
-  :group 'jmail)
-
-(defface jmail-view-5-face
-  '((t :inherit font-lock-comment-face :bold nil :italic t))
-  "Face for cited message parts (level 5)."
-  :group 'jmail)
-
-(defface jmail-view-6-face
-  '((t :inherit font-lock-comment-delimiter-face :bold nil :italic t))
-  "Face for cited message parts (level 6)."
-  :group 'jmail)
-
 ;;; Customization
 
 (defcustom jmail-view-html-default-view nil
@@ -91,9 +55,6 @@
 ;;; Internal Variables
 
 (defconst jmail-view--buffer-name "*jmail-view*")
-
-(defconst jmail-view--cited-regexp
-  "^\\(\\([[:alpha:]]+\\)\\|\\( *\\)\\)\\(\\(>+ ?\\)+\\)")
 
 (defconst jmail-view--prompt-all-str "all")
 
@@ -115,85 +76,11 @@
   (select-window (jmail-split-window-below buffer))
   (switch-to-buffer jmail-view--buffer-name))
 
-(defun jmail-view--eoh-point ()
-  (save-excursion
-    (rfc822-goto-eoh)
-    (point)))
-
-(defun jmail-view--header-face-line ()
-  (let* ((beg (line-beginning-position))
-	 (end (line-end-position))
-	 (str (buffer-substring beg end)))
-    (cond
-     ;; match To field
-     ((string-match "^[Tt]o:" str)
-      (add-face-text-property beg (+ beg (match-end 0))
-			      'message-header-name)
-      (add-face-text-property (+ beg (match-end 0)) end
-			      'message-header-to))
-     ;; match Cc or Reply field
-     ((string-match "^\\(Cc\\|[Rr]eply-[Tt]o\\):" str)
-      (add-face-text-property beg (+ beg (match-end 0))
-			      'message-header-name)
-      (add-face-text-property (+ beg (match-end 0)) end
-			      'message-header-cc))
-     ;; match Subject field
-     ((string-match "^[Ss]ubject:" str)
-      (add-face-text-property beg (+ beg (match-end 0))
-			      'message-header-name)
-      (add-face-text-property (+ beg (match-end 0)) end
-			      'message-header-subject))
-     ;; match other
-     ((string-match "^[A-Z][^: \n\t]+:" str)
-      (add-face-text-property beg (+ beg (match-end 0))
-			      'message-header-name)
-      (add-face-text-property (+ beg (match-end 0)) end
-			      'message-header-other)))))
-
-(defun jmail-view--set-header-faces ()
-  (save-excursion
-    (goto-char (point-min))
-    (let ((end (jmail-view--eoh-point)))
-      (while (< (point) end)
-	(jmail-view--header-face-line)
-	(forward-line)))))
-
 (defun jmail-view--clean-body ()
   (save-excursion
     (message-goto-body)
     (while (re-search-forward "$" nil t)
       (replace-match ""))))
-
-(defun jmail-view--fontify-cited ()
-  (save-excursion
-    (message-goto-body)
-    (while (re-search-forward jmail-view--cited-regexp nil t)
-      (when-let* ((str (buffer-substring (line-beginning-position) (point)))
-		  (level (mod (string-width (replace-regexp-in-string
-					     "[^>]" "" str)) 7))
-		  (cited-face (intern-soft (format "jmail-view-%d-face" level))))
-	(add-face-text-property (line-beginning-position)
-				(line-end-position)
-				cited-face)))))
-
-(defun jmail-view--minimal-diff-face ()
-  (save-excursion
-    (goto-char (point-max))
-    (while (re-search-backward "^diff \-\-git" nil t))
-    (while (not (eobp))
-      (let* ((start (point))
-	     (end (line-end-position))
-	     (str (buffer-substring-no-properties start end))
-	     (inhibit-read-only t))
-	(cond ((string-match "^\\(---\\|\\+\\+\\+\\)" str)
-	       (add-face-text-property start end 'diff-file-header))
-	      ((string-match "^@@" str)
-	       (add-face-text-property start end 'diff-header))
-	      ((string-match "^\\+" str)
-	       (add-face-text-property start end 'diff-added))
-	      ((string-match "^\\-" str)
-	       (add-face-text-property start end 'diff-removed)))
-	(forward-line)))))
 
 (defun jmail-view--insert-html (html)
   (let ((beg (point)))
@@ -261,16 +148,27 @@
 	     (setq jmail-view--html-view nil))
 	   (insert plain-text)))))
 
+(defun jmail-view--fontify-mail ()
+  (setq-local font-lock-defaults '(jmail-font-lock t))
+  (save-excursion
+    (goto-char (point-min))
+    (let ((limit (if jmail-view--html-view
+		     (jmail-eoh-mail-point)
+		   (point-max))))
+      (while (and (not (eobp))
+		  (< (point) limit))
+	(font-lock-fontify-region (line-beginning-position)
+      				  (line-end-position))
+	(forward-line)))))
+
 (defun jmail-view--insert-mail ()
   (when jmail-view--data
     (with-jmail-view-buffer
      (erase-buffer)
      (jmail-view--insert-contents)
-     (jmail-view--set-header-faces)
      (unless jmail-view--html-view
-       (jmail-view--clean-body)
-       (jmail-view--fontify-cited)
-       (jmail-view--minimal-diff-face))
+       (jmail-view--clean-body))
+     (jmail-view--fontify-mail)
      (set-buffer-modified-p nil)
      (goto-char (point-min)))))
 
