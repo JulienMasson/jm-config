@@ -210,15 +210,19 @@
       (message-indent-citation beg (point)))))
 
 (defun jmail-view--autodetect-account ()
-  (when-let* ((accounts (jmail-get-accounts jmail-smtp-config-file))
-	      (accounts-address (mapcar #'cddr accounts))
-	      (to (plist-get jmail-view--data :to))
-	      (to-address (mapcar #'cdr to))
-	      (address (car (cl-intersection accounts-address to-address
-					     :test #'string=))))
-    (seq-find (lambda (elem)
-		(string= address (cddr elem)))
-	      accounts)))
+  (if-let* ((accounts (jmail-get-accounts jmail-smtp-config-file))
+	    (accounts-address (mapcar #'cddr accounts))
+	    (to (plist-get jmail-view--data :to))
+	    (to-address (mapcar #'cdr to))
+	    (address (car (cl-intersection accounts-address to-address
+					   :test #'string=))))
+      (seq-find (lambda (elem)
+		  (string= address (cddr elem)))
+		accounts)
+    (when-let ((accounts (jmail-get-accounts jmail-smtp-config-file))
+	       (account (completing-read "Select account: "
+					 (mapcar #'car accounts))))
+      (assoc account accounts))))
 
 (defun jmail-view--reply-get-to (from)
   (when-let ((to (append (plist-get jmail-view--data :from)
