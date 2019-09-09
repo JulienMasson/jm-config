@@ -23,6 +23,13 @@
 
 ;;; Code:
 
+;;; Customization
+
+(defcustom jmail-update--ignore-channels nil
+  "If non nil, list of channels to ignore when fetching mails"
+  :type 'list
+  :group 'jmail)
+
 ;;; Internal Variables
 
 (defconst jmail-update--buffer-name "*jmail-update*")
@@ -78,8 +85,23 @@
   (when-jmail-update-process-success process
     (jmail-update--index)))
 
+(defun jmail-update--get-channels ()
+  (let (channels)
+    (with-current-buffer (find-file-noselect jmail-sync-config-file)
+      (goto-char (point-min))
+      (while (re-search-forward "^Channel " nil t)
+	(add-to-list 'channels
+		     (buffer-substring (point) (line-end-position)) t))
+      (kill-buffer))
+    channels))
+
 (defun jmail-update--get-sync-args ()
-  (list "--all" "--config" (jmail-untramp-path jmail-sync-config-file)))
+  (when-let* ((all-channels (jmail-update--get-channels))
+	      (channels (cl-set-difference all-channels
+					   jmail-update--ignore-channels
+					   :test #'string=)))
+    (append (list "--config" (jmail-untramp-path jmail-sync-config-file))
+	    channels)))
 
 (defun jmail-update--sync ()
   (let* ((default-directory jmail-top-maildir)
