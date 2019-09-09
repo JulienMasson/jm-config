@@ -56,13 +56,11 @@
 ;; add custom queries
 (add-to-list 'jmail-queries '(nil . (("Starred"   . "flag:flagged"))))
 
-;; remove drafts, sent and trash from queries
-(assoc-delete-all "drafts" jmail-queries)
-(assoc-delete-all "sent" jmail-queries)
-(assoc-delete-all "trash" jmail-queries)
-
 ;; refresh every 60 seconds
 (setq jmail-update-buffer-every 60)
+
+;; display html by default
+(setq jmail-view-html-default-view t)
 
 ;; cached unread data
 (defvar jmail-unread-data-cached nil)
