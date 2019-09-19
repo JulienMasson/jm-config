@@ -160,6 +160,7 @@
 (status-add-to-left 'status-acscope)
 (status-add-to-left 'status-project-manager)
 (status-add-to-left 'status-virtual-desktops)
+(status-add-to-right 'status-date)
 (status-add-to-right 'status-erc)
 (status-add-to-right 'status-jmail)
 (turn-on-status)
