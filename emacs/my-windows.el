@@ -22,6 +22,9 @@
 
 ;;; Code:
 
+;; no windows decorations
+(set-frame-parameter nil 'undecorated t)
+
 ;; vertical split by default
 (setq split-height-threshold 119)
 (setq split-width-threshold 143)
