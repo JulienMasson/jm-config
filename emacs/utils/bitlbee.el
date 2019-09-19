@@ -77,10 +77,11 @@
 (defun bitlbee-hook ()
   (when (and (string= "localhost" erc-session-server)
              (string= "&bitlbee" (buffer-name)))
-    (let ((backend (bitlbee-b-backend bitlbee-current)))
-      (rename-buffer (bitlbee-server bitlbee-current))
-      (remove-hook 'erc-join-hook 'bitlbee-hook)
-      (call-if-function (b-backend-after-connect backend)))))
+    (rename-buffer (bitlbee-server bitlbee-current))
+    (remove-hook 'erc-join-hook 'bitlbee-hook)
+    (when-let* ((backend (bitlbee-b-backend bitlbee-current))
+		(after-connect (b-backend-after-connect backend)))
+      (funcall after-connect))))
 
 (defun bitlbee-list-erc-modified ()
   (delq nil
