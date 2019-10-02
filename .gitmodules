@@ -228,3 +228,6 @@
 [submodule "emacs/modules/locate-dired"]
 	path = emacs/modules/locate-dired
 	url = https://github.com/JulienMasson/locate-dired.git
+[submodule "emacs/modules/yaml-mode"]
+	path = emacs/modules/yaml-mode
+	url = https://github.com/yoshiki/yaml-mode.git

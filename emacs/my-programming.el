@@ -117,6 +117,9 @@
 ;; perl
 (defalias 'perl-mode 'cperl-mode)
 
+;; yaml
+(require 'yaml-mode)
+
 ;; gdb
 (require 'my-gdb)
 
