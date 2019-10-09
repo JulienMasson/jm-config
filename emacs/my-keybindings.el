@@ -22,6 +22,10 @@
 
 ;;; Code:
 
+;; disable suspend frame
+(global-set-key (kbd "C-z") nil)
+(global-set-key (kbd "C-x C-z") nil)
+
 ;; movement windows
 (global-set-key (kbd "C-c <left>")  'windmove-left)
 (global-set-key (kbd "C-c <right>") 'windmove-right)
