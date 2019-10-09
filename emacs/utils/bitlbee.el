@@ -181,7 +181,8 @@
 						    (b-backend-name (bitlbee-b-backend account)))
 						  bitlbee-accounts)
 					  nil t nil nil)))
-  (let* ((account (bitlbee-find-account name))
+  (let* ((default-directory "/")
+	 (account (bitlbee-find-account name))
 	 (backend (bitlbee-b-backend account))
 	 (cmd-line (bitlbee-build-cmd backend)))
     (start-process-shell-command name
