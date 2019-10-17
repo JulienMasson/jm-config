@@ -223,5 +223,16 @@ search modes defined in the new `dired-sort-toggle'.
 	    (hexl-find-file file))
 	  files)))
 
+;; dired sudo
+(defun dired-sudo ()
+  (interactive)
+  (let ((dir (expand-file-name default-directory)))
+    (if (tramp-tramp-file-p dir)
+	(let* ((dissect (tramp-dissect-file-name dir))
+	       (host (tramp-file-name-host dissect))
+	       (local-dir (tramp-file-name-localname dissect))
+	       (tramp (replace-regexp-in-string local-dir "" dir)))
+	  (dired (format "%s|sudo:root@%s:%s" tramp host local-dir)))
+      (dired (concat "/sudo:root@localhost:" dir)))))
 
 (provide 'my-dired)

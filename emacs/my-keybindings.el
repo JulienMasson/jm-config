@@ -186,6 +186,7 @@
 (define-key dired-mode-map "L" 'locate-dired)
 (define-key dired-mode-map "U" 'unmark-all-dired-buffer)
 (define-key dired-mode-map "K" 'kill-all-dired-buffer)
+(define-key dired-mode-map "S" 'dired-sudo)
 
 ;; erc
 (define-key erc-mode-map (kbd "C-c C-i") 'emojify-insert-emoji)

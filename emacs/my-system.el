@@ -68,12 +68,11 @@
   (interactive (list (read-file-name "Find file (as root): ")))
   (if (tramp-tramp-file-p file)
       (let* ((dissect (tramp-dissect-file-name file))
-	     (method (tramp-file-name-method dissect))
-	     (user (tramp-file-name-user dissect))
 	     (host (tramp-file-name-host dissect))
-	     (file-name (tramp-file-name-localname dissect)))
-	(find-alternate-file (format "/%s:%s@%s|sudo:root@%s:%s"
-				     method user host host file-name)))
+	     (local-file (tramp-file-name-localname dissect))
+	     (tramp (replace-regexp-in-string local-dir "" dir)))
+	(find-alternate-file (format "%s|sudo:root@%s:%s"
+				     tramp host local-file)))
     (find-alternate-file (concat "/sudo:root@localhost:" file))))
 
 ;; define key in help mode
