@@ -114,9 +114,6 @@
 (require 'company-files)
 (add-to-list 'company-backends 'company-files)
 
-;; perl
-(defalias 'perl-mode 'cperl-mode)
-
 ;; yaml
 (require 'yaml-mode)
 
@@ -125,6 +122,11 @@
 
 ;; C source code
 (require 'my-c)
+
+;; perl
+(defalias 'perl-mode 'cperl-mode)
+(add-to-list 'acscope-database-default-files "pl")
+(add-to-list 'acscope-mode-hook-list 'cperl-mode-hook)
 
 ;; anaconda mode
 (require 'anaconda-mode)
