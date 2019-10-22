@@ -90,27 +90,25 @@
 
 ;; highlight focus
 (require 'face-remap)
-
 (defvar highlight-focus-background "#303030")
-(defvar highlight-focus-cookie nil)
 
 (defun highlight-focus-swap (prev next)
-  (with-current-buffer prev
-    (when highlight-focus-cookie
-      (face-remap-remove-relative highlight-focus-cookie)))
-  (with-current-buffer next
-    (setq highlight-focus-cookie
-          (face-remap-add-relative 'default :background highlight-focus-background))))
+  (when (and (buffer-live-p prev)
+	     (not (eq prev next)))
+    (with-current-buffer prev
+      (setq face-remapping-alist nil)
+      (force-mode-line-update)))
+  (when (buffer-live-p next)
+    (with-current-buffer next
+      (face-remap-add-relative 'default :background
+			       highlight-focus-background))))
 
 (defun highlight-focus-check (old-fn &rest args)
   (let ((prev (current-buffer))
 	next)
     (apply old-fn args)
     (setq next (current-buffer))
-    (when (and (buffer-live-p prev)
-	       (buffer-live-p next)
-	       (not (eq prev next)))
-      (highlight-focus-swap prev next))))
+    (highlight-focus-swap prev next)))
 
 (advice-add 'select-window :around #'highlight-focus-check)
 
