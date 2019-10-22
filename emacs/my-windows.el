@@ -84,43 +84,35 @@
 ;; show parenthese
 (show-paren-mode 1)
 
-;; highlight focus
-(require 'face-remap)
-(defvar highlight-focus:last-buffer nil)
-(defvar highlight-focus:cookie nil)
-(defvar highlight-focus:background "#303030")
-(defvar highlight-focus:app-has-focus t)
-
-(defun highlight-focus:check ()
-  "Check if focus has changed, and if so, update remapping."
-  (let ((current-buffer (and highlight-focus:app-has-focus (current-buffer))))
-    (unless (eq highlight-focus:last-buffer current-buffer)
-      (when (and highlight-focus:last-buffer highlight-focus:cookie)
-        (with-current-buffer highlight-focus:last-buffer
-          (face-remap-remove-relative highlight-focus:cookie)))
-      (setq highlight-focus:last-buffer current-buffer)
-      (when current-buffer
-        (setq highlight-focus:cookie
-              (face-remap-add-relative 'default :background highlight-focus:background))))))
-
-(defun highlight-focus:app-focus (state)
-  (setq highlight-focus:app-has-focus state)
-  (highlight-focus:check))
-
 ;; load jm theme
 (add-to-list 'custom-theme-load-path my-emacs-root-path)
 (load-theme 'jm t)
 
-;; change background color on focus window
-(defadvice other-window (after highlight-focus activate)
-  (highlight-focus:check))
-(defadvice select-window (after highlight-focus activate)
-  (highlight-focus:check))
-(defadvice select-frame (after highlight-focus activate)
-  (highlight-focus:check))
-(add-hook 'window-configuration-change-hook 'highlight-focus:check)
-(add-hook 'focus-in-hook (lambda () (highlight-focus:app-focus t)))
-(add-hook 'focus-out-hook (lambda () (highlight-focus:app-focus nil)))
+;; highlight focus
+(require 'face-remap)
+
+(defvar highlight-focus-background "#303030")
+(defvar highlight-focus-cookie nil)
+
+(defun highlight-focus-swap (prev next)
+  (with-current-buffer prev
+    (when highlight-focus-cookie
+      (face-remap-remove-relative highlight-focus-cookie)))
+  (with-current-buffer next
+    (setq highlight-focus-cookie
+          (face-remap-add-relative 'default :background highlight-focus-background))))
+
+(defun highlight-focus-check (old-fn &rest args)
+  (let ((prev (current-buffer))
+	next)
+    (apply old-fn args)
+    (setq next (current-buffer))
+    (when (and (buffer-live-p prev)
+	       (buffer-live-p next)
+	       (not (eq prev next)))
+      (highlight-focus-swap prev next))))
+
+(advice-add 'select-window :around #'highlight-focus-check)
 
 ;; line highlighting in all buffers
 (require 'hl-line)
@@ -201,6 +193,5 @@
 ;; move lines
 (require 'move-lines)
 (move-lines-binding)
-
 
 (provide 'my-windows)
