@@ -53,16 +53,6 @@
 ;; default dired setting
 (put 'dired-find-alternate-file 'disabled nil)
 
-;; virtual desktop
-(require 'virtual-desktops)
-(setq virtual-desktops-display-mode-line nil)
-(virtual-desktops-mode 1)
-
-;; add 4 virtual desktop
-(dotimes (i 4)
-  (virtual-desktops-add 1))
-(virtual-desktops-goto 1)
-
 ;; find file as root
 (defun sudo-find-file (file)
   (interactive (list (read-file-name "Find file (as root): ")))
@@ -158,7 +148,7 @@
 (status-add-to-left 'status-compilation)
 (status-add-to-left 'status-acscope)
 (status-add-to-left 'status-project-manager)
-(status-add-to-left 'status-virtual-desktops)
+(status-add-to-left 'status-tab-bar)
 (status-add-to-right 'status-date)
 (status-add-to-right 'status-erc)
 (status-add-to-right 'status-jmail)

@@ -40,6 +40,10 @@
 (global-set-key (kbd "C-M-<right>") 'right-sexp)
 (global-set-key (kbd "C-M-<left>") 'left-sexp)
 
+;; tab bar right/left
+(global-set-key (kbd "M-S-<right>") 'tab-bar-switch-to-next-tab)
+(global-set-key (kbd "M-S-<left>") 'tab-bar-switch-to-prev-tab)
+
 ;; return command
 (global-set-key (kbd "C-<return>") 'jump-newline-and-indent)
 
@@ -99,12 +103,6 @@
 ;; interactive-align
 (global-set-key (kbd "C-.") 'align)
 (global-set-key (kbd "C-'") 'ialign)
-
-;; goto virtual desktops
-(global-set-key (kbd "M-1") (lambda () (interactive) (virtual-desktops-goto 1)))
-(global-set-key (kbd "M-2") (lambda () (interactive) (virtual-desktops-goto 2)))
-(global-set-key (kbd "M-3") (lambda () (interactive) (virtual-desktops-goto 3)))
-(global-set-key (kbd "M-4") (lambda () (interactive) (virtual-desktops-goto 4)))
 
 ;; org
 (global-set-key (kbd "C-c o a") 'jm-org-agenda)

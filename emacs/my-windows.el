@@ -44,6 +44,9 @@
   (toggle-scroll-bar -1)
   (tool-bar-mode -1))
 
+;; always keep the tab bar hidden
+(setq tab-bar-show nil)
+
 ;; windows size
 (setq default-frame-alist '((width . 80) (height . 40)))
 

@@ -5,11 +5,6 @@
 	path = emacs/modules/dtrt-indent
 	url = https://github.com/jscheid/dtrt-indent
 	ignore = untracked
-[submodule "emacs/virtual-desktops.el"]
-	path = emacs/modules/virtual-desktops
-	url = https://github.com/JulienMasson/virtual-desktops.el
-	ignore = untracked
-	branch = master
 [submodule "emacs/purple"]
 	path = emacs/modules/purple
 	url = https://github.com/JulienMasson/purple
