@@ -26,6 +26,7 @@
 (require 'subr-x)
 (require 'jmail-compose)
 (require 'jmail-count)
+(require 'jmail-nntp)
 (require 'jmail-search)
 (require 'jmail-update)
 (require 'jmail-utils)
@@ -38,6 +39,7 @@
 
 (defvar jmail-mode-map
   (let ((map (make-sparse-keymap)))
+    (define-key map "N"      'jmail-nntp)
     (define-key map "U"      'jmail-unread-all)
     (define-key map "g"      'jmail-update-buffer)
     (define-key map "j"      'jmail-jump-to-maildir)
