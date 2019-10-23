@@ -22,6 +22,9 @@
 
 ;;; Code:
 
+;; display most important messages
+(setq gnus-verbose-backends 5)
+
 ;; default message from style
 (setq message-from-style 'angles)
 
