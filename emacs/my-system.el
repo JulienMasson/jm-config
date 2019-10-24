@@ -65,6 +65,9 @@
 				     tramp host local-file)))
     (find-alternate-file (concat "/sudo:root@localhost:" file))))
 
+;; browse kill ring
+(require 'browse-kill-ring)
+
 ;; define key in help mode
 (require 'help-mode)
 

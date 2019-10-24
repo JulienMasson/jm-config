@@ -226,3 +226,6 @@
 [submodule "emacs/modules/yaml-mode"]
 	path = emacs/modules/yaml-mode
 	url = https://github.com/yoshiki/yaml-mode.git
+[submodule "emacs/modules/browse-kill-ring"]
+	path = emacs/modules/browse-kill-ring
+	url = https://github.com/T-J-Teru/browse-kill-ring.git

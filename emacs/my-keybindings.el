@@ -64,6 +64,9 @@
 (global-set-key (kbd "M-w") 'kill-ring-save-or-copy-line)
 (global-set-key (kbd "C-c M-w") 'show-and-copy-buffer-filename)
 
+;; browse kill ring
+(global-set-key (kbd "C-M-y") 'browse-kill-ring)
+
 ;; isearch
 (global-set-key (kbd "C-s") 'isearch-forward-regexp)
 (global-set-key (kbd "C-r") 'isearch-backward-regexp)
