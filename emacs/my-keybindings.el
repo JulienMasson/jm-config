@@ -22,6 +22,9 @@
 
 ;;; Code:
 
+;; ibuffer
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+
 ;; disable suspend frame
 (global-set-key (kbd "C-z") nil)
 (global-set-key (kbd "C-x C-z") nil)
