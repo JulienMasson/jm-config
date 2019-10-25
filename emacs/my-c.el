@@ -34,6 +34,8 @@
 
 ;; semantic
 (require 'semantic)
+(require 'semantic/db-file)
+(require 'semantic/db-typecache)
 (setq semantic-default-c-path '("/usr/include/" "/usr/local/include/"
 				"/usr/include/x86_64-linux-gnu/"))
 (semantic-mode)
