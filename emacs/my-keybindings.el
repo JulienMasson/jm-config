@@ -119,6 +119,7 @@
 (global-set-key (kbd "C-c g f") 'magit-log-buffer-file)
 (global-set-key (kbd "C-c g r") 'magit-reset-hard)
 (global-set-key (kbd "C-c g b") 'magit-blame-addition)
+(global-set-key (kbd "C-c g y") 'magit-show-refs)
 (define-key magit-mode-map [remap magit-copy-buffer-thing-as-kill] 'kill-ring-save)
 (define-key magit-mode-map [remap magit-copy-buffer-revision] 'kill-ring-save)
 
