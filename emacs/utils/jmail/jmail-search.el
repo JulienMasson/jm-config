@@ -110,6 +110,14 @@
   :type 'alist
   :group 'jmail)
 
+(defcustom jmail-search-fields '("cc:" "bcc:" "from:" "to:" "subject:"
+				 "body:" "maildir:" "msgid:" "prio:"
+				 "flag:" "date:" "size:" "embed:" "file:"
+				 "mime:" "tag:" "list:")
+  "List of search fields supported"
+  :type 'list
+  :group 'jmail)
+
 ;;; Internal Variables
 
 (defconst jmail-search--process-buffer-name "*jmail-search-process*")

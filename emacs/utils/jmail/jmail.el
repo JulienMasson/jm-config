@@ -346,7 +346,7 @@
       (jmail-search unread)))
 
 (defun jmail-search-prompt (query)
-  (interactive "sSearch: ")
+  (interactive (jmail-read-prompt "Search: " jmail-search-fields))
   (jmail-search query))
 
 (defun jmail ()
