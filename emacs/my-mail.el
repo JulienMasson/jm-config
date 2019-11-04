@@ -57,7 +57,11 @@
 (setq jmail-queries (jmail-autofill-maildir-queries jmail-top-maildir))
 
 ;; add custom queries
-(add-to-list 'jmail-queries '(nil . (("Starred"   . "flag:flagged"))))
+(setq jmail-queries (jmail-maildir-add-query nil "Starred" "flag:flagged" jmail-queries))
+
+;; fetch RSS news
+(setq jmail-rss-config-file (concat my-private-dotfiles-path ".feed2exec.ini"))
+(setq jmail-rss-enable t)
 
 ;; refresh every 60 seconds
 (setq jmail-update-buffer-every 60)

@@ -23,12 +23,18 @@
 
 ;;; Code:
 
+(require 'jmail-rss)
+
 ;;; Customization
 
 (defcustom jmail-update--ignore-channels nil
   "If non nil, list of channels to ignore when fetching mails"
   :type 'list
   :group 'jmail)
+
+;;; External Variables
+
+(defconst jmail-update-process-name "jmail-update")
 
 ;;; Internal Variables
 
@@ -75,15 +81,17 @@
 	 (maildir (concat "--maildir=" (jmail-untramp-path jmail-top-maildir)))
 	 (args (list "index" "--nocolor" maildir))
 	 (buffer (get-buffer jmail-update--buffer-name))
-	 (process (apply 'start-file-process "jmail-update" buffer
-			 program args)))
+	 (process (apply 'start-file-process jmail-update-process-name
+			 buffer program args)))
     (set-process-filter process 'jmail-update--process-filter)
     (set-process-sentinel process 'jmail-update--index-process-sentinel)))
 
 ;; sync
 (defun jmail-update--sync-process-sentinel (process status)
   (when-jmail-update-process-success process
-    (jmail-update--index)))
+      (if (jmail-rss-enabled)
+	  (jmail-rss-fetch jmail-update--buffer-name #'jmail-update--index)
+	(jmail-update--index))))
 
 (defun jmail-update--get-channels ()
   (let (channels)
@@ -108,8 +116,8 @@
 	 (program (jmail-find-program jmail-sync-program))
 	 (args (jmail-update--get-sync-args))
 	 (buffer (get-buffer-create jmail-update--buffer-name))
-	 (process (apply 'start-file-process "jmail-update" buffer
-			 program args)))
+	 (process (apply 'start-file-process jmail-update-process-name
+			 buffer program args)))
     (with-current-buffer buffer
       (erase-buffer))
     (set-process-filter process 'jmail-update--process-filter)
