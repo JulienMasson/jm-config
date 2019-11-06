@@ -68,9 +68,9 @@
   "Face for a Queries header"
   :group 'jmail)
 
-(defface jmail-account-face
+(defface jmail-section-face
   '((t :inherit font-lock-variable-name-face))
-  "Face for a account"
+  "Face for a section"
   :group 'jmail)
 
 ;;; Customization
@@ -136,13 +136,22 @@
 (defun jmail--insert-query (query)
   (insert (propertize (format "%-5s %-18s" " " query) 'face 'bold)))
 
+(defun jmail--insert-section (section queries)
+  (let ((beg (point))
+	(queries-all (mapconcat (lambda (query)
+				  (format "(%s)" (cdr query)))
+				queries " or ")))
+    (insert (propertize (format "    * %s" (upcase section))
+			'face 'jmail-section-face))
+    (put-text-property beg (point) 'jmail-section queries-all)
+    (insert "\n")))
+
 (defun jmail--insert-queries ()
   (mapc (lambda (data)
-	  (let ((account (car data))
+	  (let ((section (car data))
 		(queries (cdr data)))
-	    (when account
-	      (insert (propertize (format "    * %s \n" (upcase account))
-				  'face 'jmail-account-face)))
+	    (when section
+	      (jmail--insert-section section queries))
 	    (mapc (lambda (query)
 		    (let ((beg (point)))
 		      (jmail--insert-query (car query))
@@ -171,16 +180,20 @@
     (jmail--restart-update-timer))
   (jmail--goto-first-query))
 
+(defun jmail--get-query (pos)
+  (or (get-text-property pos 'jmail-section)
+      (get-text-property pos 'jmail)))
+
 (defun jmail--move-to-query (forward)
   (with-jmail-buffer
    (let* ((pos (jmail-find-visible-character (point) forward))
-	  (prop (if pos (get-text-property pos 'jmail))))
+	  (prop (if pos (jmail--get-query pos))))
      (while (and pos (not prop))
        (save-excursion
 	 (goto-char pos)
 	 (setq pos (jmail-find-visible-character (point) forward))
 	 (when pos
-	   (setq prop (get-text-property pos 'jmail)))))
+	   (setq prop (jmail--get-query pos )))))
      (when (and pos prop)
        (goto-char pos)))))
 
@@ -215,12 +228,14 @@
 	(goto-line first)
 	(setq ,line first)
 	(setq ,query (get-text-property (point) 'jmail))
-	,@body
+	(when ,query
+	  ,@body)
 	(while (not (= ,line last))
 	  (jmail-next-query)
 	  (setq ,line (line-number-at-pos))
 	  (setq ,query (get-text-property (point) 'jmail))
-	  ,@body)))))
+	  (when ,query
+	    ,@body))))))
 
 (defun jmail--count-total-handler (count data)
   (with-jmail-buffer
@@ -248,7 +263,7 @@
 (defun jmail--get-counts ()
   (jmail--foreach-query line query
     (jmail-count-get query #'jmail--count-total-handler line)
-    (jmail-count-get (concat query " flag:unread")
+    (jmail-count-get (format "(%s) and flag:unread" query)
     		     #'jmail--count-unread-handler line)))
 
 (defun jmail--update-buffer-success ()
@@ -327,8 +342,8 @@
 
 (defun jmail-enter ()
   (interactive)
-  (if-let ((prop (get-text-property (point) 'jmail)))
-      (jmail-search prop)))
+  (when-let ((query (jmail--get-query (point))))
+      (jmail-search query)))
 
 (defun jmail-jump-to-maildir (query)
   (interactive (list (completing-read "Jump to: "
@@ -341,8 +356,8 @@
 
 (defun jmail-unread ()
   (interactive)
-  (if-let* ((prop (get-text-property (point) 'jmail))
-	    (unread (concat prop " flag:unread")))
+  (when-let* ((query (jmail--get-query (point)))
+	      (unread (format "(%s) and flag:unread" query)))
       (jmail-search unread)))
 
 (defun jmail-search-prompt (query)
