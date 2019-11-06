@@ -252,26 +252,6 @@
   (when-let ((object (text-properties-at (point))))
     (funcall func object)))
 
-(defun jmail-search--get-count (file)
-  (let* ((hostname (getenv "HOSTNAME"))
-	 (regexp (format ".*%s,U=\\([0-9]+\\):2," hostname)))
-    (when (string-match regexp file)
-      (string-to-number (match-string 1 file)))))
-
-(defun jmail-search--add-counter (file)
-  (if-let* ((dir (file-name-directory file))
-	    (last-file (car (last (directory-files dir))))
-	    (last-count (jmail-search--get-count last-file)))
-      (format "%s,U=%d:2," file (+ last-count 1))
-    (concat file ",U=1:2,")))
-
-(defun jmail-search--rename-file-as-read (file)
-  (let* ((hostname (getenv "HOSTNAME"))
-	 (regexp (format ".*%s$" hostname)))
-    (when (string-match regexp file)
-      (setq file (jmail-search--add-counter file)))
-    (replace-regexp-in-string ",$" ",S" file)))
-
 (defun jmail-search--mark-as-read ()
   (with-jmail-search-buffer
    (when-let* ((point (line-beginning-position))
@@ -287,7 +267,7 @@
        (jmail-search--remove-flag point)
        (setq flags (remove 'unread flags))
        (jmail-search--set-property :flags flags)
-       (setq new-path (jmail-search--rename-file-as-read new-path)))
+       (setq new-path (replace-regexp-in-string ",$" ",S" new-path)))
      (unless (string= path new-path)
        (jmail-search--set-property :path new-path)
        (rename-file path new-path)))))

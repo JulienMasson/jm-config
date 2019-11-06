@@ -23,6 +23,8 @@
 
 ;;; Code:
 
+(require 'json)
+
 ;;; Customization
 
 (defcustom jmail-rss-enable nil
@@ -43,15 +45,61 @@
 
 ;;; Internal Functions
 
-(defun jmail-rss--process-sentinel (process status)
-  (when-jmail-update-process-success process
-      (funcall jmail-rss--current-cb)))
-
-(defun jmail-rss--get-args ()
-  (let ((args (list "--verbose" "fetch")))
+(defun jmail-rss--get-args (cmd)
+  (let ((args (list "--verbose" cmd)))
     (if jmail-rss-config-file
 	(append (list "--config" jmail-rss-config-file) args)
       args)))
+
+(defun jmail-rss--get-folders ()
+  (let ((args (jmail-rss--get-args "ls"))
+	folders)
+    (with-temp-buffer
+      (apply 'process-file jmail-rss-program nil
+	     (current-buffer) nil args)
+      (goto-char (point-min))
+      (while (not (eobp))
+	(push (json-read) folders)
+	(end-of-defun)))
+    (mapcar (lambda (elem)
+	      (let ((mailbox (file-name-as-directory
+			      (assoc-default 'mailbox elem)))
+		    (folder (assoc-default 'folder elem)))
+	      (file-name-as-directory (concat mailbox folder))))
+	  folders)))
+
+(defun jmail-rss--get-count (dir)
+  (let* ((hostname (getenv "HOSTNAME"))
+	 (regexp (format ".*%s,U=\\([0-9]+\\):2," hostname))
+	 (last-file (car (last (directory-files dir)))))
+    (if (string-match regexp last-file)
+	(string-to-number (match-string 1 last-file))
+      0)))
+
+(defun jmail-rss--rename-file (file count)
+  (let* ((hostname (getenv "HOSTNAME"))
+	 (regexp (concat hostname "$")))
+    (when (string-match regexp file)
+      (rename-file file (format "%s,U=%d:2," file count)))))
+
+(defun jmail-rss--rename-new-entries ()
+  (let ((folders (jmail-rss--get-folders)))
+    (mapc (lambda (folder)
+	    (let* ((cur-dir (concat folder "cur/"))
+		   (new-dir (concat folder "new/"))
+		   (count (max (jmail-rss--get-count cur-dir)
+			       (jmail-rss--get-count new-dir)))
+		   (new-files (directory-files new-dir t "^[^.]")))
+	      (mapc (lambda (file)
+		      (setq count (+ count 1))
+		      (jmail-rss--rename-file file count))
+		    new-files)))
+	  folders)))
+
+(defun jmail-rss--process-sentinel (process status)
+  (when-jmail-update-process-success process
+      (jmail-rss--rename-new-entries)
+      (funcall jmail-rss--current-cb)))
 
 ;;; External Functions
 
@@ -63,7 +111,7 @@
   (setq jmail-rss--current-cb cb)
   (let* ((default-directory jmail-top-maildir)
 	 (program (jmail-find-program jmail-rss-program))
-	 (args (jmail-rss--get-args))
+	 (args (jmail-rss--get-args "fetch"))
 	 (process (apply 'start-file-process jmail-update-process-name
 			 buffer program args)))
     (set-process-filter process 'jmail-update--process-filter)
