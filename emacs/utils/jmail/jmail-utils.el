@@ -117,18 +117,18 @@
       (jmail-tramp-executable-find program-name)
     (executable-find program-name)))
 
-(defun jmail-find-visible-character (from forward)
+(defun jmail-find-alphanumeric-character (from forward)
   (save-excursion
     (goto-char from)
     (if forward
 	(progn
 	  (end-of-line)
-	  (when (re-search-forward "[[:graph:]]" nil t)
+	  (when (re-search-forward "[[:alnum:]]" nil t)
 	    (- (point) 1)))
       (beginning-of-line)
-      (when (re-search-backward "[[:graph:]]" nil t)
+      (when (re-search-backward "[[:alnum:]]" nil t)
 	(beginning-of-line)
-	(re-search-forward "[[:graph:]]" nil t)
+	(re-search-forward "[[:alnum:]]" nil t)
 	(- (point) 1)))))
 
 (defun jmail-maildir-add-query (header name query queries &optional append)

@@ -141,7 +141,7 @@
 	(queries-all (mapconcat (lambda (query)
 				  (format "(%s)" (cdr query)))
 				queries " or ")))
-    (insert (propertize (format "    * %s" (upcase section))
+    (insert (propertize (format "    ▶ %s" (upcase section))
 			'face 'jmail-section-face))
     (put-text-property beg (point) 'jmail-section queries-all)
     (insert "\n")))
@@ -186,12 +186,12 @@
 
 (defun jmail--move-to-query (forward)
   (with-jmail-buffer
-   (let* ((pos (jmail-find-visible-character (point) forward))
+   (let* ((pos (jmail-find-alphanumeric-character (point) forward))
 	  (prop (if pos (jmail--get-query pos))))
      (while (and pos (not prop))
        (save-excursion
 	 (goto-char pos)
-	 (setq pos (jmail-find-visible-character (point) forward))
+	 (setq pos (jmail-find-alphanumeric-character (point) forward))
 	 (when pos
 	   (setq prop (jmail--get-query pos )))))
      (when (and pos prop)
