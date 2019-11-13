@@ -53,6 +53,9 @@
 ;; default dired setting
 (put 'dired-find-alternate-file 'disabled nil)
 
+;; Avoid performance issues in files with very long lines.
+(global-so-long-mode)
+
 ;; find file as root
 (defun sudo-find-file (file)
   (interactive (list (read-file-name "Find file (as root): ")))
