@@ -229,3 +229,6 @@
 [submodule "emacs/modules/browse-kill-ring"]
 	path = emacs/modules/browse-kill-ring
 	url = https://github.com/T-J-Teru/browse-kill-ring.git
+[submodule "emacs/modules/dired-rsync"]
+	path = emacs/modules/dired-rsync
+	url = https://github.com/stsquad/dired-rsync.git

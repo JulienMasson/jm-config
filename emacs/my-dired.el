@@ -235,4 +235,21 @@ search modes defined in the new `dired-sort-toggle'.
 	  (dired (format "%s|sudo:root@%s:%s" tramp host local-dir)))
       (dired (concat "/sudo:root@localhost:" dir)))))
 
+;; dired rsync copy
+(require 'dired-rsync)
+
+(defun dired-rsync-remote-p ()
+  (let ((dir (expand-file-name default-directory))
+	(methods '("ssh" "scp")))
+    (when (tramp-tramp-file-p dir)
+      (let* ((dissect (tramp-dissect-file-name dir))
+	     (method (tramp-file-name-method dissect)))
+	(member method methods)))))
+
+(defun dired-jm-do-copy (old-fn &rest args)
+  (if (dired-rsync-remote-p)
+      (call-interactively #'dired-rsync)
+    (apply old-fn args)))
+(advice-add 'dired-do-copy :around #'dired-jm-do-copy)
+
 (provide 'my-dired)
