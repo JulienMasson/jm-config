@@ -38,7 +38,6 @@
 (require 'semantic/db-typecache)
 (setq semantic-default-c-path '("/usr/include/" "/usr/local/include/"
 				"/usr/include/x86_64-linux-gnu/"))
-(semantic-mode)
 
 (defun semantic-set-default-include-path ()
   (setq-mode-local c-mode
@@ -52,9 +51,15 @@
 		     semantic-dependency-system-include-path
 		     dirs)))
 
-;; company semantic
-(require 'company-semantic)
-(add-to-list 'company-backends 'company-semantic)
+;; semantic acscope
+(require 'semantic-acscope)
+
+;; async semantic database
+(require 'async-semantic-db)
+
+;; company jm
+(require 'company-jm)
+(add-to-list 'company-backends 'company-jm)
 
 ;; global setting applied to specific c files
 (defvar c-global-settings-list nil)
@@ -118,6 +123,5 @@
 
 ;; kconfig mode
 (require 'kconfig-mode)
-
 
 (provide 'my-c)
