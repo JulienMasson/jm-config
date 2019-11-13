@@ -95,6 +95,7 @@
   (cl-case command
     (interactive (company-begin-backend 'company-jm))
     (prefix (company-jm--prefix))
-    (candidates (company-jm--candidates arg))))
+    (candidates (company-jm--candidates arg))
+    (duplicates t)))
 
 (provide 'company-jm)
