@@ -45,3 +45,6 @@
 
 ;; jm private
 (require 'jm-private)
+
+;; clear echo area
+(message nil)
