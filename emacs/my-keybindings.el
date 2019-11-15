@@ -193,9 +193,6 @@
 (define-key dired-mode-map "K" 'kill-all-dired-buffer)
 (define-key dired-mode-map "S" 'dired-sudo)
 
-;; erc
-(define-key erc-mode-map (kbd "C-c C-i") 'emojify-insert-emoji)
-
 ;; realgud
 (global-set-key (kbd "C-c r a") (lambda () (interactive) (realgud:cmdbuf-associate)))
 (global-set-key (kbd "C-c r f") 'realgud-current-frame)

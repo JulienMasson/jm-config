@@ -79,9 +79,6 @@
 [submodule "emacs/modules/erc-image"]
 	path = emacs/modules/erc-image
 	url = https://github.com/kidd/erc-image.el.git
-[submodule "emacs/modules/emojify"]
-	path = emacs/modules/emojify
-	url = https://github.com/iqbalansari/emacs-emojify.git
 [submodule "emacs/modules/ht"]
 	path = emacs/modules/ht
 	url = https://github.com/Wilfred/ht.el.git

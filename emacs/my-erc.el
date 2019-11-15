@@ -51,10 +51,6 @@
 (add-to-list 'erc-modules 'image)
 (erc-update-modules)
 
-;; emojify mode
-(require 'emojify)
-(add-hook 'erc-mode-hook 'emojify-mode)
-
 ;; exclude some types of messages
 (setq erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"))
 
