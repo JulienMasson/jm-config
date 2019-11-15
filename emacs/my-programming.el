@@ -186,5 +186,7 @@
 	      ((boundp symbol)
 	       (describe-variable symbol))))))))
 
+;; meson mode
+(require 'meson-mode)
 
 (provide 'my-programming)

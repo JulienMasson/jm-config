@@ -229,3 +229,6 @@
 [submodule "emacs/modules/dired-rsync"]
 	path = emacs/modules/dired-rsync
 	url = https://github.com/stsquad/dired-rsync.git
+[submodule "emacs/modules/meson-mode"]
+	path = emacs/modules/meson-mode
+	url = https://github.com/wentasah/meson-mode.git
