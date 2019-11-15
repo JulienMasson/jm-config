@@ -123,6 +123,10 @@
     (set-process-filter process 'jmail-update--process-filter)
     (set-process-sentinel process 'jmail-update--sync-process-sentinel)))
 
+(defun jmail-update--running ()
+  (and jmail-update--ongoing
+       (get-buffer-process jmail-update--buffer-name)))
+
 ;;; External Functions
 
 (defun jmail-update-quit ()
@@ -130,7 +134,7 @@
 
 (defun jmail-update (success error)
   (interactive)
-  (unless jmail-update--ongoing
+  (unless (jmail-update--running)
     (setq jmail-update--ongoing t)
     (setq jmail-update--success-cb success)
     (setq jmail-update--error-cb error)
