@@ -100,16 +100,34 @@
   (read-directory-name (format "Rsync %s to: " msg))))
 
 (defun async-dired--rsync-get-args (marks dest)
-  (append (list "--archive" "--compress" "--info=progress2")
-	  (mapcar (lambda (mark)
-		    (replace-regexp-in-string "/ssh:" "" mark))
-		  marks)
-	  (list dest)))
+  (let ((default-args (list "--archive" "--compress"
+			    "--recursive" "--info=progress2"))
+	(src-remote-p (tramp-tramp-file-p (car marks)))
+	(dest-remote-p (tramp-tramp-file-p dest)))
+    (append default-args
+	    (cond
+	     ;; src and dest on local
+	     ((not (or src-remote-p dest-remote-p))
+	      (append marks (list dest)))
+	     ;; src and dest on remote
+	     ((and src-remote-p dest-remote-p)
+	      (mapcar #'untramp-path (append marks (list dest))))
+	     ;; src or dest is on remote, the other on local
+	     (t (mapcar (lambda (elem)
+			  (replace-regexp-in-string "/ssh:" "" elem))
+			(append marks (list dest))))))))
+
+(defun async-dired--default-directory (marks dest)
+  (let ((src-remote-p (tramp-tramp-file-p (car marks)))
+	(dest-remote-p (tramp-tramp-file-p dest)))
+    (if (and src-remote-p dest-remote-p)
+	dest
+      (getenv "HOME"))))
 
 (defun async-dired--rsync ()
   (when-let* ((marks (dired-get-marked-files))
 	      (dest (async-dired--rsync-prompt marks))
-	      (default-directory dest)
+	      (default-directory (async-dired--default-directory marks dest))
 	      (program (executable-find async-dired--rsync-program))
 	      (args (async-dired--rsync-get-args marks dest))
 	      (buffer (async-dired--create-buffer "rsync"))
@@ -129,7 +147,6 @@
     (apply old-fn args)))
 
 ;; delete
-
 (defun async-dired--process-filter-delete (process str)
   (with-current-buffer (process-buffer process)
     (goto-char (point-max))
