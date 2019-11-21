@@ -64,9 +64,6 @@
 [submodule "emacs/modules/company-mode"]
 	path = emacs/modules/company-mode
 	url = https://github.com/company-mode/company-mode.git
-[submodule "emacs/modules/async"]
-	path = emacs/modules/async
-	url = https://github.com/jwiegley/emacs-async.git
 [submodule "emacs/modules/rg"]
 	path = emacs/modules/rg
 	url = https://github.com/dajva/rg.el.git
@@ -226,9 +223,6 @@
 [submodule "emacs/modules/browse-kill-ring"]
 	path = emacs/modules/browse-kill-ring
 	url = https://github.com/T-J-Teru/browse-kill-ring.git
-[submodule "emacs/modules/dired-rsync"]
-	path = emacs/modules/dired-rsync
-	url = https://github.com/stsquad/dired-rsync.git
 [submodule "emacs/modules/meson-mode"]
 	path = emacs/modules/meson-mode
 	url = https://github.com/wentasah/meson-mode.git

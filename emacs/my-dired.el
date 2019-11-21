@@ -28,6 +28,10 @@
 ;; locate dired
 (require 'locate-dired)
 
+;; async dired
+(require 'async-dired)
+(async-dired-setup)
+
 ;; sort dired buffer
 (defun ls-lisp-format-file-size (file-size human-readable)
   "This is a redefinition of the function from `dired.el'. This
@@ -131,10 +135,6 @@ search modes defined in the new `dired-sort-toggle'.
                    (concat "Dired " dired-actual-switches)))))
     (force-mode-line-update)))
 
-;; dired async
-(require 'dired-async)
-(dired-async-mode 1)
-
 ;; dired diff
 (require 'diff)
 
@@ -234,22 +234,5 @@ search modes defined in the new `dired-sort-toggle'.
 	       (tramp (replace-regexp-in-string local-dir "" dir)))
 	  (dired (format "%s|sudo:root@%s:%s" tramp host local-dir)))
       (dired (concat "/sudo:root@localhost:" dir)))))
-
-;; dired rsync copy
-(require 'dired-rsync)
-
-(defun dired-rsync-remote-p ()
-  (let ((dir (expand-file-name default-directory))
-	(methods '("ssh" "scp")))
-    (when (tramp-tramp-file-p dir)
-      (let* ((dissect (tramp-dissect-file-name dir))
-	     (method (tramp-file-name-method dissect)))
-	(member method methods)))))
-
-(defun dired-jm-do-copy (old-fn &rest args)
-  (if (dired-rsync-remote-p)
-      (call-interactively #'dired-rsync)
-    (apply old-fn args)))
-(advice-add 'dired-do-copy :around #'dired-jm-do-copy)
 
 (provide 'my-dired)
