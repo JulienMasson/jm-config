@@ -72,7 +72,8 @@
   (let ((buffer (process-buffer process)))
     (if (zerop (process-exit-status process))
 	(kill-buffer buffer)
-      (switch-to-buffer-other-window buffer))))
+      (when (buffer-live-p buffer)
+	(switch-to-buffer-other-window buffer)))))
 
 ;; copy
 (defun async-dired--get-copy-progress (output)
@@ -86,10 +87,11 @@
   (let* ((output (replace-regexp-in-string "" "\n" str))
 	 (progress (async-dired--get-copy-progress output)))
     (with-current-buffer (process-buffer process)
-      (goto-char (point-max))
-      (insert output)
-      (when progress
-	(async-dired--update-modeline process progress)))))
+      (save-excursion
+	(goto-char (point-max))
+	(insert output)
+	(when progress
+	  (async-dired--update-modeline process progress))))))
 
 (defun async-dired--rsync-prompt (marks)
   (let* ((nbr (length marks))
@@ -149,16 +151,17 @@
 ;; delete
 (defun async-dired--process-filter-delete (process str)
   (with-current-buffer (process-buffer process)
-    (goto-char (point-max))
-    (let ((beg (point))
-	  lines progress)
-      (insert str)
-      (setq async-dired--current-count
-	    (+ (count-lines beg (point-max))
-	       async-dired--current-count))
-      (setq progress (/ (* async-dired--current-count 100)
-			async-dired--current-total))
-      (async-dired--update-modeline process progress))))
+    (save-excursion
+      (goto-char (point-max))
+      (let ((beg (point))
+	    lines progress)
+	(insert str)
+	(setq async-dired--current-count
+	      (+ (count-lines beg (point-max))
+		 async-dired--current-count))
+	(setq progress (/ (* async-dired--current-count 100)
+			  async-dired--current-total))
+	(async-dired--update-modeline process progress)))))
 
 (defun async-dired--delete-get-args (marks)
   (append (list "--force" "--recursive" "--verbose") marks))
@@ -187,8 +190,9 @@
 
 (defun async-dired--process-filter-count (process str)
   (with-current-buffer (process-buffer process)
-    (goto-char (point-max))
-    (insert str)))
+    (save-excursion
+      (goto-char (point-max))
+      (insert str))))
 
 (defun async-dired--process-sentinel-count (process status)
   (let ((buffer (process-buffer process)))
@@ -196,7 +200,8 @@
 	(with-current-buffer buffer
 	  (setq async-dired--current-total (async-dired--get-total))
 	  (async-dired--delete process))
-      (switch-to-buffer-other-window buffer)
+      (when (buffer-live-p buffer)
+	(switch-to-buffer-other-window buffer))
       (async-dired--remove-action process))))
 
 (defun async-dired--count-get-args (marks)
