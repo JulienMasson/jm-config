@@ -32,11 +32,13 @@
 
 (defvar async-dired--ongoing-actions nil)
 
-(defvar-local async-dired--current-files nil)
+(defvar-local async-dired--files nil)
 
-(defvar-local async-dired--current-count nil)
+(defvar-local async-dired--count nil)
 
-(defvar-local async-dired--current-total nil)
+(defvar-local async-dired--total nil)
+
+(defvar-local async-dired--revert-path nil)
 
 ;;; Internal Functions
 
@@ -56,24 +58,42 @@
   (with-async-dired-buffer process
     (setq mode-name (format "Async Dired: %s%%" progress))))
 
-(defun async-dired--reset-buffer (process)
+(defun async-dired--reset-modeline (process)
   (with-async-dired-buffer process
-    (dired-sort-set-modeline)
-    (revert-buffer)))
+    (dired-sort-set-modeline)))
 
 (defun async-dired--create-buffer (action)
   (let* ((name (format "*async-dired-%s*" action))
 	 (buffer (generate-new-buffer-name name)))
     (get-buffer-create buffer)))
 
+(defun async-dired--assoc-dired-buffers ()
+  (delq nil (mapcar (lambda (buffer)
+		      (with-current-buffer buffer
+			(when (string= major-mode "dired-mode")
+			  (cons (expand-file-name default-directory)
+				buffer))))
+		    (buffer-list))))
+
+(defun async-dired--revert-buffers ()
+  (let ((dired-buffers (async-dired--assoc-dired-buffers)))
+    (mapc (lambda (path)
+	    (when-let* ((expand-path (expand-file-name path))
+			(buffer (assoc-default expand-path dired-buffers)))
+	      (with-current-buffer buffer
+		(revert-buffer))))
+	  async-dired--revert-path)))
+
 (defun async-dired--process-sentinel (process status)
-  (async-dired--reset-buffer process)
+  (async-dired--reset-modeline process)
   (async-dired--remove-action process)
-  (let ((buffer (process-buffer process)))
-    (if (zerop (process-exit-status process))
-	(kill-buffer buffer)
-      (when (buffer-live-p buffer)
-	(switch-to-buffer-other-window buffer)))))
+  (when-let ((buffer (process-buffer process)))
+    (when (buffer-live-p buffer)
+      (with-current-buffer buffer
+	(async-dired--revert-buffers)
+	(if (zerop (process-exit-status process))
+	    (kill-buffer )
+	  (switch-to-buffer-other-window buffer))))))
 
 ;; copy
 (defun async-dired--get-copy-progress (output)
@@ -138,6 +158,7 @@
     (add-to-list 'async-dired--ongoing-actions (cons process (current-buffer)))
     (async-dired--update-modeline process "0")
     (with-current-buffer buffer
+      (add-to-list 'async-dired--revert-path dest)
       (erase-buffer)
       (insert (concat "Execute command: rsync " (mapconcat 'identity args " "))))
     (set-process-filter process 'async-dired--process-filter-copy)
@@ -156,11 +177,11 @@
       (let ((beg (point))
 	    lines progress)
 	(insert str)
-	(setq async-dired--current-count
+	(setq async-dired--count
 	      (+ (count-lines beg (point-max))
-		 async-dired--current-count))
-	(setq progress (/ (* async-dired--current-count 100)
-			  async-dired--current-total))
+		 async-dired--count))
+	(setq progress (/ (* async-dired--count 100)
+			  async-dired--total))
 	(async-dired--update-modeline process progress)))))
 
 (defun async-dired--delete-get-args (marks)
@@ -168,7 +189,7 @@
 
 (defun async-dired--delete (process)
   (let* ((program "rm")
-	 (args (async-dired--delete-get-args async-dired--current-files))
+	 (args (async-dired--delete-get-args async-dired--files))
 	 (previous-process process)
 	 (buffer (process-buffer previous-process))
 	 (process (apply 'start-file-process (buffer-name buffer)
@@ -176,7 +197,7 @@
     (setcar (assoc previous-process async-dired--ongoing-actions) process)
     (with-current-buffer buffer
       (erase-buffer)
-      (insert (format "Total files found: %s\n" async-dired--current-count))
+      (insert (format "Total files found: %s\n" async-dired--count))
       (insert (format "Execute command: rm %s\n"
 		      (mapconcat 'identity args " "))))
     (set-process-filter process 'async-dired--process-filter-delete)
@@ -198,7 +219,7 @@
   (let ((buffer (process-buffer process)))
     (if (zerop (process-exit-status process))
 	(with-current-buffer buffer
-	  (setq async-dired--current-total (async-dired--get-total))
+	  (setq async-dired--total (async-dired--get-total))
 	  (async-dired--delete process))
       (when (buffer-live-p buffer)
 	(switch-to-buffer-other-window buffer))
@@ -208,7 +229,8 @@
   (append (list "--all") marks))
 
 (defun async-dired--count-files (marks)
-  (when-let* ((files (mapcar #'untramp-path marks))
+  (when-let* ((dired-buffer (current-buffer))
+	      (files (mapcar #'untramp-path marks))
 	      (program (executable-find async-dired--du-program))
 	      (args (async-dired--count-get-args files))
 	      (buffer (async-dired--create-buffer "delete"))
@@ -217,9 +239,10 @@
     (add-to-list 'async-dired--ongoing-actions (cons process (current-buffer)))
     (async-dired--update-modeline process "0")
     (with-current-buffer buffer
-      (setq async-dired--current-files files)
-      (setq async-dired--current-count 0)
-      (setq async-dired--current-total 0)
+      (add-to-list 'async-dired--revert-path default-directory)
+      (setq async-dired--files files)
+      (setq async-dired--count 0)
+      (setq async-dired--total 0)
       (erase-buffer)
       (insert (format "Execute command: du %s\n"
 		      (mapconcat 'identity args " "))))
