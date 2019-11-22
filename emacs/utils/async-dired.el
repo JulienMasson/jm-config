@@ -40,6 +40,8 @@
 
 (defvar-local async-dired--revert-path nil)
 
+(defvar-local async-dired--done-cb nil)
+
 ;;; Internal Functions
 
 (defmacro with-async-dired-buffer (process &rest body)
@@ -89,23 +91,25 @@
   (async-dired--remove-action process)
   (when-let ((buffer (process-buffer process)))
     (when (buffer-live-p buffer)
-      (with-current-buffer buffer
-	(async-dired--revert-buffers)
-	(if (zerop (process-exit-status process))
-	    (kill-buffer )
-	  (switch-to-buffer-other-window buffer))))))
+      (if (zerop (process-exit-status process))
+	  (with-current-buffer buffer
+	    (when async-dired--done-cb
+	      (funcall async-dired--done-cb))
+	    (async-dired--revert-buffers)
+	    (kill-buffer))
+	(switch-to-buffer-other-window buffer)))))
 
-;; copy
-(defun async-dired--get-copy-progress (output)
+;; rsync
+(defun async-dired--rsync-get-progress (output)
   (when-let* ((lines (split-string output "\n"))
 	      (line (last lines))
 	      (regexp " \\([0-9]+\\)%"))
     (when (string-match regexp str)
       (match-string 1 str))))
 
-(defun async-dired--process-filter-copy (process str)
+(defun async-dired--process-filter-rsync (process str)
   (let* ((output (replace-regexp-in-string "" "\n" str))
-	 (progress (async-dired--get-copy-progress output)))
+	 (progress (async-dired--rsync-get-progress output)))
     (with-current-buffer (process-buffer process)
       (save-excursion
 	(goto-char (point-max))
@@ -121,12 +125,11 @@
 			 'face 'warning)))
   (read-directory-name (format "Rsync %s to: " msg))))
 
-(defun async-dired--rsync-get-args (marks dest)
-  (let ((default-args (list "--archive" "--compress"
-			    "--recursive" "--info=progress2"))
+(defun async-dired--rsync-get-args (marks dest &optional extra-args)
+  (let ((default-args (list "--archive" "--info=progress2"))
 	(src-remote-p (tramp-tramp-file-p (car marks)))
 	(dest-remote-p (tramp-tramp-file-p dest)))
-    (append default-args
+    (append default-args (if extra-args extra-args)
 	    (cond
 	     ;; src and dest on local
 	     ((not (or src-remote-p dest-remote-p))
@@ -139,34 +142,52 @@
 			  (replace-regexp-in-string "/ssh:" "" elem))
 			(append marks (list dest))))))))
 
-(defun async-dired--default-directory (marks dest)
+(defun async-dired--rsync-default-directory (marks dest)
   (let ((src-remote-p (tramp-tramp-file-p (car marks)))
 	(dest-remote-p (tramp-tramp-file-p dest)))
     (if (and src-remote-p dest-remote-p)
 	dest
       (getenv "HOME"))))
 
-(defun async-dired--rsync ()
-  (when-let* ((marks (dired-get-marked-files))
+(defun async-dired--rsync (name &optional extra-args done-cb)
+  (when-let* ((current-dir default-directory)
+	      (marks (dired-get-marked-files))
+	      (files (mapcar #'untramp-path marks))
 	      (dest (async-dired--rsync-prompt marks))
-	      (default-directory (async-dired--default-directory marks dest))
+	      (default-directory (async-dired--rsync-default-directory marks dest))
 	      (program (executable-find async-dired--rsync-program))
-	      (args (async-dired--rsync-get-args marks dest))
-	      (buffer (async-dired--create-buffer "rsync"))
+	      (args (async-dired--rsync-get-args marks dest extra-args))
+	      (buffer (async-dired--create-buffer name))
 	      (process (apply 'start-file-process (buffer-name buffer)
 			      buffer program args)))
     (add-to-list 'async-dired--ongoing-actions (cons process (current-buffer)))
     (async-dired--update-modeline process "0")
     (with-current-buffer buffer
-      (add-to-list 'async-dired--revert-path dest)
+      (setq async-dired--files files)
+      (setq async-dired--revert-path (list dest current-dir))
+      (setq async-dired--done-cb done-cb)
       (erase-buffer)
       (insert (concat "Execute command: rsync " (mapconcat 'identity args " "))))
-    (set-process-filter process 'async-dired--process-filter-copy)
+    (set-process-filter process 'async-dired--process-filter-rsync)
     (set-process-sentinel process 'async-dired--process-sentinel)))
 
+;; copy
 (defun async-dired--do-copy (old-fn &rest args)
   (if (executable-find async-dired--rsync-program)
-      (async-dired--rsync)
+      (async-dired--rsync "copy")
+    (apply old-fn args)))
+
+;; rename
+(defun async-dired--delete-directories ()
+  (mapc (lambda (file)
+	  (when (file-directory-p file)
+	    (delete-directory file t)))
+	async-dired--files))
+
+(defun async-dired--do-rename (old-fn &rest args)
+  (if (executable-find async-dired--rsync-program)
+      (async-dired--rsync "rename" (list "--remove-source-files")
+			  #'async-dired--delete-directories)
     (apply old-fn args)))
 
 ;; delete
@@ -239,10 +260,10 @@
     (add-to-list 'async-dired--ongoing-actions (cons process (current-buffer)))
     (async-dired--update-modeline process "0")
     (with-current-buffer buffer
-      (add-to-list 'async-dired--revert-path default-directory)
       (setq async-dired--files files)
       (setq async-dired--count 0)
       (setq async-dired--total 0)
+      (setq async-dired--revert-path (list default-directory))
       (erase-buffer)
       (insert (format "Execute command: du %s\n"
 		      (mapconcat 'identity args " "))))
@@ -268,6 +289,7 @@
 
 (defun async-dired-setup ()
   (advice-add 'dired-do-copy :around #'async-dired--do-copy)
+  (advice-add 'dired-do-rename :around #'async-dired--do-rename)
   (advice-add 'dired-do-delete :around #'async-dired--do-delete)
   (advice-add 'dired-do-flagged-delete :around #'async-dired--do-flagged-delete))
 
