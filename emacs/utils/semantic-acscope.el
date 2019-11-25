@@ -52,6 +52,7 @@
 (defun semantic-acscope ()
   (interactive)
   (when acscope-database-list
-    (async-semantic-db (semantic-acscope--collect-files))))
+    (async-semantic-db (semantic-acscope--collect-files)
+		       semantic-default-c-path)))
 
 (provide 'semantic-acscope)
