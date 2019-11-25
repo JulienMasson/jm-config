@@ -36,8 +36,9 @@
 (require 'semantic)
 (require 'semantic/db-file)
 (require 'semantic/db-typecache)
-(setq semantic-default-c-path '("/usr/include/" "/usr/local/include/"
-				"/usr/include/x86_64-linux-gnu/"))
+(setq semantic-default-c-path `("/usr/include/" "/usr/local/include/"
+				"/usr/include/x86_64-linux-gnu/"
+				,(concat (getenv "HOME") "/.local/include/")))
 
 (defun semantic-set-default-include-path ()
   (setq-mode-local c-mode
