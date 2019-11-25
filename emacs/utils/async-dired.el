@@ -225,10 +225,8 @@
     (set-process-sentinel process 'async-dired--process-sentinel)))
 
 (defun async-dired--get-total ()
-  (save-excursion
-    (goto-char (point-min))
-    (forward-line)
-    (count-lines (point) (point-max))))
+  (string-to-number (buffer-substring (line-beginning-position)
+				      (line-end-position))))
 
 (defun async-dired--process-filter-count (process str)
   (with-current-buffer (process-buffer process)
@@ -246,17 +244,17 @@
 	(switch-to-buffer-other-window buffer))
       (async-dired--remove-action process))))
 
-(defun async-dired--count-get-args (marks)
-  (append (list "--all") marks))
+(defun async-dired--count-command (files)
+  (format "ls -fR %s | wc -l"
+	  (mapconcat 'identity files " ")))
 
 (defun async-dired--count-files (marks)
   (when-let* ((dired-buffer (current-buffer))
 	      (files (mapcar #'untramp-path marks))
-	      (program (executable-find async-dired--du-program))
-	      (args (async-dired--count-get-args files))
+	      (command (async-dired--count-command files))
 	      (buffer (async-dired--create-buffer "delete"))
-	      (process (apply 'start-file-process (buffer-name buffer)
-			      buffer program args)))
+	      (process (start-file-process-shell-command
+			(buffer-name buffer) buffer command)))
     (add-to-list 'async-dired--ongoing-actions (cons process (current-buffer)))
     (async-dired--update-modeline process "0")
     (with-current-buffer buffer
@@ -265,8 +263,7 @@
       (setq async-dired--total 0)
       (setq async-dired--revert-path (list default-directory))
       (erase-buffer)
-      (insert (format "Execute command: du %s\n"
-		      (mapconcat 'identity args " "))))
+      (insert (format "Execute command: du %s\n" command)))
     (set-process-filter process 'async-dired--process-filter-count)
     (set-process-sentinel process 'async-dired--process-sentinel-count)))
 
