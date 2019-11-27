@@ -80,26 +80,30 @@
     (goto-char (point-max))
     (insert str)))
 
+(defun async-semantic-db--files-parsed-p (file)
+  (and file (not (member file async-semantic-db--files-parsed))))
+
 (defun async-semantic-db--parse-recursive (file)
-  (when (and file (not (member file async-semantic-db--files-parsed)))
-    (with-current-buffer (find-file-noselect file)
-      ;; parse current file
-      (message "Parsing: %s" file)
-      (semanticdb-save-current-db)
-      (add-to-list 'async-semantic-db--files-parsed file)
-      ;; parse include files
-      (mapc #'async-semantic-db--parse-recursive
-	    (mapcar (lambda (include)
-		      (cl-multiple-value-bind (name _ system tag)
-			  include
-			(let ((system (plist-get system :system-flag))
-			      (src (plist-get tag :filename)))
-			  (cond ((and system tag)
-		      		 (plist-get tag 'dependency-file))
-				((and (not system) src)
-				 (concat (file-name-directory src) name))
-				(t (concat default-directory name))))))
-		    (semantic-find-tags-included (current-buffer)))))))
+  (when (async-semantic-db--files-parsed-p file)
+    (add-to-list 'async-semantic-db--files-parsed file)
+    (when (file-exists-p file)
+      (with-current-buffer (find-file-noselect file)
+	;; parse current file
+	(message "Parsing: %s" file)
+	(setq-mode-local c-mode
+  			 semantic-dependency-system-include-path
+  			 semantic-default-c-path)
+	(semanticdb-save-current-db)
+	;; parse include files
+	(mapc #'async-semantic-db--parse-recursive
+	      (mapcar (lambda (include)
+			(if-let ((name (car include))
+				 (path (semantic-dependency-tag-file include)))
+			    path
+			  (when (async-semantic-db--files-parsed-p name)
+			    (message "\n-> Cannot find path: %s\n" name))
+			  name))
+		      (semantic-find-tags-included (current-buffer))))))))
 
 ;;; External Functions
 
@@ -107,13 +111,9 @@
   (let ((files (async-semantic-db--read files-path))
 	(includes (async-semantic-db--read includes-path)))
     (setq semantic-default-c-path includes)
-    (setq-mode-local c-mode
-  		     semantic-dependency-system-include-path
-  		     semantic-default-c-path)
     (message "-> Includes:\n%s\n" semantic-default-c-path)
     (semantic-mode)
-    (mapc #'async-semantic-db--parse-recursive files)
-    (semanticdb-save-all-db)))
+    (mapc #'async-semantic-db--parse-recursive files)))
 
 (defun async-semantic-db (files includes)
   (unless async-semantic-db--ongoing

@@ -23,7 +23,6 @@
 ;;; Code:
 
 (require 'async-semantic-db)
-(require 'company-semantic)
 (require 'semantic/db-mode)
 
 ;;; Customization
@@ -33,62 +32,102 @@
   :type 'list
   :group 'company)
 
-(defcustom company-jm-enabled nil
-  "Enable `company-jm', by default it's disable"
+(defcustom company-jm-enabled t
+  "Enable/Disable `company-jm', by default it's enabled"
   :type 'boolean
   :group 'company)
 
+
+;;; Internal Variables
+
+(defvar-local company-jm--tags nil)
+
+(defvar-local company-jm--files nil)
+
 ;;; Internal Functions
 
-(defun company-jm--setup-buffer ()
-  (semantic-default-c-setup)
-  (setq semantic-new-buffer-fcn-was-run t)
-  (semantic-lex-init)
-  (semantic-clear-toplevel-cache)
-  (semanticdb-semantic-init-hook-fcn))
+(defun company-jm--reset ()
+  (setq company-jm--tags nil)
+  (setq company-jm--files nil))
 
 (defun company-jm--buffer-parsed ()
   (let* ((dd (file-name-directory (file-truename (buffer-file-name))))
 	 (cache-file (semanticdb-cache-filename semanticdb-new-database-class dd)))
     (file-exists-p cache-file)))
 
+(defun company-jm--get-includes (tags)
+  (when-let ((includes (seq-filter (lambda (tag)
+				     (eq (semantic-tag-class tag) 'include))
+				   tags)))
+    (mapcar #'semantic-dependency-tag-file includes)))
+
+(defun company-jm--fetch-tags (file)
+  (when (and file (not (member file company-jm--files)))
+    (add-to-list 'company-jm--files file)
+    (when-let* ((filename (file-name-nondirectory (file-truename file)))
+		(dir (file-name-directory (file-truename file)))
+		(cache-file (semanticdb-cache-filename semanticdb-new-database-class dir))
+		(db (semanticdb-load-database cache-file))
+		(table (seq-find (lambda (table)
+				   (string= filename (oref table file)))
+				 (oref db tables)))
+		(tags (oref table tags)))
+      (setq company-jm--tags (append company-jm--tags tags))
+      (mapc #'company-jm--fetch-tags (company-jm--get-includes tags)))))
+
+(defun company-jm--completions (prefix)
+  (when-let ((functions (seq-filter (lambda (tag)
+				      (eq (semantic-tag-class tag) 'function))
+				    company-jm--tags)))
+    (seq-filter (lambda (func)
+		  (string-prefix-p prefix func))
+		(mapcar #'car functions))))
+
+(defun company-jm--completions-raw (prefix)
+  nil)
+
 (defun company-jm--candidates (arg)
   (let (candidates)
     (if (not (company-jm--buffer-parsed))
 	(async-semantic-db-buffer)
-      (unless (semantic-active-p)
-	(company-jm--setup-buffer)
-	(semantic-fetch-tags))
-      (when (semantic-fetch-available-tags)
-	(setq candidates (if (and (equal arg "")
-				  (not (looking-back "->\\|\\.\\|::" (- (point) 2))))
-			     (company-semantic-completions-raw arg)
-			   (company-semantic-completions arg)))))
+      (unless company-jm--tags
+	(setq company-jm--files nil)
+	(company-jm--fetch-tags (buffer-file-name)))
+      (setq candidates (if (and (equal arg "")
+				(not (looking-back "->\\|\\.\\|::" (- (point) 2))))
+			   (company-jm--completions-raw arg)
+			 (company-jm--completions arg))))
     candidates))
 
 (defun company-jm--prefix ()
   (and company-jm-enabled
        (memq major-mode company-jm-modes)
        (not (company-in-string-or-comment))
-       (or (company-semantic--prefix) 'stop)))
+       (not async-semantic-db--ongoing)
+       (or (company-grab-symbol-cons "\\.\\|->\\|::" 2) 'stop)))
+
+(defun company-jm--buffer-list ()
+  (seq-filter (lambda (buffer)
+		(with-current-buffer buffer
+		  (and company-jm-enabled
+		       (memq major-mode company-jm-modes))))
+	      (buffer-list)))
+
+(defmacro foreach-company-jm-buffer (&rest body)
+  (declare (indent 2))
+  `(mapc (lambda (buffer)
+	   (with-current-buffer buffer
+	     ,@body))
+	 (company-jm--buffer-list)))
 
 ;;; External Functions
 
 (defun company-jm-toggle ()
   (interactive)
   (setq company-jm-enabled (not company-jm-enabled))
-  (if company-jm-enabled
-      (progn
-	;; add semanticdb hooks
-	(dolist (elt semanticdb-hooks)
-	  (add-hook (cadr elt) (car elt)))
-	(message (concat "Company JM: "
-			 (propertize "Enabled" 'face 'success))))
-    ;; remove semanticdb hooks
-    (dolist (elt semanticdb-hooks)
-      (remove-hook (cadr elt) (car elt)))
-    (message (concat "Company JM: "
-		     (propertize "Disabled" 'face 'error)))))
+  (message (concat "Company JM: " (if company-jm-enabled
+				      (propertize "Enabled" 'face 'success)
+				    (propertize "Disabled" 'face 'error)))))
 
 (defun company-jm (command &optional arg &rest ignored)
   (interactive (list 'interactive))
