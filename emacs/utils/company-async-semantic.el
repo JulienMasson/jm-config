@@ -43,25 +43,15 @@
 
 (defvar-local company-async-semantic--files-dep nil)
 
-;;; Internal Functions
+(defvar company-async-semantic--parsing-ongoing nil)
 
-(defmacro company-async-semantic--find-file-on-path (file path)
-  (if (fboundp 'locate-file)
-      `(locate-file ,file ,path)
-    `(let ((p ,path)
-	   (found nil))
-       (while (and p (not found))
-	 (let ((f (expand-file-name ,file (car p))))
-	   (if (file-exists-p f)
-	       (setq found f)))
-	 (setq p (cdr p)))
-       found)))
+;;; Internal Functions
 
 (defun company-async-semantic--find-dep (include)
   (when-let ((default-dir (expand-file-name default-directory))
 	     (path (append (list default-dir) async-semantic-default-path))
 	     (file (semantic-tag-name include)))
-    (company-async-semantic--find-file-on-path file path)))
+    (locate-file file path)))
 
 (defun company-async-semantic--get-includes-files-dep (file)
   (when-let* ((tags (assoc-default file company-async-semantic--cache))
@@ -81,26 +71,46 @@
 
 (defun company-async-semantic--get-tags (files)
   (let (tags)
-    (mapc (lambda (file)
-	    (when-let ((tag (assoc-default file company-async-semantic--cache)))
-	      (setq tags (append tags tag))))
-	  files)
+    (dolist (file files)
+      (when-let ((tag (assoc-default file company-async-semantic--cache)))
+	(setq tags (append tags tag))))
     tags))
 
+(defun company-async-semantic--match (tag prefix)
+  (let ((func (car tag))
+	(class (semantic-tag-class tag)))
+    (when (and (or (eq class 'function)
+		   (eq class 'variable))
+	       (string-prefix-p prefix func))
+      func)))
+
 (defun company-async-semantic--completions-system (prefix)
-  (company-async-semantic--get-files-dep)
-  (delq nil (mapcar (lambda (tag)
-		      (let ((func (car tag)))
-			(when (and (eq (semantic-tag-class tag) 'function)
-				   (string-prefix-p prefix func))
-			  func)))
-		    (company-async-semantic--get-tags company-async-semantic--files-dep))))
+  (let* ((files company-async-semantic--files-dep)
+	 (tags (company-async-semantic--get-tags files)))
+    (delq nil (mapcar (lambda (tag)
+			(company-async-semantic--match tag prefix))
+		      tags))))
 
 (defun company-async-semantic--completions-scope (prefix)
   )
 
+(defun company-async-semantic--find-tag (pos)
+  (when-let ((file (file-truename (buffer-file-name)))
+	     (tags (assoc-default file company-async-semantic--cache)))
+    (seq-find (lambda (tag)
+		(when-let* ((range (semantic-tag-overlay tag))
+			    (beg (aref range 0))
+			    (end (aref range 1)))
+		  (and (> pos beg) (< pos end))))
+	      tags)))
+
 (defun company-async-semantic--completions-local (prefix)
-  )
+  (when-let* ((tag (company-async-semantic--find-tag (point)))
+	      (attr (semantic-tag-attributes tag))
+	      (arguments (plist-get attr :arguments)))
+    (seq-filter (lambda (var)
+		  (string-prefix-p prefix var))
+		(mapcar #'car arguments))))
 
 (defun company-async-semantic--completions (prefix)
   (delq nil (append (company-async-semantic--completions-local prefix)
@@ -123,8 +133,18 @@
 	(setcdr (assoc file company-async-semantic--cache) tags)
       (add-to-list 'company-async-semantic--cache (cons file tags)))))
 
+(defun company-async-semantic--check-deps ()
+  (let ((files-dep company-async-semantic--files-dep))
+    (company-async-semantic--get-files-dep)
+    (cl-subsetp company-async-semantic--files-dep files-dep)))
+
 (defun company-async-semantic--parse-done (files)
-  (mapc #'company-async-semantic--update-cache files))
+  (mapc #'company-async-semantic--update-cache files)
+  (setq company-async-semantic--parsing-ongoing nil))
+
+(defun company-async-semantic--run-parse (&optional recursive)
+  (setq company-async-semantic--parsing-ongoing t)
+  (async-semantic-buffer #'company-async-semantic--parse-done recursive))
 
 (defun company-async-semantic--need-parse ()
   (not (assoc (file-truename (buffer-file-name))
@@ -135,8 +155,9 @@
 
 (defun company-async-semantic--candidates (arg)
   (let (candidates)
-    (if (company-async-semantic--need-parse)
-	(async-semantic-buffer #'company-async-semantic--parse-done t)
+    (if (or (company-async-semantic--need-parse)
+	    (not (company-async-semantic--check-deps)))
+	(company-async-semantic--run-parse t)
       (setq candidates (if (company-async-semantic--completion-raw-p arg)
 			   (company-async-semantic--completions-raw arg)
 			 (company-async-semantic--completions arg))))
@@ -146,14 +167,33 @@
   (and company-async-semantic-enabled
        (memq major-mode company-async-semantic-modes)
        (not (company-in-string-or-comment))
-       (async-semantic-idle)
+       (not company-async-semantic--parsing-ongoing)
        (or (company-grab-symbol-cons "\\.\\|->\\|::" 2) 'stop)))
 
 (defun company-async-semantic--after-save ()
-  (when (memq major-mode company-async-semantic-modes)
-    (if (company-async-semantic--need-parse)
-	(async-semantic-buffer #'company-async-semantic--parse-done t)
-      (async-semantic-buffer #'company-async-semantic--parse-done))))
+  (when (and (memq major-mode company-async-semantic-modes)
+	     (not (company-async-semantic--need-parse)))
+    (company-async-semantic--run-parse)))
+
+(defun company-async-semantic--enable ()
+  (add-hook 'after-save-hook 'company-async-semantic--after-save nil t))
+
+(defun company-async-semantic--disable ()
+  (remove-hook 'after-save-hook 'company-async-semantic--after-save t))
+
+(defun company-async-semantic--global-check ()
+  (let ((func (if company-async-semantic-enabled
+		  'company-async-semantic--enable
+		'company-async-semantic--disable)))
+    (dolist (buffer (buffer-list))
+      (with-current-buffer buffer
+	(when (memq major-mode company-async-semantic-modes)
+	  (funcall func))))))
+
+(defun company-async-semantic--setup ()
+  (if company-async-semantic-enabled
+      (company-async-semantic--enable)
+    (company-async-semantic--disable)))
 
 ;;; External Functions
 
@@ -163,8 +203,11 @@
 
 (defun company-async-semantic-setup ()
   (if company-async-semantic-enabled
-      (add-hook 'after-save-hook 'company-async-semantic--after-save)
-    (remove-hook 'after-save-hook 'company-async-semantic--after-save)))
+      (dolist (mode-hook (list 'c-mode-hook 'c++-mode-hook))
+	(add-hook mode-hook 'company-async-semantic--setup))
+    (dolist (mode-hook (list 'c-mode-hook 'c++-mode-hook))
+      (remove-hook mode-hook 'company-async-semantic--setup)))
+  (company-async-semantic--global-check))
 
 (defun company-async-semantic-toggle ()
   (interactive)

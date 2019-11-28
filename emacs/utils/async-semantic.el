@@ -178,7 +178,4 @@
   (interactive)
   (async-semantic (list (buffer-file-name)) cb recursive includes))
 
-(defun async-semantic-idle ()
-  (not async-semantic--ongoing))
-
 (provide 'async-semantic)
