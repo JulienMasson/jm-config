@@ -1,4 +1,4 @@
-;;; semantic-acscope.el --- Semantic Acscope Management
+;;; async-semantic-acscope.el --- Semantic Acscope Management
 
 ;; Copyright (C) 2019 Julien Masson
 
@@ -23,22 +23,22 @@
 ;;; Code:
 
 (require 'acscope)
-(require 'async-semantic-db)
+(require 'async-semantic)
 
 ;;; Internal Functions
 
-(defun semantic-acscope--get-cscope-files ()
+(defun async-semantic-acscope--get-cscope-files ()
   (when-let* ((match (concat acscope-database--prefix "\\(.*\\)\.files$"))
 	      (files (directory-files default-directory nil match)))
     (with-temp-buffer
       (insert-file-contents (car files))
       (split-string (buffer-string) "\n" t))))
 
-(defun semantic-acscope--collect-files ()
+(defun async-semantic-acscope--collect-files ()
   (let ((files-collected '()))
     (mapc (lambda (database)
 	    (when-let* ((default-directory database)
-			(files (semantic-acscope--get-cscope-files))
+			(files (async-semantic-acscope--get-cscope-files))
 			(files (mapcar (lambda (file)
 					 (concat default-directory
 						 (file-name-nondirectory file)))
@@ -49,10 +49,10 @@
 
 ;;; External Functions
 
-(defun semantic-acscope ()
+(defun async-semantic-acscope ()
   (interactive)
   (when acscope-database-list
-    (async-semantic-db (semantic-acscope--collect-files)
-		       semantic-default-c-path)))
+    (async-semantic (async-semantic-acscope--collect-files)
+		    semantic-default-c-path)))
 
-(provide 'semantic-acscope)
+(provide 'async-semantic-acscope)

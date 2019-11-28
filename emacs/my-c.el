@@ -32,35 +32,19 @@
 (setq acscope-database-fast-symbol t)
 (acscope-global-setup)
 
-;; semantic
-(require 'semantic)
-(require 'semantic/db-file)
-(require 'semantic/db-typecache)
-(setq semantic-default-c-path `("/usr/include/" "/usr/local/include/"
-				"/usr/include/x86_64-linux-gnu/"
-				,(concat (getenv "HOME") "/.local/include/")))
+;; async semantic
+(require 'async-semantic)
+(setq async-semantic-default-path `("/usr/include/" "/usr/local/include/"
+				    "/usr/include/x86_64-linux-gnu/"
+				    ,(concat (getenv "HOME") "/.local/include/")))
 
-(defun semantic-set-default-include-path ()
-  (setq-mode-local c-mode
-  		   semantic-dependency-system-include-path
-  		   semantic-default-c-path))
+;; company async semantic
+(require 'company-async-semantic)
+(add-to-list 'company-backends 'company-async-semantic)
+(company-async-semantic-setup)
 
-(defun semantic-set-include-path-from-toplevel (includes)
-  (let* ((top (magit-toplevel))
-	 (dirs (mapcar (lambda (dir) (concat top dir)) includes)))
-    (setq-mode-local c-mode
-		     semantic-dependency-system-include-path
-		     dirs)))
-
-;; semantic acscope
-(require 'semantic-acscope)
-
-;; async semantic database
-(require 'async-semantic-db)
-
-;; company jm
-(require 'company-jm)
-(add-to-list 'company-backends 'company-jm)
+;; async semantic acscope
+(require 'async-semantic-acscope)
 
 ;; global setting applied to specific c files
 (defvar c-global-settings-list nil)
@@ -70,8 +54,7 @@
 
 (defun apply-c-default-settings ()
   (setq transient-values (append transient-default-values
-				 transient-default-log-arguments))
-  (semantic-set-default-include-path))
+				 transient-default-log-arguments)))
 
 (defun apply-c-global-settings (&rest _)
   (let* ((filename (expand-file-name default-directory))
@@ -97,10 +80,7 @@
 
 (defun kernel-global-settings ()
   (setq transient-values (append transient-default-values
-				 transient-kernel-log-arguments))
-  (if (tramp-tramp-file-p default-directory)
-      (semantic-set-default-include-path)
-    (semantic-set-include-path-from-toplevel '("include/" "arch/arm64/include/"))))
+				 transient-kernel-log-arguments)))
 
 (defun register-kernel-global-settings (path)
   (add-to-list 'magit-blacklist-repo path)
