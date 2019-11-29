@@ -78,20 +78,22 @@
 	(setq tags (append tags tag))))
     tags))
 
-(defun company-async-semantic--match (tag prefix)
-  (let ((func (car tag))
+(defun company-async-semantic--match (tag prefix compare)
+  (let ((name (semantic-tag-name tag))
 	(class (semantic-tag-class tag)))
-    (when (and (or (eq class 'function)
-		   (eq class 'variable))
-	       (string-prefix-p prefix func))
-      func)))
+    (and (or (eq class 'function)
+	     (eq class 'variable)
+	     (eq class 'type))
+	 (funcall compare prefix name))))
 
 (defun company-async-semantic--completions-system (prefix)
-  (let* ((files company-async-semantic--files-dep)
-	 (tags (company-async-semantic--get-tags files)))
-    (delq nil (mapcar (lambda (tag)
-			(company-async-semantic--match tag prefix))
-		      tags))))
+  (when-let* ((files company-async-semantic--files-dep)
+	      (tags (company-async-semantic--get-tags files))
+	      (matchs (seq-filter (lambda (tag)
+				    (company-async-semantic--match tag prefix
+								   #'string-prefix-p))
+				  tags)))
+    (mapcar #'semantic-tag-name matchs)))
 
 (defun company-async-semantic--completions-scope (prefix)
   )
@@ -131,6 +133,13 @@
   (delq nil (append (company-async-semantic--get-args)
 		    (company-async-semantic--get-local-vars))))
 
+(defun company-async-semantic--all-local-type (name)
+  (let ((vars (company-async-semantic--get-all-local)))
+    (seq-find (lambda (var)
+		(string= (semantic-tag-name var)
+			 symbol))
+	      vars)))
+
 (defun company-async-semantic--completions-local (prefix)
   (when-let ((vars (company-async-semantic--get-all-local)))
     (seq-filter (lambda (var)
@@ -143,19 +152,19 @@
 		    (company-async-semantic--completions-system prefix))))
 
 (defun company-async-semantic--find-bound ()
-  (let ((line-beg (line-beginning-position)))
+  (let ((line-start (line-beginning-position)))
     (save-excursion
-      (if (re-search-backward ",\\|(" line-beg t)
+      (if (re-search-backward ",\\|(" line-start t)
 	  (+ (point) 1)
-	line-beg))))
+	line-start))))
 
-(defun company-async-semantic--find-end (beg)
+(defun company-async-semantic--find-end (start)
   (save-excursion
-    (re-search-backward company-async-semantic--member-regexp beg)
+    (re-search-backward company-async-semantic--member-regexp start)
     (point)))
 
-(defun company-async-semantic--tokens (beg end)
-  (let ((str (buffer-substring-no-properties beg end)))
+(defun company-async-semantic--tokens (start end)
+  (let ((str (buffer-substring-no-properties start end)))
     (mapcar #'string-trim
 	    (split-string str company-async-semantic--member-regexp))))
 
@@ -180,9 +189,9 @@
       (mapcar #'semantic-tag-name members))))
 
 (defun company-async-semantic--completions-member ()
-  (when-let* ((beg (company-async-semantic--find-bound))
-	      (end (company-async-semantic--find-end beg))
-	      (tokens (company-async-semantic--tokens beg end))
+  (when-let* ((start (company-async-semantic--find-bound))
+	      (end (company-async-semantic--find-end start))
+	      (tokens (company-async-semantic--tokens start end))
 	      (vars (company-async-semantic--get-all-local))
 	      (match (seq-find (lambda (arg)
 				 (string= (semantic-tag-name arg)
@@ -266,9 +275,11 @@
     (company-async-semantic--run-parse)))
 
 (defun company-async-semantic--enable ()
+  (local-set-key (kbd "M-.") #'company-async-semantic-goto-definition)
   (add-hook 'after-save-hook 'company-async-semantic--after-save nil t))
 
 (defun company-async-semantic--disable ()
+  (local-set-key (kbd "M-.") #'xref-find-definitions)
   (remove-hook 'after-save-hook 'company-async-semantic--after-save t))
 
 (defun company-async-semantic--global-check ()
@@ -286,6 +297,40 @@
     (company-async-semantic--disable)))
 
 ;;; External Functions
+
+(defun company-async-semantic-goto-definition ()
+  (interactive)
+  (let* ((symbol (symbol-name (symbol-at-point)))
+	 (files company-async-semantic--files-dep)
+	 (local (company-async-semantic--all-local-type symbol))
+	 file tag)
+    (if local
+	(progn
+	  (setq file (file-truename (buffer-file-name)))
+	  (setq tag local))
+      ;; search over cache
+      (when-let ((match (seq-find (lambda (cache)
+				    (seq-find (lambda (tag)
+						(company-async-semantic--match
+						 tag symbol #'string=))
+					      (cdr cache)))
+				  company-async-semantic--cache))
+		 (tags (cdr match))
+		 (tmp (seq-find (lambda (tag)
+				  (company-async-semantic--match tag symbol
+								 #'string=))
+				tags)))
+	(setq file (car match))
+	(setq tag tmp)))
+    ;; jump to the match
+    (when (and file tag)
+      (let* ((range (semantic-tag-overlay tag))
+	     (start (aref range 0))
+	     (end (aref range 1)))
+	(xref-push-marker-stack)
+	(with-current-buffer (find-file file)
+	  (goto-char end)
+	  (re-search-backward symbol start t))))))
 
 (defun company-async-semantic-clear-cache ()
   (interactive)
