@@ -36,8 +36,9 @@
   :type 'boolean
   :group 'company)
 
-
 ;;; Internal Variables
+
+(defconst company-async-semantic--member-regexp "->\\|\\.\\|::")
 
 (defvar company-async-semantic--cache nil)
 
@@ -104,20 +105,81 @@
 		  (and (> pos beg) (< pos end))))
 	      tags)))
 
-(defun company-async-semantic--completions-local (prefix)
+(defun company-async-semantic--get-args ()
   (when-let* ((tag (company-async-semantic--find-tag (point)))
-	      (attr (semantic-tag-attributes tag))
-	      (arguments (plist-get attr :arguments)))
+	      (attr (semantic-tag-attributes tag)))
+    (plist-get attr :arguments)))
+
+(defun company-async-semantic--completions-local (prefix)
+  (when-let ((args (company-async-semantic--get-args)))
     (seq-filter (lambda (var)
 		  (string-prefix-p prefix var))
-		(mapcar #'car arguments))))
+		(mapcar #'car args))))
 
-(defun company-async-semantic--completions (prefix)
+(defun company-async-semantic--completions-env (prefix)
   (delq nil (append (company-async-semantic--completions-local prefix)
 		    (company-async-semantic--completions-scope prefix)
 		    (company-async-semantic--completions-system prefix))))
 
-(defun company-async-semantic--completions-raw (prefix)
+(defun company-async-semantic--find-bound ()
+  (let ((line-beg (line-beginning-position)))
+    (save-excursion
+      (if (re-search-backward ",\\|(" line-beg t)
+	  (+ (point) 1)
+	line-beg))))
+
+(defun company-async-semantic--find-end (beg)
+  (save-excursion
+    (re-search-backward company-async-semantic--member-regexp beg)
+    (point)))
+
+(defun company-async-semantic--tokens (beg end)
+  (let ((str (buffer-substring-no-properties beg end)))
+    (mapcar #'string-trim
+	    (split-string str company-async-semantic--member-regexp))))
+
+(defun company-async-semantic--find-members (type)
+  (when-let* ((files company-async-semantic--files-dep)
+	      (tags (company-async-semantic--get-tags files))
+	      (match (seq-find (lambda (tag)
+				 (string= (semantic-tag-name tag) type))
+			       tags)))
+    (plist-get (semantic-tag-attributes match) :members)))
+
+(defun company-async-semantic--get-members (type tokens)
+  (let ((members (company-async-semantic--find-members type)))
+    (if tokens
+	(when-let* ((token (pop tokens))
+		    (match (seq-find (lambda (member)
+				       (string= (semantic-tag-name member)
+						token))
+				     members))
+		    (type (plist-get (semantic-tag-attributes match) :type)))
+	  (company-async-semantic--get-members (semantic-tag-name type) tokens))
+      (mapcar #'semantic-tag-name members))))
+
+(defun company-async-semantic--completions-member ()
+  (when-let* ((beg (company-async-semantic--find-bound))
+	      (end (company-async-semantic--find-end beg))
+	      (tokens (company-async-semantic--tokens beg end))
+	      (args (company-async-semantic--get-args))
+	      (match (seq-find (lambda (arg)
+				 (string= (semantic-tag-name arg)
+					  (car tokens)))
+			       args))
+	      (type (plist-get (semantic-tag-attributes match) :type)))
+    (when (listp type)
+      (company-async-semantic--get-members (semantic-tag-name type)
+					   (cdr tokens)))))
+
+(defun company-async-semantic--completions-member-p (prefix)
+  (and (equal prefix "") (looking-back company-async-semantic--member-regexp
+				       (- (point) 2))))
+
+(defun company-async-semantic--completions-include (prefix)
+  nil)
+
+(defun company-async-semantic--completions-include-p (prefix)
   nil)
 
 (defun company-async-semantic--update-cache (file)
@@ -150,25 +212,32 @@
   (not (assoc (file-truename (buffer-file-name))
 	      company-async-semantic--cache)))
 
-(defun company-async-semantic--completion-raw-p (arg)
-  (and (equal arg "") (not (looking-back "->\\|\\.\\|::" (- (point) 2)))))
-
 (defun company-async-semantic--candidates (arg)
   (let (candidates)
     (if (or (company-async-semantic--need-parse)
 	    (not (company-async-semantic--check-deps)))
 	(company-async-semantic--run-parse t)
-      (setq candidates (if (company-async-semantic--completion-raw-p arg)
-			   (company-async-semantic--completions-raw arg)
-			 (company-async-semantic--completions arg))))
+      (setq candidates
+	    (cond
+	     ;; include
+	     ((company-async-semantic--completions-include-p arg)
+	      (company-async-semantic--completions-include arg))
+	     ;; member
+	     ((company-async-semantic--completions-member-p arg)
+	      (company-async-semantic--completions-member))
+	     ;; env: function, variables, macro ...
+	     (t (company-async-semantic--completions-env arg)))))
     candidates))
+
+(defun company-async-semantic--grab-symbol ()
+  (company-grab-symbol-cons company-async-semantic--member-regexp 2))
 
 (defun company-async-semantic--prefix ()
   (and company-async-semantic-enabled
        (memq major-mode company-async-semantic-modes)
        (not (company-in-string-or-comment))
        (not company-async-semantic--parsing-ongoing)
-       (or (company-grab-symbol-cons "\\.\\|->\\|::" 2) 'stop)))
+       (or (company-async-semantic--grab-symbol) 'stop)))
 
 (defun company-async-semantic--after-save ()
   (when (and (memq major-mode company-async-semantic-modes)
