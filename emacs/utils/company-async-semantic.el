@@ -23,6 +23,7 @@
 ;;; Code:
 
 (require 'async-semantic)
+(require 'semantic/bovine/c)
 
 ;;; Customization
 
@@ -100,9 +101,9 @@
 	     (tags (assoc-default file company-async-semantic--cache)))
     (seq-find (lambda (tag)
 		(when-let* ((range (semantic-tag-overlay tag))
-			    (beg (aref range 0))
+			    (start (aref range 0))
 			    (end (aref range 1)))
-		  (and (> pos beg) (< pos end))))
+		  (and (> pos start) (< pos end))))
 	      tags)))
 
 (defun company-async-semantic--get-args ()
@@ -110,11 +111,31 @@
 	      (attr (semantic-tag-attributes tag)))
     (plist-get attr :arguments)))
 
+(defun company-async-semantic--parse (start end)
+  (let ((semantic--parse-table semantic-c-by--parse-table)
+	(semantic-lex-syntax-modifications '((?> ".") (?< ".")))
+	(semantic-lex-analyzer #'semantic-c-lexer))
+    (semantic-lex-init)
+    (semantic-parse-region start end 'bovine-inner-scope nil t)))
+
+(defun company-async-semantic--get-local-vars ()
+  (when-let* ((tag (company-async-semantic--find-tag (point)))
+	      (range (semantic-tag-overlay tag))
+	      (start (save-excursion
+		       (goto-char (aref range 0))
+		       (re-search-forward "{")))
+	      (end (- (aref range 1) 1)))
+    (company-async-semantic--parse start end)))
+
+(defun company-async-semantic--get-all-local ()
+  (delq nil (append (company-async-semantic--get-args)
+		    (company-async-semantic--get-local-vars))))
+
 (defun company-async-semantic--completions-local (prefix)
-  (when-let ((args (company-async-semantic--get-args)))
+  (when-let ((vars (company-async-semantic--get-all-local)))
     (seq-filter (lambda (var)
 		  (string-prefix-p prefix var))
-		(mapcar #'car args))))
+		(mapcar #'semantic-tag-name vars))))
 
 (defun company-async-semantic--completions-env (prefix)
   (delq nil (append (company-async-semantic--completions-local prefix)
@@ -162,11 +183,11 @@
   (when-let* ((beg (company-async-semantic--find-bound))
 	      (end (company-async-semantic--find-end beg))
 	      (tokens (company-async-semantic--tokens beg end))
-	      (args (company-async-semantic--get-args))
+	      (vars (company-async-semantic--get-all-local))
 	      (match (seq-find (lambda (arg)
 				 (string= (semantic-tag-name arg)
 					  (car tokens)))
-			       args))
+			       vars))
 	      (type (plist-get (semantic-tag-attributes match) :type)))
     (when (listp type)
       (company-async-semantic--get-members (semantic-tag-name type)
