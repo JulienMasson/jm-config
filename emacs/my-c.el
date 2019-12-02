@@ -35,7 +35,6 @@
 ;; async semantic
 (require 'async-semantic)
 (setq async-semantic-default-path `("/usr/include/" "/usr/local/include/"
-				    "/usr/include/x86_64-linux-gnu/"
 				    ,(concat (getenv "HOME") "/.local/include/")))
 
 ;; company async semantic
