@@ -64,7 +64,7 @@
 	    (unless (member include company-async-semantic--files-dep)
 	      (add-to-list 'company-async-semantic--files-dep include t)
 	      (company-async-semantic--get-includes-files-dep include)))
-	  (mapcar #'company-async-semantic--find-dep includes))))
+	  (delq nil (mapcar #'company-async-semantic--find-dep includes)))))
 
 (defun company-async-semantic--get-files-dep ()
   (let ((file (file-truename (buffer-file-name))))
@@ -206,11 +206,30 @@
   (and (equal prefix "") (looking-back company-async-semantic--member-regexp
 				       (- (point) 2))))
 
-(defun company-async-semantic--completions-include (prefix)
-  nil)
+(defun company-async-semantic--include (prefix dirs)
+  (let ((regexp (concat "^" prefix))
+	(case-fold-search nil)
+	candidates matchs)
+    (dolist (dir dirs)
+      (setq matchs (mapcar (lambda (match)
+			     (replace-regexp-in-string dir "" match))
+			   (directory-files-recursively dir regexp)))
+      (setq candidates (cl-union candidates matchs :test #'string=)))
+    candidates))
 
-(defun company-async-semantic--completions-include-p (prefix)
-  nil)
+(defun company-async-semantic--completions-include (prefix)
+  (let* ((start (line-beginning-position))
+	 (str (buffer-substring-no-properties start (point)))
+	 (local-dir (list (expand-file-name default-directory)))
+	 (system-dirs async-semantic-default-path))
+    (if (string-match "#include <" str)
+	(company-async-semantic--include prefix system-dirs)
+      (company-async-semantic--include prefix local-dir))))
+
+(defun company-async-semantic--completions-include-p ()
+  (let* ((start (line-beginning-position))
+	 (str (buffer-substring-no-properties start (point))))
+    (string-match "#include [\"<]" str)))
 
 (defun company-async-semantic--update-cache (file)
   (when-let* ((filename (file-name-nondirectory file))
@@ -250,7 +269,7 @@
       (setq candidates
 	    (cond
 	     ;; include
-	     ((company-async-semantic--completions-include-p arg)
+	     ((company-async-semantic--completions-include-p)
 	      (company-async-semantic--completions-include arg))
 	     ;; member
 	     ((company-async-semantic--completions-member-p arg)
@@ -305,6 +324,7 @@
 	 (local (company-async-semantic--all-local-type symbol))
 	 file tag)
     (if local
+	;; search over local vars
 	(progn
 	  (setq file (file-truename (buffer-file-name)))
 	  (setq tag local))
