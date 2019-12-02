@@ -37,11 +37,18 @@
   :type 'boolean
   :group 'company)
 
+(defcustom company-async-semantic-includes nil
+  "Assoc list with CONS (path . includes) used to set includes path"
+  :type 'alist
+  :group 'company)
+
 ;;; Internal Variables
 
 (defconst company-async-semantic--member-regexp "->\\|\\.\\|::")
 
 (defvar company-async-semantic--cache nil)
+
+(defvar-local company-async-semantic--default-path nil)
 
 (defvar-local company-async-semantic--files-dep nil)
 
@@ -49,9 +56,18 @@
 
 ;;; Internal Functions
 
+(defun company-async-semantic--set-default-path ()
+  (if-let* ((local-dir (expand-file-name default-directory))
+	    (match (seq-find (lambda (dir)
+			       (string-prefix-p dir local-dir))
+			     (mapcar #'car company-async-semantic-includes))))
+      (setq company-async-semantic--default-path
+	    (assoc-default match company-async-semantic-includes))
+    (setq company-async-semantic--default-path async-semantic-default-path)))
+
 (defun company-async-semantic--find-dep (include)
   (when-let ((default-dir (expand-file-name default-directory))
-	     (path (append (list default-dir) async-semantic-default-path))
+	     (path (append (list default-dir) company-async-semantic--default-path))
 	     (file (semantic-tag-name include)))
     (locate-file file path)))
 
@@ -221,7 +237,7 @@
   (let* ((start (line-beginning-position))
 	 (str (buffer-substring-no-properties start (point)))
 	 (local-dir (list (expand-file-name default-directory)))
-	 (system-dirs async-semantic-default-path))
+	 (system-dirs company-async-semantic--default-path))
     (if (string-match "#include <" str)
 	(company-async-semantic--include prefix system-dirs)
       (company-async-semantic--include prefix local-dir))))
@@ -294,6 +310,7 @@
     (company-async-semantic--run-parse)))
 
 (defun company-async-semantic--enable ()
+  (company-async-semantic--set-default-path)
   (local-set-key (kbd "M-.") #'company-async-semantic-goto-definition)
   (add-hook 'after-save-hook 'company-async-semantic--after-save nil t))
 
