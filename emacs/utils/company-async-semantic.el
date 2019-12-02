@@ -56,6 +56,9 @@
 
 ;;; Internal Functions
 
+(defun company-async-semantic--remote-host (file)
+  (replace-regexp-in-string "\\(^/ssh:.*:\\).*" "\\1" file))
+
 (defun company-async-semantic--set-default-path ()
   (if-let* ((local-dir (expand-file-name default-directory))
 	    (match (seq-find (lambda (dir)
@@ -63,13 +66,40 @@
 			     (mapcar #'car company-async-semantic-includes))))
       (setq company-async-semantic--default-path
 	    (assoc-default match company-async-semantic-includes))
-    (setq company-async-semantic--default-path async-semantic-default-path)))
+    (if (tramp-tramp-file-p local-dir)
+	(setq company-async-semantic--default-path
+	      (let ((host (company-async-semantic--remote-host local-dir)))
+		(mapcar (lambda (include)
+			  (concat host include))
+			async-semantic-default-path)))
+      (setq company-async-semantic--default-path async-semantic-default-path))))
+
+(defun company-async-semantic--remote-locate-file (file paths)
+  (let (match)
+    (catch 'match
+      (dolist (path paths)
+	(when (file-exists-p path)
+	  (let* ((default-directory path)
+		 (host (company-async-semantic--remote-host path))
+		 (local-dir (replace-regexp-in-string host "" path))
+		 (program (executable-find "find")))
+	  (with-temp-buffer
+	    (process-file program nil (current-buffer) nil
+			  local-dir "-name" file)
+	    (goto-char (point-min))
+	    (unless (= (point-min) (point-max))
+	      (setq match (concat host (buffer-substring-no-properties
+					(line-beginning-position)
+					(line-end-position)))))))))
+      match)))
 
 (defun company-async-semantic--find-dep (include)
   (when-let ((default-dir (expand-file-name default-directory))
-	     (path (append (list default-dir) company-async-semantic--default-path))
+	     (paths (append (list default-dir) company-async-semantic--default-path))
 	     (file (semantic-tag-name include)))
-    (locate-file file path)))
+    (if (tramp-tramp-file-p default-dir)
+	(company-async-semantic--remote-locate-file file paths)
+      (locate-file file paths))))
 
 (defun company-async-semantic--get-includes-files-dep (file)
   (when-let* ((tags (assoc-default file company-async-semantic--cache))
@@ -262,7 +292,13 @@
 
 (defun company-async-semantic--check-deps ()
   (let ((files-dep company-async-semantic--files-dep))
-    (company-async-semantic--get-files-dep)
+    ;; WORKAROUND:
+    ;; When we get files dep on remote, it can be very slow.
+    ;; Since we don't want to be stuck at every call, only check
+    ;; `company-async-semantic--files-dep' for remote files.
+    (unless (and (tramp-tramp-file-p default-directory)
+		 company-async-semantic--files-dep)
+      (company-async-semantic--get-files-dep))
     (cl-subsetp company-async-semantic--files-dep files-dep)))
 
 (defun company-async-semantic--parse-done (files)
