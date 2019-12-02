@@ -99,8 +99,9 @@
 
 (defun async-semantic--process-filter (process str)
   (with-current-buffer (process-buffer process)
-    (goto-char (point-max))
-    (insert str)))
+    (save-excursion
+      (goto-char (point-max))
+      (insert str))))
 
 (defun async-semantic--files-p (file)
   (and file (not (member file async-semantic--files))))

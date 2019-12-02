@@ -126,11 +126,13 @@
 
 (defun company-async-semantic--match (tag prefix compare)
   (let ((name (semantic-tag-name tag))
-	(class (semantic-tag-class tag)))
-    (and (or (eq class 'function)
-	     (eq class 'variable)
-	     (eq class 'type))
-	 (funcall compare prefix name))))
+	(class (semantic-tag-class tag))
+	(attr (semantic-tag-attributes tag)))
+    (when (or (eq class 'function)
+	      (eq class 'variable)
+	      (and (eq class 'type)
+		   (plist-member attr :members)))
+      (funcall compare prefix name))))
 
 (defun company-async-semantic--completions-system (prefix)
   (when-let* ((files company-async-semantic--files-dep)
@@ -218,7 +220,9 @@
   (when-let* ((files company-async-semantic--files-dep)
 	      (tags (company-async-semantic--get-tags files))
 	      (match (seq-find (lambda (tag)
-				 (string= (semantic-tag-name tag) type))
+				 (and (string= (semantic-tag-name tag) type)
+				      (plist-member (semantic-tag-attributes tag)
+						    :members)))
 			       tags)))
     (plist-get (semantic-tag-attributes match) :members)))
 
@@ -227,8 +231,9 @@
     (if tokens
 	(when-let* ((token (pop tokens))
 		    (match (seq-find (lambda (member)
-				       (string= (semantic-tag-name member)
-						token))
+				       (and (string= (semantic-tag-name member) token)
+					    (plist-member (semantic-tag-attributes match)
+							  :members)))
 				     members))
 		    (type (plist-get (semantic-tag-attributes match) :type)))
 	  (company-async-semantic--get-members (semantic-tag-name type) tokens))
@@ -307,7 +312,8 @@
 
 (defun company-async-semantic--run-parse (&optional recursive)
   (setq company-async-semantic--parsing-ongoing t)
-  (async-semantic-buffer #'company-async-semantic--parse-done recursive))
+  (async-semantic-buffer #'company-async-semantic--parse-done recursive
+			 company-async-semantic--default-path))
 
 (defun company-async-semantic--need-parse ()
   (not (assoc (file-truename (buffer-file-name))
@@ -403,7 +409,7 @@
 	(xref-push-marker-stack)
 	(with-current-buffer (find-file file)
 	  (goto-char end)
-	  (re-search-backward symbol start t))))))
+	  (while (re-search-backward symbol start t)))))))
 
 (defun company-async-semantic-clear-cache ()
   (interactive)
