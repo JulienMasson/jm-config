@@ -74,6 +74,8 @@
 (defvar transient-kernel-log-arguments
   '((magit-log:magit-log-mode "-n256" "--decorate")))
 
+(defvar async-semantic-kernel-includes '("include/" "arch/arm64/include/"))
+
 (defun cscope-kernel-source-file (dir)
   (funcall 'cscope-generate-from-objects dir))
 
@@ -82,8 +84,12 @@
 				 transient-kernel-log-arguments)))
 
 (defun register-kernel-global-settings (path)
-  (add-to-list 'magit-blacklist-repo path)
-  (add-to-list 'c-global-settings-list `(,path . kernel-global-settings)))
+  (let ((kernel-includes (mapcar (lambda (p)
+				   (concat path p))
+				 async-semantic-kernel-includes)))
+    (add-to-list 'magit-blacklist-repo path)
+    (add-to-list 'company-async-semantic-includes (cons path kernel-includes) t)
+    (add-to-list 'c-global-settings-list `(,path . kernel-global-settings))))
 
 ;; checkpatch
 (defun checkpatch ()
