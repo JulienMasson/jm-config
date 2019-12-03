@@ -123,7 +123,7 @@
 			      (format "* [ %d files ]" nbr)
 			    (file-name-nondirectory (car marks)))
 			 'face 'warning)))
-  (read-directory-name (format "Rsync %s to: " msg))))
+    (expand-file-name (read-directory-name (format "Rsync %s to: " msg)))))
 
 (defun async-dired--rsync-get-args (marks dest &optional extra-args)
   (let ((default-args (list "--archive" "--info=progress2"))
