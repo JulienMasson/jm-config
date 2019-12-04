@@ -36,13 +36,16 @@
 ;;; External Variables
 
 (defconst async-semantic-files (concat semanticdb-default-save-directory
-					  "/.async-semantic-files"))
+				       "/.async-semantic-files"))
 
 (defconst async-semantic-includes (concat semanticdb-default-save-directory
-					     "/.async-semantic-includes"))
+					  "/.async-semantic-includes"))
 
 (defconst async-semantic-files-parsed (concat semanticdb-default-save-directory
 					      "/.async-semantic-files-parsed"))
+
+(defconst async-semantic-files-up-to-date (concat semanticdb-default-save-directory
+						  "/.async-semantic-files-up-to-date"))
 
 ;;; Internal Variables
 
@@ -50,9 +53,11 @@
 
 (defvar async-semantic--cb nil)
 
-(defvar async-semantic--files nil)
-
 (defvar async-semantic--files-parsed nil)
+
+(defvar async-semantic--files-up-to-date nil)
+
+(defvar async-semantic--files-not-found nil)
 
 ;;; Internal Functions
 
@@ -84,9 +89,10 @@
 
 (defun async-semantic--process-sentinel (process status)
   (if (eq (process-exit-status process) 0)
-      (let ((files (async-semantic--read async-semantic-files-parsed)))
-	(when (and files async-semantic--cb)
-	  (funcall async-semantic--cb files))
+      (when async-semantic--cb
+	(let ((files-parsed (async-semantic--read async-semantic-files-parsed))
+	      (files-up-to-date (async-semantic--read async-semantic-files-up-to-date)))
+	  (funcall async-semantic--cb files-parsed files-up-to-date))
 	(kill-buffer (process-buffer process)))
     (message (concat "Async Semantic Database: "
 		     (propertize "Failed" 'face 'error)))
@@ -94,6 +100,7 @@
   (delete-file async-semantic-files)
   (delete-file async-semantic-includes)
   (delete-file async-semantic-files-parsed)
+  (delete-file async-semantic-files-up-to-date)
   (setq async-semantic--ongoing nil)
   (setq async-semantic--cb nil))
 
@@ -103,57 +110,81 @@
       (goto-char (point-max))
       (insert str))))
 
-(defun async-semantic--files-p (file)
-  (and file (not (member file async-semantic--files))))
+(defun async-semantic--get-table (file)
+  (when-let* ((filename (file-name-nondirectory file))
+	      (dir (file-name-directory file))
+	      (cache-file (semanticdb-cache-filename
+			   semanticdb-new-database-class dir))
+	      (db (semanticdb-load-database cache-file))
+	      (table (seq-find (lambda (table)
+				 (string= filename (oref table file)))
+			       (oref db tables))))
+    (delete-instance db)
+    table))
 
-(defun async-semantic--parse (file)
-  (when (async-semantic--files-p file)
-    (add-to-list 'async-semantic--files file)
-    (when (file-exists-p file)
-      (with-current-buffer (find-file-noselect file)
-	;; parse current file
-	(message "Parsing: %s" file)
-	(setq-mode-local c-mode
-  			 semantic-dependency-system-include-path
-  			 semantic-default-c-path)
-	(semanticdb-save-current-db)
-	(add-to-list 'async-semantic--files-parsed file)))))
+(defun async-semantic--includes (file)
+  (when-let* ((cur-dir (file-name-directory file))
+	      (paths (append (list cur-dir) semantic-default-c-path))
+	      (table (async-semantic--get-table file))
+	      (tags (oref table tags))
+	      (includes (seq-filter (lambda (tag)
+				      (eq (semantic-tag-class tag) 'include))
+				    tags)))
+    (delq nil (mapcar (lambda (include)
+			(locate-file (semantic-tag-name include) paths))
+		      includes))))
 
-(defun async-semantic--parse-recursive (file)
-  (when (async-semantic--files-p file)
-    (add-to-list 'async-semantic--files file)
-    (when (file-exists-p file)
-      (with-current-buffer (find-file-noselect file)
-	;; parse current file
-	(message "Parsing: %s" file)
-	(setq-mode-local c-mode
-  			 semantic-dependency-system-include-path
-  			 semantic-default-c-path)
-	(semanticdb-save-current-db)
-	(add-to-list 'async-semantic--files-parsed file)
-	;; parse include files
-	(mapc #'async-semantic--parse-recursive
-	      (mapcar (lambda (include)
-			(if-let ((name (car include))
-				 (path (semantic-dependency-tag-file include)))
-			    path
-			  (when (async-semantic--files-p name)
-			    (message "\n-> Cannot find path: %s\n" name))
-			  name))
-		      (semantic-find-tags-included (current-buffer))))))))
+(defun async-semantic--message (header str)
+  (message "%-15s %s" header str))
+
+(defun async-semantic--parse-file (file)
+  (with-current-buffer (find-file-noselect file)
+    (async-semantic--message "Parsing:" file)
+    (setq-mode-local c-mode
+  		     semantic-dependency-system-include-path
+  		     semantic-default-c-path)
+    (semanticdb-save-current-db))
+  (add-to-list 'async-semantic--files-parsed file))
+
+(defun async-semantic--up-to-date-p (file)
+  (when-let* ((table (async-semantic--get-table file))
+	      (stats (file-attributes file))
+	      (curmodtime (file-attribute-modification-time stats)))
+    (equal (oref table lastmodtime) curmodtime)))
+
+(defun async-semantic--parse-p (file)
+  (or (member file async-semantic--files-up-to-date)
+      (member file async-semantic--files-not-found)
+      (member file async-semantic--files-parsed)))
+
+(defun async-semantic--parse (file &optional recursive)
+  (unless (async-semantic--parse-p file)
+    (cond ((async-semantic--up-to-date-p file)
+	   (add-to-list 'async-semantic--files-up-to-date file)
+	   (async-semantic--message "Up-To-Date:" file))
+	  ((not (file-exists-p file))
+	   (add-to-list 'async-semantic--files-not-found file)
+	   (async-semantic--message "File not found:" file))
+	  (t (async-semantic--parse-file file)))
+    (when recursive
+      (dolist (include (async-semantic--includes file))
+	(async-semantic--parse include recursive)))))
 
 ;;; External Functions
+
+(defun async-semantic-parse-idle ()
+  (not async-semantic--ongoing))
 
 (defun async-semantic-parse (files-path includes-path &optional recursive)
   (let ((files (async-semantic--read files-path))
 	(includes (async-semantic--read includes-path)))
     (setq semantic-default-c-path includes)
-    (message "-> Includes:\n%s\n" semantic-default-c-path)
+    (message "-> Default Path:\n%s\n" (mapconcat 'identity semantic-default-c-path "  "))
     (semantic-mode)
-    (if recursive
-	(mapc #'async-semantic--parse-recursive files)
-      (mapc #'async-semantic--parse files))
-    (async-semantic--save async-semantic-files-parsed async-semantic--files-parsed)))
+    (dolist (file files)
+      (async-semantic--parse file recursive))
+    (async-semantic--save async-semantic-files-parsed async-semantic--files-parsed)
+    (async-semantic--save async-semantic-files-up-to-date async-semantic--files-up-to-date)))
 
 (defun async-semantic (files &optional cb recursive includes)
   (unless async-semantic--ongoing

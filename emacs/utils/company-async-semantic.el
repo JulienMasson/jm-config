@@ -52,8 +52,6 @@
 
 (defvar-local company-async-semantic--files-dep nil)
 
-(defvar company-async-semantic--parsing-ongoing nil)
-
 ;;; Internal Functions
 
 (defun company-async-semantic--remote-host (file)
@@ -283,13 +281,7 @@
     (string-match "#include [\"<]" str)))
 
 (defun company-async-semantic--update-cache (file)
-  (when-let* ((filename (file-name-nondirectory file))
-	      (dir (file-name-directory file))
-	      (cache-file (semanticdb-cache-filename semanticdb-new-database-class dir))
-	      (db (semanticdb-load-database cache-file))
-	      (table (seq-find (lambda (table)
-				 (string= filename (oref table file)))
-			       (oref db tables)))
+  (when-let* ((table (async-semantic--get-table file))
 	      (tags (oref table tags)))
     (if (assoc file company-async-semantic--cache)
 	(setcdr (assoc file company-async-semantic--cache) tags)
@@ -306,12 +298,13 @@
       (company-async-semantic--get-files-dep))
     (cl-subsetp company-async-semantic--files-dep files-dep)))
 
-(defun company-async-semantic--parse-done (files)
-  (mapc #'company-async-semantic--update-cache files)
-  (setq company-async-semantic--parsing-ongoing nil))
+(defun company-async-semantic--parse-done (files-parsed files-up-to-date)
+  (mapc #'company-async-semantic--update-cache files-parsed)
+  (dolist (file files-up-to-date)
+    (unless (assoc file company-async-semantic--cache)
+      (company-async-semantic--update-cache file))))
 
 (defun company-async-semantic--run-parse (&optional recursive)
-  (setq company-async-semantic--parsing-ongoing t)
   (async-semantic-buffer #'company-async-semantic--parse-done recursive
 			 company-async-semantic--default-path))
 
@@ -343,12 +336,13 @@
   (and company-async-semantic-enabled
        (memq major-mode company-async-semantic-modes)
        (not (company-in-string-or-comment))
-       (not company-async-semantic--parsing-ongoing)
+       (async-semantic-parse-idle)
        (or (company-async-semantic--grab-symbol) 'stop)))
 
 (defun company-async-semantic--after-save ()
   (when (and (memq major-mode company-async-semantic-modes)
-	     (not (company-async-semantic--need-parse)))
+	     (not (company-async-semantic--need-parse))
+	     (async-semantic-parse-idle))
     (company-async-semantic--run-parse)))
 
 (defun company-async-semantic--enable ()
