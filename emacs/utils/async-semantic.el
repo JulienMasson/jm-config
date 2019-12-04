@@ -110,11 +110,13 @@
       (goto-char (point-max))
       (insert str))))
 
+(defun async-semantic--get-cache (file)
+  (semanticdb-cache-filename semanticdb-new-database-class
+			     (file-name-directory file)))
+
 (defun async-semantic--get-table (file)
   (when-let* ((filename (file-name-nondirectory file))
-	      (dir (file-name-directory file))
-	      (cache-file (semanticdb-cache-filename
-			   semanticdb-new-database-class dir))
+	      (cache-file (async-semantic--get-cache file))
 	      (db (semanticdb-load-database cache-file))
 	      (table (seq-find (lambda (table)
 				 (string= filename (oref table file)))

@@ -280,9 +280,8 @@
 	 (str (buffer-substring-no-properties start (point))))
     (string-match "#include [\"<]" str)))
 
-(defun company-async-semantic--update-cache (file)
-  (when-let* ((table (async-semantic--get-table file))
-	      (tags (oref table tags)))
+(defun company-async-semantic--update-cache (table file)
+  (when-let ((tags (oref table tags)))
     (if (assoc file company-async-semantic--cache)
 	(setcdr (assoc file company-async-semantic--cache) tags)
       (add-to-list 'company-async-semantic--cache (cons file tags)))))
@@ -299,10 +298,29 @@
     (cl-subsetp company-async-semantic--files-dep files-dep)))
 
 (defun company-async-semantic--parse-done (files-parsed files-up-to-date)
-  (mapc #'company-async-semantic--update-cache files-parsed)
-  (dolist (file files-up-to-date)
-    (unless (assoc file company-async-semantic--cache)
-      (company-async-semantic--update-cache file))))
+  (let (databases)
+    (cl-macrolet ((update-cache (file)
+		  `(let* ((filename (file-name-nondirectory ,file))
+			  (cache-file (async-semantic--get-cache ,file))
+			  (db (assoc-default cache-file databases))
+			  table)
+		     (unless db
+		       (setq db (semanticdb-load-database cache-file))
+		       (add-to-list 'databases (cons cache-file db)))
+		     (setq table (seq-find (lambda (table)
+					     (string= filename (oref table ,file)))
+					   (oref db tables)))
+		     (company-async-semantic--update-cache table ,file))))
+      ;; files parsed
+      (dolist (file files-parsed)
+	(update-cache file))
+      ;; files up-to-date
+      (dolist (file files-up-to-date)
+	(unless (assoc file company-async-semantic--cache)
+	  (update-cache file)))
+      ;; free ressources
+      (dolist (db databases)
+	(delete-instance (cdr db))))))
 
 (defun company-async-semantic--run-parse (&optional recursive)
   (async-semantic-buffer #'company-async-semantic--parse-done recursive
