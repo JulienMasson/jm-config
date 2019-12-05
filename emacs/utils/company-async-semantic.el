@@ -48,6 +48,8 @@
 
 (defvar company-async-semantic--cache nil)
 
+(defvar company-async-semantic--updating-cache nil)
+
 (defvar-local company-async-semantic--default-path nil)
 
 (defvar-local company-async-semantic--files-dep nil)
@@ -271,10 +273,13 @@
     (string-match "#include [\"<]" str)))
 
 (defun company-async-semantic--update-cache (table file)
-  (when-let ((tags (oref table tags)))
+  (setq company-async-semantic--updating-cache t)
+  (let ((tags (when (slot-boundp table 'tags)
+		(oref table tags))))
     (if (assoc file company-async-semantic--cache)
 	(setcdr (assoc file company-async-semantic--cache) tags)
-      (add-to-list 'company-async-semantic--cache (cons file tags)))))
+      (add-to-list 'company-async-semantic--cache (cons file tags))))
+  (setq company-async-semantic--updating-cache nil))
 
 (defun company-async-semantic--check-deps ()
   (let ((files-dep company-async-semantic--files-dep))
@@ -344,7 +349,7 @@
   (and company-async-semantic-enabled
        (memq major-mode company-async-semantic-modes)
        (not (company-in-string-or-comment))
-       (async-semantic-parse-idle)
+       (not company-async-semantic--updating-cache)
        (or (company-async-semantic--grab-symbol) 'stop)))
 
 (defun company-async-semantic--after-save ()

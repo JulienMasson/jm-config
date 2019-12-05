@@ -49,7 +49,7 @@
 
 ;;; Internal Variables
 
-(defvar async-semantic--ongoing nil)
+(defvar async-semantic--process nil)
 
 (defvar async-semantic--cb nil)
 
@@ -100,9 +100,7 @@
   (delete-file async-semantic-files)
   (delete-file async-semantic-includes)
   (delete-file async-semantic-files-parsed)
-  (delete-file async-semantic-files-up-to-date)
-  (setq async-semantic--ongoing nil)
-  (setq async-semantic--cb nil))
+  (delete-file async-semantic-files-up-to-date))
 
 (defun async-semantic--process-filter (process str)
   (with-current-buffer (process-buffer process)
@@ -111,8 +109,11 @@
       (insert str))))
 
 (defun async-semantic--get-cache (file)
-  (semanticdb-cache-filename semanticdb-new-database-class
-			     (file-name-directory file)))
+  (let* ((dir (file-name-directory (file-truename file)))
+	 (cache-file (semanticdb-cache-filename semanticdb-new-database-class
+						dir)))
+    (when (file-exists-p cache-file)
+      cache-file)))
 
 (defun async-semantic--get-table (file)
   (when-let* ((filename (file-name-nondirectory file))
@@ -128,7 +129,8 @@
   (when-let* ((cur-dir (file-name-directory file))
 	      (paths (append (list cur-dir) semantic-default-c-path))
 	      (table (async-semantic--get-table file))
-	      (tags (oref table tags))
+	      (tags (when (slot-boundp table 'tags)
+		      (oref table tags)))
 	      (includes (seq-filter (lambda (tag)
 				      (eq (semantic-tag-class tag) 'include))
 				    tags)))
@@ -174,8 +176,9 @@
 
 ;;; External Functions
 
-(defun async-semantic-parse-idle ()
-  (not async-semantic--ongoing))
+(defun async-semantic-parse-running ()
+  (and async-semantic--process
+       (eq (process-status async-semantic--process) 'run)))
 
 (defun async-semantic-parse (files-path includes-path &optional recursive)
   (let ((files (async-semantic--read files-path))
@@ -189,8 +192,7 @@
     (async-semantic--save async-semantic-files-up-to-date async-semantic--files-up-to-date)))
 
 (defun async-semantic (files &optional cb recursive includes)
-  (unless async-semantic--ongoing
-    (setq async-semantic--ongoing t)
+  (unless (async-semantic-parse-running)
     (setq async-semantic--cb cb)
     (async-semantic--save async-semantic-files files)
     (async-semantic--save async-semantic-includes
@@ -203,6 +205,7 @@
 	   (buffer (get-buffer-create "*async-semantic*"))
 	   (process (apply 'start-process "async-semantic" buffer
 			   program args)))
+      (setq async-semantic--process process)
       (with-current-buffer buffer
 	(erase-buffer))
       (set-process-filter process 'async-semantic--process-filter)
