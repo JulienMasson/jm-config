@@ -46,6 +46,8 @@
 
 (defconst company-async-semantic--member-regexp "->\\|\\.\\|::")
 
+(defconst company-async-semantic--include-regexp "#include\\s-+[\"<]\\([a-zA-Z0-9_/]*\\)$")
+
 (defvar company-async-semantic--cache nil)
 
 (defvar company-async-semantic--updating-cache nil)
@@ -247,30 +249,41 @@
   (and (equal prefix "") (looking-back company-async-semantic--member-regexp
 				       (- (point) 2))))
 
-(defun company-async-semantic--include (prefix dirs)
-  (let ((regexp (concat "^" prefix))
+(defun company-async-semantic--include (prefix dirs local)
+  (let ((sub-dir (file-name-directory prefix))
+	(regexp (concat "^" (file-name-nondirectory prefix)))
 	(case-fold-search nil)
-	candidates matchs)
+	candidates matchs cur-dir)
     (dolist (dir dirs)
-      (setq matchs (mapcar (lambda (match)
-			     (replace-regexp-in-string dir "" match))
-			   (directory-files-recursively dir regexp)))
-      (setq candidates (cl-union candidates matchs :test #'string=)))
+      (setq cur-dir (concat dir sub-dir))
+      (when (file-exists-p cur-dir)
+	(dolist (result (directory-files cur-dir nil regexp))
+	  (unless (string-match "^\\." result)
+	    (if (file-directory-p (concat cur-dir result))
+		(dolist (file (directory-files-recursively (concat cur-dir result) "^"))
+		  (push (replace-regexp-in-string (concat cur-dir "\\(.*\\)")
+						  (concat "\\1" local) file)
+			matchs))
+	      (push (concat result local) matchs))))
+	(setq candidates (cl-union candidates matchs :test #'string=))))
     candidates))
 
-(defun company-async-semantic--completions-include (prefix)
+(defun company-async-semantic--completions-include ()
   (let* ((start (line-beginning-position))
 	 (str (buffer-substring-no-properties start (point)))
 	 (local-dir (list (expand-file-name default-directory)))
-	 (system-dirs company-async-semantic--default-path))
-    (if (string-match "#include <" str)
-	(company-async-semantic--include prefix system-dirs)
-      (company-async-semantic--include prefix local-dir))))
+	 (system-dirs company-async-semantic--default-path)
+	 (local (string-match "#include \"" str))
+	 (prefix (when (string-match company-async-semantic--include-regexp str)
+		   (match-string 1 str))))
+    (if local
+	(company-async-semantic--include prefix local-dir "\"")
+      (company-async-semantic--include prefix system-dirs ">"))))
 
 (defun company-async-semantic--completions-include-p ()
   (let* ((start (line-beginning-position))
 	 (str (buffer-substring-no-properties start (point))))
-    (string-match "#include [\"<]" str)))
+    (string-match company-async-semantic--include-regexp str)))
 
 (defun company-async-semantic--update-cache (table file)
   (setq company-async-semantic--updating-cache t)
@@ -333,7 +346,7 @@
 	    (cond
 	     ;; include
 	     ((company-async-semantic--completions-include-p)
-	      (company-async-semantic--completions-include arg))
+	      (company-async-semantic--completions-include))
 	     ;; member
 	     ((company-async-semantic--completions-member-p arg)
 	      (company-async-semantic--completions-member))
@@ -342,7 +355,10 @@
     candidates))
 
 (defun company-async-semantic--grab-symbol ()
-  (company-grab-symbol-cons company-async-semantic--member-regexp 2))
+  (let ((member (company-grab-symbol-cons company-async-semantic--member-regexp 2)))
+    (if (consp member)
+	member
+      (company-grab-symbol-cons company-async-semantic--include-regexp))))
 
 (defun company-async-semantic--prefix ()
   (and company-async-semantic-enabled
