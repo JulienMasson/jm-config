@@ -139,9 +139,6 @@
 	(add-to-list 'matchs (semantic-tag-name tag) t)))
     matchs))
 
-(defun company-async-semantic--completions-scope (prefix)
-  )
-
 (defun company-async-semantic--find-tag (pos)
   (when-let ((file (file-truename (buffer-file-name)))
 	     (tags (assoc-default file company-async-semantic--cache)))
@@ -190,7 +187,6 @@
 
 (defun company-async-semantic--completions-env (prefix)
   (delq nil (append (company-async-semantic--completions-local prefix)
-		    (company-async-semantic--completions-scope prefix)
 		    (company-async-semantic--completions-system prefix))))
 
 (defun company-async-semantic--find-bound ()
