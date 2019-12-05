@@ -184,6 +184,7 @@
   (let ((files (async-semantic--read files-path))
 	(includes (async-semantic--read includes-path)))
     (setq semantic-default-c-path includes)
+    (setq semantic-c-obey-conditional-section-parsing-flag nil)
     (message "-> Default Path:\n%s\n" (mapconcat 'identity semantic-default-c-path "  "))
     (semantic-mode)
     (dolist (file files)
