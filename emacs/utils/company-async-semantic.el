@@ -274,8 +274,7 @@
 
 (defun company-async-semantic--update-cache (table file)
   (setq company-async-semantic--updating-cache t)
-  (let ((tags (when (slot-boundp table 'tags)
-		(oref table tags))))
+  (when-let ((tags (oref table tags)))
     (if (assoc file company-async-semantic--cache)
 	(setcdr (assoc file company-async-semantic--cache) tags)
       (add-to-list 'company-async-semantic--cache (cons file tags))))
