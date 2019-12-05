@@ -385,29 +385,33 @@
 
 (defun company-async-semantic-goto-definition ()
   (interactive)
-  (let* ((symbol (symbol-name (symbol-at-point)))
-	 (files company-async-semantic--files-dep)
-	 (tag (company-async-semantic--find-local symbol))
-	 (file (file-truename (buffer-file-name))))
-    (unless tag
-      ;; search over cache
-      (let (match)
-	(catch 'match
-	  (dolist (cache company-async-semantic--cache)
-	    (dolist (cache-tag (cdr cache))
-	      (when (company-async-semantic--match cache-tag symbol #'string=)
-		(setq file (car cache))
-		(setq tag cache-tag)
-		(setq match t)))))))
-    ;; jump to the match
-    (when (and file tag)
-      (let* ((range (semantic-tag-overlay tag))
-	     (start (aref range 0))
-	     (end (aref range 1)))
-	(xref-push-marker-stack)
-	(with-current-buffer (find-file file)
-	  (goto-char end)
-	  (while (re-search-backward symbol start t)))))))
+  (if company-async-semantic--updating-cache
+      (message "Please wait, updating cache ...")
+    (let* ((symbol (symbol-name (symbol-at-point)))
+	   (tag (company-async-semantic--find-local symbol))
+	   (file (file-truename (buffer-file-name))))
+      (unless tag
+	;; search over cache
+	(let (match)
+	  (catch 'match
+	    (dolist (cache company-async-semantic--cache)
+	      (when (member (car cache) company-async-semantic--files-dep)
+		(dolist (cache-tag (cdr cache))
+		  (when (company-async-semantic--match cache-tag symbol #'string=)
+		    (setq file (car cache))
+		    (setq tag cache-tag)
+		    (setq match t))))))))
+      ;; jump to the match
+      (when (and file tag)
+	(let* ((range (semantic-tag-overlay tag))
+	       (start (aref range 0))
+	       (end (aref range 1)))
+	  (xref-push-marker-stack)
+	  (with-current-buffer (find-file file)
+	    (goto-char end)
+	    (while (re-search-backward symbol start t))
+	    (unless company-async-semantic--files-dep
+	      (company-async-semantic--get-files-dep))))))))
 
 (defun company-async-semantic-clear-cache ()
   (interactive)
