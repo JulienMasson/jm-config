@@ -58,6 +58,19 @@
 
 ;;; Internal Functions
 
+(defun company-async-semantic--set-status (msg)
+  (dolist (buffer (buffer-list))
+    (with-current-buffer buffer
+      (when (memq major-mode company-async-semantic-modes)
+	(if (string-match "\\(.*\\):.*" mode-name)
+	    (let ((header (match-string 1 mode-name)))
+	      (setq mode-name (if msg
+				  (format "%s:  %s" header msg)
+				header)))
+	  (when msg
+	    (setq mode-name (format "%s:  %s" mode-name msg))))
+	(force-mode-line-update)))))
+
 (defun company-async-semantic--remote-host (file)
   (replace-regexp-in-string "\\(^/ssh:.*:\\).*" "\\1" file))
 
@@ -304,7 +317,8 @@
       (company-async-semantic--get-files-dep))
     (cl-subsetp company-async-semantic--files-dep files-dep)))
 
-(defun company-async-semantic--parse-done (files-parsed files-up-to-date)
+(defun company-async-semantic--parse-success (files-parsed files-up-to-date)
+  (company-async-semantic--set-status "Updating cache")
   (let (databases)
     (cl-macrolet ((update-cache (file)
 		  `(let* ((filename (file-name-nondirectory ,file))
@@ -327,21 +341,31 @@
 	  (update-cache file)))
       ;; free ressources
       (dolist (db databases)
-	(delete-instance (cdr db))))))
+	(delete-instance (cdr db)))))
+    (company-async-semantic--set-status nil))
+
+(defun company-async-semantic--parse-fail ()
+  (company-async-semantic--set-status nil))
 
 (defun company-async-semantic--run-parse (&optional recursive)
-  (async-semantic-buffer #'company-async-semantic--parse-done recursive
+  (async-semantic-buffer #'company-async-semantic--parse-success
+			 #'company-async-semantic--parse-fail
+			 recursive
 			 company-async-semantic--default-path))
 
-(defun company-async-semantic--need-parse ()
-  (not (assoc (file-truename (buffer-file-name))
-	      company-async-semantic--cache)))
+(defun company-async-semantic--parse-all ()
+  (company-async-semantic--run-parse t)
+  (company-async-semantic--set-status "Parse ongoing"))
+
+(defun company-async-semantic--need-parse-all ()
+  (or (not (assoc (file-truename (buffer-file-name))
+		  company-async-semantic--cache))
+      (not (company-async-semantic--check-deps))))
 
 (defun company-async-semantic--candidates (arg)
   (let (candidates)
-    (if (or (company-async-semantic--need-parse)
-	    (not (company-async-semantic--check-deps)))
-	(company-async-semantic--run-parse t)
+    (if (company-async-semantic--need-parse-all)
+	(company-async-semantic--parse-all)
       (setq candidates
 	    (cond
 	     ;; include

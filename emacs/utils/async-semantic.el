@@ -51,7 +51,9 @@
 
 (defvar async-semantic--process nil)
 
-(defvar async-semantic--cb nil)
+(defvar async-semantic--cb-success nil)
+
+(defvar async-semantic--cb-fail nil)
 
 (defvar async-semantic--files-parsed nil)
 
@@ -63,7 +65,7 @@
 
 (defun async-semantic--save (path files)
   (let ((save-silently t))
-    (with-current-buffer (find-file-noselect path)
+    (with-current-buffer (find-file-noselect path t)
       (erase-buffer)
       (mapc (lambda (file)
 	      (insert (concat file "\n")))
@@ -88,25 +90,32 @@
 			 ")")))
 
 (defun async-semantic--process-sentinel (process status)
-  (if (eq (process-exit-status process) 0)
-      (when async-semantic--cb
-	(let ((files-parsed (async-semantic--read async-semantic-files-parsed))
-	      (files-up-to-date (async-semantic--read async-semantic-files-up-to-date)))
-	  (funcall async-semantic--cb files-parsed files-up-to-date))
-	(kill-buffer (process-buffer process)))
-    (message (concat "Async Semantic Database: "
-		     (propertize "Failed" 'face 'error)))
-    (switch-to-buffer-other-window (process-buffer process)))
+  (let ((buffer (process-buffer process)))
+    (if (eq (process-exit-status process) 0)
+	(progn
+	  (when async-semantic--cb-success
+	    (let ((files-parsed (async-semantic--read async-semantic-files-parsed))
+		  (files-up-to-date (async-semantic--read async-semantic-files-up-to-date)))
+	      (funcall async-semantic--cb-success files-parsed files-up-to-date)))
+	  (kill-buffer buffer))
+      (message (concat "Async Semantic Database: "
+		       (propertize "Failed" 'face 'error)))
+      (when (buffer-live-p buffer)
+	(switch-to-buffer-other-window buffer))
+      (when async-semantic--cb-fail
+	(funcall async-semantic--cb-fail))))
   (delete-file async-semantic-files)
   (delete-file async-semantic-includes)
   (delete-file async-semantic-files-parsed)
   (delete-file async-semantic-files-up-to-date))
 
 (defun async-semantic--process-filter (process str)
-  (with-current-buffer (process-buffer process)
-    (save-excursion
-      (goto-char (point-max))
-      (insert str))))
+  (let ((buffer (process-buffer process)))
+    (when (buffer-live-p buffer)
+      (with-current-buffer buffer
+	(save-excursion
+	  (goto-char (point-max))
+	  (insert str))))))
 
 (defun async-semantic--get-cache (file)
   (let* ((dir (file-name-directory (file-truename file)))
@@ -192,9 +201,10 @@
     (async-semantic--save async-semantic-files-parsed async-semantic--files-parsed)
     (async-semantic--save async-semantic-files-up-to-date async-semantic--files-up-to-date)))
 
-(defun async-semantic (files &optional cb recursive includes)
+(defun async-semantic (files &optional success fail recursive includes)
   (unless (async-semantic-parse-running)
-    (setq async-semantic--cb cb)
+    (setq async-semantic--cb-success success)
+    (setq async-semantic--cb-fail fail)
     (async-semantic--save async-semantic-files files)
     (async-semantic--save async-semantic-includes
 			  (if includes
@@ -212,8 +222,8 @@
       (set-process-filter process 'async-semantic--process-filter)
       (set-process-sentinel process 'async-semantic--process-sentinel))))
 
-(defun async-semantic-buffer (&optional cb recursive includes)
+(defun async-semantic-buffer (&optional success fail recursive includes)
   (interactive)
-  (async-semantic (list (buffer-file-name)) cb recursive includes))
+  (async-semantic (list (buffer-file-name)) success fail recursive includes))
 
 (provide 'async-semantic)
