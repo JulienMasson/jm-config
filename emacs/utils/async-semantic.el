@@ -64,7 +64,8 @@
 ;;; Internal Functions
 
 (defun async-semantic--save (path files)
-  (let ((save-silently t))
+  (let ((save-silently t)
+	(message-log-max nil))
     (with-current-buffer (find-file-noselect path t)
       (erase-buffer)
       (mapc (lambda (file)
