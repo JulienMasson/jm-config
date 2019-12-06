@@ -56,6 +56,8 @@
 
 (defvar-local company-async-semantic--files-dep nil)
 
+(defvar-local company-async-semantic--completions nil)
+
 ;;; Internal Functions
 
 (defun company-async-semantic--set-status (msg)
@@ -197,10 +199,10 @@
 	    (company-async-semantic--get-all-local)))
 
 (defun company-async-semantic--completions-local (prefix)
-  (when-let ((vars (company-async-semantic--get-all-local)))
-    (seq-filter (lambda (var)
-		  (string-prefix-p prefix var))
-		(mapcar #'semantic-tag-name vars))))
+  (when-let ((tags (company-async-semantic--get-all-local)))
+    (seq-filter (lambda (tag)
+		  (string-prefix-p prefix (semantic-tag-name tag)))
+		tags)))
 
 (defun company-async-semantic--completions-env (prefix)
   (delq nil (append (company-async-semantic--completions-local prefix)
@@ -241,9 +243,9 @@
 				       (string= (semantic-tag-name member) token))
 				     members))
 		    (type (plist-get (semantic-tag-attributes match) :type)))
-      (mapcar #'semantic-tag-name members))))
 	  (when (listp type)
 	    (company-async-semantic--get-members (semantic-tag-name type) tokens)))
+      members)))
 
 (defun company-async-semantic--completions-member ()
   (when-let* ((start (company-async-semantic--find-bound))
@@ -365,20 +367,46 @@
       (not (company-async-semantic--check-deps))))
 
 (defun company-async-semantic--candidates (arg)
-  (let (candidates)
-    (if (company-async-semantic--need-parse-all)
-	(company-async-semantic--parse-all)
-      (setq candidates
-	    (cond
-	     ;; include
-	     ((company-async-semantic--completions-include-p)
-	      (company-async-semantic--completions-include))
-	     ;; member
-	     ((company-async-semantic--completions-member-p arg)
-	      (company-async-semantic--completions-member))
-	     ;; env: function, variables, macro ...
-	     (t (company-async-semantic--completions-env arg)))))
-    candidates))
+  (if (company-async-semantic--need-parse-all)
+      (company-async-semantic--parse-all)
+    (setq company-async-semantic--completions nil)
+    ;; include
+    (if (company-async-semantic--completions-include-p)
+	(company-async-semantic--completions-include)
+      (setq company-async-semantic--completions
+	    ;; member
+	    (if (company-async-semantic--completions-member-p arg)
+		(company-async-semantic--completions-member)
+	      ;; env: function, variables, macro ...
+	      (company-async-semantic--completions-env arg)))
+      (when company-async-semantic--completions
+	(mapcar #'semantic-tag-name company-async-semantic--completions)))))
+
+(defun company-async-semantic--annotation (arg)
+  (when-let* ((tag (seq-find (lambda (completion)
+			       (string= (semantic-tag-name completion) arg))
+			     company-async-semantic--completions))
+	      (attr (semantic-tag-attributes tag)))
+    (cond ((eq (semantic-tag-class tag) 'function) "func")
+	  ((eq (semantic-tag-class tag) 'variable)
+	   (cond ((plist-member attr :pointer)
+		  (concat "*"
+			  (let ((type (plist-get attr :type)))
+			    (if (listp type)
+				(semantic-tag-name type)
+			      type))))
+		 ((plist-member attr :constant-flag) "const")
+		 ((plist-member attr :type)
+		  (let ((type (plist-get attr :type)))
+		    (if (listp type)
+			(semantic-tag-name type)
+		      type)))
+		 (t "unknown")))
+	  ((eq (semantic-tag-class tag) 'type)
+	   (plist-get attr :type)))))
+
+(defun company-async-semantic--post-completion ()
+  (setq company-async-semantic--completions nil))
 
 (defun company-async-semantic--grab-symbol ()
   (let ((member (company-grab-symbol-cons company-async-semantic--member-regexp 2)))
@@ -480,6 +508,8 @@
     (interactive (company-begin-backend 'company-async-semantic))
     (prefix (company-async-semantic--prefix))
     (candidates (company-async-semantic--candidates arg))
+    (annotation (company-async-semantic--annotation arg))
+    (post-completion (company-async-semantic--post-completion))
     (duplicates t)))
 
 (provide 'company-async-semantic)
