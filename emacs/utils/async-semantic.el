@@ -156,6 +156,7 @@
     (setq-mode-local c-mode
   		     semantic-dependency-system-include-path
   		     semantic-default-c-path)
+    (semantic-force-refresh)
     (semanticdb-save-current-db))
   (add-to-list 'async-semantic--files-parsed file))
 
