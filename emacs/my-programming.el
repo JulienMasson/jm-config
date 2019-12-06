@@ -101,6 +101,7 @@
 ;; company mode
 (require 'company)
 (setq company-backends nil)
+(setq company-tooltip-align-annotations t)
 (global-company-mode)
 
 ;; don't message in echo area

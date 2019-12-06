@@ -156,6 +156,7 @@
    `(company-scrollbar-bg ((t (:inherit company-tooltip))))
    `(company-scrollbar-fg ((t (:inherit company-tooltip-selection))))
    `(company-tooltip ((t (:inherit company-preview))))
+   `(company-tooltip-annotation ((t (:inherit company-preview :foreground ,blue))))
    `(company-tooltip-common ((t (:inherit company-tooltip :foreground ,primary))))
    `(company-tooltip-common-selection ((t (:inherit company-tooltip-selection
 						    :foreground ,primary))))

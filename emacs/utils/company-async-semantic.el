@@ -98,14 +98,14 @@
 		 (host (company-async-semantic--remote-host path))
 		 (local-dir (replace-regexp-in-string host "" path))
 		 (program (executable-find "find")))
-	  (with-temp-buffer
-	    (process-file program nil (current-buffer) nil
-			  local-dir "-name" file)
-	    (goto-char (point-min))
-	    (unless (= (point-min) (point-max))
-	      (setq match (concat host (buffer-substring-no-properties
-					(line-beginning-position)
-					(line-end-position)))))))))
+	    (with-temp-buffer
+	      (process-file program nil (current-buffer) nil
+			    local-dir "-name" file)
+	      (goto-char (point-min))
+	      (unless (= (point-min) (point-max))
+		(setq match (concat host (buffer-substring-no-properties
+					  (line-beginning-position)
+					  (line-end-position)))))))))
       match)))
 
 (defun company-async-semantic--find-dep (include)
@@ -342,7 +342,8 @@
       ;; free ressources
       (dolist (db databases)
 	(delete-instance (cdr db)))))
-    (company-async-semantic--set-status nil))
+  (company-async-semantic--get-files-dep)
+  (company-async-semantic--set-status nil))
 
 (defun company-async-semantic--parse-fail ()
   (company-async-semantic--set-status nil))
@@ -392,9 +393,9 @@
        (or (company-async-semantic--grab-symbol) 'stop)))
 
 (defun company-async-semantic--after-save ()
-  (when (and (memq major-mode company-async-semantic-modes)
-	     (not (company-async-semantic--need-parse))
-	     (async-semantic-parse-idle))
+  (when (and (not (async-semantic-parse-running))
+	     (assoc (file-truename (buffer-file-name))
+		    company-async-semantic--cache))
     (company-async-semantic--run-parse)))
 
 (defun company-async-semantic--enable ()
