@@ -123,7 +123,7 @@
 				    tags)))
     (mapc (lambda (include)
 	    (unless (member include company-async-semantic--files-dep)
-	      (add-to-list 'company-async-semantic--files-dep include t)
+	      (push include company-async-semantic--files-dep)
 	      (company-async-semantic--get-includes-files-dep include)))
 	  (delq nil (mapcar #'company-async-semantic--find-dep includes)))))
 
@@ -153,7 +153,7 @@
   (let (matchs)
     (foreach-company-async-semantic--tag
       (when (company-async-semantic--match tag prefix #'string-prefix-p)
-	(add-to-list 'matchs (semantic-tag-name tag) t)))
+	(push tag matchs)))
     matchs))
 
 (defun company-async-semantic--find-tag (pos)
@@ -304,7 +304,7 @@
   (when-let ((tags (oref table tags)))
     (if (assoc file company-async-semantic--cache)
 	(setcdr (assoc file company-async-semantic--cache) tags)
-      (add-to-list 'company-async-semantic--cache (cons file tags))))
+      (push (cons file tags) company-async-semantic--cache)))
   (setq company-async-semantic--updating-cache nil))
 
 (defun company-async-semantic--check-deps ()
@@ -328,7 +328,7 @@
 			  table)
 		     (unless db
 		       (setq db (semanticdb-load-database cache-file))
-		       (add-to-list 'databases (cons cache-file db)))
+		       (push (cons cache-file db) databases))
 		     (setq table (seq-find (lambda (table)
 					     (string= filename (oref table ,file)))
 					   (oref db tables)))
