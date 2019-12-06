@@ -241,8 +241,9 @@
 				       (string= (semantic-tag-name member) token))
 				     members))
 		    (type (plist-get (semantic-tag-attributes match) :type)))
-	  (company-async-semantic--get-members (semantic-tag-name type) tokens))
       (mapcar #'semantic-tag-name members))))
+	  (when (listp type)
+	    (company-async-semantic--get-members (semantic-tag-name type) tokens)))
 
 (defun company-async-semantic--completions-member ()
   (when-let* ((start (company-async-semantic--find-bound))
