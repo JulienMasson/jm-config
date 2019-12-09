@@ -124,15 +124,16 @@
 				      (eq (semantic-tag-class tag) 'include))
 				    tags)))
     (mapc (lambda (include)
-	    (unless (member include company-async-semantic--files-dep)
-	      (push include company-async-semantic--files-dep)
+	    (unless (member include files-dep)
+	      (push include files-dep)
 	      (company-async-semantic--get-includes-files-dep include)))
 	  (delq nil (mapcar #'company-async-semantic--find-dep includes)))))
 
 (defun company-async-semantic--get-files-dep ()
-  (let ((file (file-truename (buffer-file-name))))
-    (setq company-async-semantic--files-dep (list file))
-    (company-async-semantic--get-includes-files-dep file)))
+  (let* ((file (file-truename (buffer-file-name)))
+	 (files-dep (list file)))
+    (company-async-semantic--get-includes-files-dep file)
+    files-dep))
 
 (defun company-async-semantic--match (tag prefix compare)
   (let ((name (semantic-tag-name tag))
@@ -309,16 +310,14 @@
       (push (cons file tags) company-async-semantic--cache)))
   (setq company-async-semantic--updating-cache nil))
 
-(defun company-async-semantic--check-deps ()
-  (let ((files-dep company-async-semantic--files-dep))
-    ;; WORKAROUND:
-    ;; When we get files dep on remote, it can be very slow.
-    ;; Since we don't want to be stuck at every call, only check
-    ;; `company-async-semantic--files-dep' for remote files.
-    (unless (and (tramp-tramp-file-p default-directory)
-		 company-async-semantic--files-dep)
-      (company-async-semantic--get-files-dep))
-    (cl-subsetp company-async-semantic--files-dep files-dep)))
+(defun company-async-semantic--new-includes ()
+  ;; WORKAROUND:
+  ;; When we get files dep on remote, it can be very slow.
+  ;; Since we don't want to be stuck at every call, only check
+  ;; if the current file visited is local.
+  (unless (tramp-tramp-file-p default-directory)
+    (not (cl-subsetp (company-async-semantic--get-files-dep)
+		     company-async-semantic--files-dep))))
 
 (defun company-async-semantic--parse-success (files-parsed files-up-to-date)
   (company-async-semantic--set-status "Updating cache")
@@ -345,26 +344,32 @@
       ;; free ressources
       (dolist (db databases)
 	(delete-instance (cdr db)))))
-  (company-async-semantic--get-files-dep)
   (company-async-semantic--set-status nil))
+
+(defun company-async-semantic--parse-all-success (files-parsed files-up-to-date)
+  (company-async-semantic--parse-success files-parsed files-up-to-date)
+  (setq company-async-semantic--files-dep (company-async-semantic--get-files-dep)))
 
 (defun company-async-semantic--parse-fail ()
   (company-async-semantic--set-status nil))
 
-(defun company-async-semantic--run-parse (&optional recursive)
+(defun company-async-semantic--run-parse ()
   (async-semantic-buffer #'company-async-semantic--parse-success
 			 #'company-async-semantic--parse-fail
-			 recursive
+			 nil
 			 company-async-semantic--default-path))
 
 (defun company-async-semantic--parse-all ()
-  (company-async-semantic--run-parse t)
+  (async-semantic-buffer #'company-async-semantic--parse-all-success
+			 #'company-async-semantic--parse-fail
+			 t
+			 company-async-semantic--default-path)
   (company-async-semantic--set-status "Parse ongoing"))
 
 (defun company-async-semantic--need-parse-all ()
   (or (not (assoc (file-truename (buffer-file-name))
 		  company-async-semantic--cache))
-      (not (company-async-semantic--check-deps))))
+      (not company-async-semantic--files-dep)))
 
 (defun company-async-semantic--candidates (arg)
   (if (company-async-semantic--need-parse-all)
@@ -425,7 +430,9 @@
   (when (and (not (async-semantic-parse-running))
 	     (assoc (file-truename (buffer-file-name))
 		    company-async-semantic--cache))
-    (company-async-semantic--run-parse)))
+    (if (company-async-semantic--new-includes)
+	(company-async-semantic--parse-all)
+      (company-async-semantic--run-parse))))
 
 (defun company-async-semantic--enable ()
   (company-async-semantic--set-default-path)
@@ -455,7 +462,7 @@
 (defun company-async-semantic-goto-definition ()
   (interactive)
   (unless company-async-semantic--files-dep
-    (company-async-semantic--get-files-dep))
+    (setq company-async-semantic--files-dep (company-async-semantic--get-files-dep)))
   (let* ((symbol (symbol-name (symbol-at-point)))
 	 (tag (company-async-semantic--find-local symbol))
 	 (file (file-truename (buffer-file-name))))
@@ -480,7 +487,8 @@
 	  (goto-char end)
 	  (while (re-search-backward symbol start t))
 	  (unless company-async-semantic--files-dep
-	    (company-async-semantic--get-files-dep)))))))
+	    (setq company-async-semantic--files-dep
+		  (company-async-semantic--get-files-dep))))))))
 
 (defun company-async-semantic-clear-cache ()
   (interactive)
