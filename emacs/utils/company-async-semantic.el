@@ -510,6 +510,6 @@
     (candidates (company-async-semantic--candidates arg))
     (annotation (company-async-semantic--annotation arg))
     (post-completion (company-async-semantic--post-completion))
-    (duplicates t)))
+    (sorted t)))
 
 (provide 'company-async-semantic)
