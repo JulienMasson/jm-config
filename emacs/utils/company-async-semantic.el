@@ -304,7 +304,8 @@
 
 (defun company-async-semantic--update-cache (table file)
   (setq company-async-semantic--updating-cache t)
-  (when-let ((tags (oref table tags)))
+  (when-let ((tags (when (slot-boundp table 'tags)
+		     (oref table tags))))
     (if (assoc file company-async-semantic--cache)
 	(setcdr (assoc file company-async-semantic--cache) tags)
       (push (cons file tags) company-async-semantic--cache)))
@@ -373,7 +374,15 @@
 
 (defun company-async-semantic--candidates (arg)
   (if (company-async-semantic--need-parse-all)
-      (company-async-semantic--parse-all)
+      ;; load saved tags even if they may be outdated,
+      ;; the next parse will update it.
+      (let* ((file (file-truename (buffer-file-name)))
+	     (default-path company-async-semantic--default-path)
+	     (includes (async-semantic-includes file default-path)))
+	(when includes
+	  (setq company-async-semantic--files-dep includes)
+	  (company-async-semantic--parse-success includes nil))
+	(company-async-semantic--parse-all))
     (setq company-async-semantic--completions nil)
     ;; include
     (if (company-async-semantic--completions-include-p)

@@ -135,18 +135,6 @@
     (delete-instance db)
     table))
 
-(defun async-semantic--includes (file)
-  (when-let* ((cur-dir (file-name-directory file))
-	      (paths (append (list cur-dir) semantic-default-c-path))
-	      (table (async-semantic--get-table file))
-	      (tags (oref table tags))
-	      (includes (seq-filter (lambda (tag)
-				      (eq (semantic-tag-class tag) 'include))
-				    tags)))
-    (delq nil (mapcar (lambda (include)
-			(locate-file (semantic-tag-name include) paths))
-		      includes))))
-
 (defun async-semantic--message (header str)
   (message "%-15s %s" header str))
 
@@ -182,10 +170,22 @@
 	   (async-semantic--message "File not found:" file))
 	  (t (async-semantic--parse-file file)))
     (when recursive
-      (dolist (include (async-semantic--includes file))
+      (dolist (include (async-semantic-includes file semantic-default-c-path))
 	(async-semantic--parse include recursive)))))
 
 ;;; External Functions
+
+(defun async-semantic-includes (file default-path)
+  (when-let* ((cur-dir (file-name-directory file))
+	      (paths (append (list cur-dir) default-path))
+	      (table (async-semantic--get-table file))
+	      (tags (oref table tags))
+	      (includes (seq-filter (lambda (tag)
+				      (eq (semantic-tag-class tag) 'include))
+				    tags)))
+    (delq nil (mapcar (lambda (include)
+			(locate-file (semantic-tag-name include) paths))
+		      includes))))
 
 (defun async-semantic-parse-running ()
   (and async-semantic--process
