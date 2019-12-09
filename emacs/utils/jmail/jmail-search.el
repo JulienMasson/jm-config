@@ -325,7 +325,10 @@
 
 (defun jmail-search--args (query thread related)
   (let ((option "find")
-	(default-args (list "--reverse" "--format=sexp" query)))
+	(default-args (list "--reverse"
+			    "--threads-ignore-leader"
+			    "--format=sexp"
+			    query)))
     (when thread
       (push "--threads" default-args))
     (when related
