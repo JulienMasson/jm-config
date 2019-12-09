@@ -52,10 +52,16 @@
 ;; gdb
 (defvar gdb-default-cmd "gdb")
 
-(defun gdb (file)
+(defun gdb (file &optional args env)
   (interactive (list (ido-read-file-name "gdb on: ")))
-  (realgud:gdb (format "%s %s" gdb-default-cmd
-		       (untramp-path file))))
+  (let ((gdb-cmd (concat gdb-default-cmd " --args "))
+	(gdb-args (delq nil (list (untramp-path file) args))))
+    (realgud:gdb (concat gdb-cmd (mapconcat 'identity gdb-args " ")))
+    (realgud-command "set print pretty on")
+    (when env
+      (mapc (lambda (var)
+	      (realgud-command (concat "set environment " var)))
+	    env))))
 
 ;; gdb attach
 (defun gdb-attach (process)
