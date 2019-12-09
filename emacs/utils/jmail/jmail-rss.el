@@ -59,7 +59,8 @@
 	     (current-buffer) nil args)
       (goto-char (point-min))
       (while (not (eobp))
-	(push (json-read) folders)
+	(when-let ((object (ignore-errors (json-read))))
+	  (push object folders))
 	(end-of-defun)))
     (mapcar (lambda (elem)
 	      (let ((mailbox (file-name-as-directory
