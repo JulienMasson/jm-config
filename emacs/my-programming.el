@@ -102,6 +102,7 @@
 (require 'company)
 (setq company-backends nil)
 (setq company-tooltip-align-annotations t)
+(setq company-tooltip-minimum-width 40)
 (global-company-mode)
 
 ;; don't message in echo area
