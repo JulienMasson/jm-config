@@ -61,6 +61,8 @@
 
 (defvar async-semantic--files-not-found nil)
 
+(defvar async-semantic--cache-databases nil)
+
 ;;; Internal Functions
 
 (defun async-semantic--save (path files)
@@ -125,6 +127,21 @@
     (when (file-exists-p cache-file)
       cache-file)))
 
+(defun async-semantic--fast-find-table (filename db)
+  (seq-find (lambda (table)
+	      (string= filename (oref table file)))
+	    (oref db tables)))
+
+(defun async-semantic--fast-get-table (file)
+  (if-let* ((filename (file-name-nondirectory file))
+	    (cache-file (async-semantic--get-cache file))
+	    (db (assoc-default cache-file async-semantic--cache-databases)))
+      (async-semantic--fast-find-table filename db)
+    (when cache-file
+      (setq db (semanticdb-load-database cache-file))
+      (push (cons cache-file db) async-semantic--cache-databases)
+      (async-semantic--fast-find-table filename db))))
+
 (defun async-semantic--get-table (file)
   (when-let* ((filename (file-name-nondirectory file))
 	      (cache-file (async-semantic--get-cache file))
@@ -134,6 +151,21 @@
 			       (oref db tables))))
     (delete-instance db)
     table))
+
+(defun async-semantic--fast-get-includes (file default-path)
+  (when-let* ((cur-dir (file-name-directory file))
+	      (paths (append (list cur-dir) default-path))
+	      (filename (file-name-nondirectory file))
+	      (cache-file (async-semantic--get-cache file))
+	      (db (assoc-default cache-file async-semantic--cache-databases))
+	      (table (async-semantic--fast-find-table filename db))
+	      (tags (oref table tags))
+	      (includes (seq-filter (lambda (tag)
+				      (eq (semantic-tag-class tag) 'include))
+				    tags)))
+    (delq nil (mapcar (lambda (include)
+			(locate-file (semantic-tag-name include) paths))
+		      includes))))
 
 (defun async-semantic--message (header str)
   (message "%-15s %s" header str))
@@ -149,7 +181,7 @@
   (add-to-list 'async-semantic--files-parsed file))
 
 (defun async-semantic--up-to-date-p (file)
-  (when-let* ((table (async-semantic--get-table file))
+  (when-let* ((table (async-semantic--fast-get-table file))
 	      (stats (file-attributes file))
 	      (curmodtime (file-attribute-modification-time stats)))
     (and (equal (oref table lastmodtime) curmodtime)
@@ -170,8 +202,12 @@
 	   (async-semantic--message "File not found:" file))
 	  (t (async-semantic--parse-file file)))
     (when recursive
-      (dolist (include (async-semantic-get-includes file semantic-default-c-path))
-	(async-semantic--parse include recursive)))))
+      (let* ((path semantic-default-c-path)
+	     (includes (if (member file async-semantic--files-up-to-date)
+			  (async-semantic--fast-get-includes file path)
+			 (async-semantic-get-includes file path))))
+	(dolist (include includes)
+	  (async-semantic--parse include recursive))))))
 
 ;;; External Functions
 
