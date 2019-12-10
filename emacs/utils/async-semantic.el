@@ -170,12 +170,12 @@
 	   (async-semantic--message "File not found:" file))
 	  (t (async-semantic--parse-file file)))
     (when recursive
-      (dolist (include (async-semantic-includes file semantic-default-c-path))
+      (dolist (include (async-semantic-get-includes file semantic-default-c-path))
 	(async-semantic--parse include recursive)))))
 
 ;;; External Functions
 
-(defun async-semantic-includes (file default-path)
+(defun async-semantic-get-includes (file default-path)
   (when-let* ((cur-dir (file-name-directory file))
 	      (paths (append (list cur-dir) default-path))
 	      (table (async-semantic--get-table file))

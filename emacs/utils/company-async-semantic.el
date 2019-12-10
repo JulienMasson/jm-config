@@ -58,6 +58,8 @@
 
 (defvar-local company-async-semantic--completions nil)
 
+(defvar-local company-async-semantic--init nil)
+
 ;;; Internal Functions
 
 (defun company-async-semantic--set-status (msg)
@@ -367,34 +369,33 @@
 			 company-async-semantic--default-path)
   (company-async-semantic--set-status "Parse ongoing"))
 
-(defun company-async-semantic--need-parse-all ()
-  (or (not (assoc (file-truename (buffer-file-name))
-		  company-async-semantic--cache))
-      (not company-async-semantic--files-dep)))
+(defun company-async-semantic--load-local ()
+  (let* ((file (file-truename (buffer-file-name)))
+	 (default-path company-async-semantic--default-path)
+	 (includes (async-semantic-get-includes file default-path))
+	 (files-parsed (append (list file) includes)))
+    (when includes
+      (setq company-async-semantic--files-dep includes)
+      (company-async-semantic--parse-success files-parsed nil))))
 
 (defun company-async-semantic--candidates (arg)
-  (if (company-async-semantic--need-parse-all)
-      ;; load saved tags even if they may be outdated,
-      ;; the next parse will update it.
-      (let* ((file (file-truename (buffer-file-name)))
-	     (default-path company-async-semantic--default-path)
-	     (includes (async-semantic-includes file default-path)))
-	(when includes
-	  (setq company-async-semantic--files-dep includes)
-	  (company-async-semantic--parse-success includes nil))
-	(company-async-semantic--parse-all))
-    (setq company-async-semantic--completions nil)
-    ;; include
-    (if (company-async-semantic--completions-include-p)
-	(company-async-semantic--completions-include)
-      (setq company-async-semantic--completions
-	    ;; member
-	    (if (company-async-semantic--completions-member-p arg)
-		(company-async-semantic--completions-member)
-	      ;; env: function, variables, macro ...
-	      (company-async-semantic--completions-env arg)))
-      (when company-async-semantic--completions
-	(mapcar #'semantic-tag-name company-async-semantic--completions)))))
+  ;; load local cache if present and parse all environment
+  (unless company-async-semantic--init
+    (company-async-semantic--load-local)
+    (company-async-semantic--parse-all)
+    (setq company-async-semantic--init t))
+  (setq company-async-semantic--completions nil)
+  ;; include
+  (if (company-async-semantic--completions-include-p)
+      (company-async-semantic--completions-include)
+    (setq company-async-semantic--completions
+	  ;; member
+	  (if (company-async-semantic--completions-member-p arg)
+	      (company-async-semantic--completions-member)
+	    ;; env: function, variables, macro ...
+	    (company-async-semantic--completions-env arg)))
+    (when company-async-semantic--completions
+      (mapcar #'semantic-tag-name company-async-semantic--completions))))
 
 (defun company-async-semantic--annotation (arg)
   (when-let* ((tag (seq-find (lambda (completion)
