@@ -52,6 +52,8 @@
 
 (defvar company-async-semantic--updating-cache nil)
 
+(defvar company-async-semantic--updating-buffer nil)
+
 (defvar-local company-async-semantic--default-path nil)
 
 (defvar-local company-async-semantic--files-dep nil)
@@ -351,10 +353,14 @@
 
 (defun company-async-semantic--parse-all-success (files-parsed files-up-to-date)
   (company-async-semantic--parse-success files-parsed files-up-to-date)
-  (setq company-async-semantic--files-dep (company-async-semantic--get-files-dep)))
+  (when (buffer-live-p company-async-semantic--updating-buffer)
+    (with-current-buffer company-async-semantic--updating-buffer
+      (setq company-async-semantic--files-dep (company-async-semantic--get-files-dep))))
+  (setq company-async-semantic--updating-buffer nil))
 
 (defun company-async-semantic--parse-fail ()
-  (company-async-semantic--set-status nil))
+  (company-async-semantic--set-status nil)
+  (setq company-async-semantic--updating-buffer nil))
 
 (defun company-async-semantic--run-parse ()
   (async-semantic-buffer #'company-async-semantic--parse-success
@@ -367,6 +373,7 @@
 			 #'company-async-semantic--parse-fail
 			 t
 			 company-async-semantic--default-path)
+  (setq company-async-semantic--updating-buffer (current-buffer))
   (company-async-semantic--set-status "Parse ongoing"))
 
 (defun company-async-semantic--load-local ()
