@@ -65,6 +65,28 @@
 
 ;;; Internal Functions
 
+(defun async-semantic--remote-host (file)
+  (replace-regexp-in-string "\\(^/ssh:.*:\\).*" "\\1" file))
+
+(defun async-semantic--remote-locate-file (file paths)
+  (let (match)
+    (catch 'match
+      (dolist (path paths)
+	(when (file-exists-p path)
+	  (let* ((default-directory path)
+		 (host (async-semantic--remote-host path))
+		 (local-dir (replace-regexp-in-string host "" path))
+		 (program (executable-find "find")))
+	    (with-temp-buffer
+	      (process-file program nil (current-buffer) nil
+			    local-dir "-name" file)
+	      (goto-char (point-min))
+	      (unless (= (point-min) (point-max))
+		(setq match (concat host (buffer-substring-no-properties
+					  (line-beginning-position)
+					  (line-end-position)))))))))
+      match)))
+
 (defun async-semantic--save (path files)
   (let ((save-silently t)
 	(message-log-max nil))
@@ -211,6 +233,13 @@
 
 ;;; External Functions
 
+(defun async-semantic-locate-file (file paths)
+  (when-let* ((default-dir (expand-file-name default-directory))
+	      (default-paths (append (list default-dir) paths)))
+    (if (tramp-tramp-file-p default-dir)
+	(async-semantic--remote-locate-file file default-paths)
+      (locate-file file default-paths))))
+
 (defun async-semantic-get-includes (file default-path)
   (when-let* ((cur-dir (file-name-directory file))
 	      (paths (append (list cur-dir) default-path))
@@ -220,7 +249,8 @@
 				      (eq (semantic-tag-class tag) 'include))
 				    tags)))
     (delq nil (mapcar (lambda (include)
-			(locate-file (semantic-tag-name include) paths))
+			(async-semantic-locate-file (semantic-tag-name include)
+						    paths))
 		      includes))))
 
 (defun async-semantic-parse-running ()
