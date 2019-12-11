@@ -283,15 +283,6 @@
       (push (cons file tags) company-async-semantic--cache)))
   (setq company-async-semantic--updating-cache nil))
 
-(defun company-async-semantic--new-includes ()
-  ;; WORKAROUND:
-  ;; When we get files dep on remote, it can be very slow.
-  ;; Since we don't want to be stuck at every call, only check
-  ;; if the current file visited is local.
-  (unless (tramp-tramp-file-p default-directory)
-    (not (cl-subsetp (company-async-semantic--get-files-dep)
-		     company-async-semantic--files-dep))))
-
 (defun company-async-semantic--parse-success (files-parsed files-up-to-date)
   (company-async-semantic--set-status "Updating cache")
   (let (databases)
@@ -323,18 +314,38 @@
   (company-async-semantic--parse-success files-parsed files-up-to-date)
   (when (buffer-live-p company-async-semantic--updating-buffer)
     (with-current-buffer company-async-semantic--updating-buffer
-      (setq company-async-semantic--files-dep (company-async-semantic--get-files-dep))))
+      (setq company-async-semantic--files-dep (append files-parsed files-up-to-date))))
   (setq company-async-semantic--updating-buffer nil))
+
+(defun company-async-semantic--parse-current-success (files-parsed files-up-to-date)
+  (company-async-semantic--parse-success files-parsed files-up-to-date)
+  (let (need-parse-all)
+    (when (buffer-live-p company-async-semantic--updating-buffer)
+      (with-current-buffer company-async-semantic--updating-buffer
+	;; FIXME:
+	;; When we get files dep on remote, it can be very slow.
+	;; Since we don't want to be stuck at every call, we only
+	;; check new includes for local files.
+	(unless (tramp-tramp-file-p default-directory)
+	  (let ((last-files-dep company-async-semantic--files-dep)
+		(cur-files-dep (company-async-semantic--get-files-dep)))
+	    (setq company-async-semantic--files-dep cur-files-dep)
+	    (when (cl-set-difference cur-files-dep last-files-dep :test #'string=)
+	      (setq need-parse-all t))))))
+    (setq company-async-semantic--updating-buffer nil)
+    (when need-parse-all
+      (setq async-semantic-cb-parsing-done #'company-async-semantic--parse-all))))
 
 (defun company-async-semantic--parse-fail ()
   (company-async-semantic--set-status nil)
   (setq company-async-semantic--updating-buffer nil))
 
-(defun company-async-semantic--run-parse ()
-  (async-semantic-buffer #'company-async-semantic--parse-success
+(defun company-async-semantic--parse-current ()
+  (async-semantic-buffer #'company-async-semantic--parse-current-success
 			 #'company-async-semantic--parse-fail
 			 nil
-			 company-async-semantic--default-path))
+			 company-async-semantic--default-path)
+  (setq company-async-semantic--updating-buffer (current-buffer)))
 
 (defun company-async-semantic--parse-all ()
   (async-semantic-buffer #'company-async-semantic--parse-all-success
@@ -346,7 +357,8 @@
 
 (defun company-async-semantic--load-local ()
   (let* ((file (file-truename (buffer-file-name)))
-	 (default-path company-async-semantic--default-path)
+	 (default-path (unless (tramp-tramp-file-p file)
+			 company-async-semantic--default-path))
 	 (includes (async-semantic-get-includes file default-path))
 	 (files-parsed (append (list file) includes)))
     (when includes
@@ -415,9 +427,7 @@
   (when (and (not (async-semantic-parse-running))
 	     (assoc (file-truename (buffer-file-name))
 		    company-async-semantic--cache))
-    (if (company-async-semantic--new-includes)
-	(company-async-semantic--parse-all)
-      (company-async-semantic--run-parse))))
+      (company-async-semantic--parse-current)))
 
 (defun company-async-semantic--enable ()
   (company-async-semantic--set-default-path)

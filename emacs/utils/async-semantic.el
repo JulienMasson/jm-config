@@ -25,6 +25,7 @@
 (require 'semantic)
 (require 'semantic/db-file)
 (require 'subr-x)
+(require 'tramp)
 
 ;;; Customization
 
@@ -47,6 +48,8 @@
 (defconst async-semantic-files-up-to-date (concat semanticdb-default-save-directory
 						  "/.async-semantic-files-up-to-date"))
 
+(defvar async-semantic-cb-parsing-done nil)
+
 ;;; Internal Variables
 
 (defvar async-semantic--process nil)
@@ -63,23 +66,28 @@
 
 (defvar async-semantic--cache-databases nil)
 
+(defvar async-semantic--cache-find nil)
+
 ;;; Internal Functions
 
 (defun async-semantic--remote-host (file)
   (replace-regexp-in-string "\\(^/ssh:.*:\\).*" "\\1" file))
 
 (defun async-semantic--remote-locate-file (file paths)
-  (let (match)
+  (let* ((host (async-semantic--remote-host (expand-file-name default-directory)))
+	 (program (executable-find "find" t))
+	 (sub-dir (file-name-directory file))
+	 (filename (file-name-nondirectory file))
+	 match cur-dir)
     (catch 'match
       (dolist (path paths)
-	(when (file-exists-p path)
-	  (let* ((default-directory path)
-		 (host (async-semantic--remote-host path))
-		 (local-dir (replace-regexp-in-string host "" path))
-		 (program (executable-find "find")))
+	(setq cur-dir (concat path sub-dir))
+	(when (file-exists-p cur-dir)
+	  (let* ((default-directory cur-dir)
+		 (local-dir (replace-regexp-in-string host "" cur-dir)))
 	    (with-temp-buffer
 	      (process-file program nil (current-buffer) nil
-			    local-dir "-name" file)
+			    local-dir "-name" filename)
 	      (goto-char (point-min))
 	      (unless (= (point-min) (point-max))
 		(setq match (concat host (buffer-substring-no-properties
@@ -132,7 +140,10 @@
   (delete-file async-semantic-files)
   (delete-file async-semantic-includes)
   (delete-file async-semantic-files-parsed)
-  (delete-file async-semantic-files-up-to-date))
+  (delete-file async-semantic-files-up-to-date)
+  (when async-semantic-cb-parsing-done
+    (funcall async-semantic-cb-parsing-done)
+    (setq async-semantic-cb-parsing-done nil)))
 
 (defun async-semantic--process-filter (process str)
   (let ((buffer (process-buffer process)))
@@ -174,6 +185,52 @@
     (delete-instance db)
     table))
 
+
+(defun async-semantic--fill-local-cache-find (path)
+  (let* ((default-directory "/")
+	 (program (executable-find "find"))
+	 results)
+    (setq results (with-temp-buffer
+		    (process-file program nil (current-buffer) nil
+				  path "-name" "*.h")
+		    (buffer-string)))
+    (when results
+      (setq results (split-string results "\n"))
+      (push (cons path results) async-semantic--cache-find)
+      results)))
+
+(defun async-semantic--fill-remote-cache-find (path)
+  (let* ((host (async-semantic--remote-host path))
+	 (default-directory host)
+	 (regexp (concat "^" host))
+	 (local-dir (replace-regexp-in-string regexp "" path))
+	 (program (executable-find "find" t))
+	 results)
+    (setq results (with-temp-buffer
+		    (process-file program nil (current-buffer) nil
+				  local-dir "-name" "*.h")
+		    (buffer-string)))
+    (when results
+      (setq results (mapcar (lambda (file)
+			      (concat host file))
+			  (split-string results "\n")))
+      (push (cons path results) async-semantic--cache-find)
+      results)))
+
+(defun async-semantic--fast-locate-file (file paths)
+  (let (match)
+    (catch 'match
+      (dolist (path paths)
+	(let ((headers (assoc-default path async-semantic--cache-find)))
+	  (unless headers
+	    (setq headers (if (tramp-tramp-file-p path)
+			      (async-semantic--fill-remote-cache-find path)
+			    (async-semantic--fill-local-cache-find path))))
+	  (dolist (header headers)
+	    (when (string= (concat path file) header)
+	      (setq match header))))))
+    match))
+
 (defun async-semantic--fast-get-includes (file default-path)
   (when-let* ((cur-dir (file-name-directory file))
 	      (paths (append (list cur-dir) default-path))
@@ -185,9 +242,12 @@
 	      (includes (seq-filter (lambda (tag)
 				      (eq (semantic-tag-class tag) 'include))
 				    tags)))
-    (delq nil (mapcar (lambda (include)
-			(locate-file (semantic-tag-name include) paths))
-		      includes))))
+    (let (results)
+      (dolist (include includes)
+	(when-let* ((file (semantic-tag-name include))
+		    (result (async-semantic--fast-locate-file file paths)))
+	  (push result results)))
+      results)))
 
 (defun async-semantic--message (header str)
   (message "%-15s %s" header str))
