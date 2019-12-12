@@ -454,10 +454,11 @@
        (or (company-async-semantic--grab-symbol) 'stop)))
 
 (defun company-async-semantic--after-save ()
-  (when (and (not (async-semantic-parse-running))
-	     (assoc (file-truename (buffer-file-name))
-		    company-async-semantic--cache))
-      (company-async-semantic--parse-current)))
+  (unless (async-semantic-parse-running)
+    (if (assoc (file-truename (buffer-file-name))
+	       company-async-semantic--cache)
+	(company-async-semantic--parse-current)
+      (company-async-semantic--parse-all))))
 
 (defun company-async-semantic--enable ()
   (company-async-semantic--set-default-path)
