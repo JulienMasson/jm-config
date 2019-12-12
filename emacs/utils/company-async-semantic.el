@@ -356,19 +356,35 @@
   (setq company-async-semantic--updating-buffer nil))
 
 (defun company-async-semantic--parse-current ()
+  (setq company-async-semantic--updating-buffer (current-buffer))
   (async-semantic-buffer #'company-async-semantic--parse-current-success
 			 #'company-async-semantic--parse-fail
 			 nil
-			 company-async-semantic--default-path)
-  (setq company-async-semantic--updating-buffer (current-buffer)))
+			 company-async-semantic--default-path))
 
 (defun company-async-semantic--parse-all ()
+  (setq company-async-semantic--updating-buffer (current-buffer))
   (async-semantic-buffer #'company-async-semantic--parse-all-success
 			 #'company-async-semantic--parse-fail
 			 t
 			 company-async-semantic--default-path)
-  (setq company-async-semantic--updating-buffer (current-buffer))
   (company-async-semantic--set-status "Parse ongoing"))
+
+(defun company-async-semantic--parse-init-success (files-parsed files-up-to-date)
+  (company-async-semantic--parse-success files-parsed files-up-to-date)
+  (when (buffer-live-p company-async-semantic--updating-buffer)
+    (with-current-buffer company-async-semantic--updating-buffer
+      (unless company-async-semantic--files-dep
+	(setq company-async-semantic--files-dep files-parsed))))
+  (setq company-async-semantic--updating-buffer nil)
+  (setq async-semantic-cb-parsing-done #'company-async-semantic--parse-all))
+
+(defun company-async-semantic--parse-init ()
+  (setq company-async-semantic--updating-buffer (current-buffer))
+  (async-semantic-buffer #'company-async-semantic--parse-init-success
+			 #'company-async-semantic--parse-fail
+			 nil
+			 company-async-semantic--default-path))
 
 (defun company-async-semantic--load-local ()
   (let* ((file (file-truename (buffer-file-name)))
@@ -384,7 +400,7 @@
   ;; load local cache if present and parse all environment
   (unless company-async-semantic--init
     (company-async-semantic--load-local)
-    (company-async-semantic--parse-all)
+    (company-async-semantic--parse-init)
     (setq company-async-semantic--init t))
   (setq company-async-semantic--completions nil)
   ;; include

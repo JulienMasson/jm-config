@@ -70,11 +70,8 @@
 
 ;;; Internal Functions
 
-(defun async-semantic--remote-host (file)
-  (replace-regexp-in-string "\\(^/ssh:.*:\\).*" "\\1" file))
-
 (defun async-semantic--remote-locate-file (file paths)
-  (let* ((host (async-semantic--remote-host (expand-file-name default-directory)))
+  (let* ((host (async-semantic-remote-host (expand-file-name default-directory)))
 	 (program (executable-find "find" t))
 	 (sub-dir (file-name-directory file))
 	 (filename (file-name-nondirectory file))
@@ -200,7 +197,7 @@
       results)))
 
 (defun async-semantic--fill-remote-cache-find (path)
-  (let* ((host (async-semantic--remote-host path))
+  (let* ((host (async-semantic-remote-host path))
 	 (default-directory host)
 	 (regexp (concat "^" host))
 	 (local-dir (replace-regexp-in-string regexp "" path))
@@ -292,6 +289,9 @@
 	  (async-semantic--parse include recursive))))))
 
 ;;; External Functions
+
+(defun async-semantic-remote-host (file)
+  (replace-regexp-in-string "\\(^/ssh:.*:\\).*" "\\1" file))
 
 (defun async-semantic-locate-file (file paths)
   (when-let* ((default-dir (expand-file-name default-directory))
