@@ -64,6 +64,21 @@
 
 ;;; Internal Functions
 
+(defun company-async-semantic--set-default-path ()
+  (if-let* ((local-dir (expand-file-name default-directory))
+	    (match (seq-find (lambda (dir)
+			       (string-prefix-p dir local-dir))
+			     (mapcar #'car company-async-semantic-includes))))
+      (setq company-async-semantic--default-path
+	    (assoc-default match company-async-semantic-includes))
+    (if (tramp-tramp-file-p local-dir)
+	(setq company-async-semantic--default-path
+	      (let ((host (async-semantic-remote-host local-dir)))
+		(mapcar (lambda (include)
+			  (concat host include))
+			async-semantic-default-path)))
+      (setq company-async-semantic--default-path async-semantic-default-path))))
+
 (defun company-async-semantic--set-status (msg)
   (dolist (buffer (buffer-list))
     (with-current-buffer buffer
