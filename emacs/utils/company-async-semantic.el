@@ -299,7 +299,6 @@
   (setq company-async-semantic--updating-cache nil))
 
 (defun company-async-semantic--parse-success (files-parsed files-up-to-date)
-  (company-async-semantic--set-status "Updating cache")
   (let (databases)
     (cl-macrolet ((update-cache (file)
 		  `(let* ((filename (file-name-nondirectory ,file))
@@ -322,15 +321,15 @@
 	  (update-cache file)))
       ;; free ressources
       (dolist (db databases)
-	(delete-instance (cdr db)))))
-  (company-async-semantic--set-status nil))
+	(delete-instance (cdr db))))))
 
 (defun company-async-semantic--parse-all-success (files-parsed files-up-to-date)
   (company-async-semantic--parse-success files-parsed files-up-to-date)
   (when (buffer-live-p company-async-semantic--updating-buffer)
     (with-current-buffer company-async-semantic--updating-buffer
       (setq company-async-semantic--files-dep (append files-parsed files-up-to-date))))
-  (setq company-async-semantic--updating-buffer nil))
+  (setq company-async-semantic--updating-buffer nil)
+  (company-async-semantic--set-status nil))
 
 (defun company-async-semantic--parse-current-success (files-parsed files-up-to-date)
   (company-async-semantic--parse-success files-parsed files-up-to-date)
