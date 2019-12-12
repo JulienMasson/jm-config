@@ -401,18 +401,20 @@
     (company-async-semantic--load-local)
     (company-async-semantic--parse-init)
     (setq company-async-semantic--init t))
-  (setq company-async-semantic--completions nil)
-  ;; include
-  (if (company-async-semantic--completions-include-p)
-      (company-async-semantic--completions-include)
-    (setq company-async-semantic--completions
-	  ;; member
-	  (if (company-async-semantic--completions-member-p arg)
-	      (company-async-semantic--completions-member)
-	    ;; env: function, variables, macro ...
-	    (company-async-semantic--completions-env arg)))
-    (when company-async-semantic--completions
-      (mapcar #'semantic-tag-name company-async-semantic--completions))))
+  ;; search over tags from files dependencies
+  (when company-async-semantic--files-dep
+    (setq company-async-semantic--completions nil)
+    ;; include
+    (if (company-async-semantic--completions-include-p)
+	(company-async-semantic--completions-include)
+      (setq company-async-semantic--completions
+	    ;; member
+	    (if (company-async-semantic--completions-member-p arg)
+		(company-async-semantic--completions-member)
+	      ;; env: function, variables, macro ...
+	      (company-async-semantic--completions-env arg)))
+      (when company-async-semantic--completions
+	(mapcar #'semantic-tag-name company-async-semantic--completions)))))
 
 (defun company-async-semantic--annotation (arg)
   (when-let* ((tag (seq-find (lambda (completion)
