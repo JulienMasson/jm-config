@@ -520,6 +520,11 @@
 	    (setq company-async-semantic--files-dep
 		  (company-async-semantic--get-files-dep))))))))
 
+(defun company-async-semantic-add-path (dir)
+  (interactive "DAdd include path: ")
+  (push (file-truename dir) company-async-semantic--default-path)
+  (company-async-semantic--parse-all))
+
 (defun company-async-semantic-clear-cache ()
   (interactive)
   (setq company-async-semantic--cache nil))
