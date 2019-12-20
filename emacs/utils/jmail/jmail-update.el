@@ -60,13 +60,14 @@
 
 (defmacro when-jmail-update-process-success (process &rest body)
   (declare (indent 2))
-  `(if (and (zerop (process-exit-status ,process))
-  	    (buffer-live-p (process-buffer ,process)))
-       (progn ,@body)
-     (if (eq (process-status ,process) 'exit)
-	 (jmail-funcall jmail-update--error-cb)
-       (kill-buffer (process-buffer process)))
-     (jmail-update--reset-env)))
+  `(let ((default-directory jmail-top-maildir))
+     (if (and (zerop (process-exit-status ,process))
+  	      (buffer-live-p (process-buffer ,process)))
+	 (progn ,@body)
+       (if (eq (process-status ,process) 'exit)
+	   (jmail-funcall jmail-update--error-cb)
+	 (kill-buffer (process-buffer process)))
+       (jmail-update--reset-env))))
 
 ;; index
 (defun jmail-update--index-process-sentinel (process status)
