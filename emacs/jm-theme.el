@@ -194,6 +194,10 @@
    `(cscope-separator-face ((t (:inherit font-lock-variable-name-face
 					 :weight bold))))
 
+;;;; cperl
+   `(cperl-array-face ((t (:inherit font-lock-variable-name-face))))
+   `(cperl-hash-face ((t (:inherit font-lock-variable-name-face))))
+
 ;;;;; message-mode
    `(message-cited-text ((t (:inherit font-lock-builtin-face))))
    `(message-header-bcc ((t (:inherit font-lock-variable-name-face))))
