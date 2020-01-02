@@ -246,7 +246,7 @@
 
 (defun async-dired--count-command (files)
   (format "ls -fR %s | wc -l"
-	  (mapconcat 'identity files " ")))
+	  (mapconcat 'shell-quote-argument files " ")))
 
 (defun async-dired--count-files (marks)
   (when-let* ((dired-buffer (current-buffer))
