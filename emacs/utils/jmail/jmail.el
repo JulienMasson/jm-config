@@ -35,6 +35,13 @@
   "Mail reader for Emacs."
   :group 'mail)
 
+;;; Mail User Agent
+(define-mail-user-agent 'jmail-user-agent
+  'jmail-compose
+  'message-send-and-exit
+  'message-kill-buffer
+  'message-send-hook)
+
 ;;; Mode
 
 (defvar jmail-mode-map

@@ -44,6 +44,9 @@
 ;; jmail
 (require 'jmail)
 
+;; set Mail User Agent
+(setq mail-user-agent 'jmail-user-agent)
+
 ;; set top maildir
 (setq jmail-top-maildir "~/.cache/mails")
 
