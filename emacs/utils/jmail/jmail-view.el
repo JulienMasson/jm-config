@@ -246,8 +246,6 @@
 	  (plain-text (plist-get jmail-view--data :body-txt))
 	  (in-reply-to (plist-get jmail-view--data :in-reply-to)))
      (message-pop-to-buffer (message-buffer-name "reply" to))
-     (jmail-compose-mode)
-     (jmail-compose-set-extra-arguments (car account) from-email)
      (message-setup `((From . ,from)
 		      (To . ,to)
 		      (Cc . ,cc)
@@ -257,6 +255,10 @@
      (message-hide-headers)
      (when plain-text
        (jmail-view--insert-reply-text from plain-text))
+     (jmail-compose-mode)
+     (jmail-company-setup)
+     (jmail-compose-setup-send-mail)
+     (jmail-compose-set-extra-arguments (car account) from-email)
      (message-goto-body))))
 
 (defun jmail-view-save-attachments (attachments outdir)

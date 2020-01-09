@@ -36,11 +36,14 @@
 
 (define-derived-mode jmail-compose-mode message-mode
   "jmail compose"
-  (setq-local font-lock-defaults '(jmail-font-lock t))
-  (setq-local send-mail-function 'message-send-mail-with-sendmail)
-  (setq-local message-send-mail-function 'message-send-mail-with-sendmail)
-  (setq-local sendmail-program (jmail-find-program "msmtp"))
-  (jmail-company-setup))
+  (setq-local font-lock-defaults '(jmail-font-lock t)))
+
+;;; Customization
+
+(defcustom jmail-compose-hook nil
+  "Functions called when composing"
+  :type 'hook
+  :group 'jmail)
 
 ;;; Internal Functions
 
@@ -60,6 +63,11 @@
 		    (concat "--account=" account)
 		    (concat "--user=" email))))
 
+(defun jmail-compose-setup-send-mail ()
+  (setq-local send-mail-function 'message-send-mail-with-sendmail)
+  (setq-local message-send-mail-function 'message-send-mail-with-sendmail)
+  (setq-local sendmail-program (jmail-find-program "msmtp")))
+
 (defun jmail-compose (account)
   (interactive (list (completing-read "Compose with: "
 				      (jmail-compose--account-list))))
@@ -68,14 +76,17 @@
 	 (from-email (cdr from))
 	 (buffer (message-buffer-name "mail")))
     (with-current-buffer (get-buffer-create buffer)
-      (jmail-compose-mode)
-      (jmail-compose-set-extra-arguments account from-email)
       (message-setup `((From . ,(jmail-make-address-str from))
 		       (To . "")
 		       (Subject . "")))
       (message-sort-headers)
       (message-hide-headers)
       (set-buffer-modified-p nil)
+      (jmail-compose-mode)
+      (run-hooks 'jmail-compose-hook)
+      (jmail-company-setup)
+      (jmail-compose-setup-send-mail)
+      (jmail-compose-set-extra-arguments account from-email)
       (message-goto-to)
       (jmail-switch-to-buffer (current-buffer)))))
 

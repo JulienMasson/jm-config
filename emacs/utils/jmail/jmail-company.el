@@ -61,7 +61,7 @@
   (interactive (list 'interactive))
   (cl-case command
     (interactive (company-begin-backend 'jmail-company))
-    (prefix (and (derived-mode-p 'message-mode)
+    (prefix (and (derived-mode-p 'message-mode 'org-msg-edit-mode)
 		 (looking-back jmail-company--address-fields-regexp
 			       (line-beginning-position))
 		 (company-grab "[:,][ \t]*\\(.*\\)" 1

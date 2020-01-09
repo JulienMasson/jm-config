@@ -27,6 +27,7 @@
 (require 'jmail-compose)
 (require 'jmail-count)
 (require 'jmail-nntp)
+(require 'jmail-org-msg)
 (require 'jmail-search)
 (require 'jmail-update)
 (require 'jmail-utils)
