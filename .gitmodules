@@ -223,3 +223,6 @@
 [submodule "emacs/modules/meson-mode"]
 	path = emacs/modules/meson-mode
 	url = https://github.com/wentasah/meson-mode.git
+[submodule "emacs/modules/eaf"]
+	path = emacs/modules/eaf
+	url = https://github.com/manateelazycat/emacs-application-framework.git
