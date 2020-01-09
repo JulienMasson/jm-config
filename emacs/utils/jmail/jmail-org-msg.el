@@ -23,6 +23,7 @@
 
 ;;; Code:
 
+(require 'eaf)
 (require 'jmail-compose)
 (require 'org-msg)
 
@@ -41,7 +42,8 @@
 
 (defun jmail-org-msg--set-keymap ()
   (define-key org-msg-edit-mode-map (kbd "C-c a") 'jmail-org-msg-attach-dired-files)
-  (define-key org-msg-edit-mode-map (kbd "C-c C-h") 'jmail-org-msg-toggle-infos))
+  (define-key org-msg-edit-mode-map (kbd "C-c C-h") 'jmail-org-msg-toggle-infos)
+  (define-key org-msg-edit-mode-map [remap org-export-dispatch] 'jmail-org-msg-preview))
 
 (defun jmail-org-msg--range (str-start str-end)
   (let (start end)
@@ -87,44 +89,105 @@
   (when-let ((options-range (jmail-org-msg--options-range)))
     (goto-char (cadr options-range))))
 
+(defun jmail-org-msg--compose-htmlp ()
+  (or (org-msg-article-htmlp-jmail) ;; reply
+      (not (message-fetch-field "To")))) ;; new message
+
 (defun jmail-org-msg--compose ()
-  ;; clean-up body
-  (save-excursion
-    (message-goto-body)
-    (delete-region (point) (point-max)))
-  ;; setup body
-  (org-msg-post-setup)
-  (jmail-org-msg--hide-infos)
-  (jmail-org-msg--goto-body)
-  (insert "\n\n\n\n")
-  (set-buffer-modified-p nil)
-  (jmail-org-msg--set-keymap))
+  (when (jmail-org-msg--compose-htmlp)
+    ;; clean-up body
+    (save-excursion
+      (message-goto-body)
+      (delete-region (point) (point-max)))
+    ;; setup body
+    (org-msg-post-setup)
+    (jmail-org-msg--hide-infos)
+    (jmail-org-msg--goto-body)
+    (insert "\n\n\n\n")
+    (set-buffer-modified-p nil)
+    (jmail-org-msg--set-keymap)))
 
 ;;; External Functions
 
+(defun jmail-org-msg-preview ()
+  (interactive)
+  (let ((file (make-temp-file "org-msg" nil ".html"))
+	(mail (org-msg-build)))
+    (with-temp-file file
+      (insert (org-msg-xml-to-str mail)))
+    (eaf-open file "browser" "temp_html_file")))
+
 (defun jmail-org-msg-attach-dired-files ()
+  "Attach marked dired files"
   (interactive)
   (when-let ((files (dired-get-all-marked)))
     (mapc #'org-msg-attach-attach files)))
 
 (defun jmail-org-msg-toggle-infos ()
+  "Toggle infos (options, signature ...) displayed in the body"
   (interactive)
   (if jmail-org-msg--infos-hidden
       (jmail-org-msg--show-infos)
     (jmail-org-msg--hide-infos)))
 
+(defun org-msg-save-article-for-reply-jmail ()
+  "Export the currently visited jmail article as HTML."
+  (with-jmail-view-buffer
+   (when-let* ((html (plist-get jmail-view--data :body-html))
+	       (message-id (plist-get jmail-view--data :message-id))
+	       (file (concat (temporary-file-directory) message-id)))
+     (cl-flet* ((mails2str (l)
+		  (mapconcat (lambda (m)
+			       (format "%S &lt;%s&gt;" (car m) (cdr m)))
+			     l ", "))
+		(field2str (f)
+		  (when-let* ((str (message-fetch-field (car f)))
+			      (value (funcall (cdr f) str)))
+		    (format "%s: %s<br>\n" (capitalize (car f) value)))))
+	(with-temp-file file
+	  (save-excursion
+	    (insert html)
+	    (quoted-printable-decode-region (point-min) (point-max)))
+	  ;; Remove everything before html tag
+	  (save-excursion
+	    (if (re-search-forward "^<html\\(.*?\\)>" nil t)
+		(delete-region (point-min) (match-beginning 0))
+	      ;; Handle malformed HTML
+	      (insert "<html><body>")
+	      (goto-char (point-max))
+	      (insert "</body></html>")))
+	  ;; Insert reply header after body tag
+	  (when (re-search-forward "<body\\(.*?\\)>" nil t)
+	    (goto-char (match-end 0))
+	    (insert "<div align=\"left\">\n"
+		    (mapconcat #'field2str
+			       `(("From"    . ,#'mails2str)
+				 ("Subject" . identity)
+				 ("To"      . ,#'mails2str)
+				 ("Cc"      . ,#'mails2str)
+				 ("Date"    . message-make-date))
+			       "")
+		    "</div>\n<hr>\n")))
+	(list file)))))
+
+(defun org-msg-article-htmlp-jmail ()
+  "Return t if the current jmail article is HTML article."
+  (with-jmail-view-buffer jmail-view--html-view))
+
 (defun org-msg-mode-jmail ()
   "Setup the hook for jmail mail user agent."
   (if org-msg-mode
-      (add-hook 'jmail-compose-hook 'jmail-org-msg--compose)
-    (remove-hook 'jmail-compose-hook 'jmail-org-msg--compose)))
+      (add-hook 'jmail-compose-mode-hook 'jmail-org-msg--compose)
+    (remove-hook 'jmail-compose-mode-hook 'jmail-org-msg--compose)))
 
 (defun jmail-org-msg-enable ()
+  "Enable `org-msg-mode' for jmail"
   (interactive)
   (add-to-list 'org-msg-supported-mua (cons 'jmail-user-agent "jmail"))
   (org-msg-mode 1))
 
 (defun jmail-org-msg-disable ()
+  "Disable `org-msg-mode' for jmail"
   (interactive)
   (when (assoc 'jmail-user-agent org-msg-supported-mua)
     (org-msg-mode -1)
