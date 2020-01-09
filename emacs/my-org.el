@@ -27,6 +27,7 @@
 (require 'org-agenda)
 (require 'org-gtasks)
 (require 'org-gcal)
+(require 'org-tempo)
 (require 'ob-gnuplot)
 (require 'ob-C)
 (require 'ob-shell)

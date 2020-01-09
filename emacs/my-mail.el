@@ -41,6 +41,16 @@
 ;; message buffer will be killed after sending a message
 (setq message-kill-buffer-on-exit t)
 
+;; org msg
+(require 'org-msg)
+(setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil \\n:t")
+(setq org-msg-startup "hidestars noindent inlineimages")
+(setq org-msg-signature "
+#+begin_signature
+--
+Julien Masson
+#+end_signature")
+
 ;; jmail
 (require 'jmail)
 
@@ -68,6 +78,9 @@
 
 ;; refresh every 60 seconds
 (setq jmail-update-buffer-every 60)
+
+;; enable org-msg for jmail
+(jmail-org-msg-enable)
 
 ;; display html by default
 (setq jmail-view-html-default-view t)
@@ -159,20 +172,6 @@
 (add-to-list 'send-patch-get-recipients-funcs
 	     (cons "U-Boot" 'send-patch-get-recipients-kernel) t)
 
-;; org msg
-(require 'org-msg)
-(setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil \\n:t")
-(setq org-msg-startup "hidestars noindent inlineimages")
-(setq org-msg-greeting-fmt "\nHi %s,\n\n")
-(setq org-msg-greeting-fmt-mailto t)
-(setq org-msg-signature "
-
-Regards,
-
-#+begin_signature
---\n
-Julien Masson
-#+end_signature")
 (org-msg-mode)
 
 
