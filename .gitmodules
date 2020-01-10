@@ -88,9 +88,6 @@
 [submodule "emacs/modules/realgud"]
 	path = emacs/modules/realgud
 	url = https://github.com/JulienMasson/realgud.git
-[submodule "emacs/modules/tablist"]
-	path = emacs/modules/tablist
-	url = https://github.com/JulienMasson/tablist.git
 [submodule "emacs/modules/ido-completing-read-plus"]
 	path = emacs/modules/ido-completing-read-plus
 	url = https://github.com/DarwinAwardWinner/ido-completing-read-plus.git
@@ -226,3 +223,6 @@
 [submodule "emacs/modules/eaf"]
 	path = emacs/modules/eaf
 	url = https://github.com/manateelazycat/emacs-application-framework.git
+[submodule "emacs/modules/tablist"]
+	path = emacs/modules/tablist
+	url = https://github.com/politza/tablist.git
