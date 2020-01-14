@@ -23,23 +23,20 @@
 
 ;;; Code:
 
+(require 'jmail-actions)
 (require 'jmail-view)
 
 ;;; Mode
 
 (defvar jmail-search-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "a" 'jmail-search-action-at-point-or-region)
-    (define-key map "A" 'jmail-search-action-thread)
+    (define-key map "a" 'jmail-actions-apply)
 
     (define-key map "d" 'jmail-search-delete-at-point-or-region)
     (define-key map "D" 'jmail-search-delete-thread)
 
     (define-key map "m" 'jmail-search-mark-at-point-or-region)
     (define-key map "M" 'jmail-search-mark-thread)
-
-    (define-key map "p" 'jmail-search-apply-patch)
-    (define-key map "P" 'jmail-search-apply-patch-series)
 
     (define-key map "r" 'jmail-search-move-at-point-or-region)
     (define-key map "R" 'jmail-search-move-thread)
@@ -96,11 +93,6 @@
   :group 'jmail)
 
 ;;; Customization
-
-(defcustom jmail-search-actions nil
-  "Alist of actions to apply at point or region or thread"
-  :type 'alist
-  :group 'jmail)
 
 (defcustom jmail-search-mark-flags '(("read"      . jmail-search--mark-as-read)
 				     ("unread"    . jmail-search--mark-as-unread)
@@ -593,25 +585,6 @@
      (rename-file path new-path))))
 
 ;;; External Functions
-
-(defun jmail-search-action-at-point-or-region (action)
-  (interactive (list (completing-read (if (region-active-p)
-					  "Apply action on region: "
-					"Apply action at point: ")
-				      'jmail-search-actions)))
-  (if (region-active-p)
-      (jmail-search--foreach-line-region
-       (jmail-search--funcall-object-at
-	(assoc-default action jmail-search-actions)))
-    (jmail-search--funcall-object-at
-     (assoc-default action jmail-search-actions))))
-
-(defun jmail-search-action-thread (action)
-  (interactive (list (completing-read "Apply action on thread: "
-				      'jmail-search-actions)))
-  (jmail-search--foreach-line-thread
-   (jmail-search--funcall-object-at
-    (assoc-default action jmail-search-actions))))
 
 (defun jmail-search-delete-at-point-or-region (confirm)
   (interactive (list (yes-or-no-p (if (region-active-p)
