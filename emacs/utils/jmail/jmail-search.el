@@ -474,25 +474,32 @@
 (defmacro jmail-search--foreach-line-thread (&rest body)
   `(with-jmail-search-buffer
     (save-excursion
-      (jmail-search--goto-root-thread)
-      ,@body
-      (next-line)
-      (while (and (jmail-search--thread-level-at-point)
-		  (not (zerop (jmail-search--thread-level-at-point))))
+      (lexical-let (start end)
+	(jmail-search--goto-root-thread)
+	(setq start (line-beginning-position))
 	,@body
-	(next-line)))))
+	(next-line)
+	(while (and (jmail-search--thread-level-at-point)
+		    (not (zerop (jmail-search--thread-level-at-point))))
+	  ,@body
+	  (next-line))
+	(setq end (line-beginning-position))
+	(list start end)))))
 
 (defmacro jmail-search--foreach-line-region (&rest body)
   `(with-jmail-search-buffer
     (save-excursion
       (when (region-active-p)
 	(lexical-let ((beg (region-beginning))
-		      (end (region-end)))
+		      (end (region-end))
+		      start)
 	  (deactivate-mark)
 	  (goto-char beg)
+	  (setq start (line-beginning-position))
 	  (while (<= (point) end)
 	    ,@body
-	    (next-line)))))))
+	    (next-line))
+	  (list start (line-beginning-position)))))))
 
 (defun jmail-search--thread-range ()
   (if-let ((level (jmail-search--thread-level-at-point)))
@@ -526,21 +533,32 @@
 		 (propertize jmail-search--overlay-string
 			     'face 'jmail-search-overlay-fold-face))))
 
-(defun jmail-search--remove-current-line ()
+(defun jmail-search--remove-overlay ()
+  (when-let* ((beg (line-beginning-position))
+	      (overlay (jmail-search--find-overlay beg)))
+    (setq jmail-search--overlays (remove overlay jmail-search--overlays))
+    (delete-overlay overlay)))
+
+(defun jmail-search--remove-overlay-range (start end)
   (save-excursion
-    (beginning-of-line)
-    (when-let ((overlay (jmail-search--find-overlay (point))))
-      (setq jmail-search--overlays (remove overlay jmail-search--overlays))
-      (delete-overlay overlay))
-    (delete-region (point) (+ (line-end-position) 1))))
+    (goto-char start)
+    (while (< (point) end)
+      (jmail-search--remove-overlay)
+      (next-line))))
+
+(defun jmail-search--delete-region (start end)
+  (with-jmail-search-buffer
+   (delete-region start end)))
+
+(defun jmail-search--delete-line ()
+  (jmail-search--delete-region (line-beginning-position)
+			       (+ (line-end-position) 1)))
 
 (defun jmail-search--delete-message ()
-  (interactive)
   (with-jmail-search-buffer
    (when-let* ((object (text-properties-at (point)))
 	       (path (plist-get object :path)))
-     (delete-file path)
-     (jmail-search--remove-current-line))))
+     (delete-file path))))
 
 (defun jmail-search--read-uidvalidity (dir)
   (when-let* ((default-directory dir)
@@ -600,18 +618,24 @@
 				      "Delete all messages from region: "
 				    "Delete message: "))))
   (when confirm
-    (if (region-active-p)
-	(jmail-search--foreach-line-region
-	 (jmail-search--delete-message))
-      (jmail-search--delete-message))
-    (jmail-update-buffer)))
+      (if (region-active-p)
+	  (let ((range (jmail-search--foreach-line-region
+			(jmail-search--delete-message))))
+	    (apply #'jmail-search--remove-overlay-range range)
+	    (apply #'jmail-search--delete-region range))
+	(jmail-search--delete-message)
+	(jmail-search--remove-overlay)
+	(jmail-search--delete-line))
+      (jmail-update-buffer)))
 
 (defun jmail-search-delete-thread (confirm)
   (interactive (list (yes-or-no-p "Delete whole thread: ")))
   (when confirm
-    (jmail-search--foreach-line-thread
-     (jmail-search--delete-message))
-    (jmail-update-buffer)))
+    (let ((range (jmail-search--foreach-line-thread
+		  (jmail-search--delete-message))))
+      (apply #'jmail-search--remove-overlay-range range)
+      (apply #'jmail-search--delete-region range)
+      (jmail-update-buffer))))
 
 (defun jmail-search-mark-at-point-or-region (flag)
   (interactive (list (completing-read (if (region-active-p)
