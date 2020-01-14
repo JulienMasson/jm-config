@@ -89,9 +89,14 @@
 
 (defun transient--show-with-my-window-resize (old-fn &rest args)
   (setq my-window-sibling (selected-window))
-  (flet ((window-resize (window delta &optional horizontal ignore pixelwise)
-			(my-window-resize window delta horizontal ignore pixelwise)))
-    (apply old-fn args)))
+  (let ((split-saved (frame-parameter nil 'unsplittable)))
+    (when split-saved
+      (set-frame-parameter nil 'unsplittable nil))
+    (flet ((window-resize (window delta &optional horizontal ignore pixelwise)
+			  (my-window-resize window delta horizontal ignore pixelwise)))
+      (apply old-fn args))
+    (when split-saved
+      (set-frame-parameter nil 'unsplittable t))))
 
 (advice-add 'transient--show :around #'transient--show-with-my-window-resize)
 

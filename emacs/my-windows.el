@@ -25,9 +25,8 @@
 ;; no windows decorations
 (set-frame-parameter nil 'undecorated t)
 
-;; vertical split by default
-(setq split-height-threshold 119)
-(setq split-width-threshold 143)
+;; prevent automatic splitting
+(set-frame-parameter nil 'unsplittable t)
 
 ;; movement off the edge of the frame wraps around.
 (setq windmove-wrap-around t)
@@ -180,12 +179,11 @@
   (let (window (get-buffer-window (current-buffer)))
     (set-window-dedicated-p window (not (window-dedicated-p window)))))
 
-;; toggle horizontal split
-(defun toggle-horizontal-split ()
+;; toggle window split
+(defun toggle-window-split ()
   (interactive)
-  (if (not split-height-threshold)
-      (setq split-height-threshold 119)
-    (setq split-height-threshold nil)))
+  (let ((split (frame-parameter nil 'unsplittable)))
+    (set-frame-parameter nil 'unsplittable (not split))))
 
 ;; hide lines/region
 (require 'hide-lines)
