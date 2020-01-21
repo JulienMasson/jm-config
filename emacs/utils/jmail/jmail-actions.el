@@ -26,7 +26,8 @@
 ;;; Customization
 
 (defcustom jmail-actions '(("patch"        . jmail-apply-patch)
-			   ("patch-series" . jmail-apply-patch-series))
+			   ("patch-series" . jmail-apply-patch-series)
+			   ("patchwork"    . jmail-open-patchwork-kernel))
   "Alist of actions to apply in `jmail-search-mode'"
   :type 'alist
   :group 'jmail)
@@ -65,6 +66,17 @@
 	    (copy-file msg tmp-patch t)
 	    (shell-command (concat "git am " (jmail-untramp-path tmp-patch)))
 	    (delete-file tmp-patch))))))
+
+(defun jmail-open-patchwork-kernel ()
+  (interactive)
+  (when-let* ((object (text-properties-at (point)))
+	      (message-id (plist-get object :message-id))
+	      (pwclient (executable-find "pwclient"))
+	      (kernel-url "https://patchwork.kernel.org/patch/")
+	      (args (list "search" (concat "--msgid=<" message-id ">")
+			  (concat "--format=" kernel-url "%{id}")))
+	      (results (apply #'process-lines pwclient args)))
+    (browse-url (car results))))
 
 ;;; External Functions
 
