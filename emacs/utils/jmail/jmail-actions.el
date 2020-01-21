@@ -23,8 +23,6 @@
 
 ;;; Code:
 
-(require 'jmail-search)
-
 ;;; Customization
 
 (defcustom jmail-actions '(("patch"        . jmail-apply-patch)
