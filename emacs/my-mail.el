@@ -118,6 +118,8 @@ Julien Masson
 				      (string= email (cddr elem)))
 				    accounts)))
 	(jmail-compose-mode)
+	(jmail-company-setup)
+	(jmail-compose-setup-send-mail)
 	(jmail-compose-set-extra-arguments (car account) email)))))
 
 (add-hook 'send-patch-compose-hook 'send-patch-setup-jmail-env)
