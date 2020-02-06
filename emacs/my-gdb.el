@@ -158,5 +158,4 @@
 			 gdb-default-cmd
 			 kgdb-args vmlinux))))
 
-
 (provide 'my-gdb)

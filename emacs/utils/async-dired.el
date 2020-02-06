@@ -167,7 +167,7 @@
       (setq async-dired--revert-path (list dest current-dir))
       (setq async-dired--done-cb done-cb)
       (erase-buffer)
-      (insert (concat "Execute command: rsync " (mapconcat 'identity args " "))))
+      (insert (format "Execute command: rsync %s\n" (mapconcat 'identity args " "))))
     (set-process-filter process 'async-dired--process-filter-rsync)
     (set-process-sentinel process 'async-dired--process-sentinel)))
 
