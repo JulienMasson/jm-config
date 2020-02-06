@@ -144,6 +144,9 @@
 (set-face-attribute 'comint-highlight-prompt nil
                     :inherit nil)
 
+;; no message when auto-saving
+(setq auto-save-no-message t)
+
 ;; silent some message in echo area
 (defun suppress-messages (old-fun &rest args)
   (cl-flet ((silence (&rest args1) (ignore)))
