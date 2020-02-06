@@ -5,11 +5,6 @@
 	path = emacs/modules/dtrt-indent
 	url = https://github.com/jscheid/dtrt-indent
 	ignore = untracked
-[submodule "emacs/purple"]
-	path = emacs/modules/purple
-	url = https://github.com/JulienMasson/purple
-	ignore = untracked
-	branch = master
 [submodule "emacs/popup-el"]
 	path = emacs/modules/popup-el
 	url = https://github.com/auto-complete/popup-el
@@ -223,6 +218,9 @@
 [submodule "emacs/modules/eaf"]
 	path = emacs/modules/eaf
 	url = https://github.com/manateelazycat/emacs-application-framework.git
+[submodule "emacs/modules/purple"]
+	path = emacs/modules/purple
+	url = https://github.com/jeremy-compostella/purple.git
 [submodule "emacs/modules/tablist"]
 	path = emacs/modules/tablist
 	url = https://github.com/politza/tablist.git
