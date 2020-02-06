@@ -45,6 +45,15 @@
   (define-key org-msg-edit-mode-map (kbd "C-c C-h") 'jmail-org-msg-toggle-infos)
   (define-key org-msg-edit-mode-map [remap org-export-dispatch] 'jmail-org-msg-preview))
 
+(defun jmail-org-msg--set-advice ()
+  (advice-add 'org-msg-org-to-xml :around 'jmail-org-msg--force-newlines))
+
+(defun jmail-org-msg--force-newlines (orig-func &rest args)
+  (let ((str (car args))
+	(base (cadr args)))
+    (setq str (replace-regexp-in-string "^$" "\\\\\\\\\n" str))
+    (apply orig-func (list str base))))
+
 (defun jmail-org-msg--range (str-start str-end)
   (let (start end)
     (save-excursion
@@ -103,9 +112,10 @@
     (org-msg-post-setup)
     (jmail-org-msg--hide-infos)
     (jmail-org-msg--goto-body)
-    (insert "\n\n\n\n")
+    (insert "\n\n")
     (set-buffer-modified-p nil)
-    (jmail-org-msg--set-keymap)))
+    (jmail-org-msg--set-keymap)
+    (jmail-org-msg--set-advice)))
 
 ;;; External Functions
 
