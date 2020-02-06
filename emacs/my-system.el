@@ -31,6 +31,9 @@
 (put 'narrow-to-page   'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 
+;; disable use of directory-local variables
+(setq enable-dir-local-variables nil)
+
 ;; don't ask to follow symlink
 (setq vc-follow-symlinks t)
 
