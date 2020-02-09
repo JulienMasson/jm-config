@@ -224,3 +224,6 @@
 [submodule "emacs/modules/tablist"]
 	path = emacs/modules/tablist
 	url = https://github.com/politza/tablist.git
+[submodule "emacs/modules/persistent-scratch"]
+	path = emacs/modules/persistent-scratch
+	url = https://github.com/Fanael/persistent-scratch.git

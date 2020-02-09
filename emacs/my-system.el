@@ -71,6 +71,10 @@
 				     tramp host local-file)))
     (find-alternate-file (concat "/sudo:root@localhost:" file))))
 
+;; persistent scratch
+(require 'persistent-scratch)
+(persistent-scratch-setup-default)
+
 ;; browse kill ring
 (require 'browse-kill-ring)
 
