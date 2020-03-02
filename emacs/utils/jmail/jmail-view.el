@@ -203,6 +203,24 @@
     (set-process-filter process 'jmail-view--process-filter)
     (set-process-sentinel process 'jmail-view--process-sentinel)))
 
+(defun jmail-view--signature-begin ()
+  (save-excursion
+    (goto-char (point-max))
+    (if (re-search-backward message-signature-separator nil t)
+	(- (point) 1)
+      (point-max))))
+
+(defun jmail-view--citation (beg end)
+  (save-excursion
+    (goto-char beg)
+    (move-beginning-of-line 1)
+    (while (< (point) end)
+      (let* ((prefix (buffer-substring (point) (+ (point) 1)))
+	     (str (if (string= prefix ">") ">" "> ")))
+	(insert str)
+	(setq end (+ end (length str)))
+	(forward-line)))))
+
 (defun jmail-view--insert-reply-text (from plain-text)
   (save-excursion
     (message-goto-body)
@@ -211,7 +229,7 @@
     (let ((beg (point)))
       (insert plain-text)
       (jmail-view--clean-body)
-      (message-indent-citation beg (point)))))
+      (jmail-view--citation beg (jmail-view--signature-begin)))))
 
 (defun jmail-view--autodetect-account ()
   (if-let* ((accounts (jmail-get-accounts jmail-smtp-config-file))
