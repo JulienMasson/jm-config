@@ -77,10 +77,14 @@
   (switch-to-buffer jmail-view--buffer-name))
 
 (defun jmail-view--clean-body ()
-  (save-excursion
-    (message-goto-body)
-    (while (re-search-forward "$" nil t)
-      (replace-match ""))))
+  (let ((clean-actions '(("$"            "")
+			 (">[[:blank:]]+>" ">>")
+			 (">[[:blank:]]+"  "> "))))
+    (save-excursion
+      (dolist (action clean-actions)
+	(message-goto-body)
+	(while (re-search-forward (car action) nil t)
+	  (replace-match (cadr action)))))))
 
 (defun jmail-view--insert-html (html)
   (let ((beg (point)))
