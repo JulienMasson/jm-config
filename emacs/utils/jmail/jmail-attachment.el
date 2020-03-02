@@ -27,6 +27,8 @@
 
 (defconst jmail-attachment--buffer-name "*jmail-attachment*")
 
+(defvar jmail-attachment-switch-to-dired nil)
+
 ;;; Internal Functions
 
 (defun jmail-attachment--process-sentinel (process status)
@@ -34,8 +36,9 @@
     (with-current-buffer (process-buffer process)
       (let ((dir default-directory))
 	(kill-this-buffer)
-	(dired-other-window dir)
-	(revert-buffer)))
+	(when jmail-attachment-switch-to-dired
+	  (dired-other-window dir)
+	  (revert-buffer))))
     (switch-to-buffer-other-window (process-buffer process))))
 
 (defun jmail-attachment--process-filter (process str)
@@ -59,12 +62,14 @@
 
 ;;; External Functions
 
-(defun jmail-attachment-save (msg-path index outdir)
+(cl-defun jmail-attachment-save (msg-path index outdir &optional (switch t))
+  (setq jmail-attachment-switch-to-dired switch)
   (let* ((parts (format "--parts=%d" index))
 	 (args (jmail-attachment--build-args outdir msg-path parts)))
     (jmail-attachment--process outdir args)))
 
-(defun jmail-attachment-save-all (msg-path outdir)
+(cl-defun jmail-attachment-save-all (msg-path outdir &optional (switch t))
+  (setq jmail-attachment-switch-to-dired switch)
   (let* ((save-all "--save-attachments")
 	 (args (jmail-attachment--build-args outdir msg-path save-all)))
     (jmail-attachment--process outdir args)))
