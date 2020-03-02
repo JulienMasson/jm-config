@@ -28,6 +28,9 @@
 ;; default message from style
 (setq message-from-style 'angles)
 
+;; default host address
+(setq mail-host-address "mail.gmail.com")
+
 ;; default citation format
 (setq message-citation-line-format "On %a %d %b %Y at %R, %f wrote:\n")
 (setq message-citation-line-function 'message-insert-formatted-citation-line)
