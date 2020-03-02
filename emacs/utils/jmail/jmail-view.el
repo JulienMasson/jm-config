@@ -32,6 +32,7 @@
 
 (defvar jmail-view-mode-map
   (let ((map (make-sparse-keymap)))
+    (define-key map "F" 'jmail-view-forward)
     (define-key map "R" 'jmail-view-reply)
     (define-key map "S" 'jmail-view-save-attachments)
     (define-key map "n" 'jmail-search-next)
@@ -98,6 +99,15 @@
 (defun jmail-view--date-str ()
   (when-let ((date (plist-get jmail-view--data :date)))
     (format-time-string "%a, %e %b %Y %T %z" date)))
+
+(defun jmail-view--add-attachments (msg-path attachments)
+  (jmail-attachment-save-all msg-path (temporary-file-directory) nil)
+  (let ((files (mapcar (lambda (file)
+			 (concat (temporary-file-directory) (car file)))
+		       attachments)))
+    (if org-msg-mode
+	(mapc #'org-msg-attach-attach files)
+      (mapc #'mml-attach-file files))))
 
 (defun jmail-view--get-attachments ()
   (when-let* ((parts (plist-get jmail-view--data :parts))
@@ -231,6 +241,18 @@
       (jmail-view--clean-body)
       (jmail-view--citation beg (jmail-view--signature-begin)))))
 
+(defun jmail-view--insert-forward-text (from date to cc subject plain-text)
+  (save-excursion
+    (message-goto-body)
+    (insert "\n\n---------- Forwarded message ---------\n")
+    (insert "From: " from "\n")
+    (insert "Date: " date "\n")
+    (insert "Subject: " subject "\n")
+    (insert "To: " to "\n")
+    (when cc
+      (insert "Cc: " cc "\n"))
+    (insert plain-text)))
+
 (defun jmail-view--autodetect-account ()
   (if-let* ((accounts (jmail-get-accounts jmail-smtp-config-file))
 	    (accounts-address (mapcar #'cddr accounts))
@@ -279,6 +301,40 @@
      (when plain-text
        (jmail-view--insert-reply-text from plain-text))
      (jmail-compose-mode)
+     (jmail-company-setup)
+     (jmail-compose-setup-send-mail)
+     (jmail-compose-set-extra-arguments (car account) from-email)
+     (message-goto-body))))
+
+(defun jmail-view-forward ()
+  (interactive)
+  (with-jmail-view-buffer
+   (let* ((account (jmail-view--autodetect-account))
+	  (from (jmail-make-address-str (cdr account)))
+	  (from-email (cddr account))
+	  (from-fwd (jmail-view--address-str :from))
+	  (date-fwd (jmail-view--date-str))
+	  (subject-fwd (plist-get jmail-view--data :subject))
+	  (to-fwd (jmail-view--address-str :to))
+	  (cc-fwd (jmail-view--address-str :cc))
+	  (subject (message-simplify-subject subject-fwd))
+	  (plain-text (plist-get jmail-view--data :body-txt))
+	  (in-reply-to (plist-get jmail-view--data :in-reply-to))
+	  (attachments (jmail-view--get-attachments))
+	  (msg-path (plist-get jmail-view--data :path)))
+     (message-pop-to-buffer (generate-new-buffer-name "*unsent forward*"))
+     (message-setup `((From . ,from)
+		      (To . "")
+		      (Subject . ,(concat "Fwd: " subject))
+		      (In-reply-to . ,in-reply-to)))
+     (message-sort-headers)
+     (message-hide-headers)
+     (when plain-text
+       (jmail-view--insert-forward-text
+	from-fwd date-fwd to-fwd cc-fwd subject-fwd plain-text))
+     (jmail-compose-mode)
+     (when attachments
+       (jmail-view--add-attachments msg-path attachments))
      (jmail-company-setup)
      (jmail-compose-setup-send-mail)
      (jmail-compose-set-extra-arguments (car account) from-email)

@@ -102,20 +102,30 @@
   (or (org-msg-article-htmlp-jmail) ;; reply
       (not (message-fetch-field "To")))) ;; new message
 
-(defun jmail-org-msg--compose ()
-  (when (jmail-org-msg--compose-htmlp)
-    ;; clean-up body
+(defun jmail-org-msg--extract-attachments ()
+  (let (attachments)
     (save-excursion
       (message-goto-body)
-      (delete-region (point) (point-max)))
-    ;; setup body
-    (org-msg-post-setup)
-    (jmail-org-msg--hide-infos)
-    (jmail-org-msg--goto-body)
-    (insert "\n\n")
-    (set-buffer-modified-p nil)
-    (jmail-org-msg--set-keymap)
-    (jmail-org-msg--set-advice)))
+      (while (re-search-forward "^<#part filename=\"\\(.*\\)\"" nil t)
+	(add-to-list 'attachments (substring-no-properties (match-string 1)) t)))
+    attachments))
+
+(defun jmail-org-msg--compose ()
+  (when (jmail-org-msg--compose-htmlp)
+    (let ((attachments (jmail-org-msg--extract-attachments)))
+      ;; clean-up body
+      (save-excursion
+	(message-goto-body)
+	(delete-region (point) (point-max)))
+      ;; setup body
+      (org-msg-post-setup)
+      (mapc #'org-msg-attach-attach attachments)
+      (jmail-org-msg--hide-infos)
+      (jmail-org-msg--goto-body)
+      (insert "\n\n")
+      (set-buffer-modified-p nil)
+      (jmail-org-msg--set-keymap)
+      (jmail-org-msg--set-advice))))
 
 ;;; External Functions
 
