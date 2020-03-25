@@ -227,3 +227,12 @@
 [submodule "emacs/modules/persistent-scratch"]
 	path = emacs/modules/persistent-scratch
 	url = https://github.com/Fanael/persistent-scratch.git
+[submodule "emacs/modules/circe"]
+	path = emacs/modules/circe
+	url = https://github.com/jorgenschaefer/circe.git
+[submodule "emacs/modules/slack"]
+	path = emacs/modules/slack
+	url = https://github.com/yuya373/emacs-slack.git
+[submodule "emacs/modules/emojify"]
+	path = emacs/modules/emojify
+	url = https://github.com/iqbalansari/emacs-emojify.git
