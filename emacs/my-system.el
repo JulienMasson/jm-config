@@ -90,8 +90,8 @@
 ;; dired config
 (require 'my-dired)
 
-;; erc config
-(require 'my-erc)
+;; chat config
+(require 'my-chat)
 
 ;; programming config
 (require 'my-programming)

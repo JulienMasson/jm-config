@@ -1,6 +1,6 @@
-;;; my-erc.el --- ERC Configuration
+;;; my-chat.el --- Chat Configuration
 
-;; Copyright (C) 2019 Julien Masson
+;; Copyright (C) 2020 Julien Masson
 
 ;; Author: Julien Masson <massonju.eseo@gmail.com>
 ;; URL: https://github.com/JulienMasson/jm-config/
@@ -21,6 +21,15 @@
 ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Code:
+
+;; echat
+(require 'echat)
+
+;; slack show emoji
+(setq slack-buffer-emojify t)
+
+;; slack error log level
+(setq slack-log-level 'error)
 
 ;; erc
 (require 'erc)
@@ -111,5 +120,4 @@
   (setq-local completion-ignore-case t)
   (add-hook 'completion-at-point-functions 'erc-complete-word-at-point nil t))
 
-
-(provide 'my-erc)
+(provide 'my-chat)

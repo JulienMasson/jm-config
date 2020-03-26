@@ -133,10 +133,14 @@
 ;; refresh status
 (global-set-key (kbd "C-c C-u") (lambda () (interactive) (run-at-time 1 status-refresh-timer-delay 'status-update)))
 
-;; bitlbee
-(global-set-key (kbd "C-c e b") 'bitlbee-update-all)
-(global-set-key (kbd "C-c e c") 'bitlbee-chat)
-(global-set-key (kbd "C-c e j") 'erc-chat-jump)
+;; echat
+(global-set-key (kbd "C-c e c") 'echat-channel-select)
+(global-set-key (kbd "C-c e g") 'echat-group-select)
+(global-set-key (kbd "C-c e i") 'echat-im-select)
+(global-set-key (kbd "C-c e j") 'echat-jump)
+(global-set-key (kbd "C-c e q") 'echat-quit)
+(global-set-key (kbd "C-c e s") 'echat-search)
+(global-set-key (kbd "C-c e r") 'echat-start)
 
 ;; acscope
 (define-key acscope-mode-map (kbd "C-c s k") 'acscope-database-add-kernel)
