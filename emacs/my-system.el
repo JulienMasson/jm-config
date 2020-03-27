@@ -164,6 +164,7 @@
 (status-add-to-left 'status-tab-bar)
 (status-add-to-right 'status-date)
 (status-add-to-right 'status-erc)
+(status-add-to-right 'status-echat)
 (status-add-to-right 'status-jmail)
 (turn-on-status)
 

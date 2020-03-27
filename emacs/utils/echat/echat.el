@@ -28,9 +28,21 @@
 ;;; Class
 
 (defclass echat ()
-  ((name     :initarg :name :type string)
-   (active-p :initarg :active-p :type boolean :initform nil)
-   (buffers  :initarg :buffers :initform nil)))
+  ((name     :initarg :name     :initform ""  :type string)
+   (face     :initarg :face     :initform nil)
+   (active-p :initarg :active-p :initform nil :type boolean)
+   (buffers  :initarg :buffers  :initform nil)))
+
+;;; Groups
+
+(defgroup echat nil
+  "echat group"
+  :group 'applications)
+
+(defgroup echat-faces nil
+  "Faces used by echat"
+  :group 'echat
+  :group 'faces)
 
 ;;; Chat Supported
 
@@ -42,12 +54,19 @@
 
 ;;; Generic Functions
 
-(cl-defgeneric echat-add-buffer (echat buffer)
+(cl-defgeneric echat-add-buffer (echat name buffer)
   "Add buffer to buffer list of echat object"
   (let ((buffers (oref echat buffers)))
     (when (bufferp buffer)
-      (add-to-list 'buffers buffer t)
+      (add-to-list 'buffers (cons name buffer) t)
       (oset echat buffers buffers))))
+
+(cl-defgeneric echat-unread-queries (obj)
+  "Return a list of plist with the following keys:
+- name:  Channel, Group or IM name
+- echat: echat object
+- count: number of unread message
+- query: function used to jump to this unread")
 
 (cl-defgeneric echat-do-search (obj)
   "Search echat object")
@@ -74,63 +93,77 @@
 		(string= (oref echat name) name))
 	      echats))
 
+(defun echat--prompt-unread (prompt)
+  (let* ((data (delq nil (mapcar #'echat-unread-queries echats)))
+	 (unreads (apply #'append data))
+	 (collection (mapcar (lambda (unread)
+			       (let ((name (plist-get unread :name))
+				     (echat (plist-get unread :echat)))
+				 (propertize name 'face (oref echat face))))
+			     unreads))
+	 (name (completing-read prompt collection)))
+    (cl-find-if (lambda (unread) (string= (plist-get unread :name) name))
+		unreads)))
+
 (defun echat--prompt-inactive (prompt)
-  (let* ((inactives (cl-remove-if (lambda (echat)
-				    (oref echat active-p))
+  (let* ((inactives (cl-remove-if (lambda (echat) (oref echat active-p))
 				  echats))
 	 (collection (mapcar (lambda (echat)
-			       (oref echat name))
+			       (with-slots (name face) echat
+				 (propertize name 'face face)))
 			     inactives)))
     (completing-read prompt collection)))
 
 (defun echat--prompt-active (prompt)
-  (let* ((actives (cl-remove-if-not (lambda (echat)
-				      (oref echat active-p))
+  (let* ((actives (cl-remove-if-not (lambda (echat) (oref echat active-p))
 				    echats))
 	 (collection (mapcar (lambda (echat)
-			       (oref echat name))
+			       (with-slots (name face) echat
+				 (propertize name 'face face)))
 			     actives)))
     (completing-read prompt collection)))
 
 (defun echat--prompt-buffers (prompt)
   (let (collection)
     (dolist (echat echats)
-      (dolist (buffer (oref echat buffers))
-	(when (buffer-live-p buffer)
-	  (add-to-list 'collection (buffer-name buffer)))))
-    (completing-read prompt collection)))
-
-(defun echat--select (echat select)
-  (let ((buffer (funcall select echat)))
-    (echat-add-buffer echat buffer)))
+      (let ((face (oref echat face)))
+	(pcase-dolist (`(,name . ,buffer) (oref echat buffers))
+	  (when (buffer-live-p buffer)
+	    (add-to-list 'collection (cons (propertize name 'face face)
+					   buffer))))))
+    (let ((name (completing-read prompt (mapcar #'car collection))))
+      (cdr (assq name collection)))))
 
 ;;; External Functions
 
-(defun echat-search (name)
-  (interactive (list (echat--prompt-active "Search: ")))
-  (let ((echat (echat--find-by-name name)))
-    (echat-do-search echat)))
-
-(defun echat-channel-select (name)
-  (interactive (list (echat--prompt-active "Channel: ")))
-  (echat--select (echat--find-by-name name)
-		 #'echat-do-channel-select))
-
-(defun echat-group-select (name)
-  (interactive (list (echat--prompt-active "Group: ")))
-  (echat--select (echat--find-by-name name)
-		 #'echat-do-group-select))
-
-(defun echat-im-select (name)
-  (interactive (list (echat--prompt-active "IM: ")))
-  (echat--select (echat--find-by-name name)
-		 #'echat-do-im-select))
-
-(defun echat-jump (buffer)
-  (interactive (list (echat--prompt-buffers "Jump: ")))
+(defun echat-display-buffer (buffer)
   (if (get-buffer-window-list buffer)
       (pop-to-buffer buffer)
     (switch-to-buffer-other-window buffer)))
+
+(defun echat-search (name)
+  (interactive (list (echat--prompt-active "Search: ")))
+  (echat-do-search (echat--find-by-name name)))
+
+(defun echat-channel-select (name)
+  (interactive (list (echat--prompt-active "Channel: ")))
+  (echat-do-channel-select (echat--find-by-name name)))
+
+(defun echat-group-select (name)
+  (interactive (list (echat--prompt-active "Group: ")))
+  (echat-do-group-select (echat--find-by-name name)))
+
+(defun echat-im-select (name)
+  (interactive (list (echat--prompt-active "IM: ")))
+  (echat-do-im-select (echat--find-by-name name)))
+
+(defun echat-unread (plist)
+  (interactive (list (echat--prompt-unread "Unread: ")))
+  (funcall (plist-get plist :query)))
+
+(defun echat-jump (buffer)
+  (interactive (list (echat--prompt-buffers "Jump: ")))
+  (echat-display-buffer buffer))
 
 (defun echat-start (name)
   (interactive (list (echat--prompt-inactive "Start: ")))
