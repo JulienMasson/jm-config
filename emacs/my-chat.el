@@ -31,6 +31,10 @@
 ;; slack error log level
 (setq slack-log-level 'error)
 
+;; circle no confirmation
+(setq circe-server-killed-confirmation nil)
+(setq circe-channel-killed-confirmation nil)
+
 ;; erc
 (require 'erc)
 
