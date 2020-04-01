@@ -40,27 +40,42 @@
 
 ;;; Internal Functions
 
-(defun echat-slack--buffer-display (slack name buffer)
-  (echat-add-buffer slack name buffer)
-  (echat-display-buffer buffer))
+(defun echat-slack--find-by-team (team)
+  (cl-find-if (lambda (echat)
+		(and (echat-slack-p echat)
+		     (oref echat active-p)
+		     (eq  (oref echat team) team)))
+	      echats))
 
-(defun echat-slack--room-display (slack team room name)
-  (if-let ((buffer (slack-buffer-find 'slack-message-buffer team room)))
-      (echat-slack--buffer-display slack name buffer)
-    (slack-room-clear-messages room)
-    (slack-conversations-view
-     room team
-     :after-success (lambda (messages cursor)
-		      ;; WORKAROUND:
-		      ;; For unknown reasons sometimes the buffer is not
-		      ;; "ready", put `message' here seeems to workaround
-		      ;; this issue.
-		      (message nil)
-		      (slack-room-set-messages room messages team)
-		      (let* ((slack-buffer (slack-create-message-buffer
-					    room cursor team))
-			     (buffer (slack-buffer-buffer slack-buffer)))
-			(echat-slack--buffer-display slack name buffer))))))
+(defun echat-slack--find-buffer (slack name)
+  (cl-find-if (lambda (echat-buffer)
+		(let ((buffer (oref echat-buffer buffer)))
+		  (when (or (not buffer) (buffer-live-p buffer))
+		    (string= (oref echat-buffer name) name))))
+	      (oref slack buffers)))
+
+(defun echat-slack--room-query (slack echat-buffer room name)
+  (slack-room-clear-messages room)
+  (let* ((team (oref slack team))
+	 (after-success (lambda (messages cursor)
+			  (slack-room-set-messages room messages team)
+			  (when-let* ((slack-buffer (slack-create-message-buffer
+						     room cursor team))
+				      (buffer (slack-buffer-buffer slack-buffer)))
+			    (oset echat-buffer buffer buffer)
+			    (echat-display-buffer buffer)))))
+    (slack-conversations-view room team :after-success after-success)))
+
+(defun echat-slack--room-display (slack room name)
+  (let ((echat-buffer (echat-slack--find-buffer slack name)))
+    (unless echat-buffer
+      (setq echat-buffer (echat-add-buffer slack name nil
+					   #'echat-slack--room-display
+					   (list slack room name))))
+    (let ((buffer (oref echat-buffer buffer)))
+      (if (buffer-live-p buffer)
+	  (echat-display-buffer buffer)
+	(echat-slack--room-query slack echat-buffer room name)))))
 
 (defun echat-slack--kill-buffers (team)
   (slack-team-kill-buffers team)
@@ -77,27 +92,56 @@
     (cl-find-if (lambda (room) (string= (slack-room-name room team) name))
 		rooms)))
 
-;;; External Functions
+(defun echat-slack--unread (slack id unread-p unread-count func)
+  (when-let* ((team (oref slack team))
+	      (rooms (funcall func team))
+	      (room (cl-find-if (lambda (r) (string= (oref r id) id)) rooms))
+	      (name (slack-room-name room team)))
+    (let ((echat-buffer (echat-slack--find-buffer slack name)))
+      (unless echat-buffer
+	(setq echat-buffer (echat-add-buffer slack name nil
+					     #'echat-slack--room-display
+					     (list slack room name))))
+      (oset echat-buffer unread-p unread-p)
+      (oset echat-buffer unread-count unread-count))))
 
-(cl-defmethod echat-get-unread ((slack echat-slack))
-  (when (oref slack active-p)
-    (let* ((team (oref slack team))
-	   (ims (slack-team-ims team))
-	   (channels (slack-team-channels team))
-	   (groups (slack-team-groups team))
-	   data)
-      (dolist (room (apply #'append (list ims channels groups)))
-	(when-let* ((unread (slack-room-has-unread-p room team))
-		    (count (slack-room-mention-count room team))
-		    (name (if (slack-channel-p room)
-			      (concat "#" (slack-room-name room team))
-			    (slack-room-name room team)))
-		    (query #'echat-slack--room-display)
-		    (query-args (list slack team room name))
-		    (unread (echat-unread :name name :echat slack :count count
-					  :query query :query-args query-args)))
-	  (add-to-list 'data unread t)))
-      data)))
+(defun echat-slack--handle-counts-update (team counts)
+  (when-let ((slack (echat-slack--find-by-team team)))
+    (with-slots (channels ims) counts
+      (pcase-dolist (`(,rooms . ,func) (list (cons channels 'slack-team-channels)
+					     (cons ims 'slack-team-ims)))
+	(dolist (room rooms)
+	  (with-slots (id has-unreads mention-count) room
+	    (when has-unreads
+	      (echat-slack--unread slack id has-unreads mention-count func))))))))
+
+(defun echat-slack--handle-push-message (team room)
+  (when-let* ((slack (echat-slack--find-by-team team))
+	      (name (slack-room-name room team)))
+    (if-let ((echat-buffer (echat-slack--find-buffer slack name)))
+	(with-slots (buffer unread-count) echat-buffer
+	  (unless (and buffer (get-buffer-window-list buffer))
+	    (oset echat-buffer unread-p t)
+	    (oset echat-buffer unread-count (incf unread-count))))
+      (setq echat-buffer (echat-add-buffer slack name nil
+					   #'echat-slack--room-display
+					   (list slack room name)))
+      (oset echat-buffer unread-p t)
+      (oset echat-buffer unread-count 1))))
+
+;;; Slack Activity
+
+(cl-defmethod echat-slack--counts-update ((team slack-team))
+  (slack-client-counts team (lambda (counts)
+			      (echat-slack--handle-counts-update team counts)
+                              (oset team counts counts))))
+(advice-add 'slack-counts-update :override #'echat-slack--counts-update)
+
+(cl-defmethod echat-slack--push-message ((this slack-room) message team)
+  (echat-slack--handle-push-message team this))
+(advice-add 'slack-room-push-message :after #'echat-slack--push-message)
+
+;;; External Functions
 
 (cl-defmethod echat-do-search ((slack echat-slack))
   (let* ((team (oref slack team))
@@ -112,35 +156,29 @@
     (slack-search-request search after-success team)))
 
 (cl-defmethod echat-do-group-select ((slack echat-slack))
-  (let* ((team (oref slack team))
-	 (groups (slack-team-groups team))
-	 (face (oref slack face))
-	 (prompt (format "Group (%s): " (propertize (oref slack name)
-						    'face face)))
-	 (group (echat-slack--select team groups prompt))
-	 (name (slack-room-name group team)))
-    (echat-slack--room-display slack team group name)))
+  (with-slots (name face team) slack
+    (let* ((groups (slack-team-groups team))
+	   (prompt (format "Group (%s): " (propertize name 'face face)))
+	   (group (echat-slack--select team groups prompt))
+	   (name (slack-room-name group team)))
+      (echat-slack--room-display slack group name))))
 
 (cl-defmethod echat-do-channel-select ((slack echat-slack))
-  (let* ((team (oref slack team))
-	 (channels (slack-team-channels team))
-	 (face (oref slack face))
-	 (prompt (format "Channel (%s): " (propertize (oref slack name)
-						      'face face)))
-	 (channel (echat-slack--select team channels prompt))
-	 (name (concat "#" (slack-room-name channel team))))
-    (echat-slack--room-display slack team channel name)))
+  (with-slots (name face team) slack
+    (let* ((channels (slack-team-channels team))
+	   (prompt (format "Channel (%s): " (propertize name 'face face)))
+	   (channel (echat-slack--select team channels prompt))
+	   (name (concat "#" (slack-room-name channel team))))
+      (echat-slack--room-display slack channel name))))
 
 (cl-defmethod echat-do-im-select ((slack echat-slack))
-  (let* ((team (oref slack team))
-	 (ims (cl-remove-if-not (lambda (im) (oref im is-open))
-				(slack-team-ims team)))
-	 (face (oref slack face))
-	 (prompt (format "IM (%s): " (propertize (oref slack name)
-						 'face face)))
-	 (im (echat-slack--select team ims prompt))
-	 (name (slack-room-name im team)))
-    (echat-slack--room-display slack team im name)))
+  (with-slots (name face team) slack
+    (let* ((ims (cl-remove-if-not (lambda (im) (oref im is-open))
+				  (slack-team-ims team)))
+	   (prompt (format "IM (%s): " (propertize name 'face face)))
+	   (im (echat-slack--select team ims prompt))
+	   (name (slack-room-name im team)))
+      (echat-slack--room-display slack im name))))
 
 (cl-defmethod echat-do-start ((slack echat-slack))
   (slack-start (oref slack team)))

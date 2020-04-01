@@ -28,21 +28,18 @@
 ;;; Class
 
 (defclass echat ()
-  ((name     :initarg :name     :initform ""  :type string)
-   (face     :initarg :face     :initform nil)
-   (active-p :initarg :active-p :initform nil :type boolean)
-   (buffers  :initarg :buffers  :initform nil)))
+  ((name         :initarg :name         :initform ""  :type string)
+   (face         :initarg :face         :initform nil)
+   (active-p     :initarg :active-p     :initform nil :type boolean)
+   (buffers      :initarg :buffers      :initform nil)))
 
 (defclass echat-buffer ()
-  ((name     :initarg :name     :initform ""  :type string)
-   (buffer   :initarg :buffer   :initform nil)))
-
-(defclass echat-unread ()
-  ((name       :initarg :name       :initform ""  :type string)
-   (echat      :initarg :echat      :initform nil)
-   (count      :initarg :count      :initform 0   :type number)
-   (query      :initarg :query      :initform nil)
-   (query-args :initarg :query-args :initform nil)))
+  ((name         :initarg :name         :initform ""  :type string)
+   (buffer       :initarg :buffer       :initform nil)
+   (unread-p     :initarg :unread-p     :initform nil :type boolean)
+   (unread-count :initarg :unread-count :initform 0   :type number)
+   (query        :initarg :query        :initform nil)
+   (query-args   :initarg :query-args   :initform nil)))
 
 ;;; Groups
 
@@ -67,16 +64,6 @@
 
 ;;; Generic Functions
 
-(cl-defgeneric echat-add-buffer (echat name buffer)
-  "Add buffer to buffer list of echat object"
-  (let ((buffers (oref echat buffers))
-	(echat-buffer (echat-buffer :name name :buffer buffer)))
-    (add-to-list 'buffers echat-buffer t)
-    (oset echat buffers buffers)))
-
-(cl-defgeneric echat-get-unread (obj)
-  "Return a list of echat-unread object")
-
 (cl-defgeneric echat-do-search (obj)
   "Search echat object")
 
@@ -97,31 +84,23 @@
 
 ;;; Internal Functions
 
-(defun echat--find-by-buffer (buffer)
-  (cl-find-if (lambda (echat)
-		(cl-find-if (lambda (echat-buffer)
-			      (eq (oref echat-buffer buffer) buffer))
-			    (oref echat buffers)))
-	      echats))
+(defun echat--mark-buffer-as-read (buffer)
+  (when-let ((echat-buffer (echat-find-echat-buffer buffer)))
+    (oset echat-buffer unread-p nil)
+    (oset echat-buffer unread-count 0)))
 
 (defun echat--find-by-name (name)
   (cl-find-if (lambda (echat)
 		(string= (oref echat name) name))
 	      echats))
 
-(defun echat--prompt-unread (prompt)
-  (let* ((data (delq nil (mapcar #'echat-get-unread echats)))
-	 (unreads (apply #'append data))
-	 (collection (mapcar (lambda (unread)
-			       (with-slots (name count echat) unread
-				 (propertize (if (zerop count)
-						 name
-					       (format "%s (%s)" name count))
-					     'face (oref echat face))))
-			     unreads))
-	 (name (completing-read prompt collection)))
-    (cl-find-if (lambda (unread) (string= (oref unread name) name))
-		unreads)))
+(defun echat--remove-buffers-killed (echat)
+  (let (buffers)
+    (dolist (echat-buffer (oref echat buffers))
+      (let ((buffer (oref echat-buffer buffer)))
+	(when (or (not buffer) (buffer-live-p buffer))
+	  (add-to-list 'buffers echat-buffer t))))
+    (oset echat buffers buffers)))
 
 (defun echat--prompt (prompt collection)
   (completing-read prompt (mapcar (lambda (echat)
@@ -149,19 +128,57 @@
     (let ((name (completing-read prompt (mapcar #'car collection))))
       (oref (cdr (assq name collection)) buffer))))
 
+(defun echat--prompt-unread-buffers (prompt)
+  (let (collection)
+    (dolist (echat echats)
+      (let ((face (oref echat face)))
+	(dolist (echat-buffer (oref echat buffers))
+	  (with-slots (name buffer unread-p unread-count) echat-buffer
+	    (when (and (or (not buffer) (buffer-live-p buffer)) unread-p)
+	      (let ((str (if (zerop unread-count) name
+			   (format "%s (%s)" name unread-count))))
+		(add-to-list 'collection (cons (propertize str 'face face)
+					       echat-buffer))))))))
+    (let ((name (completing-read prompt (mapcar #'car collection))))
+      (cdr (assq name collection)))))
+
 ;;; External Functions
+
+(defun echat-find-echat-buffer (buffer)
+  (catch 'found
+    (dolist (echat echats)
+      (dolist (echat-buffer (oref echat buffers))
+	(when (eq buffer (oref echat-buffer buffer))
+	  (throw 'found echat-buffer))))))
+
+(defun echat-find-by-buffer (buffer)
+  (cl-find-if (lambda (echat)
+		(cl-find-if (lambda (echat-buffer)
+			      (eq (oref echat-buffer buffer) buffer))
+			    (oref echat buffers)))
+	      echats))
+
+(defun echat-add-buffer (echat name buffer &optional query query-args)
+  (echat--remove-buffers-killed echat)
+  (let ((buffers (oref echat buffers))
+	(echat-buffer (echat-buffer :name name :buffer buffer
+				    :query query :query-args query-args)))
+    (add-to-list 'buffers echat-buffer t)
+    (oset echat buffers buffers)
+    echat-buffer))
 
 (defun echat-unregister (name)
   (interactive (list (echat--prompt "Search: " echats)))
   (let ((echat (echat--find-by-name name)))
     (with-slots (name active-p) echat
       (when active-p (echat-quit name))
-      (cl-delete echat echats))))
+      (setq echats (cl-delete echat echats)))))
 
 (defun echat-display-buffer (buffer)
   (if (get-buffer-window-list buffer)
       (pop-to-buffer buffer)
-    (switch-to-buffer-other-window buffer)))
+    (switch-to-buffer-other-window buffer)
+    (echat--mark-buffer-as-read buffer)))
 
 (defun echat-search (name)
   (interactive (list (echat--prompt-active "Search: ")))
@@ -179,10 +196,14 @@
   (interactive (list (echat--prompt-active "IM: ")))
   (echat-do-im-select (echat--find-by-name name)))
 
-(defun echat-unread-select (unread)
-  (interactive (list (echat--prompt-unread "Unread: ")))
-  (with-slots (query query-args) unread
-    (apply query query-args)))
+(defun echat-unread-select (echat-buffer)
+  (interactive (list (echat--prompt-unread-buffers "Unread: ")))
+  (with-slots (buffer query query-args) echat-buffer
+    (if (buffer-live-p buffer)
+	(echat-display-buffer buffer)
+      (if query
+	  (apply query query-args)
+	(error "No query found to retrieve this buffer")))))
 
 (defun echat-jump (buffer)
   (interactive (list (echat--prompt-buffers "Jump: ")))

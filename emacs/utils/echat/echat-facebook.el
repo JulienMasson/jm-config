@@ -60,6 +60,13 @@
     (circe-command-SAY "account facebook set group_chat_open all")
     (circe-command-SAY "account facebook on")))
 
+(defun echat-facebook--parse-root-msg (facebook nick body)
+  (if (string-match "^\\([[:graph:]]*\\).*\\(Offline\\|Online\\)$" body)
+      (echat-facebook--add-user facebook (match-string 1 body))
+    (when (string-match "^facebook - Logging in: Logged in$" body)
+      (echat-facebook--connected facebook))
+    (echat-irc-insert-msg facebook nil body)))
+
 ;;; External Functions
 
 (cl-defmethod echat-irc-new-buffer ((facebook echat-facebook) name)
@@ -69,14 +76,18 @@
 	((eq major-mode 'circe-query-mode)
 	 (echat-add-buffer facebook name (current-buffer)))))
 
-(cl-defmethod echat-irc-new-channel-msg ((facebook echat-facebook) msg)
-  (cond ((string-match "^<root> \\([[:graph:]]*\\).*\\(Offline\\|Online\\)$" msg)
-	 (echat-facebook--add-user facebook (match-string 1 msg)))
-	((string-match "^<root> facebook - Logging in: Logged in$" msg)
-	 (echat-facebook--connected facebook))))
-
-(cl-defmethod echat-get-unread ((facebook echat-facebook))
-  )
+(cl-defmethod echat-irc-new-msg ((facebook echat-facebook) args)
+  (let ((format (car args)))
+    (when (member format (list 'circe-format-self-say 'circe-format-say))
+      (let* ((keywords (cdr args))
+	     (nick (plist-get keywords :nick))
+	     (body (plist-get keywords :body)))
+	(cond ((eq major-mode 'circe-channel-mode)
+	       (when (and (eq format 'circe-format-say)
+			  (string= nick "root"))
+		 (echat-facebook--parse-root-msg facebook nick body)))
+	      ((eq major-mode 'circe-query-mode)
+	       (echat-irc-insert-msg facebook nick body t)))))))
 
 (cl-defmethod echat-do-search ((facebook echat-facebook))
   (error "Operation not supported"))
