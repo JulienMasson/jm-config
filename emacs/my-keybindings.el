@@ -219,5 +219,7 @@
 (define-key shell-mode-map (kbd "C-M-m") nil)
 (define-key shell-mode-map (kbd "C-c SPC") nil)
 
+;; eaf
+(global-set-key (kbd "C-M-w") 'eaf-open-browser)
 
 (provide 'my-keybindings)
