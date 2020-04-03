@@ -38,8 +38,8 @@
 ;;; Faces
 
 (defface echat-facebook-face
-  '((((class color) (background light)) :foreground "DodgerBlue2")
-    (((class color) (background  dark)) :foreground "LightBlue2"))
+  '((((class color) (background light)) :foreground "DodgerBlue4")
+    (((class color) (background  dark)) :foreground "DodgerBlue1"))
   "Face for echat facebook"
   :group 'echat-faces)
 
@@ -65,7 +65,7 @@
       (echat-facebook--add-user facebook (match-string 1 body))
     (when (string-match "^facebook - Logging in: Logged in$" body)
       (echat-facebook--connected facebook))
-    (echat-irc-insert-msg facebook nil body)))
+    (echat-irc-insert-server-msg facebook body)))
 
 ;;; External Functions
 
@@ -87,7 +87,7 @@
 			  (string= nick "root"))
 		 (echat-facebook--parse-root-msg facebook nick body)))
 	      ((eq major-mode 'circe-query-mode)
-	       (echat-irc-insert-msg facebook nick body t)))))))
+	       (echat-irc-insert-msg facebook nick body)))))))
 
 (cl-defmethod echat-do-search ((facebook echat-facebook))
   (error "Operation not supported"))
@@ -116,12 +116,14 @@
 
 (defun echat-register-facebook (&rest plist)
   (let* ((name (plist-get plist :name))
+	 (nick (plist-get plist :nick))
 	 (user (plist-get plist :user))
 	 (password (plist-get plist :password))
 	 (work (plist-get plist :work))
 	 (bitlbee (echat-bitlbee-create name "-n" "-D" "-v"))
 	 (circe-options (list :host "localhost"
-			      :port (oref bitlbee port)))
+			      :port (oref bitlbee port)
+			      :nick nick))
 	 (facebook (echat-facebook :name name
 				   :face 'echat-facebook-face
 				   :circe-options circe-options

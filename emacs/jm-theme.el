@@ -222,6 +222,13 @@
    `(org-table ((t (:foreground ,green-dark))))
    `(org-todo ((t (:inherit font-lock-string-face :weight bold))))
 
+;;;;; circe
+   `(circe-prompt-face ((t :inherit default
+			   :box (:line-width -1 :style released-button))))
+
+;;;;; lui
+   `(lui-button-face ((t :inherit font-lock-keyword-face :underline t)))
+
 ;;;;; erc
    `(erc-action-face ((t (:inherit erc-default-face))))
    `(erc-bold-face ((t (:weight bold))))
