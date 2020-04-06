@@ -65,7 +65,7 @@
       (echat-facebook--add-user facebook (match-string 1 body))
     (when (string-match "^facebook - Logging in: Logged in$" body)
       (echat-facebook--connected facebook))
-    (echat-irc-insert-server-msg facebook body)))
+    (echat-ui-insert-info facebook body)))
 
 ;;; External Functions
 
@@ -74,20 +74,21 @@
 	 (oset echat bitlbee-channel (current-buffer))
 	 (echat-facebook--connect facebook))
 	((eq major-mode 'circe-query-mode)
-	 (echat-add-buffer facebook name (current-buffer)))))
+	 (echat-add-buffer facebook name (current-buffer))
+	 (echat-logs-insert-load-more facebook (echat-irc-me facebook)))))
 
 (cl-defmethod echat-irc-new-msg ((facebook echat-facebook) args)
   (let ((format (car args)))
     (when (member format (list 'circe-format-self-say 'circe-format-say))
       (let* ((keywords (cdr args))
-	     (nick (plist-get keywords :nick))
+	     (sender (plist-get keywords :nick))
 	     (body (plist-get keywords :body)))
 	(cond ((eq major-mode 'circe-channel-mode)
 	       (when (and (eq format 'circe-format-say)
 			  (string= nick "root"))
 		 (echat-facebook--parse-root-msg facebook nick body)))
 	      ((eq major-mode 'circe-query-mode)
-	       (echat-irc-insert-msg facebook nick body)))))))
+	       (echat-irc-insert-msg facebook sender body)))))))
 
 (cl-defmethod echat-do-search ((facebook echat-facebook))
   (error "Operation not supported"))

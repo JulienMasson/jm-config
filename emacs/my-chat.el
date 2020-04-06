@@ -50,13 +50,8 @@
 (setq lui-fill-column 80)
 (setq lui-time-stamp-format "[%e-%b %H:%M]")
 (setq lui-time-stamp-position nil)
-(setq lui-fill-type "")
+(setq lui-fill-type nil)
 (setq lui-flyspell-p t)
 (setq lui-prompt-string circe-prompt-string)
-
-;; lui logging
-(require 'lui-logging)
-(setq lui-logging-directory "~/.cache/lui-logs")
-(enable-lui-logging-globally)
 
 (provide 'my-chat)

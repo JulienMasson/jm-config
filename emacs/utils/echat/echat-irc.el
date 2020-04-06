@@ -24,6 +24,7 @@
 ;;; Code:
 
 (require 'circe)
+(require 'echat-ui)
 
 ;;; Class
 
@@ -45,18 +46,6 @@
   '((((class color) (background light)) :foreground "chocolate4")
     (((class color) (background  dark)) :foreground "chocolate1"))
   "Face for echat irc"
-  :group 'echat-faces)
-
-(defface echat-irc-server-msg-face
-  '((((class color) (background light)) :foreground "grey15")
-    (((class color) (background  dark)) :foreground "grey30"))
-  "Face for echat irc server msg"
-  :group 'echat-faces)
-
-(defface echat-irc-nick-face
-  '((((class color) (background light)) :foreground "SpringGreen4")
-    (((class color) (background  dark)) :foreground "SpringGreen3"))
-  "Face for echat irc nick msg"
   :group 'echat-faces)
 
 ;;; Internal Functions
@@ -117,56 +106,14 @@
     (apply orig-func args)))
 (advice-add 'circe-display :around #'echat-irc--catch-msg)
 
-(defun echat-irc--need-header-p (nick)
-  (catch 'found
-    (save-excursion
-      (while (not (bobp))
-	(when-let* ((properties (text-properties-at (point)))
-		    (previous-time (plist-get properties :echat-time))
-		    (previous-nick (plist-get properties :echat-nick))
-		    (time-elapsed (time-subtract (current-time)
-						 previous-time)))
-	  (throw 'found (not (and (string= previous-nick nick)
-				  (< (time-to-seconds time-elapsed) 60)))))
-	(forward-line -1))
-      t)))
-
-(defun echat-irc--insert-header (echat nick)
-  (with-slots (face circe-options) echat
-    (let* ((my-nick (plist-get circe-options :nick))
-	   (me (string= my-nick nick))
-	   (current-time (current-time))
-	   (ts (format-time-string lui-time-stamp-format
-				   current-time
-                                   lui-time-stamp-zone))
-	   (spaces (- (/ lui-fill-column 2) (/ (length ts) 2)))
-	   (fmt (format "%%-%ds%%s%%%ds\n" spaces spaces))
-	   (nick-face (if me 'echat-irc-nick-face face))
-	   (nick-str (propertize nick 'face `(bold ,nick-face)))
-	   (ts-str (propertize ts 'face 'lui-time-stamp-face))
-	   (inhibit-read-only t)
-	   (fill-column lui-fill-column)
-	   (beg (point)))
-      (save-excursion
-	(goto-char lui-output-marker)
-	(insert (format fmt (if me "" nick-str) ts-str
-			(if me nick-str "")))
-	(set-marker lui-output-marker (point))
-	(goto-char beg)
-	(add-text-properties (line-beginning-position)
-			     (line-end-position)
-			     (list :echat-time current-time
-				   :echat-nick nick))))))
-
 ;;; External Functions
 
-(defun echat-irc-insert-server-msg (echat body)
-  (lui-insert (propertize (concat body "\n") 'face 'echat-irc-server-msg-face)))
+(cl-defmethod echat-irc-me ((irc echat-irc-object))
+  (let ((circe-options (oref echat circe-options)))
+    (plist-get circe-options :nick)))
 
-(defun echat-irc-insert-msg (echat nick body)
-  (when (echat-irc--need-header-p nick)
-    (echat-irc--insert-header echat nick))
-  (lui-insert (propertize (concat body "\n") 'lui-format-argument 'body))
+(cl-defmethod echat-irc-insert-msg ((irc echat-irc-object) sender body)
+  (echat-ui-insert-msg echat sender (echat-irc-me echat) body :save t)
   (unless (get-buffer-window-list (current-buffer))
     (when-let* ((echat-buffer (echat-find-echat-buffer (current-buffer)))
 		(unread-count (oref echat-buffer unread-count)))
@@ -175,7 +122,8 @@
 
 (cl-defmethod echat-irc-new-buffer ((irc echat-irc) name)
   (when (derived-mode-p 'circe-chat-mode)
-    (echat-add-buffer irc name (current-buffer))))
+    (echat-add-buffer irc name (current-buffer))
+    (echat-logs-insert-load-more irc (echat-irc-me echat))))
 
 (cl-defmethod echat-irc-new-msg ((irc echat-irc) args)
   (let ((format (car args))
@@ -189,12 +137,12 @@
 	     (cond ((string= (plist-get keywords :event) "353")
 		    (echat-irc--add-users (split-string (nth 3 args))))
 		   ((string= (plist-get keywords :event) "332")
-		    (echat-irc-insert-server-msg irc (nth 2 args))))))
+		    (echat-ui-insert-info irc (nth 2 args))))))
 	  ((member format (list 'circe-format-self-say 'circe-format-say))
 	   (echat-irc-insert-msg irc (plist-get keywords :nick)
 				 (plist-get keywords :body)))
 	  (t (when-let ((body (plist-get keywords :body)))
-	       (echat-irc-insert-server-msg irc body))))))
+	       (echat-ui-insert-info irc body))))))
 
 (cl-defmethod echat-do-search ((irc echat-irc-object))
   (error "Operation not supported"))

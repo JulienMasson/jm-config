@@ -25,6 +25,8 @@
 
 (require 'seq)
 
+;;; Customization
+
 (defcustom echat-bitlbee-port-range (list 6670 6690)
   "Specify the range of which port bitlbee can use."
   :group 'echat)

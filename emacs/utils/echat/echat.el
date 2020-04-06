@@ -36,6 +36,7 @@
 (defclass echat-buffer ()
   ((name         :initarg :name         :initform ""  :type string)
    (buffer       :initarg :buffer       :initform nil)
+   (mute-p       :initarg :mute-p       :initform nil :type boolean)
    (unread-p     :initarg :unread-p     :initform nil :type boolean)
    (unread-count :initarg :unread-count :initform 0   :type number)
    (query        :initarg :query        :initform nil)
@@ -177,8 +178,8 @@
 (defun echat-display-buffer (buffer)
   (if (get-buffer-window-list buffer)
       (pop-to-buffer buffer)
-    (switch-to-buffer-other-window buffer)
-    (echat--mark-buffer-as-read buffer)))
+    (switch-to-buffer-other-window buffer))
+  (echat--mark-buffer-as-read buffer))
 
 (defun echat-search (name)
   (interactive (list (echat--prompt-active "Search: ")))
@@ -204,6 +205,12 @@
       (if query
 	  (apply query query-args)
 	(error "No query found to retrieve this buffer")))))
+
+(defun echat-mute-toggle (buffer)
+  (interactive (list (echat--prompt-buffers "Toggle Mute: ")))
+  (let* ((echat-buffer (echat-find-echat-buffer buffer))
+	 (mute-p (oref echat-buffer mute-p)))
+    (oset echat-buffer mute-p (not mute-p))))
 
 (defun echat-jump (buffer)
   (interactive (list (echat--prompt-buffers "Jump: ")))

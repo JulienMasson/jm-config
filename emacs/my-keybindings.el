@@ -138,6 +138,7 @@
 (global-set-key (kbd "C-c e g") 'echat-group-select)
 (global-set-key (kbd "C-c e i") 'echat-im-select)
 (global-set-key (kbd "C-c e j") 'echat-jump)
+(global-set-key (kbd "C-c e m") 'echat-mute-toggle)
 (global-set-key (kbd "C-c e q") 'echat-quit)
 (global-set-key (kbd "C-c e r") 'echat-start)
 (global-set-key (kbd "C-c e s") 'echat-search)

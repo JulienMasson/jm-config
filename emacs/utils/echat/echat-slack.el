@@ -23,6 +23,7 @@
 
 ;;; Code:
 
+(require 'echat-ui)
 (require 'slack)
 
 ;;; Class
@@ -131,42 +132,16 @@
 
 ;;; Slack Activity
 
-(cl-defmethod echat-slack--message-header ((this slack-message) team)
-  (when-let* ((slack (echat-slack--find-by-team team))
-	      (face (oref slack face))
-	      (self-name (slack-user-name (oref team self-id) team))
-	      (name (slack-message-sender-name this team)))
-    (let* ((edited-at (slack-format-ts (slack-message-edited-at this)))
-           (deleted-at (slack-format-ts (oref this deleted-at)))
-	   (me (string= self-name name))
-	   (nick-emoji (when-let* ((id (slack-message-sender-id this))
-				   (user (slack-user--find id team))
-				   (profile (plist-get user :profile)))
-			 (plist-get profile :status_emoji)))
-           (nick-icon (when-let ((image (slack-message-profile-image this team)))
-			(propertize "image" 'display image 'face
-				    'slack-profile-image-face)))
-	   (nick-face (if me 'echat-irc-nick-face face))
-	   (nick-str (propertize name 'face `(bold ,nick-face)))
-	   (current-time (current-time))
-	   (ts (format-time-string lui-time-stamp-format
-				   current-time
-                                   lui-time-stamp-zone))
-	   (ts-str (propertize ts 'face 'lui-time-stamp-face))
-	   (spaces (- (/ lui-fill-column 2) (/ (length ts) 2)))
-	   (fmt (format "\n%%-%ds%%s%%%ds\n" spaces spaces)))
-      (format fmt (if (not me)
-		      (concat (when nick-icon (concat nick-icon " "))
-			      nick-str
-			      (when nick-emoji (concat " " nick-emoji)))
-		    " ")
-	      ts-str
-	      (if me
-		  (concat (when nick-emoji (concat nick-emoji " "))
-			  nick-str
-			  (when nick-icon (concat " " nick-icon)))
-		" ")))))
-(advice-add 'slack-message-header :override #'echat-slack--message-header)
+(cl-defmethod echat-slack--insert-msg ((this slack-message-buffer) message
+                                       &optional not-tracked-p prev-message)
+  (when-let* ((team (slack-buffer-team this))
+	      (slack (echat-slack--find-by-team team))
+	      (sender (slack-message-sender-name message team))
+	      (icon (slack-message-profile-image message team))
+	      (me (slack-user-name (oref team self-id) team))
+	      (body (slack-message-body message team)))
+    (echat-ui-insert-msg slack sender me body :icon icon)))
+(advice-add 'slack-buffer-insert :override #'echat-slack--insert-msg)
 
 (cl-defmethod echat-slack--counts-update ((team slack-team))
   (let ((after-success `(lambda (counts)
