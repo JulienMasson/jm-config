@@ -109,11 +109,11 @@
 ;;; External Functions
 
 (cl-defmethod echat-irc-me ((irc echat-irc-object))
-  (let ((circe-options (oref echat circe-options)))
+  (let ((circe-options (oref irc circe-options)))
     (plist-get circe-options :nick)))
 
 (cl-defmethod echat-irc-insert-msg ((irc echat-irc-object) sender body)
-  (echat-ui-insert-msg echat sender (echat-irc-me echat) body :save t)
+  (echat-ui-insert-msg echat sender (echat-irc-me irc) body :save t)
   (unless (get-buffer-window-list (current-buffer))
     (when-let* ((echat-buffer (echat-find-echat-buffer (current-buffer)))
 		(unread-count (oref echat-buffer unread-count)))
@@ -122,8 +122,10 @@
 
 (cl-defmethod echat-irc-new-buffer ((irc echat-irc) name)
   (when (derived-mode-p 'circe-chat-mode)
-    (echat-add-buffer irc name (current-buffer))
-    (echat-logs-insert-load-more irc (echat-irc-me echat))))
+    (let ((buffer (current-buffer))
+	  (me (echat-irc-me irc)))
+      (echat-add-buffer irc name buffer)
+      (echat-ui-setup-buffer irc me buffer))))
 
 (cl-defmethod echat-irc-new-msg ((irc echat-irc) args)
   (let ((format (car args))

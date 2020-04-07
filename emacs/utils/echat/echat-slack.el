@@ -139,8 +139,9 @@
 	      (sender (slack-message-sender-name message team))
 	      (icon (slack-message-profile-image message team))
 	      (me (slack-user-name (oref team self-id) team))
-	      (body (slack-message-body message team)))
-    (echat-ui-insert-msg slack sender me body :icon icon)))
+	      (body (slack-message-body message team))
+	      (time (slack-message-time-stamp message)))
+    (echat-ui-insert-msg slack sender me body :icon icon :time time)))
 (advice-add 'slack-buffer-insert :override #'echat-slack--insert-msg)
 
 (cl-defmethod echat-slack--counts-update ((team slack-team))

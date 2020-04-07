@@ -48,28 +48,38 @@
       (while (re-search-forward regexp nil t)
 	(add-to-list 'data (list (read (match-string 1))
 				 (match-string 2)
-				 (match-string 3))))
+				 (match-string 3)) t))
       (kill-current-buffer))
     data))
 
 (defun echat-logs--insert (button)
   (when-let ((echat (button-get button 'echat-logs-echat))
 	     (me (button-get button 'echat-logs-me))
-	     (data (button-get button 'echat-logs-data)))
-    (pcase-dolist (`(,time ,sender ,body) data)
-      (echat-ui-insert-msg echat sender me body :time time))))
+	     (data (button-get button 'echat-logs-data))
+	     (beg (line-beginning-position))
+	     (end (+ (line-end-position) 1))
+	     (inhibit-read-only t)
+	     (last-pos t))
+    (save-excursion
+      (echat-ui--remove-separator)
+      (delete-region beg end)
+      (setq last-pos (marker-position lui-output-marker))
+      (set-marker lui-output-marker beg)
+      (pcase-dolist (`(,time ,sender ,body) data)
+	(echat-ui--insert-msg echat sender me body time nil))
+      (set-marker lui-output-marker (+ (marker-position lui-output-marker)
+				       (- last-pos 1)))
+      (echat-ui--insert-separator))))
 
 ;;; External Functions
 
 (defun echat-logs-insert-load-more (echat me)
-  (when-let* ((data (echat-logs--load echat))
-	      (inhibit-read-only t))
-    (goto-char (point-min))
+  (when-let ((data (echat-logs--load echat)))
     (insert-text-button "(load more)" 'action #'echat-logs--insert
 			'echat-logs-echat echat
 			'echat-logs-me me
 			'echat-logs-data data)
-    (insert "\n\n")))
+    (insert "\n")))
 
 (defun echat-logs-save (echat sender body time)
   (unless (file-directory-p echat-logs-directory)
