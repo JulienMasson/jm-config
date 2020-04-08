@@ -177,6 +177,10 @@
 (global-set-key (kbd "C-M-g") 'grep-at-point)
 (define-key grep-mode-map "s" 'grep-save-buffer)
 (define-key grep-mode-map (kbd "TAB") #'my-grep-context)
+(define-key grep-mode-map "N" 'grep-command-next)
+(define-key grep-mode-map "P" 'grep-command-previous)
+(define-key grep-mode-map "e" 'grep-command-edit)
+(define-key grep-mode-map "d" 'grep-command-change-directory)
 
 ;; occur
 (global-set-key (kbd "C-M-o") 'occur-at-point)

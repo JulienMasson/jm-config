@@ -60,43 +60,13 @@
 (require 'dtrt-indent)
 (dtrt-indent-mode t)
 
-;; change default grep
-(setq grep-command "grep --color -nsrH -E ")
-
-;; grep context
-(require 'grep-context)
-(add-hook 'compilation-mode-hook #'grep-context-mode)
-
-(defun my-grep-context (&optional arg)
-  (interactive "p")
-    (cond ((= arg 1) (call-interactively 'grep-context-more-around-point))
-        (t (call-interactively 'grep-context-less-around-point))))
-
-;; grep save buffer
-(defun grep-save-buffer ()
-  (interactive)
-  (rename-buffer (generate-new-buffer-name "*grep*")))
-
-;; grep at point
-(require 'thingatpt)
-(defun grep-at-point ()
-  (interactive)
-  (grep (format "%s%s ."
-		grep-command
-		(thing-at-point 'symbol))))
-
 ;; occur at point
 (defun occur-at-point ()
   (interactive)
   (occur (thing-at-point 'symbol)))
 
-;; ripgrep
-(require 'rg)
-(defun rg-executable () (executable-find "rg"))
-
-;; wgrep
-(require 'wgrep)
-(setq wgrep-auto-save-buffer t)
+;; grep config
+(require 'my-grep)
 
 ;; company mode
 (require 'company)
