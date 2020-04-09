@@ -146,6 +146,8 @@
 	  (t (when-let ((body (plist-get keywords :body)))
 	       (echat-ui-insert-info irc body))))))
 
+(cl-defmethod echat-mark-buffer-as-read ((irc echat-irc-object) buffer))
+
 (cl-defmethod echat-do-search ((irc echat-irc-object))
   (error "Operation not supported"))
 

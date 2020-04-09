@@ -157,6 +157,11 @@
 
 ;;; External Functions
 
+(cl-defmethod echat-mark-buffer-as-read ((slack echat-slack) buffer)
+  (with-current-buffer buffer
+    (let ((ts (slack-buffer-latest-ts slack-current-buffer)))
+      (slack-buffer-update-mark-request slack-current-buffer ts))))
+
 (cl-defmethod echat-do-search ((slack echat-slack))
   (let* ((team (oref slack team))
 	 (query (read-string "Query: "))

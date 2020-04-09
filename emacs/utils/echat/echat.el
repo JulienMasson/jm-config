@@ -65,30 +65,35 @@
 
 ;;; Generic Functions
 
+(cl-defgeneric echat-mark-buffer-as-read (obj buffer)
+  "Mark buffer as read with echat object")
+
 (cl-defgeneric echat-do-search (obj)
-  "Search echat object")
+  "Search with echat object")
 
 (cl-defgeneric echat-do-channel-select (obj)
-  "Select Channel echat object")
+  "Select Channel with echat object")
 
 (cl-defgeneric echat-do-group-select (obj)
-  "Select Group echat object")
+  "Select Group with echat object")
 
 (cl-defgeneric echat-do-im-select (obj)
-  "Select IM echat object")
+  "Select IM with echat object")
 
 (cl-defgeneric echat-do-start (obj)
-  "Start echat object")
+  "Start with echat object")
 
 (cl-defgeneric echat-do-quit (obj)
-  "Quit echat object")
+  "Quit with echat object")
 
 ;;; Internal Functions
 
 (defun echat--mark-buffer-as-read (buffer)
-  (when-let ((echat-buffer (echat-find-echat-buffer buffer)))
+  (when-let* ((echat (echat-find-by-buffer buffer))
+	      (echat-buffer (echat-find-echat-buffer buffer)))
     (oset echat-buffer unread-p nil)
-    (oset echat-buffer unread-count 0)))
+    (oset echat-buffer unread-count 0)
+    (echat-mark-buffer-as-read echat buffer)))
 
 (defun echat--find-by-name (name)
   (cl-find-if (lambda (echat)
@@ -153,11 +158,11 @@
 	  (throw 'found echat-buffer))))))
 
 (defun echat-find-by-buffer (buffer)
-  (cl-find-if (lambda (echat)
-		(cl-find-if (lambda (echat-buffer)
-			      (eq (oref echat-buffer buffer) buffer))
-			    (oref echat buffers)))
-	      echats))
+  (catch 'found
+    (dolist (echat echats)
+      (dolist (echat-buffer (oref echat buffers))
+	(when (eq buffer (oref echat-buffer buffer))
+	  (throw 'found echat))))))
 
 (defun echat-add-buffer (echat name buffer &optional query query-args)
   (echat--remove-buffers-killed echat)
