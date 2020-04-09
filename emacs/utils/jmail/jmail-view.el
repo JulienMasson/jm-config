@@ -268,13 +268,13 @@
 					 (mapcar #'car accounts))))
       (assoc account accounts))))
 
-(defun jmail-view--reply-get-to (from)
-  (when-let ((to (append (plist-get jmail-view--data :from)
-			 (plist-get jmail-view--data :to)))
-	     (to-list (mapcar #'jmail-make-address-str to)))
-    (mapconcat 'identity (seq-remove (lambda (elem)
-				       (string= from elem))
-				     to-list) ", ")))
+(defun jmail-view--reply-get-to (from-email)
+  (when-let* ((to (append (plist-get jmail-view--data :from)
+			  (plist-get jmail-view--data :to)))
+	      (to-list (mapcar #'jmail-make-address-str to)))
+    (string-join (seq-remove (lambda (elem)
+			       (string-match from-email elem))
+			     to-list) ", ")))
 
 ;;; External Functions
 
@@ -284,7 +284,7 @@
    (let* ((account (jmail-view--autodetect-account))
 	  (from (jmail-make-address-str (cdr account)))
 	  (from-email (cddr account))
-	  (to (jmail-view--reply-get-to from))
+	  (to (jmail-view--reply-get-to from-email))
 	  (cc (jmail-view--address-str :cc))
 	  (subject (message-simplify-subject
 		    (plist-get jmail-view--data :subject)))
