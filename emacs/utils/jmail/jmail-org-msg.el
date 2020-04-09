@@ -100,7 +100,7 @@
 
 (defun jmail-org-msg--compose-htmlp ()
   (or (org-msg-article-htmlp-jmail) ;; reply
-      (not (message-fetch-field "To")))) ;; new message
+      (not (message-fetch-field "Subject")))) ;; new message
 
 (defun jmail-org-msg--extract-attachments ()
   (let (attachments)
