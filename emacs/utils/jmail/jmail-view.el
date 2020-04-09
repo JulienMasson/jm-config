@@ -289,13 +289,13 @@
 	  (subject (message-simplify-subject
 		    (plist-get jmail-view--data :subject)))
 	  (plain-text (plist-get jmail-view--data :body-txt))
-	  (in-reply-to (plist-get jmail-view--data :in-reply-to)))
+	  (in-reply-to (plist-get jmail-view--data :message-id)))
      (message-pop-to-buffer (message-buffer-name "reply" to))
      (message-setup `((From . ,from)
 		      (To . ,to)
 		      (Cc . ,cc)
 		      (Subject . ,(concat "Re: " subject))
-		      (In-reply-to . ,in-reply-to)))
+		      (In-reply-to . ,(format "<%s>" in-reply-to))))
      (message-sort-headers)
      (message-hide-headers)
      (when plain-text
