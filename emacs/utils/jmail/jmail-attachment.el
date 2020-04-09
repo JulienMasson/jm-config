@@ -57,7 +57,7 @@
 
 (defun jmail-attachment--build-args (outdir msg-path args)
   (list "extract" "--overwrite"
-	(concat "--target-dir=" outdir)
+	(concat "--target-dir=" (shell-quote-argument outdir))
 	args msg-path))
 
 ;;; External Functions
