@@ -109,12 +109,10 @@
    `(link ((t (:inherit font-lock-keyword-face :underline t))))
 
 ;;;; mode-line
-   `(mode-line ((,class (:foreground ,gray :background ,black
-			 	     :box (:line-width -1 :style released-button)))
-		(t :inverse-video t)))
+   `(mode-line ((t (:background ,background :foreground ,foreground))))
    `(mode-line-buffer-id ((t (:inherit font-lock-variable-name-face :weight bold))))
    `(mode-line-inactive ((t (:foreground ,gray-light :background ,gray-dark
-   					 :box nil :weight light))))
+   					 :weight light))))
 
 ;;;; hl-line-mode
    `(hl-line ((,class (:background ,gray-dark))
@@ -248,6 +246,9 @@
    `(erc-pal-face ((t (:inherit font-lock-variable-name-face :weight bold))))
    `(erc-prompt-face ((t (:inherit font-lock-variable-name-face :weight bold))))
    `(erc-timestamp-face ((t (:inherit font-lock-doc-face))))
+
+;;;;; doom modeline
+   `(doom-modeline-bar ((t :background ,primary)))
    ))
 
 ;; set ansi color

@@ -110,9 +110,6 @@
 [submodule "emacs/modules/websocket"]
 	path = emacs/modules/websocket
 	url = https://github.com/ahyatt/emacs-websocket.git
-[submodule "emacs/modules/telephone-line"]
-	path = emacs/modules/telephone-line
-	url = https://github.com/dbordak/telephone-line.git
 [submodule "emacs/modules/org-bullets"]
 	path = emacs/modules/org-bullets
 	url = https://github.com/sabof/org-bullets.git
@@ -236,3 +233,12 @@
 [submodule "emacs/modules/emojify"]
 	path = emacs/modules/emojify
 	url = https://github.com/iqbalansari/emacs-emojify.git
+[submodule "emacs/modules/shrink-path"]
+	path = emacs/modules/shrink-path
+	url = https://gitlab.com/bennya/shrink-path.el.git
+[submodule "emacs/modules/doom-modeline"]
+	path = emacs/modules/doom-modeline
+	url = https://github.com/seagle0128/doom-modeline.git
+[submodule "emacs/modules/all-the-icons"]
+	path = emacs/modules/all-the-icons
+	url = https://github.com/domtronn/all-the-icons.el.git

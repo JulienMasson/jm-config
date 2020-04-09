@@ -79,10 +79,6 @@
 ;; hide welcome screen
 (setq inhibit-startup-message t)
 
-;; uniquify
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'forward)
-
 ;; show parenthese
 (show-paren-mode 1)
 
@@ -90,9 +86,35 @@
 (add-to-list 'custom-theme-load-path my-emacs-root-path)
 (load-theme 'jm t)
 
+;; doom modeline
+(require 'doom-modeline)
+(setq doom-modeline-height 20)
+
+(doom-modeline-def-segment spaces
+  "Spaces."
+  (propertize "  " 'face (if (doom-modeline--active)
+			     'mode-line
+			   'mode-line-inactive)))
+
+(doom-modeline-def-segment jm-buffer-position
+  "My buffer position information."
+  (let* ((active (doom-modeline--active))
+	 (percent (format-mode-line '("" mode-line-percent-position "%%")))
+         (face (if active 'mode-line 'mode-line-inactive)))
+    (concat (propertize percent 'face face)
+	    (propertize "   " 'face (if active 'mode-line 'mode-line-inactive))
+	    (propertize (format-mode-line "%l: %c") 'face face))))
+
+(doom-modeline-def-modeline 'jm-modeline
+  '(bar spaces jm-buffer-position spaces buffer-info)
+  '(misc-info spaces process spaces major-mode))
+
+(doom-modeline-refresh-bars)
+(doom-modeline-set-modeline 'jm-modeline 'default)
+
 ;; highlight focus
 (require 'face-remap)
-(defvar highlight-focus-background "#303030")
+(defvar highlight-focus-background "#242424")
 
 (defun highlight-focus-swap (prev next)
   (when (and (buffer-live-p prev)
@@ -114,28 +136,17 @@
 
 (advice-add 'select-window :around #'highlight-focus-check)
 
+;; add custom icons
+(defvar jm-icons
+  '((jmail-mode         all-the-icons-octicon "mail"   :v-adjust 0.0)
+    (jmail-compose-mode all-the-icons-octicon "pencil" :v-adjust 0.0)
+    (jmail-search-mode  all-the-icons-octicon "mail"   :v-adjust 0.0)))
+(setq all-the-icons-mode-icon-alist (append all-the-icons-mode-icon-alist
+					    jm-icons))
+
 ;; line highlighting in all buffers
 (require 'hl-line)
 (global-hl-line-mode 1)
-
-;; modeline
-(require 'telephone-line)
-
-(telephone-line-defsegment telephone-window-dedicated ()
-  (when (window-dedicated-p)
-    "Window Dedicated"))
-
-(setq telephone-line-lhs
-      '((accent . (telephone-line-airline-position-segment
-		   telephone-window-dedicated))
-        (nil    . (telephone-line-buffer-segment))))
-
-(setq telephone-line-rhs
-      '((nil    . (telephone-line-misc-info-segment
-		   telephone-line-process-segment))
-        (accent . (telephone-line-major-mode-segment))))
-
-(telephone-line-mode 1)
 
 ;; ansi color
 (require 'comint)
