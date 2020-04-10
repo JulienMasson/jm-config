@@ -205,6 +205,7 @@
 (cl-defmethod echat-do-quit ((slack echat-slack))
   (let ((team (oref slack team)))
     (slack-ws--close (oref team ws) team t)
+    (slack-cancel-notify-adandon-reconnect)
     (echat-slack--kill-buffers team)))
 
 (defun echat-register-slack (&rest plist)
