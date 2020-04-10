@@ -88,13 +88,21 @@
 
 ;; doom modeline
 (require 'doom-modeline)
-(setq doom-modeline-height 20)
+(setq doom-modeline-height (frame-char-height))
 
 (doom-modeline-def-segment spaces
   "Spaces."
   (propertize "  " 'face (if (doom-modeline--active)
 			     'mode-line
 			   'mode-line-inactive)))
+
+(doom-modeline-def-segment window-dedicated
+  "Window Dedicated."
+  (when (window-dedicated-p)
+    (let ((face (if (doom-modeline--active)
+		    '(:inherit error :box (:style released-button))
+		  'mode-line-inactive)))
+      (propertize " Window Dedicated " 'face face))))
 
 (doom-modeline-def-segment jm-buffer-position
   "My buffer position information."
@@ -107,7 +115,7 @@
 
 (doom-modeline-def-modeline 'jm-modeline
   '(bar spaces jm-buffer-position spaces buffer-info)
-  '(misc-info spaces process spaces major-mode))
+  '(window-dedicated spaces misc-info spaces process spaces major-mode))
 
 (doom-modeline-refresh-bars)
 (doom-modeline-set-modeline 'jm-modeline 'default)
@@ -138,9 +146,13 @@
 
 ;; add custom icons
 (defvar jm-icons
-  '((jmail-mode         all-the-icons-octicon "mail"   :v-adjust 0.0)
-    (jmail-compose-mode all-the-icons-octicon "pencil" :v-adjust 0.0)
-    (jmail-search-mode  all-the-icons-octicon "mail"   :v-adjust 0.0)))
+ '((jmail-mode                all-the-icons-octicon "mail"         :v-adjust 0.0)
+   (jmail-compose-mode        all-the-icons-octicon "pencil"       :v-adjust 0.0)
+   (jmail-search-mode         all-the-icons-octicon "mail"         :v-adjust 0.0)
+   (circe-channel-mode        all-the-icons-faicon  "commenting-o" :v-adjust 0.0)
+   (circe-query-mode          all-the-icons-faicon  "commenting-o" :v-adjust 0.0)
+   (slack-message-buffer-mode all-the-icons-faicon  "slack"        :v-adjust 0.0)
+   (acscope-buffer-mode       all-the-icons-octicon "tools"        :v-adjust 0.0)))
 (setq all-the-icons-mode-icon-alist (append all-the-icons-mode-icon-alist
 					    jm-icons))
 

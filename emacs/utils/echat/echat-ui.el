@@ -47,8 +47,8 @@
   :group 'echat-faces)
 
 (defface echat-ui-nick-face
-  '((((class color) (background light)) :foreground "SpringGreen4")
-    (((class color) (background  dark)) :foreground "SpringGreen3"))
+  '((((class color) (background light)) :foreground "SpringGreen4" :weight bold)
+    (((class color) (background  dark)) :foreground "SpringGreen3" :weight bold))
   "Face for echat nick msg"
   :group 'echat-faces)
 
@@ -94,7 +94,7 @@
 		      (if myself spaces (- spaces icon-length))
 		      (if myself (- spaces icon-length) spaces)))
 	 (nick-face (if myself 'echat-ui-nick-face face))
-	 (nick-str (propertize sender 'face `(bold ,nick-face)))
+	 (nick-str (propertize sender 'face nick-face))
 	 (ts-str (propertize ts 'face 'lui-time-stamp-face))
 	 (inhibit-read-only t)
 	 (beg lui-output-marker))

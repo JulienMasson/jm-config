@@ -34,8 +34,8 @@
 ;;; Faces
 
 (defface echat-slack-face
-  '((((class color) (background light)) :foreground "purple4")
-    (((class color) (background  dark)) :foreground "purple2"))
+  '((((class color) (background light)) :foreground "purple4" :weight bold)
+    (((class color) (background  dark)) :foreground "purple2" :weight bold))
   "Face for echat slack"
   :group 'echat-faces)
 

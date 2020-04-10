@@ -157,7 +157,7 @@
 
 ;; Status
 (require 'status)
-(setq status-separator  " | ")
+(setq status-separator " | ")
 (status-add-to-left 'status-compilation)
 (status-add-to-left 'status-acscope)
 (status-add-to-left 'status-project-manager)

@@ -43,8 +43,8 @@
 ;;; Faces
 
 (defface echat-irc-face
-  '((((class color) (background light)) :foreground "chocolate4")
-    (((class color) (background  dark)) :foreground "chocolate1"))
+  '((((class color) (background light)) :foreground "DarkSlateGrey" :weight bold)
+    (((class color) (background  dark)) :foreground "DarkCyan" :weight bold))
   "Face for echat irc"
   :group 'echat-faces)
 

@@ -38,8 +38,8 @@
 ;;; Faces
 
 (defface echat-facebook-face
-  '((((class color) (background light)) :foreground "DodgerBlue4")
-    (((class color) (background  dark)) :foreground "DodgerBlue1"))
+  '((((class color) (background light)) :foreground "DodgerBlue4" :weight bold)
+    (((class color) (background  dark)) :foreground "DodgerBlue1" :weight bold))
   "Face for echat facebook"
   :group 'echat-faces)
 

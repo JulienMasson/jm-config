@@ -249,6 +249,11 @@
 
 ;;;;; doom modeline
    `(doom-modeline-bar ((t :background ,primary)))
+
+;;;;; status
+   `(status-time-face ((t (:inherit variable-pitch :foreground ,primary
+				    :width ultra-expanded :weight bold))))
+   `(status-jmail-face-account ((t (:inherit status-time-face))))
    ))
 
 ;; set ansi color
