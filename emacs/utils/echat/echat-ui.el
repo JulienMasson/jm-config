@@ -55,6 +55,7 @@
 ;;; Internal Functions
 
 (defun echat-ui--clean-up (body)
+  ;; force new line after point
   (replace-regexp-in-string "\\.\\s-+" ".\n" body))
 
 (defun echat-ui--find-header ()
@@ -88,11 +89,9 @@
 	 (ts (format-time-string lui-time-stamp-format time
                                  lui-time-stamp-zone))
 	 (icon-str (when icon (propertize "image" 'display icon)))
-	 (icon-length (if icon 5 0))
-	 (spaces (- (/ lui-fill-column 2) (/ (length ts) 2)))
-	 (fmt (format "%%-%ds%%s%%%ds"
-		      (if myself spaces (- spaces icon-length))
-		      (if myself (- spaces icon-length) spaces)))
+	 (icon-length (if icon 6 0))
+	 (spaces (- lui-fill-column (length ts) icon-length))
+	 (fmt (format "%%-%ds%%s" spaces))
 	 (nick-face (if myself 'echat-ui-nick-face face))
 	 (nick-str (propertize sender 'face nick-face))
 	 (ts-str (propertize ts 'face 'lui-time-stamp-face))
@@ -100,19 +99,15 @@
 	 (beg lui-output-marker))
     (save-excursion
       (goto-char lui-output-marker)
-      (when (and icon-str (not myself))
-	(insert icon-str " "))
-      (insert (format fmt (if myself " " nick-str) ts-str
-		      (if myself nick-str " ")))
-      (when (and icon-str myself)
-	(insert " " icon-str))
+      (when icon-str (insert icon-str " "))
+      (insert (format fmt nick-str ts-str))
       (add-text-properties lui-output-marker (point)
 			   (list :echat-time time
 				 :echat-nick sender))
       (insert "\n")
       (set-marker lui-output-marker (point)))))
 
-(defun echat-ui--fill-body (beg end justify)
+(defun echat-ui--fill-body (beg end)
   (let ((inhibit-read-only t)
 	(fill-column lui-fill-column)
 	(cur beg))
@@ -122,7 +117,7 @@
 	(goto-char beg)
 	(while (and (re-search-forward "\n" nil t)
 		    (< (point) end))
-	  (fill-region cur (point) justify)
+	  (fill-region cur (point) 'left)
 	  (setq cur (point))))
       (set-marker lui-output-marker (point)))))
 
@@ -160,8 +155,7 @@
   (let ((beg (marker-position lui-output-marker)))
     (lui-insert (propertize (concat (echat-ui--clean-up body) "\n")
 			    'lui-format-argument 'body))
-    (echat-ui--fill-body beg (marker-position lui-output-marker)
-			 (if (string= sender me) 'right 'left))))
+    (echat-ui--fill-body beg (marker-position lui-output-marker))))
 
 ;;; External Functions
 
@@ -179,7 +173,7 @@
   (echat-ui--remove-separator)
   (let ((beg (marker-position lui-output-marker)))
     (lui-insert (propertize (concat body "\n") 'face 'echat-ui-info-face))
-    (echat-ui--fill-body beg (marker-position lui-output-marker) 'left))
+    (echat-ui--fill-body beg (marker-position lui-output-marker)))
   (echat-ui--insert-separator))
 
 (cl-defun echat-ui-insert-msg (echat sender me body &key icon save
