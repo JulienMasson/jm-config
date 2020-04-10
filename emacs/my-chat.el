@@ -47,7 +47,7 @@
 
 ;; lui
 (require 'lui)
-(setq lui-fill-column 80)
+(setq lui-fill-column 90)
 (setq lui-time-stamp-format "[%e-%b %H:%M]")
 (setq lui-time-stamp-position nil)
 (setq lui-fill-type nil)
