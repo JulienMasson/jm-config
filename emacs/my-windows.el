@@ -122,7 +122,7 @@
 
 ;; highlight focus
 (require 'face-remap)
-(defvar highlight-focus-background "#242424")
+(defvar highlight-focus-background "#282828")
 
 (defun highlight-focus-swap (prev next)
   (when (and (buffer-live-p prev)
