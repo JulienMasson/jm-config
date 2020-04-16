@@ -36,7 +36,8 @@
   (let ((type (object-class-name echat))
 	(name (oref echat name))
 	(buffer (buffer-name (current-buffer))))
-    (format "%s-%s-%s.txt" type name buffer)))
+    (format "%s-%s-%s.txt" type name
+	    (replace-regexp-in-string "/" "!" buffer))))
 
 (defun echat-logs--load (echat)
   (let ((default-directory echat-logs-directory)
