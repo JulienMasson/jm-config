@@ -113,12 +113,12 @@
     (plist-get circe-options :nick)))
 
 (cl-defmethod echat-irc-insert-msg ((irc echat-irc-object) sender body)
-  (echat-ui-insert-msg echat sender (echat-irc-me irc) body :save t)
-  (unless (get-buffer-window-list (current-buffer))
+  (unless (eq (window-buffer (selected-window)) (current-buffer))
     (when-let* ((echat-buffer (echat-find-echat-buffer (current-buffer)))
 		(unread-count (oref echat-buffer unread-count)))
       (oset echat-buffer unread-p t)
-      (oset echat-buffer unread-count (incf unread-count)))))
+      (oset echat-buffer unread-count (incf unread-count))))
+  (echat-ui-insert-msg echat sender (echat-irc-me irc) body :save t))
 
 (cl-defmethod echat-irc-new-buffer ((irc echat-irc) name)
   (when (derived-mode-p 'circe-chat-mode)

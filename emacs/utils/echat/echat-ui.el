@@ -46,6 +46,18 @@
   "Face for echat separator msg"
   :group 'echat-faces)
 
+(defface echat-ui-unread-face
+  '((((class color) (background light)) :foreground "coral4" :weight bold)
+    (((class color) (background  dark)) :foreground "coral2" :weight bold))
+  "Face for echat unread msg"
+  :group 'echat-faces)
+
+(defface echat-ui-unread-separator-face
+  '((((class color) (background light)) :strike-through "coral4" :extend t)
+    (((class color) (background  dark)) :strike-through "coral2" :extend t))
+  "Face for echat unread separator msg"
+  :group 'echat-faces)
+
 (defface echat-ui-nick-face
   '((((class color) (background light)) :foreground "SpringGreen4" :weight bold)
     (((class color) (background  dark)) :foreground "SpringGreen3" :weight bold))
@@ -121,6 +133,59 @@
 	  (setq cur (point))))
       (set-marker lui-output-marker (point)))))
 
+(defun echat-ui--unread-separator ()
+  (catch 'found
+    (save-excursion
+      (goto-char (point-max))
+      (goto-char (line-beginning-position))
+      (while (not (bobp))
+	(dolist (ov (overlays-at (point)))
+	  (when (eq (overlay-get ov 'face) 'echat-ui-unread-separator-face)
+	    (throw 'found (point))))
+	(forward-line -1)))))
+
+(defun echat-ui--remove-unread-separator ()
+  (save-excursion
+    (goto-char lui-output-marker)
+    (save-excursion
+      (when-let ((pos (echat-ui--unread-separator))
+		 (inhibit-read-only t))
+	(goto-char pos)
+	(mapc #'delete-overlay (overlays-at pos))
+	(delete-region pos (+ (line-end-position) 1))))
+    (set-marker lui-output-marker (point))))
+
+(defun echat-ui--insert-unread-separator (count)
+  (let* ((str (format "| %s unread messages |" count))
+	 (spaces-before (- (/ lui-fill-column 2) (/ (length str) 2)))
+	 (spaces-after (- lui-fill-column spaces-before))
+	 (fmt (format "%%-%ds%%-%ds" spaces-before spaces-after))
+	 (beg (line-beginning-position))
+	 (inhibit-read-only t))
+    (insert (format fmt "" (propertize str 'face 'echat-ui-unread-face)))
+    (overlay-put (make-overlay beg (+ beg spaces-before))
+                 'face 'echat-ui-unread-separator-face)
+    (overlay-put (make-overlay (+ beg spaces-before (length str))
+			       (+ beg lui-fill-column))
+                 'face 'echat-ui-unread-separator-face)))
+
+(defun echat-ui--update-unread-separator (echat)
+  (when-let* ((echat-buffer (echat-find-echat-buffer (current-buffer)))
+	      (unread-count (oref echat-buffer unread-count))
+	      (inhibit-read-only t))
+    (unless (zerop unread-count)
+      (save-excursion
+	(if-let ((pos (echat-ui--unread-separator)))
+	    (progn
+	      (goto-char pos)
+	      (mapc #'delete-overlay (overlays-at pos))
+	      (delete-region pos (line-end-position))
+	      (echat-ui--insert-unread-separator unread-count))
+	  (goto-char lui-output-marker)
+	  (echat-ui--insert-unread-separator unread-count)
+	  (insert "\n")
+	  (set-marker lui-output-marker (point)))))))
+
 (defun echat-ui--remove-separator ()
   (save-excursion
     (goto-char (point-max))
@@ -144,12 +209,13 @@
 	     (beg (line-beginning-position))
 	     (end (+ beg lui-fill-column))
 	     (spaces (make-string lui-fill-column (string-to-char " "))))
-      (insert spaces "\n\n")
-      (overlay-put (make-overlay beg end)
-                   'face 'echat-ui-separator-face))
+	(insert spaces "\n\n")
+	(overlay-put (make-overlay beg end)
+                     'face 'echat-ui-separator-face))
       (set-marker lui-output-marker (point)))))
 
 (defun echat-ui--insert-msg (echat sender me body time icon)
+  (echat-ui--update-unread-separator echat)
   (unless (echat-ui--no-need-header-p sender time)
     (echat-ui--insert-header echat sender me time icon))
   (let ((beg (marker-position lui-output-marker)))
@@ -158,6 +224,18 @@
     (echat-ui--fill-body beg (marker-position lui-output-marker))))
 
 ;;; External Functions
+
+(defun echat-ui-remove-unread-separator (buffer)
+  (when (echat-find-by-buffer buffer)
+    (with-current-buffer buffer
+      (echat-ui--remove-unread-separator))))
+
+(defun echat-ui-goto-unread-messages ()
+  (interactive)
+  (when (and (derived-mode-p 'lui-mode)
+	     (echat-find-by-buffer (current-buffer)))
+    (when-let ((pos (echat-ui--unread-separator)))
+      (goto-char pos))))
 
 (defun echat-ui-setup-buffer (echat me buffer)
   (let ((inhibit-read-only t))

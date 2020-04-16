@@ -143,6 +143,7 @@
 (global-set-key (kbd "C-c e r") 'echat-start)
 (global-set-key (kbd "C-c e s") 'echat-search)
 (global-set-key (kbd "C-c e u") 'echat-unread-select)
+(define-key lui-mode-map (kbd "C-M-u") 'echat-ui-goto-unread-messages)
 
 ;; slack
 (define-key slack-message-buffer-mode-map (kbd "C-c C-e") 'emojify-insert-emoji)

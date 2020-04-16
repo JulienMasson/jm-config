@@ -53,5 +53,6 @@
 (setq lui-fill-type nil)
 (setq lui-flyspell-p t)
 (setq lui-prompt-string circe-prompt-string)
+(setq lui-scroll-behavior nil)
 
 (provide 'my-chat)

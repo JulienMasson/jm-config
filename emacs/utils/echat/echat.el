@@ -155,6 +155,22 @@
 	   (name (completing-read prompt (mapcar #'car sorted-collection))))
       (cdr (assq name sorted-collection)))))
 
+(defun echat--select-window (old-fn &rest args)
+  (let ((prev-buffer (current-buffer))
+	next-buffer)
+    (apply old-fn args)
+    (setq next-buffer (current-buffer))
+    ;; mark as read
+    (with-current-buffer next-buffer
+      (when (derived-mode-p 'lui-mode)
+	(echat--mark-buffer-as-read next-buffer)))
+    ;; remove unread separator
+    (with-current-buffer prev-buffer
+      (when (and (derived-mode-p 'lui-mode)
+		 (not (eq prev-buffer next-buffer)))
+	(echat-ui-remove-unread-separator prev-buffer)))))
+(advice-add 'select-window :around #'echat--select-window)
+
 ;;; External Functions
 
 (defun echat-find-echat-buffer (buffer)
@@ -190,8 +206,7 @@
 (defun echat-display-buffer (buffer)
   (if (get-buffer-window-list buffer)
       (pop-to-buffer buffer)
-    (switch-to-buffer-other-window buffer))
-  (echat--mark-buffer-as-read buffer))
+    (switch-to-buffer-other-window buffer)))
 
 (defun echat-search (name)
   (interactive (list (echat--prompt-active "Search: ")))

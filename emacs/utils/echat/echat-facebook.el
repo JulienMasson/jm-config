@@ -33,7 +33,7 @@
    (password        :initarg :password        :type string)
    (work            :initarg :work            :initform nil :type boolean)
    (bitlbee         :initarg :bitlbee         :type echat-bitlbee)
-   (bitlbee-channel :initarg :bitlbee-channel)))
+   (bitlbee-channel :initarg :bitlbee-channel :initform nil)))
 
 ;;; Faces
 

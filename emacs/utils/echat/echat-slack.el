@@ -121,7 +121,7 @@
 	      (name (slack-room-name room team)))
     (if-let ((echat-buffer (echat-slack--find-buffer slack name)))
 	(with-slots (buffer unread-count) echat-buffer
-	  (unless (and buffer (get-buffer-window-list buffer))
+	  (unless (and buffer (eq (window-buffer (selected-window)) buffer))
 	    (oset echat-buffer unread-p t)
 	    (oset echat-buffer unread-count (incf unread-count))))
       (setq echat-buffer (echat-add-buffer slack name nil
