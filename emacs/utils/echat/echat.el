@@ -122,6 +122,11 @@
   (echat--prompt prompt (cl-remove-if-not (lambda (echat) (oref echat active-p))
 					  echats)))
 
+(defun echat--sort-by-mute (collection)
+  (cl-sort collection (lambda (mute-a mute-b)
+			(or (not mute-a) mute-b))
+	   :key (lambda (e) (oref (cdr e) mute-p))))
+
 (defun echat--prompt-buffers (prompt)
   (let (collection)
     (dolist (echat echats)
@@ -131,8 +136,9 @@
 	    (when (buffer-live-p buffer)
 	      (add-to-list 'collection (cons (propertize name 'face face)
 					     echat-buffer)))))))
-    (let ((name (completing-read prompt (mapcar #'car collection))))
-      (oref (cdr (assq name collection)) buffer))))
+    (let* ((sorted-collection (echat--sort-by-mute collection))
+	   (name (completing-read prompt (mapcar #'car sorted-collection))))
+      (oref (cdr (assq name sorted-collection)) buffer))))
 
 (defun echat--prompt-unread-buffers (prompt)
   (let (collection)
@@ -145,8 +151,9 @@
 			   (format "%s (%s)" name unread-count))))
 		(add-to-list 'collection (cons (propertize str 'face face)
 					       echat-buffer))))))))
-    (let ((name (completing-read prompt (mapcar #'car collection))))
-      (cdr (assq name collection)))))
+    (let* ((sorted-collection (echat--sort-by-mute collection))
+	   (name (completing-read prompt (mapcar #'car sorted-collection))))
+      (cdr (assq name sorted-collection)))))
 
 ;;; External Functions
 
