@@ -63,6 +63,7 @@
 	     (last-pos t))
     (save-excursion
       (echat-ui--remove-separator)
+      (echat-ui--remove-unread-separator)
       (delete-region beg end)
       (setq last-pos (marker-position lui-output-marker))
       (set-marker lui-output-marker beg)
