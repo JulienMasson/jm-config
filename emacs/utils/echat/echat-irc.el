@@ -165,7 +165,7 @@
 
 (cl-defmethod echat-do-im-select ((irc echat-irc-object))
   (let* ((buffers (echat-irc--channel-buffers irc))
-	 (buffers-name (mapcar (lambda (buffer) (oref buffer name)) buffers))
+	 (buffers-name (eieio-mapcar buffers name))
 	 (name (completing-read "Select Channel: " buffers-name))
 	 (echat-buffer (cl-find-if (lambda (buffer)
 				     (string= name (oref buffer name)))

@@ -141,6 +141,7 @@
 (global-set-key (kbd "C-c e m") 'echat-mute-toggle)
 (global-set-key (kbd "C-c e q") 'echat-quit)
 (global-set-key (kbd "C-c e r") 'echat-start)
+(global-set-key (kbd "C-c e R") 'echat-restart)
 (global-set-key (kbd "C-c e s") 'echat-search)
 (global-set-key (kbd "C-c e u") 'echat-unread-select)
 (define-key lui-mode-map (kbd "C-M-u") 'echat-ui-goto-unread-messages)

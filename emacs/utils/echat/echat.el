@@ -88,6 +88,10 @@
 
 ;;; Internal Functions
 
+(defmacro eieio-mapcar (sequence slot)
+  (declare (indent defun))
+  `(mapcar (lambda (e) (oref e ,slot)) ,sequence))
+
 (defun echat--mark-buffer-as-read (buffer)
   (when-let* ((echat (echat-find-by-buffer buffer))
 	      (echat-buffer (echat-find-echat-buffer buffer)))
@@ -108,19 +112,26 @@
 	  (add-to-list 'buffers echat-buffer t))))
     (oset echat buffers buffers)))
 
-(defun echat--prompt (prompt collection)
-  (completing-read prompt (mapcar (lambda (echat)
-				    (with-slots (name face) echat
-				      (propertize name 'face face)))
-				  collection)))
+(defun echat--prompt (prompt echats &optional all)
+  (let ((collection (mapcar (lambda (echat)
+			      (with-slots (name face) echat
+				(propertize name 'face face)))
+			    echats)))
+    (when (and all (> (length collection) 1))
+      (push "ALL" collection))
+    (completing-read prompt collection)))
 
-(defun echat--prompt-inactive (prompt)
-  (echat--prompt prompt (cl-remove-if (lambda (echat) (oref echat active-p))
-				      echats)))
+(defun echat--inactive ()
+  (cl-remove-if (lambda (echat) (oref echat active-p)) echats))
 
-(defun echat--prompt-active (prompt)
-  (echat--prompt prompt (cl-remove-if-not (lambda (echat) (oref echat active-p))
-					  echats)))
+(defun echat--prompt-inactive (prompt &optional all)
+  (echat--prompt prompt (echat--inactive) all))
+
+(defun echat--active ()
+  (cl-remove-if-not (lambda (echat) (oref echat active-p))echats))
+
+(defun echat--prompt-active (prompt &optional all)
+  (echat--prompt prompt (echat--active) all))
 
 (defun echat--sort-by-mute (collection)
   (cl-sort collection (lambda (mute-a mute-b)
@@ -243,21 +254,32 @@
   (interactive (list (echat--prompt-buffers "Jump: ")))
   (echat-display-buffer buffer))
 
+(defun echat-restart (name)
+  (interactive (list (echat--prompt-active "Restart: " t)))
+  (let ((actives (eieio-mapcar (echat--active) name)))
+    (dolist (name (if (string= name "ALL") actives (list name)))
+      (echat-quit name)
+      (echat-start name))))
+
 (defun echat-start (name)
-  (interactive (list (echat--prompt-inactive "Start: ")))
-  (let ((echat (echat--find-by-name name)))
-    (echat-do-start echat)
-    (oset echat active-p t)))
+  (interactive (list (echat--prompt-inactive "Start: " t)))
+  (let ((inactives (eieio-mapcar (echat--inactive) name)))
+    (dolist (name (if (string= name "ALL") inactives (list name)))
+      (let ((echat (echat--find-by-name name)))
+	(echat-do-start echat)
+	(oset echat active-p t)))))
 
 (defun echat-quit (name)
-  (interactive (list (echat--prompt-active "Quit: ")))
-  (let ((echat (echat--find-by-name name)))
-    (echat-do-quit echat)
-    (oset echat active-p nil)
-    (dolist (echat-buffer (oref echat buffers))
-      (with-slots (buffer) echat-buffer
-	(when (buffer-live-p buffer)
-	  (kill-buffer buffer))))
-    (oset echat buffers nil)))
+  (interactive (list (echat--prompt-active "Quit: " t)))
+  (let ((actives (eieio-mapcar (echat--active) name)))
+    (dolist (name (if (string= name "ALL") actives (list name)))
+      (let ((echat (echat--find-by-name name)))
+	(echat-do-quit echat)
+	(oset echat active-p nil)
+	(dolist (echat-buffer (oref echat buffers))
+	  (with-slots (buffer) echat-buffer
+	    (when (buffer-live-p buffer)
+	      (kill-buffer buffer))))
+	(oset echat buffers nil)))))
 
 (provide 'echat)
