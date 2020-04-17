@@ -40,7 +40,7 @@
   (setq grep-command-index 0))
 (advice-add 'grep :after #'grep-command-save)
 
-(defun grep-command-next ()
+(defun grep-command-previous ()
   (interactive)
   (let* ((length (length grep-command-history))
 	 (index (if (= grep-command-index (- length 1))
@@ -52,7 +52,7 @@
       (setq-local default-directory dir)
       (compilation-start command #'grep-mode))))
 
-(defun grep-command-previous ()
+(defun grep-command-next ()
   (interactive)
   (let* ((length (length grep-command-history))
 	 (index (if (zerop grep-command-index)
