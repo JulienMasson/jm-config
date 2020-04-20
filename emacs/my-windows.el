@@ -82,9 +82,9 @@
 ;; show parenthese
 (show-paren-mode 1)
 
-;; load jm theme
-(add-to-list 'custom-theme-load-path my-emacs-root-path)
-(load-theme 'jm t)
+;; load jm faces
+(require 'jm-faces)
+(jm-faces-load)
 
 ;; doom modeline
 (require 'doom-modeline)
@@ -122,7 +122,10 @@
 
 ;; highlight focus
 (require 'face-remap)
-(defvar highlight-focus-background "#282828")
+
+(defface highlight-focus-face '((t))
+  "Face used to highlight current focus window."
+  :group 'faces)
 
 (defun highlight-focus-swap (prev next)
   (when (and (buffer-live-p prev)
@@ -132,8 +135,7 @@
       (force-mode-line-update)))
   (when (buffer-live-p next)
     (with-current-buffer next
-      (face-remap-add-relative 'default :background
-			       highlight-focus-background))))
+      (face-remap-add-relative 'default 'highlight-focus-face))))
 
 (defun highlight-focus-check (old-fn &rest args)
   (let ((prev (current-buffer))
