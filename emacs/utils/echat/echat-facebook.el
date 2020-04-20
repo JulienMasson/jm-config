@@ -70,7 +70,7 @@
 ;;; External Functions
 
 (cl-defmethod echat-irc-new-buffer ((facebook echat-facebook) name)
-  (when (eq major-mode 'circe-channel-mode)
+  (when (derived-mode-p 'circe-chat-mode)
     (let ((buffer (current-buffer))
 	  (me (echat-irc-me facebook)))
       (if (string-match "&bitlbee" (buffer-name buffer))
@@ -84,7 +84,7 @@
   (let ((format (car args))
 	(bitlbee-channel (oref facebook bitlbee-channel)))
     (when (and (member format (list 'circe-format-self-say 'circe-format-say))
-	       (eq major-mode 'circe-channel-mode))
+	       (derived-mode-p 'circe-chat-mode))
       (let* ((keywords (cdr args))
 	     (sender (plist-get keywords :nick))
 	     (body (plist-get keywords :body)))
@@ -106,7 +106,7 @@
   (with-current-buffer (oref facebook bitlbee-channel)
     (let* ((user (completing-read "IM: " (oref facebook candidates)))
 	   (query-buffer (circe-server-get-or-create-chat-buffer
-			  user 'circe-channel-mode)))
+			  user 'circe-query-mode)))
       (echat-display-buffer query-buffer))))
 
 (cl-defmethod echat-do-start :before ((facebook echat-facebook))
