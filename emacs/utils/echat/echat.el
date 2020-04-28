@@ -58,6 +58,7 @@
 (require 'echat-slack)
 (require 'echat-irc)
 (require 'echat-facebook)
+(require 'echat-pidgin)
 
 ;;; External Variables
 
