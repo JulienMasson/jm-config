@@ -139,10 +139,10 @@
       (goto-char (point-max))
       (goto-char (line-beginning-position))
       (while (not (bobp))
+	(forward-line -1)
 	(dolist (ov (overlays-at (point)))
 	  (when (eq (overlay-get ov 'face) 'echat-ui-unread-separator-face)
-	    (throw 'found (point))))
-	(forward-line -1)))))
+	    (throw 'found (point))))))))
 
 (defun echat-ui--remove-unread-separator ()
   (save-excursion
