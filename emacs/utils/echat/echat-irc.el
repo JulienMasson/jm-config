@@ -188,7 +188,8 @@
     (with-current-buffer buffer
       (circe-server-mode)
       (circe--server-set-variables (oref irc circe-options))
-      (circe-reconnect))))
+      (circe-reconnect)))
+  (oset irc active-p t))
 
 (cl-defmethod echat-do-quit ((irc echat-irc-object))
   (let ((server-buffer (oref irc server-buffer)))

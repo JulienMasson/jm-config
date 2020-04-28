@@ -200,7 +200,8 @@
       (echat-slack--room-display slack im name))))
 
 (cl-defmethod echat-do-start ((slack echat-slack))
-  (slack-start (oref slack team)))
+  (slack-start (oref slack team))
+  (oset slack active-p t))
 
 (cl-defmethod echat-do-quit ((slack echat-slack))
   (let ((team (oref slack team)))

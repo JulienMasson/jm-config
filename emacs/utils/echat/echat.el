@@ -266,8 +266,7 @@
   (let ((inactives (eieio-mapcar (echat--inactive) name)))
     (dolist (name (if (string= name "ALL") inactives (list name)))
       (let ((echat (echat--find-by-name name)))
-	(echat-do-start echat)
-	(oset echat active-p t)))))
+	(echat-do-start echat)))))
 
 (defun echat-quit (name)
   (interactive (list (echat--prompt-active "Quit: " t)))
