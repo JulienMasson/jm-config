@@ -33,6 +33,12 @@
 (setq slack-buffer-emojify t)
 (setq slack-log-level 'error)
 
+;; alert
+(require 'alert)
+(setq alert-log-messages nil)
+(setq alert-hide-all-notifications t)
+(setq alert-default-style nil)
+
 ;; circe
 (require 'circe)
 (setq circe-server-killed-confirmation nil)
