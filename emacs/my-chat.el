@@ -25,9 +25,6 @@
 ;; echat
 (require 'echat)
 
-;; emojify
-(require 'emojify)
-
 ;; slack
 (require 'slack)
 (setq slack-buffer-emojify t)
@@ -43,13 +40,16 @@
 (require 'circe)
 (setq circe-server-killed-confirmation nil)
 (setq circe-channel-killed-confirmation nil)
-(add-hook 'circe-chat-mode-hook #'emojify-mode)
 
 ;; circe images
 (require 'circe-display-images)
 (setq circe-display-images-image-regex
       "\\(https?:\/\/[^ ]*?\.\\\(?:png\\|jpg\\|jpeg\\|svg\\|gif\\).*\\)")
 (enable-circe-display-images)
+
+;; emojify
+(require 'emojify)
+(add-hook 'lui-mode-hook #'emojify-mode)
 
 ;; lui
 (require 'lui)
