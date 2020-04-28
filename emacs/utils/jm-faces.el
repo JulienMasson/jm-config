@@ -119,7 +119,10 @@
 			     :background ,gray-dark2)))
 
 ;;;; match
-    `(match ((t (:background ,gray-dark :foreground ,primary :weight bold))))
+    `(match ((((class color) (background light))
+	      :background ,gray-light2 :foreground ,primary :weight bold)
+	     (((class color) (background dark))
+	      :background ,gray-dark :foreground ,primary :weight bold)))
 
 ;;;; whitespace
     `(trailing-whitespace ((t (:background ,red))))
@@ -191,7 +194,8 @@
     `(compilation-mode-line-run ((t (:inherit font-lock-keyword-face))))
 
 ;;;; company
-    `(company-preview ((t (:background ,gray))))
+    `(company-preview ((((class color) (background light)) :background ,gray-light2)
+		       (((class color) (background dark)) :background ,gray)))
     `(company-preview-common ((t (:inherit company-preview :foreground ,primary))))
     `(company-scrollbar-bg ((t (:inherit company-tooltip))))
     `(company-scrollbar-fg ((t (:inherit company-tooltip-selection))))
@@ -200,7 +204,10 @@
     `(company-tooltip-common ((t (:inherit company-tooltip :foreground ,primary))))
     `(company-tooltip-common-selection ((t (:inherit company-tooltip-selection
 						     :foreground ,primary))))
-    `(company-tooltip-selection ((t (:background ,gray-dark))))
+    `(company-tooltip-selection ((((class color) (background light))
+				  :background ,gray-light)
+				 (((class color) (background dark))
+				  :background ,gray-dark)))
 
 ;;;; diff
     `(diff-added ((t (:background nil :foreground ,forest))))
