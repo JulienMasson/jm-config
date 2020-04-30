@@ -29,6 +29,9 @@
 ;; forge
 (require 'forge)
 
+;; display only open topic
+(setq forge-topic-list-limit '(60 . 0))
+
 ;; don't show magit popup warning
 (defun magit--magit-popup-warning ())
 
