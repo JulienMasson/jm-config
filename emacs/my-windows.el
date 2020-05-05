@@ -158,6 +158,10 @@
 (setq all-the-icons-mode-icon-alist (append all-the-icons-mode-icon-alist
 					    jm-icons))
 
+;; icons ibuffer
+(require 'all-the-icons-ibuffer)
+(all-the-icons-ibuffer-mode 1)
+
 ;; line highlighting in all buffers
 (require 'hl-line)
 (global-hl-line-mode 1)

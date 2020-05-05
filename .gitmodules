@@ -242,3 +242,6 @@
 [submodule "emacs/modules/all-the-icons"]
 	path = emacs/modules/all-the-icons
 	url = https://github.com/domtronn/all-the-icons.el.git
+[submodule "emacs/modules/all-the-icons-ibuffer"]
+	path = emacs/modules/all-the-icons-ibuffer
+	url = https://github.com/seagle0128/all-the-icons-ibuffer.git
