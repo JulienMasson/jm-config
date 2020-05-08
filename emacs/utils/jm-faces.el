@@ -212,8 +212,12 @@
 ;;;; diff
     `(diff-added ((t (:background nil :foreground ,forest))))
     `(diff-indicator-added ((t :inherit diff-added)))
-    `(diff-file-header ((t (:background ,black :weight bold))))
-    `(diff-header ((t (:background ,black))))
+    `(diff-file-header ((((class color) (background light))
+			 :background ,gray-light2 :weight bold)
+			(((class color) (background dark))
+			 :background ,black :weight bold)))
+    `(diff-header ((((class color) (background light)) :background ,gray-light2)
+		   (((class color) (background dark)) :background ,black)))
     `(diff-removed ((t (:background nil :foreground ,red))))
     `(diff-indicator-removed ((t :inherit diff-removed)))
     `(diff-refine-added ((t :inherit default :weight bold
