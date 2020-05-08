@@ -33,6 +33,11 @@
   :type 'alist
   :group 'echat)
 
+(defcustom echat-pidgin-account-ignored nil
+  "List of account to ignored."
+  :type 'list
+  :group 'echat)
+
 ;;; Class
 
 (defclass echat-pidgin (echat)
@@ -45,11 +50,20 @@
 (defclass echat-pidgin-buddy ()
   ((id      :initarg :id      :initform 0   :type number)
    (name    :initarg :name    :initform ""  :type string)
-   (alias   :initarg :alias   :initform ""  :type string)))
+   (alias   :initarg :alias   :initform ""  :type string)
+   (icon    :initarg :icon    :initform ""  :type string)))
 
 (defclass echat-pidgin-chat ()
   ((id      :initarg :id      :initform 0   :type number)
    (name    :initarg :name    :initform ""  :type string)))
+
+;;; Faces
+
+(defface echat-whatsapp-face
+  '((((class color) (background light)) :foreground "SeaGreen4" :weight bold)
+    (((class color) (background  dark)) :foreground "SeaGreen3" :weight bold))
+  "Face for echat whatsapp"
+  :group 'echat-faces)
 
 ;;; Pidgin mode
 
@@ -73,7 +87,8 @@
   '(("AccountSignedOn"     . echat-pidgin--account-signed-on)
     ("AccountSignedOff"	   . echat-pidgin--account-signed-off)
     ("WroteImMsg"          . echat-pidgin--im-wrote)
-    ("WroteChatMsg"        . echat-pidgin--chat-wrote)))
+    ("WroteChatMsg"        . echat-pidgin--chat-wrote)
+    ("ChatTopicChanged"    . echat-pidgin--chat-topic-changed)))
 
 (defvar echat-pidgin--dbus-objects nil)
 
@@ -127,7 +142,8 @@
 ;; Buffer
 
 (defun echat-pidgin--killed ()
-  (pidgin--call-method "PurpleConversationDestroy" :int32 echat-pidgin--id))
+  (dbus-ignore-errors
+    (pidgin--call-method "PurpleConversationDestroy" :int32 echat-pidgin--id)))
 
 (defun echat-pidgin--buffer-name (pidgin conv-name)
   (with-slots (name type) pidgin
@@ -137,8 +153,6 @@
   (if-let ((buffer (echat-pidgin--find-buffer-by-id pidgin id)))
       buffer
     (let ((buffer-name (echat-pidgin--buffer-name pidgin sender)))
-      (when-let ((buffer (get-buffer buffer-name)))
-	(kill-buffer buffer))
       (with-current-buffer (get-buffer-create buffer-name)
 	(pidgin-im-mode)
 	(setq echat-pidgin--id id)
@@ -147,49 +161,63 @@
 	(echat-add-buffer pidgin sender (current-buffer))
 	(current-buffer)))))
 
-(defun echat-pidgin--chat-buffer-name (pidgin buffer name)
-  (with-current-buffer buffer
-    (rename-buffer (echat-pidgin--buffer-name pidgin name))
-    (echat-add-buffer pidgin name (current-buffer))))
+(defun echat-pidgin--chat-setup-buffer (pidgin name id)
+  (let ((buffer-name (echat-pidgin--buffer-name pidgin name)))
+    (with-current-buffer (get-buffer-create buffer-name)
+      (pidgin-chat-mode)
+      (setq echat-pidgin--id id)
+      (setq lui-input-function #'echat-pidgin--chat-send)
+      (goto-char (point-max))
+      (echat-add-buffer pidgin name (current-buffer))
+      (current-buffer))))
 
-(defun echat-pidgin--chat-buffer-topic (pidgin buffer id topic)
-  (if (string= topic "")
-      (pidgin--call-method-async "PurpleConversationGetName"
-				 (apply-partially #'echat-pidgin--chat-buffer-name
-						  pidgin buffer)
-				 :int32 id)
+(defun echat-pidgin--chat-rename (pidgin buffer name)
+  (let ((echat-buffer (echat-find-echat-buffer buffer))
+	(buffer-name (echat-pidgin--buffer-name pidgin name)))
     (with-current-buffer buffer
-      (rename-buffer (echat-pidgin--buffer-name pidgin topic))
-      (echat-add-buffer pidgin topic (current-buffer)))))
+      (rename-buffer buffer-name)
+      (oset echat-buffer name name)
+      (oset echat-buffer buffer (current-buffer)))))
 
-(defun echat-pidgin--chat-get-topic (pidgin buffer id chat-id)
-  (pidgin--call-method-async "PurpleConvChatGetTopic"
-			     (apply-partially #'echat-pidgin--chat-buffer-topic
-					      pidgin buffer id)
-			     :int32 chat-id))
+(defun echat-pidgin--chat-topic-handler (id name topic account)
+  (when-let* ((pidgin (echat-pidgin--find-by-id account))
+	      (type (oref pidgin type))
+	      (final-name (if (string= type "Facebook") topic name)))
+    (if-let ((buffer (echat-pidgin--find-buffer-by-id pidgin id)))
+	(echat-pidgin--chat-rename pidgin buffer final-name)
+      (echat-pidgin--chat-setup-buffer pidgin final-name id))))
 
-(defun echat-pidgin--chat-buffer-infos (pidgin buffer id)
-  (pidgin--call-method-async "PurpleConvChat"
-			     (apply-partially #'echat-pidgin--chat-get-topic
-					      pidgin buffer id)
+(defun echat-pidgin--chat-topic-changed (id name topic)
+  (pidgin--call-method-async "PurpleConversationGetAccount"
+			     (apply-partially #'echat-pidgin--chat-topic-handler
+					      id name topic)
+			     :int32 id))
+
+(defun echat-pidgin--chat-buffer-set-name (pidgin buffer name)
+  (unless (string= name "")
+    (echat-pidgin--chat-rename pidgin buffer name)))
+
+(defun echat-pidgin--chat-buffer-get-name (pidgin buffer id)
+  (pidgin--call-method-async "PurpleConversationGetName"
+			     (apply-partially #'echat-pidgin--chat-buffer-set-name
+					      pidgin buffer)
 			     :int32 id))
 
 (defun echat-pidgin--chat-buffer (pidgin id)
   (if-let ((buffer (echat-pidgin--find-buffer-by-id pidgin id)))
       buffer
-    (let* ((name (number-to-string id))
-	   (buffer-name (echat-pidgin--buffer-name pidgin name)))
-      (when-let ((buffer (get-buffer buffer-name)))
-	(kill-buffer buffer))
-      (with-current-buffer (get-buffer-create buffer-name)
-	(echat-pidgin--chat-buffer-infos pidgin (current-buffer) id)
-	(pidgin-chat-mode)
-	(setq echat-pidgin--id id)
-	(setq lui-input-function #'echat-pidgin--chat-send)
-	(goto-char (point-max))
-	(current-buffer)))))
+    (with-current-buffer (echat-pidgin--chat-setup-buffer
+			  pidgin (number-to-string id) id)
+      (echat-pidgin--chat-buffer-get-name pidgin (current-buffer) id)
+      (current-buffer))))
 
 ;; Write
+
+(defun echat-pidgin--buddy-icon (pidgin name)
+  (when-let* ((buddy (echat-pidgin--find-buddy pidgin name))
+	      (icon (oref buddy icon)))
+    (unless (string= icon "")
+      (create-image icon nil nil :scale 0.75 :ascent 80))))
 
 (defun echat-pidgin--buddy-alias (pidgin name)
   (if-let ((buddy (echat-pidgin--find-buddy pidgin name)))
@@ -202,7 +230,7 @@
     (shr-render-region (point-min) (point-max))
     (buffer-string)))
 
-(defun echat-pidgin--wrote (pidgin buffer sender msg flags)
+(defun echat-pidgin--wrote (pidgin buffer sender msg icon flags)
   (let ((me (oref pidgin me))
 	(msg (echat-pidgin--html-rendering msg)))
     ;; WORKAROUND: flags set to 1 seems to be me
@@ -213,19 +241,23 @@
 	(oset echat-buffer unread-p t)
 	(oset echat-buffer unread-count (incf unread-count))))
     (with-current-buffer buffer
-      (echat-ui-insert-msg pidgin sender me msg))))
+      (echat-ui-insert-msg pidgin sender me msg :icon icon))))
 
 (defun echat-pidgin--im-wrote (account sender msg id flags)
   (when-let* ((pidgin (echat-pidgin--find-by-id account))
 	      (alias (echat-pidgin--buddy-alias pidgin sender))
 	      (buffer (echat-pidgin--im-buffer pidgin alias id)))
-    (echat-pidgin--wrote pidgin buffer alias msg flags)))
+    (echat-pidgin--wrote pidgin buffer alias msg
+			 (echat-pidgin--buddy-icon pidgin sender)
+			 flags)))
 
 (defun echat-pidgin--chat-wrote (account sender msg id flags)
   (when-let* ((pidgin (echat-pidgin--find-by-id account))
 	      (alias (echat-pidgin--buddy-alias pidgin sender))
 	      (buffer (echat-pidgin--chat-buffer pidgin id)))
-    (echat-pidgin--wrote pidgin buffer alias msg flags)))
+    (echat-pidgin--wrote pidgin buffer alias msg
+			 (echat-pidgin--buddy-icon pidgin sender)
+			 flags)))
 
 ;; Chats
 
@@ -261,8 +293,20 @@
 
 ;; Buddies
 
+(defun echat-pidgin--buddy-set-icon (buddy icon-path)
+  (oset buddy icon icon-path))
+
+(defun echat-pidgin--buddy-get-icon (buddy icon)
+  (unless (zerop icon)
+    (pidgin--call-method-async "PurpleBuddyIconGetFullPath"
+			       (apply-partially #'echat-pidgin--buddy-set-icon buddy)
+			       :int32 icon)))
+
 (defun echat-pidgin--buddy-set-alias (buddy alias)
-  (oset buddy alias alias))
+  (oset buddy alias alias)
+  (pidgin--call-method-async "PurpleBuddyGetIcon"
+			     (apply-partially #'echat-pidgin--buddy-get-icon buddy)
+			     :int32 (oref buddy id)))
 
 (defun echat-pidgin--buddy-set-name (buddy name)
   (oset buddy name name)
@@ -305,13 +349,15 @@
 	   (face (cond ((string= protocol "Facebook") 'echat-facebook-face)
 		       ((string= protocol "Slack") 'echat-slack-face)
 		       ((string= protocol "IRC") 'echat-irc-face)
+		       ((string= protocol "Whatsapp (HTTP)") 'echat-whatsapp-face)
 		       (t 'default)))
 	   (pidgin (echat-pidgin :name (if alias alias username)
 				 :face face
 				 :id id
 				 :type protocol
 				 :me (if (string= me "") username me))))
-      (add-to-list 'echats pidgin t))))
+      (unless (member username echat-pidgin-account-ignored)
+	(add-to-list 'echats pidgin t)))))
 
 ;; Signals
 
