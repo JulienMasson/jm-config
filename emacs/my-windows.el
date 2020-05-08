@@ -147,6 +147,7 @@
 (advice-add 'select-window :around #'highlight-focus-check)
 
 ;; add custom icons
+(require 'all-the-icons)
 (defvar jm-icons
  '((jmail-mode                all-the-icons-octicon "mail"         :v-adjust 0.0)
    (jmail-compose-mode        all-the-icons-octicon "pencil"       :v-adjust 0.0)
