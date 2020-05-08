@@ -146,11 +146,8 @@
 (global-set-key (kbd "C-c e u") 'echat-unread-select)
 (define-key lui-mode-map (kbd "C-M-u") 'echat-ui-goto-unread-messages)
 
-;; slack
-(define-key slack-message-buffer-mode-map (kbd "C-c C-e") 'emojify-insert-emoji)
-
-;; circe
-(define-key circe-chat-mode-map (kbd "C-c C-e") 'emojify-insert-emoji)
+;; lui
+(define-key lui-mode-map (kbd "C-c C-e") 'emojify-insert-emoji)
 
 ;; acscope
 (define-key acscope-mode-map (kbd "C-c s k") 'acscope-database-add-kernel)
