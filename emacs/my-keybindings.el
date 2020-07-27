@@ -146,6 +146,19 @@
 (global-set-key (kbd "C-c e u") 'echat-unread-select)
 (define-key lui-mode-map (kbd "C-M-u") 'echat-ui-goto-unread-messages)
 
+;; epurple
+(global-set-key (kbd "C-c e c") 'epurple-chat)
+(global-set-key (kbd "C-c e r") 'epurple-init)
+(global-set-key (kbd "C-c e q") 'epurple-exit)
+(global-set-key (kbd "C-c e j") 'epurple-jump)
+(global-set-key (kbd "C-c e i") 'epurple-im)
+(global-set-key (kbd "C-c e m") 'epurple-mute-toggle)
+(global-set-key (kbd "C-c e u") 'epurple-unread)
+(global-set-key (kbd "C-c e C") 'epurple-connect)
+(global-set-key (kbd "C-c e D") 'epurple-disconnect)
+(global-set-key (kbd "C-c e R") 'epurple-restart)
+(global-set-key (kbd "C-c e U") 'epurple-update-restart)
+
 ;; lui
 (define-key lui-mode-map (kbd "C-c C-e") 'emojify-insert-emoji)
 

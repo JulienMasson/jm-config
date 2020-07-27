@@ -22,6 +22,10 @@
 
 ;;; Code:
 
+;; epurple
+(require 'epurple)
+(setq epurple-nick-name "Julien Masson")
+
 ;; echat
 (require 'echat)
 

@@ -163,7 +163,7 @@
 (status-add-to-left 'status-project-manager)
 (status-add-to-left 'status-tab-bar)
 (status-add-to-right 'status-date)
-(status-add-to-right 'status-echat)
+(status-add-to-right 'status-epurple)
 (status-add-to-right 'status-jmail)
 (turn-on-status)
 
