@@ -55,6 +55,16 @@
 (require 'emojify)
 (add-hook 'lui-mode-hook #'emojify-mode)
 
+(defvar jm-emojify-candidates '("🙂" "😛" "😂" "😑" "😕" "🙁" "😤" "👍"))
+
+(defun jm-emojify-insert-emoji ()
+  (interactive)
+  (emojify-create-emojify-emojis)
+  (let* ((emojify-minibuffer-reading-emojis-p t)
+	 (minibuffer-setup-hook (cons #'emojify--completing-read-minibuffer-setup-hook
+                                      minibuffer-setup-hook)))
+    (insert (completing-read "Insert Emoji: " jm-emojify-candidates))))
+
 ;; lui
 (require 'lui)
 (setq lui-fill-column 90)

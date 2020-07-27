@@ -160,7 +160,7 @@
 (global-set-key (kbd "C-c e U") 'epurple-update-restart)
 
 ;; lui
-(define-key lui-mode-map (kbd "C-c C-e") 'emojify-insert-emoji)
+(define-key lui-mode-map (kbd "C-c C-e") 'jm-emojify-insert-emoji)
 
 ;; acscope
 (define-key acscope-mode-map (kbd "C-c s k") 'acscope-database-add-kernel)
