@@ -273,6 +273,11 @@
     `(org-table ((t (:foreground ,green-dark))))
     `(org-todo ((t (:inherit font-lock-string-face :weight bold))))
 
+;;;;; slack
+    `(slack-mrkdwn-code-face ((t (:foreground ,orange
+					      :box (:line-width -1 :color ,gray)))))
+    `(slack-mrkdwn-code-block-face ((t (:background ,gray-dark))))
+
 ;;;;; circe
     `(circe-prompt-face ((t :inherit default
 			    :box (:line-width -1 :style released-button))))
