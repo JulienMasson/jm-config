@@ -234,7 +234,9 @@
   (let ((me (oref pidgin me))
 	(msg (echat-pidgin--html-rendering msg)))
     ;; WORKAROUND: flags set to 1 seems to be me
-    (when (= flags 1) (setq sender me))
+    (when (= flags 1)
+      (setq sender me)
+      (setq icon (echat-pidgin--buddy-icon pidgin me)))
     (unless (eq (window-buffer (selected-window)) buffer)
       (when-let* ((echat-buffer (echat-find-echat-buffer buffer))
 		  (unread-count (oref echat-buffer unread-count)))
