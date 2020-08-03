@@ -37,11 +37,18 @@
   :type 'string
   :group 'jmail)
 
+(defcustom jmail-rss-fetch-after (* 30 60)
+  "Fetch RSS news after X seconds, the exact time depends on the time to fetch mails"
+  :type 'integer
+  :group 'jmail)
+
 ;;; External Variables
 
 (defconst jmail-rss-program "feed2exec")
 
 (defvar jmail-rss--current-cb nil)
+
+(defvar jmail-rss--current-time 0)
 
 ;;; Internal Functions
 
@@ -100,6 +107,7 @@
 (defun jmail-rss--process-sentinel (process status)
   (when-jmail-update-process-success process
       (jmail-rss--rename-new-entries)
+      (setq jmail-rss--current-time (time-convert (current-time) 'integer))
       (funcall jmail-rss--current-cb)))
 
 ;;; External Functions
@@ -109,13 +117,16 @@
        (jmail-find-program jmail-rss-program)))
 
 (defun jmail-rss-fetch (buffer cb)
-  (setq jmail-rss--current-cb cb)
-  (let* ((default-directory jmail-top-maildir)
-	 (program (jmail-find-program jmail-rss-program))
-	 (args (jmail-rss--get-args "fetch"))
-	 (process (apply 'start-file-process jmail-update-process-name
-			 buffer program args)))
-    (set-process-filter process 'jmail-update--process-filter)
-    (set-process-sentinel process 'jmail-rss--process-sentinel)))
+  (let ((secs (time-convert (current-time) 'integer)))
+    (if (< secs (+ jmail-rss--current-time jmail-rss-fetch-after))
+	(funcall cb)
+      (setq jmail-rss--current-cb cb)
+      (let* ((default-directory jmail-top-maildir)
+	     (program (jmail-find-program jmail-rss-program))
+	     (args (jmail-rss--get-args "fetch"))
+	     (process (apply 'start-file-process jmail-update-process-name
+			     buffer program args)))
+	(set-process-filter process 'jmail-update--process-filter)
+	(set-process-sentinel process 'jmail-rss--process-sentinel)))))
 
 (provide 'jmail-rss)
