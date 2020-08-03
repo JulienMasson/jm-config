@@ -49,7 +49,7 @@
 (require 'circe-display-images)
 (setq circe-display-images-image-regex
       "\\(https?:\/\/[^ ]*?\.\\\(?:png\\|jpg\\|jpeg\\|svg\\|gif\\).*\\)")
-(enable-circe-display-images)
+(add-hook 'lui-pre-output-hook 'circe-display-images)
 
 ;; emojify
 (require 'emojify)
