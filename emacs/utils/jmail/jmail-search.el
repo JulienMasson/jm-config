@@ -154,6 +154,8 @@
 (defun jmail-search--subject-str (object)
   (let* ((subject (plist-get object :subject))
 	 (thread (plist-get object :thread)))
+    (unless subject
+      (setq subject "(no subject)"))
     (if thread
 	(let* ((level (plist-get thread :level))
 	       (last-child (plist-get thread :last-child))
