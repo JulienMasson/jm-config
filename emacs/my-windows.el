@@ -155,7 +155,8 @@
    (circe-channel-mode        all-the-icons-faicon  "commenting-o" :v-adjust 0.0)
    (circe-query-mode          all-the-icons-faicon  "commenting-o" :v-adjust 0.0)
    (slack-message-buffer-mode all-the-icons-faicon  "slack"        :v-adjust 0.0)
-   (acscope-buffer-mode       all-the-icons-octicon "tools"        :v-adjust 0.0)))
+   (acscope-buffer-mode       all-the-icons-octicon "tools"        :v-adjust 0.0)
+   (device-control-mode       all-the-icons-octicon "tools"        :v-adjust 0.0)))
 (setq all-the-icons-mode-icon-alist (append all-the-icons-mode-icon-alist
 					    jm-icons))
 
