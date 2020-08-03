@@ -61,5 +61,4 @@
 		  (goto-char (point-max)))))
      (light-save-excursion (progn ,@body))))
 
-
 (provide 'utils)

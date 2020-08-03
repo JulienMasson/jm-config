@@ -248,3 +248,6 @@
 [submodule "emacs/modules/epurple"]
 	path = emacs/modules/epurple
 	url = https://github.com/JulienMasson/epurple.git
+[submodule "emacs/modules/company-box"]
+	path = emacs/modules/company-box
+	url = https://github.com/sebastiencs/company-box.git
