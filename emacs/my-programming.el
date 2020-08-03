@@ -75,6 +75,10 @@
 (setq company-tooltip-minimum-width 40)
 (global-company-mode)
 
+;; company box
+(require 'company-box)
+(add-hook 'company-mode-hook 'company-box-mode)
+
 ;; don't message in echo area
 (defun company-echo-show (&optional getter))
 
