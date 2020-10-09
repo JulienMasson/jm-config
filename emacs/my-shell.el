@@ -51,4 +51,16 @@
       (comint-send-input)
     (shell (current-buffer))))
 
+;; export PS1
+(defconst ps1-config "\\[\\e[1;34m\\]\\u  \\w${text}\\[\\e[m\\]\n\\[\\e[1;32m\\]\\t\\[\\e[m\\] ")
+(defun export-ps1 ()
+  (when shell--start-prog
+    (when-let ((process (get-buffer-process (current-buffer)))
+	       (ps1 (shell-quote-argument ps1-config)))
+      (goto-char (process-mark process))
+      (process-send-string process (format " export PS1=%s\n" ps1))
+      (while (accept-process-output process 0.1))
+      (shell-clear))))
+(setq shell-mode-hook (append shell-mode-hook (list 'export-ps1)))
+
 (provide 'my-shell)
