@@ -90,14 +90,6 @@
   (interactive)
   (rename-buffer (generate-new-buffer-name "*grep*")))
 
-;; grep at point
-(require 'thingatpt)
-(defun grep-at-point ()
-  (interactive)
-  (grep (format "%s%s ."
-		grep-command
-		(thing-at-point 'symbol))))
-
 ;; ripgrep
 (require 'rg)
 (defun rg-executable () (executable-find "rg"))

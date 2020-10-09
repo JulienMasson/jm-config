@@ -1,4 +1,4 @@
-;;; init.el --- Emacs Initialization File
+;;; uinit.el --- Micro Emacs Initialization File
 
 ;; Copyright (C) 2019 Julien Masson
 
@@ -25,27 +25,39 @@
 ;; my emacs root path
 (defvar my-emacs-root-path (file-name-directory load-file-name))
 
-;; my private dotfiles path
-(defvar my-private-dotfiles-path (concat my-emacs-root-path
-					 "modules/jm-private/dotfiles/"))
+;; disable menubar
+(menu-bar-mode -1)
 
-;; add subdirs of emacs root path in load path
-(add-to-list 'load-path my-emacs-root-path)
-(let ((default-directory my-emacs-root-path))
-  (normal-top-level-add-subdirs-to-load-path))
+;; always keep the tab bar hidden
+(setq tab-bar-show nil)
 
-;; windows config
-(require 'my-windows)
+;; set font size
+(set-face-attribute 'default nil :height 100)
 
-;; system config
-(require 'my-system)
+;; enable ido-mode
+(require 'ido)
+(setq ido-ignore-files '("\\`\\.\\./" "\\`\\./"))
+(ido-mode 1)
+(ido-everywhere)
 
-;; keybindings config
+;; minimal dired config
+(require 'dired)
+(setq dired-recursive-deletes 'always)
+(put 'dired-find-alternate-file 'disabled nil)
+
+;; disable automatic file search in ido mode
+(setq ido-auto-merge-work-directories-length -1)
+
+;; edition
+(load-file (concat my-emacs-root-path "my-edit.el"))
+
+;; faces
+(load-file (concat my-emacs-root-path "utils/jm-faces.el"))
+(jm-faces-load)
+
+;; keybindings
+(load-file (concat my-emacs-root-path "keybindings-base.el"))
 (require 'keybindings-base)
-(require 'keybindings-extra)
-
-;; jm private
-(require 'jm-private)
 
 ;; clear echo area
 (message nil)

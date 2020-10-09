@@ -24,6 +24,13 @@
 
 (require 'ls-lisp)
 (require 'dired)
+(require 'dired-x)
+
+;; delete recursively without asking
+(setq dired-recursive-deletes 'always)
+
+;; default dired setting
+(put 'dired-find-alternate-file 'disabled nil)
 
 ;; open pdf with evince
 (assoc-delete-all "\\.pdf\\'" dired-guess-shell-alist-default)

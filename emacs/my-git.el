@@ -29,6 +29,11 @@
 ;; forge
 (require 'forge)
 
+(defun forge-pull-current-topic ()
+  (interactive)
+  (when-let ((topic (forge-current-topic)))
+    (forge-pull-topic (oref topic number))))
+
 ;; display only open topic
 (setq forge-topic-list-limit '(60 . 0))
 
@@ -171,5 +176,12 @@
 (transient-append-suffix 'magit-log "h"
   '("t" "HEAD to last Tag" magit-log-from-head-to-last-tag))
 
+;; magit log from directory
+(defun magit-log-directory (dir)
+  (interactive "DLog directory: ")
+  (let ((default-directory dir))
+    (magit-log-setup-buffer (list "HEAD")
+                            (car (magit-log-arguments))
+                            (list (file-relative-name dir (magit-toplevel))))))
 
 (provide 'my-git)

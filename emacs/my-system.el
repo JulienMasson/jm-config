@@ -43,18 +43,8 @@
 ;; disable erase-buffer
 (put 'erase-buffer 'disabled nil)
 
-;; delete recursively without asking
-(setq dired-recursive-deletes 'always)
-
 ;; save password
 (setq password-cache-expiry nil)
-
-;; dired Extra
-(add-hook 'dired-load-hook
-            (function (lambda () (load "dired-x"))))
-
-;; default dired setting
-(put 'dired-find-alternate-file 'disabled nil)
 
 ;; Avoid performance issues in files with very long lines.
 (global-so-long-mode)
@@ -200,111 +190,10 @@
 ;; interactive-align
 (require 'ialign)
 
-;; jump to newline
-(defun jump-newline-and-indent ()
-  (interactive "*")
-  (end-of-line)
-  (newline-and-indent))
-
-;; right/left symbol
-(defun right-symbol ()
-  (interactive)
-  (forward-symbol 1))
-
-(defun left-symbol ()
-  (interactive)
-  (forward-symbol -1))
-
-;; right/left balanced expression
-(defun right-sexp ()
-  (interactive)
-  (forward-sexp 1))
-
-(defun left-sexp ()
-  (interactive)
-  (forward-sexp -1))
-
-;; kill commands
-(defun kill-word-or-region ()
-  (interactive)
-  (if (region-active-p)
-      (call-interactively 'kill-region)
-    (call-interactively 'kill-word)))
-
-;; delete commands
-(defun delete-word (arg)
-  (interactive "p")
-  (delete-region (point) (progn (forward-word arg) (point))))
-
-(defun backward-delete-word (arg)
-  (interactive "p")
-  (delete-word (- arg)))
-
-(defun delete-char-or-region ()
-  (interactive)
-  (if (region-active-p)
-      (call-interactively 'delete-region)
-    (call-interactively 'delete-char)))
-
-(defun delete-sexp (&optional arg)
-  (interactive "p")
-  (let ((opoint (point)))
-    (forward-sexp (or arg 1))
-    (delete-region opoint (point))))
-
-;; copy commands
-(defun show-and-copy-buffer-filename ()
-  (interactive)
-  (let ((file-name (or (buffer-file-name) list-buffers-directory)))
-    (if file-name
-        (message (kill-new file-name))
-      (error "Buffer not visiting a file"))))
-
-(defun copy-line ()
-  (interactive)
-  (kill-ring-save (line-beginning-position) (line-end-position)))
-
-(defun kill-ring-save-or-copy-line ()
-  (interactive)
-  (if (region-active-p)
-      (call-interactively 'kill-ring-save)
-    (call-interactively 'copy-line)))
-
-;; isearch commands
-(defun isearch-yank-beginning (&optional arg)
-  (interactive "p")
-  (setq isearch-string "")
-  (setq isearch-message "")
-  (isearch-search-and-update))
-
-(defun isearch-delete-selection ()
-  (interactive)
-  (delete-region isearch-other-end (point))
-  (isearch-done))
-
-(defun isearch-kill-selection ()
-  (interactive)
-  (kill-region isearch-other-end (point))
-  (isearch-done))
-
-(defun isearch-yank-symbol-or-char ()
-  (interactive)
-  (isearch-yank-internal
-   (lambda ()
-     (if (or (memq (char-syntax (or (char-after)  0)) '(?w ?_))
-	     (memq (char-syntax (or (char-after (1+ (point)))  0)) '(?w ?_)))
-	 (if (and (boundp 'subword-mode)  subword-mode) (subword-forward 1) (forward-symbol 1))
-       (forward-char 1))
-     (point))))
-
-(defun isearch-kill-ring-save ()
-  (interactive)
-  (kill-ring-save isearch-other-end (point))
-  (isearch-done)
-  (goto-char isearch-other-end))
+;; edition
+(require 'my-edit)
 
 ;; surround
 (require 'emacs-surround)
-
 
 (provide 'my-system)

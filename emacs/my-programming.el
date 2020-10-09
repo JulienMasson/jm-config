@@ -60,11 +60,6 @@
 (require 'dtrt-indent)
 (dtrt-indent-mode t)
 
-;; occur at point
-(defun occur-at-point ()
-  (interactive)
-  (occur (thing-at-point 'symbol)))
-
 ;; grep config
 (require 'my-grep)
 
