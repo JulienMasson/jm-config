@@ -106,6 +106,9 @@
 		       (((class color) (background dark))
 			:background ,black :foreground ,black)))
 
+;;;; highlight
+    `(highlight ((t :inherit default :weight bold)))
+
 ;;;; header
     `(header-line ((((class color) (background light)) :background ,gray-light2
 		    :foreground ,brown :box (:line-width -1 :style released-button))
@@ -192,6 +195,10 @@
     `(compilation-mode-line-exit ((t (:inherit font-lock-doc-face :weight bold))))
     `(compilation-mode-line-fail ((t (:inherit error))))
     `(compilation-mode-line-run ((t (:inherit font-lock-keyword-face))))
+
+;;;; xref
+    `(xref-file-header ((t (:inherit font-lock-constant-face))))
+    `(xref-line-number ((t (:inherit font-lock-string-face))))
 
 ;;;; company
     `(company-preview ((((class color) (background light)) :background ,gray-light2)
