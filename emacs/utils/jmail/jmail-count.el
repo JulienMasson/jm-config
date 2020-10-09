@@ -83,6 +83,7 @@
 
 (defun jmail-count-quit ()
   (setq jmail-count--queues nil)
+  (setq jmail-count--current nil)
   (jmail-terminate-process-buffer jmail-count--buffer-name))
 
 (defun jmail-count-get (query cb data)
