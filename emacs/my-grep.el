@@ -23,7 +23,22 @@
 ;;; Code:
 
 ;; change default grep
-(setq grep-command "grep --color -nsrH -E ")
+(defvar grep-exclude-dirs '(".git" ".ccls-cache"))
+
+(defun grep-get-command (args)
+  (let ((default-args "--color -nsrH -E")
+	(excludes (mapconcat (lambda (dirs)
+			       (format "--exclude-dir=%s" dirs))
+			     grep-exclude-dirs " ")))
+    (format "grep %s %s %s" excludes default-args args)))
+
+(defun jm-grep (command-args)
+  (interactive (list (read-shell-command "Run grep: "
+					 "--exclude=cscope* "
+					 'grep-history)))
+  (grep--save-buffers)
+  (compilation-start (grep-get-command command-args) #'grep-mode))
+(advice-add 'grep :override #'jm-grep)
 
 ;; history
 (defvar grep-command-history nil)
@@ -50,7 +65,7 @@
     (cl-multiple-value-bind (dir command)
 	(nth index grep-command-history)
       (setq-local default-directory dir)
-      (compilation-start command #'grep-mode))))
+      (compilation-start (grep-get-command command) #'grep-mode))))
 
 (defun grep-command-next ()
   (interactive)
@@ -62,12 +77,12 @@
     (cl-multiple-value-bind (dir command)
 	(nth index grep-command-history)
       (setq-local default-directory dir)
-      (compilation-start command #'grep-mode))))
+      (compilation-start (grep-get-command command) #'grep-mode))))
 
 (defun grep-command-edit (command)
   (interactive (list (let* ((command (nth grep-command-index grep-command-history))
 			    (initial-input (cadr command)))
-		       (read-string "Run grep (like this): " initial-input))))
+		       (read-string "Run grep: " initial-input))))
   (grep command))
 
 (defun grep-command-change-directory (dir)
