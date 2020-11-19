@@ -22,15 +22,6 @@
 
 ;;; Code:
 
-;; display most important messages
-(setq gnus-verbose-backends 5)
-
-;; default message from style
-(setq message-from-style 'angles)
-
-;; default host address
-(setq mail-host-address "mail.gmail.com")
-
 ;; default citation format
 (setq message-citation-line-format "On %a %d %b %Y at %R, %f wrote:\n")
 (setq message-citation-line-function 'message-insert-formatted-citation-line)
@@ -43,16 +34,6 @@
 
 ;; message buffer will be killed after sending a message
 (setq message-kill-buffer-on-exit t)
-
-;; org msg
-(require 'org-msg)
-(setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil \\n:t")
-(setq org-msg-startup "hidestars noindent inlineimages")
-(setq org-msg-signature "
-#+begin_signature
---
-Julien Masson
-#+end_signature")
 
 ;; jmail
 (require 'jmail)
@@ -89,6 +70,16 @@ Julien Masson
 
 ;; display html by default
 (setq jmail-view-html-default-view t)
+
+;; org msg
+(require 'org-msg)
+(setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil \\n:t")
+(setq org-msg-startup "hidestars noindent inlineimages")
+(setq org-msg-signature "
+#+begin_signature
+--
+Julien Masson
+#+end_signature")
 
 ;; open html with eaf
 (require 'eaf)
@@ -183,8 +174,5 @@ Julien Masson
 
 (add-to-list 'send-patch-get-recipients-funcs
 	     (cons "U-Boot" 'send-patch-get-recipients-kernel) t)
-
-(org-msg-mode)
-
 
 (provide 'my-mail)
