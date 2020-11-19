@@ -45,6 +45,9 @@
 (setq dired-recursive-deletes 'always)
 (put 'dired-find-alternate-file 'disabled nil)
 
+;; change default grep
+(setq grep-command "grep --color -nsrH -E ")
+
 ;; disable automatic file search in ido mode
 (setq ido-auto-merge-work-directories-length -1)
 
