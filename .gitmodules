@@ -251,3 +251,6 @@
 [submodule "emacs/modules/company-box"]
 	path = emacs/modules/company-box
 	url = https://github.com/sebastiencs/company-box.git
+[submodule "emacs/modules/jmail"]
+	path = emacs/modules/jmail
+	url = https://github.com/JulienMasson/jmail.git

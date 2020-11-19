@@ -75,9 +75,11 @@ Julien Masson
 ;; add custom queries
 (setq jmail-queries (jmail-maildir-add-query nil "Starred" "flag:flagged" jmail-queries))
 
-;; fetch RSS news
+;; RSS news config
 (setq jmail-rss-config-file (concat my-private-dotfiles-path ".feed2exec.ini"))
-(setq jmail-rss-enable t)
+
+;; fetch RSS news every 30 mins
+(setq jmail-rss-fetch-every (* 30 60))
 
 ;; refresh every 60 seconds
 (setq jmail-update-buffer-every 60)
@@ -107,6 +109,11 @@ Julien Masson
 	    (assoc-delete-all query jmail-unread-data-cached #'string=)))))
 
 (add-hook 'jmail-unread-count-hook #'jmail--cache-unread-data)
+
+(defun jmail--clear-cache-unread ()
+  (setq jmail-unread-data-cached nil))
+
+(add-hook 'jmail-quit-hook #'jmail--clear-cache-unread)
 
 ;; send patch
 (require 'send-patch)
