@@ -160,4 +160,12 @@
 ;; meson mode
 (require 'meson-mode)
 
+;; bitbake mode
+(require 'bb-mode)
+(setq auto-mode-alist (append '(("\\.bb\\'" . bb-mode)
+				("\\.inc\\'" . bb-mode)
+				("\\.bbclass\\'" . bb-mode)
+				("\\.bbappend\\'" . bb-mode))
+			      auto-mode-alist))
+
 (provide 'my-programming)

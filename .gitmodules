@@ -254,3 +254,6 @@
 [submodule "emacs/modules/jmail"]
 	path = emacs/modules/jmail
 	url = https://github.com/JulienMasson/jmail.git
+[submodule "emacs/modules/bb-mode"]
+	path = emacs/modules/bb-mode
+	url = https://github.com/mferland/bb-mode.git
