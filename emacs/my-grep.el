@@ -90,10 +90,6 @@
   (interactive)
   (rename-buffer (generate-new-buffer-name "*grep*")))
 
-;; ripgrep
-(require 'rg)
-(defun rg-executable () (executable-find "rg"))
-
 ;; wgrep
 (require 'wgrep)
 (setq wgrep-auto-save-buffer t)

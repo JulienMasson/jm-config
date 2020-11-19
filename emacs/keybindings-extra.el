@@ -27,6 +27,10 @@
 ;; occur
 (global-set-key (kbd "C-M-o") 'occur-at-point)
 
+;; search
+(global-set-key (kbd "C-c M-s") 'my-search)
+(global-set-key (kbd "C-M-s") 'my-search-at-point)
+
 ;; grep
 (global-set-key (kbd "C-M-g") 'grep-at-point)
 (define-key grep-mode-map "s" 'grep-save-buffer)

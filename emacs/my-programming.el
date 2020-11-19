@@ -63,6 +63,9 @@
 ;; grep config
 (require 'my-grep)
 
+;; search config
+(require 'my-search)
+
 ;; company mode
 (require 'company)
 (setq company-backends nil)
