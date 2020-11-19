@@ -246,4 +246,80 @@ search modes defined in the new `dired-sort-toggle'.
 	  (dired (format "%s|sudo:root@%s:%s" tramp host local-dir)))
       (dired (concat "/sudo:root@localhost:" dir)))))
 
+;; fd find-name
+(defvar fd-find-buffer "*fd-find*")
+(defvar fd-find-history '())
+(defvar-local fd-find--start nil)
+
+(defun fd-find-dired--process-filter (process str)
+  (when-let ((buffer (process-buffer process)))
+    (when (buffer-live-p buffer)
+      (with-current-buffer buffer
+	(let ((inhibit-read-only t))
+	  (save-excursion
+	    (goto-char (point-max))
+	    (dolist (line (split-string str "\n"))
+	      (insert (format "  %s\n" line)))))))))
+
+(defun fd-find-dired--process-sentinel (process status)
+  (when (eq (process-exit-status process) 0)
+    (with-current-buffer (process-buffer process)
+      (let* ((inhibit-read-only t)
+	     (time-elapsed (time-since fd-find--start))
+	     (time-str (format-time-string "%s.%3N" time-elapsed)))
+	(save-excursion
+	  (goto-char (point-max))
+	  (insert (format "  Search took: %s seconds" time-str)))))))
+
+(defun fd-find-setup-buffer (dir pattern cmd)
+  (with-current-buffer (get-buffer-create fd-find-buffer)
+    (widen)
+    (kill-all-local-variables)
+    (setq default-directory dir)
+    (let ((inhibit-read-only t))
+      (erase-buffer)
+      (insert (format "  %s:\n\n" default-directory))
+      (insert (format "  %s\n\n" cmd)))
+    (dired-mode default-directory "-dilsb")
+    (setq fd-find--start (current-time))
+    (setq dired-buffers (cl-remove (current-buffer) dired-buffers
+				   :key #'cdr :test #'equal))
+    (setq-local revert-buffer-function `(lambda (ignore-auto noconfirm)
+					  (fd-find-dired ,pattern)))
+    (setq-local dired-subdir-alist (list (cons default-directory (point-min-marker))))
+    (setq mode-line-process '(":%s"))
+    (current-buffer)))
+
+(defun fd-find-dired (pattern)
+  ;; check if a process is running
+  (when-let ((process (get-buffer-process fd-find-buffer)))
+    (when (eq (process-status process) 'run)
+      (if (yes-or-no-p "Stop current search ?")
+	  (progn
+	    (interrupt-process process)
+	    (sit-for 1)
+	    (delete-process process))
+	(error "Cannot run two searchs in same time"))))
+
+  ;; start process
+  (let* ((fd-cmd (format "fd -I -0 -c never \"%s\"" pattern))
+	 (fd-ls "xargs -0 ls -ld --quoting-style=literal")
+	 (cmd (format "%s | %s" fd-cmd fd-ls))
+	 (buffer (fd-find-setup-buffer default-directory pattern cmd))
+	 (process (start-file-process "fd" buffer "bash" "-c" cmd)))
+    (set-process-filter process 'fd-find-dired--process-filter)
+    (set-process-sentinel process 'fd-find-dired--process-sentinel)
+    (if (get-buffer-window-list buffer)
+	(pop-to-buffer buffer)
+      (pop-to-buffer-same-window buffer))))
+
+(defun fd-find-name-dired ()
+  (interactive)
+  (if (executable-find "fd" t)
+      (let* ((header (format "[%s] " (propertize "fd" 'face 'success)))
+	     (pattern (read-string (concat header "Find file: ")
+				   nil 'fd-find-history)))
+	(fd-find-dired pattern))
+    (call-interactively #'find-name-dired)))
+
 (provide 'my-dired)

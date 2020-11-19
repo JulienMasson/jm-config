@@ -41,6 +41,7 @@
 (define-key grep-mode-map "d" 'grep-command-change-directory)
 
 ;; dired
+(global-set-key (kbd "C-c M-f") 'fd-find-name-dired)
 (define-key dired-mode-map "=" 'dired-diff-files)
 (define-key dired-mode-map "r" 'dired-diff-directories)
 (define-key dired-mode-map "h" 'dired-do-hexl-find-file)
