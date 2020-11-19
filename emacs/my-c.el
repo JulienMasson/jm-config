@@ -30,20 +30,8 @@
 (require 'acscope-kernel)
 (setq acscope-find-auto-update nil)
 (setq acscope-database-fast-symbol t)
+(setq acscope-database-exclude-path (list ".ccls-cache"))
 (acscope-global-setup)
-
-;; async semantic
-(require 'async-semantic)
-(setq async-semantic-default-path `("/usr/include/" "/usr/local/include/"
-				    ,(concat (getenv "HOME") "/.local/include/")))
-
-;; company async semantic
-(require 'company-async-semantic)
-(add-to-list 'company-backends 'company-async-semantic)
-(company-async-semantic-setup)
-
-;; async semantic acscope
-(require 'async-semantic-acscope)
 
 ;; global setting applied to specific c files
 (defvar c-global-settings-list nil)
@@ -88,7 +76,6 @@
 				   (concat path p))
 				 async-semantic-kernel-includes)))
     (add-to-list 'magit-blacklist-repo path)
-    (add-to-list 'company-async-semantic-includes (cons path kernel-includes) t)
     (add-to-list 'c-global-settings-list `(,path . kernel-global-settings))))
 
 ;; checkpatch

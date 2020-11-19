@@ -113,9 +113,6 @@
 [submodule "emacs/modules/org-bullets"]
 	path = emacs/modules/org-bullets
 	url = https://github.com/sabof/org-bullets.git
-[submodule "emacs/modules/anaconda-mode"]
-	path = emacs/modules/anaconda-mode
-	url = https://github.com/proofit404/anaconda-mode.git
 [submodule "emacs/modules/company-anaconda"]
 	path = emacs/modules/company-anaconda
 	url = https://github.com/proofit404/company-anaconda.git
@@ -257,3 +254,6 @@
 [submodule "emacs/modules/bb-mode"]
 	path = emacs/modules/bb-mode
 	url = https://github.com/mferland/bb-mode.git
+[submodule "emacs/modules/eglot"]
+	path = emacs/modules/eglot
+	url = https://github.com/JulienMasson/eglot.git

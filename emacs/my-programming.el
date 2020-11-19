@@ -73,10 +73,6 @@
 (setq company-tooltip-minimum-width 40)
 (global-company-mode)
 
-;; company box
-(require 'company-box)
-(add-hook 'company-mode-hook 'company-box-mode)
-
 ;; don't message in echo area
 (defun company-echo-show (&optional getter))
 
@@ -94,21 +90,45 @@
 ;; gdb
 (require 'my-gdb)
 
+;; eglot
+(require 'eglot)
+(setq eglot-no-message t)
+(setq eglot-flymake-enable nil)
+(setq eglot-eldoc-enable nil)
+(setq eglot-sync-connect nil)
+(setq eglot-autoshutdown t)
+
+(defun eglot-shutdown-all ()
+  (interactive)
+  (when-let ((servers (cl-loop for servers
+                               being hash-values of eglot--servers-by-project
+                               append servers)))
+    (mapc #'eglot-shutdown servers)))
+
+(defun eglot-help-at-point ()
+  (interactive)
+  (eglot--dbind ((Hover) contents range)
+      (jsonrpc-request (eglot--current-server-or-lose) :textDocument/hover
+                       (eglot--TextDocumentPositionParams))
+    (when-let* ((blurb (and (not (seq-empty-p contents))
+			    (eglot--hover-info contents range)))
+		(hint (thing-at-point 'symbol))
+		(buf-name (format "*eglot-help %s*" hint)))
+      (unless (get-buffer buf-name)
+	(with-current-buffer (get-buffer-create buf-name)
+	  (insert blurb)
+	  (help-mode)
+	  (goto-char (point-min))))
+      (pop-to-buffer buf-name))))
+
+;; enable eglot
+(add-hook 'c-mode-hook 'eglot-ensure)
+(add-hook 'python-mode-hook 'eglot-ensure)
+(add-hook 'sh-mode-hook 'eglot-ensure)
+(add-hook 'perl-mode-hook 'eglot-ensure)
+
 ;; C source code
 (require 'my-c)
-
-;; perl
-(defalias 'perl-mode 'cperl-mode)
-(add-to-list 'acscope-database-default-files "pl")
-(add-to-list 'acscope-mode-hook-list 'cperl-mode-hook)
-
-;; anaconda mode
-(require 'anaconda-mode)
-(add-hook 'python-mode-hook 'anaconda-mode)
-
-;; anaconda company
-(require 'company-anaconda)
-(add-to-list 'company-backends 'company-anaconda)
 
 ;; manual at point
 (defun man-get-index-list (pattern)
@@ -148,7 +168,7 @@
     (cperl-perldoc-at-point))
    ;; Python mode
    ((string= major-mode "python-mode")
-    (anaconda-mode-show-doc))
+    (eglot-help-at-point))
    ;; Emacs lisp mode
    ((or (string= major-mode "emacs-lisp-mode")
 	(string= major-mode "lisp-interaction-mode"))
@@ -170,5 +190,29 @@
 				("\\.bbclass\\'" . bb-mode)
 				("\\.bbappend\\'" . bb-mode))
 			      auto-mode-alist))
+
+;; xref
+(require 'xref)
+(defun jm-xref--insert-xrefs (xref-alist)
+  (let ((project (or (project-current) `(transient . ,default-directory))))
+    (setq default-directory (project-root project))
+    (insert (format "━▶ Project Root directory: %s\n"
+		    (propertize (project-root project) 'face
+				'font-lock-keyword-face)))
+    (cl-loop for ((group . xrefs) . more1) on xref-alist do
+	     (xref--insert-propertized '(face xref-file-header xref-group t)
+                                       (format "\n*** %s:\n" (replace-regexp-in-string
+							      (expand-file-name default-directory)
+							      "" group)))
+	     (cl-loop for (xref . more2) on xrefs do
+                      (with-slots (summary location) xref
+			(let* ((line (propertize (format "%d" (xref-location-line location))
+						 'face 'xref-line-number))
+                               (prefix (format "[%s]" line)))
+                          (xref--insert-propertized
+			   (list 'xref-item xref 'keymap xref--button-map)
+			   (format "%-8s %s" prefix (string-trim summary)))))
+		      (insert "\n")))))
+(advice-add 'xref--insert-xrefs :override #'jm-xref--insert-xrefs)
 
 (provide 'my-programming)
