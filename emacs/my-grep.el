@@ -94,4 +94,10 @@
 (require 'wgrep)
 (setq wgrep-auto-save-buffer t)
 
+;; grep at point
+(require 'thingatpt)
+(defun grep-at-point ()
+  (interactive)
+  (grep (thing-at-point 'symbol)))
+
 (provide 'my-grep)

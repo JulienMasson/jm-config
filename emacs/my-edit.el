@@ -125,12 +125,6 @@
   (isearch-done)
   (goto-char isearch-other-end))
 
-;; grep at point
-(require 'thingatpt)
-(defun grep-at-point ()
-  (interactive)
-  (grep (format "%s%s ." grep-command (thing-at-point 'symbol))))
-
 ;; occur at point
 (defun occur-at-point ()
   (interactive)
