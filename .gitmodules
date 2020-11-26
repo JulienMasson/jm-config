@@ -100,7 +100,7 @@
 	url = https://github.com/jwiegley/alert.git
 [submodule "emacs/modules/org-gcal"]
 	path = emacs/modules/org-gcal
-	url = https://github.com/myuhe/org-gcal.el.git
+	url = https://github.com/kidd/org-gcal.el.git
 [submodule "emacs/modules/deferred"]
 	path = emacs/modules/deferred
 	url = https://github.com/kiwanami/emacs-deferred.git

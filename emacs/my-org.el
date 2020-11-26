@@ -59,40 +59,63 @@
 
 ;; show org-mode bullets
 (require 'org-bullets)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+(add-hook 'org-mode-hook #'org-bullets-mode)
 
 ;; use current window
 (setq org-agenda-window-setup 'current-window)
 
 ;; default org agenda view
-(setq org-agenda-custom-commands
-      '((" " "Agenda"
-         ((agenda "")))))
+(setq org-agenda-custom-commands '((" " "Agenda" ((agenda "")))))
+
+;; handle multi accounts gcal
+(defvar org-gcal-actions '(("Fetch" . org-gcal-fetch)
+			   ("Sync"  . org-gcal-sync)))
+
+(defvar org-gcal-accounts nil)
+
+(defun register-gcal-account (name &rest plist)
+  (let ((dir (plist-get plist :directory)))
+    (unless (file-directory-p dir)
+      (make-directory directory))
+    (add-to-list 'org-gcal-accounts (cons name plist))))
+
+(defun org-gcal-set-env (plist)
+  (let ((dir (plist-get plist :directory))
+	(client-id (plist-get plist :client-id))
+	(client-secret (plist-get plist :client-secret))
+	(file-alist (plist-get plist :file-alist)))
+    (setq org-gcal-dir dir)
+    (setq org-gcal-token-file (expand-file-name ".org-gcal-token" org-gcal-dir))
+    (setq org-gcal-client-id client-id)
+    (setq org-gcal-client-secret client-secret)
+    (setq org-gcal-file-alist file-alist)
+    (setq org-gcal-token-plist nil)))
+
+(defun org-gcal ()
+  (interactive)
+  (when-let* ((collection (mapcar #'car org-gcal-accounts))
+	      (name (completing-read "Select Account: " collection))
+	      (account (assoc-default name org-gcal-accounts))
+	      (action (completing-read (format "Action (%s): " name)
+				       (mapcar 'car org-gcal-actions)))
+	      (func (assoc-default action org-gcal-actions)))
+    (org-gcal-set-env account)
+    (funcall func)))
 
 ;; my function to display org-agenda
 (defun jm-org-agenda ()
   (interactive)
   (org-agenda nil " "))
 
-;; run custom hook when redo all org agenda
-(defvar org-agenda-redo-all-hook nil)
-(defun org-agenda-redo-all-run-hook (&optional exhaustive)
-  (run-hooks 'org-agenda-redo-all-hook))
-(advice-add 'org-agenda-redo-all :before #'org-agenda-redo-all-run-hook)
-
 ;; register org entry
 (defvar org-tags-todo-list '((agenda "")))
-(defun register-org-entry(file &optional sync tags)
+(defun register-org-entry(file &optional tags)
   (unless (file-exists-p file)
     (append-to-file "" nil file))
-  (setq org-agenda-files (append org-agenda-files `(,file)))
-  (if (functionp sync)
-      (add-hook 'org-agenda-redo-all-hook (eval #'sync)))
+  (add-to-list 'org-agenda-files file)
   (when tags
     (add-to-list 'org-tags-todo-list `(tags-todo ,tags) t)
-    (setq org-agenda-custom-commands
-	  `((" " "Agenda"
-	     ,org-tags-todo-list)))))
+    (setq org-agenda-custom-commands `((" " "Agenda" ,org-tags-todo-list)))))
 
 ;; define own org tags view
 (setq org-agenda-prefix-format '((agenda . "%-13i %?-12t% s")
