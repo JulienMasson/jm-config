@@ -67,6 +67,31 @@
 ;; default org agenda view
 (setq org-agenda-custom-commands '((" " "Agenda" ((agenda "")))))
 
+;; next/previous view
+(defun org-agenda-view (direction)
+  (org-agenda-check-type t 'agenda)
+  (pcase-let ((`(,_ ,days ,span) (get-text-property (point-min) 'org-last-args)))
+    (unless days (setq days (org-today)))
+    (let* ((cal-iso (calendar-iso-from-absolute days))
+	   (cal-gre (calendar-gregorian-from-absolute days))
+	   (n (pcase span
+		(`day (+ (nth 1 cal-gre) (* direction 1)))
+		(`week (+ (car cal-iso) (* direction 1)))
+		(`month (+ (car cal-gre) (* direction 1)))
+		(`year (+ (nth 2 cal-iso) (* direction 1)))))
+	   (sd (org-agenda-compute-starting-span org-starting-day span n))
+	   (org-agenda-overriding-cmd (get-text-property (point-min) 'org-series-cmd))
+	   (org-agenda-overriding-arguments (list nil sd span)))
+      (org-agenda-redo))))
+
+(defun org-agenda-next-view ()
+  (interactive)
+  (org-agenda-view 1))
+
+(defun org-agenda-previous-view ()
+  (interactive)
+  (org-agenda-view -1))
+
 ;; handle multi accounts gcal
 (defvar org-gcal-actions '(("Fetch" . org-gcal-fetch)
 			   ("Sync"  . org-gcal-sync)))

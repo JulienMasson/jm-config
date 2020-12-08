@@ -71,6 +71,8 @@
 
 ;; org
 (global-set-key (kbd "C-c o a") 'jm-org-agenda)
+(define-key org-agenda-mode-map "N" 'org-agenda-next-view)
+(define-key org-agenda-mode-map "P" 'org-agenda-previous-view)
 
 ;; open browser
 (global-set-key (kbd "C-c C-o") 'browse-url)
