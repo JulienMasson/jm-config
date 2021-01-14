@@ -37,6 +37,18 @@
 	(process-send-string process cmd))
     (error "Process not running")))
 
+;; compilation buffer name
+(defun compilation--new-buffer-name (name-of-mode)
+  (let* ((buffer (format "*%s*" (downcase name-of-mode)))
+	 (process (get-buffer-process buffer)))
+    (if (and process (eq (process-status process) 'run))
+	(if (yes-or-no-p "Use new buffer: ")
+	    (generate-new-buffer-name buffer)
+	  (current-buffer))
+      buffer)))
+
+(setq compilation-buffer-name-function #'compilation--new-buffer-name)
+
 ;; ansi color on compilation buffer
 (require 'ansi-color)
 (defun colorize-compilation-buffer ()
