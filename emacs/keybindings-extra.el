@@ -73,6 +73,8 @@
 (global-set-key (kbd "C-c o a") 'jm-org-agenda)
 (define-key org-agenda-mode-map "N" 'org-agenda-next-view)
 (define-key org-agenda-mode-map "P" 'org-agenda-previous-view)
+(define-key org-mode-map (kbd "C-c p") 'org-gtasks-push-current)
+(define-key org-mode-map (kbd "C-c P") 'org-gtasks-pull-current)
 
 ;; open browser
 (global-set-key (kbd "C-c C-o") 'browse-url)
