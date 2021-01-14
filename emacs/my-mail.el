@@ -62,8 +62,8 @@
 ;; fetch RSS news every 30 mins
 (setq jmail-rss-fetch-every (* 30 60))
 
-;; refresh every 60 seconds
-(setq jmail-update-buffer-every 60)
+;; refresh every 3 mins
+(setq jmail-update-buffer-every (* 3 60))
 
 ;; enable org-msg for jmail
 (jmail-org-msg-enable)
