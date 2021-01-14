@@ -136,6 +136,10 @@
 (define-key shell-mode-map (kbd "TAB") #'company-manual-begin)
 (define-key shell-mode-map (kbd "RET") #'shell-press-ret)
 
+;; term
+(define-key term-raw-map (kbd "C-c C-j") 'term-line-mode)
+(define-key term-raw-map (kbd "C-c C-k") 'term-char-mode)
+
 ;; manual at point
 (global-set-key (kbd "M-h") 'manual-at-point)
 
