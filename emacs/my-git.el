@@ -120,6 +120,9 @@
 ;; revert this change: `magit-visit-ref' behaves just like `magit-show-commit'
 (setq magit-visit-ref-behavior '(checkout-any focus-on-ref))
 
+;; remove tags section in ref
+(delete 'magit-insert-tags magit-refs-sections-hook)
+
 ;; blacklist slow git repository
 (defvar magit-blacklist-repo '()
   "list of blacklist repository")
