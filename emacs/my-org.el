@@ -45,6 +45,9 @@
 ;; clear files to be used for agenda display
 (setq org-agenda-files nil)
 
+;; don't show outline path in echo area after line motion
+(setq org-agenda-show-outline-path nil)
+
 ;; org todo keywords
 (setq org-todo-keywords '((sequence "TODO" "ONGOING" "|" "DONE")))
 
