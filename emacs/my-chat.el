@@ -25,6 +25,7 @@
 ;; epurple
 (require 'epurple)
 (setq epurple-nick-name "Julien Masson")
+(setq epurple-auto-reconnect t)
 
 ;; echat
 (require 'echat)
