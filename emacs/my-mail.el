@@ -79,7 +79,7 @@
 (setq org-msg-convert-citation t)
 (setq org-msg-signature "
 #+begin_signature
---
+
 Julien Masson
 #+end_signature")
 
