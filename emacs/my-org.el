@@ -189,7 +189,6 @@
     (when rtnall
       (insert "\n▶ " (propertize (upcase match) 'face 'org-level-1) "\n")
       (org-agenda-mark-header-line (point-min))
-      (setq toto rtnall)
       (insert (org-agenda-finalize-entries rtnall 'tags) "\n")
       (goto-char (point-min))
       (add-text-properties (point-min) (point-max)
