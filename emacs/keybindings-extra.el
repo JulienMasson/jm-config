@@ -126,6 +126,8 @@
 (global-set-key (kbd "C-c e D") 'epurple-disconnect)
 (global-set-key (kbd "C-c e R") 'epurple-restart)
 (global-set-key (kbd "C-c e U") 'epurple-update-restart)
+(define-key lui-mode-map (kbd "C-M-u") 'epurple-buffer-goto-unread-messages)
+
 
 ;; lui
 (define-key lui-mode-map (kbd "C-c C-e") 'jm-emojify-insert-emoji)
