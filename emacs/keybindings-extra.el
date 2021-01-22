@@ -84,9 +84,10 @@
 (global-set-key (kbd "C-c g l") 'magit-log-head)
 (global-set-key (kbd "C-c g f") 'magit-log-buffer-file)
 (global-set-key (kbd "C-c g d") 'magit-log-directory)
-(global-set-key (kbd "C-c g r") 'magit-reset-hard)
+(global-set-key (kbd "C-c g r") 'magit-reset-hard-head)
 (global-set-key (kbd "C-c g b") 'magit-blame-addition)
 (global-set-key (kbd "C-c g y") 'magit-show-refs)
+(global-set-key (kbd "C-c g c") 'magit-show-commit)
 (define-key magit-mode-map [remap magit-copy-buffer-thing-as-kill] 'kill-ring-save)
 (define-key magit-mode-map [remap magit-copy-buffer-revision] 'kill-ring-save)
 

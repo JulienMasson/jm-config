@@ -190,4 +190,9 @@
                             (car (magit-log-arguments))
                             (list (file-relative-name dir (magit-toplevel))))))
 
+;; magit reset hard HEAD
+(defun magit-reset-hard-head ()
+  (interactive)
+  (magit-reset-hard "HEAD"))
+
 (provide 'my-git)
