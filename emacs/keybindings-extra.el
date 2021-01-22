@@ -101,19 +101,6 @@
 ;; refresh status
 (global-set-key (kbd "C-c C-u") (lambda () (interactive) (run-at-time 1 status-refresh-timer-delay 'status-update)))
 
-;; echat
-(global-set-key (kbd "C-c e c") 'echat-channel-select)
-(global-set-key (kbd "C-c e g") 'echat-group-select)
-(global-set-key (kbd "C-c e i") 'echat-im-select)
-(global-set-key (kbd "C-c e j") 'echat-jump)
-(global-set-key (kbd "C-c e m") 'echat-mute-toggle)
-(global-set-key (kbd "C-c e q") 'echat-quit)
-(global-set-key (kbd "C-c e r") 'echat-start)
-(global-set-key (kbd "C-c e R") 'echat-restart)
-(global-set-key (kbd "C-c e s") 'echat-search)
-(global-set-key (kbd "C-c e u") 'echat-unread-select)
-(define-key lui-mode-map (kbd "C-M-u") 'echat-ui-goto-unread-messages)
-
 ;; epurple
 (global-set-key (kbd "C-c e c") 'epurple-chat)
 (global-set-key (kbd "C-c e r") 'epurple-init)
