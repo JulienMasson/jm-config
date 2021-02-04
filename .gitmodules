@@ -61,9 +61,6 @@
 [submodule "emacs/modules/jm-private"]
 	path = emacs/modules/jm-private
 	url = https://massonju@gitlab.com/massonju/jm-private.git
-[submodule "emacs/modules/erc-image"]
-	path = emacs/modules/erc-image
-	url = https://github.com/kidd/erc-image.el.git
 [submodule "emacs/modules/ht"]
 	path = emacs/modules/ht
 	url = https://github.com/Wilfred/ht.el.git
@@ -106,9 +103,6 @@
 [submodule "emacs/modules/org-bullets"]
 	path = emacs/modules/org-bullets
 	url = https://github.com/sabof/org-bullets.git
-[submodule "emacs/modules/pythonic"]
-	path = emacs/modules/pythonic
-	url = https://github.com/proofit404/pythonic.git
 [submodule "emacs/modules/f"]
 	path = emacs/modules/f
 	url = https://github.com/rejeep/f.el.git
@@ -193,9 +187,6 @@
 [submodule "emacs/modules/meson-mode"]
 	path = emacs/modules/meson-mode
 	url = https://github.com/wentasah/meson-mode.git
-[submodule "emacs/modules/purple"]
-	path = emacs/modules/purple
-	url = https://github.com/jeremy-compostella/purple.git
 [submodule "emacs/modules/tablist"]
 	path = emacs/modules/tablist
 	url = https://github.com/politza/tablist.git

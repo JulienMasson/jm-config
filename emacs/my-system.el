@@ -148,13 +148,28 @@
 ;; Status
 (require 'status)
 (setq status-separator " | ")
+
+(require 'status-compilation)
 (status-add-to-left 'status-compilation)
+
+(require 'status-acscope)
 (status-add-to-left 'status-acscope)
+
+(require 'status-project-manager)
 (status-add-to-left 'status-project-manager)
+
+(require 'status-tab-bar)
 (status-add-to-left 'status-tab-bar)
+
+(require 'status-date)
 (status-add-to-right 'status-date)
+
+(require 'status-epurple)
 (status-add-to-right 'status-epurple)
+
+(require 'status-jmail)
 (status-add-to-right 'status-jmail)
+
 (turn-on-status)
 
 ;; never request confirmation when opening large file
