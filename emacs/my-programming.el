@@ -141,10 +141,20 @@
       (pop-to-buffer buf-name))))
 
 ;; enable eglot
-(add-hook 'c-mode-hook 'eglot-ensure)
-(add-hook 'python-mode-hook 'eglot-ensure)
-(add-hook 'sh-mode-hook 'eglot-ensure)
-(add-hook 'perl-mode-hook 'eglot-ensure)
+(defun eglot-ensure-current-program ()
+  (assoc-default major-mode eglot-server-programs
+		 (lambda (m1 m2)
+		   (cl-find m2 (if (listp m1) m1 (list m1))
+			    :test #'provided-mode-derived-p))))
+
+(defun my-eglot-ensure ()
+  (when-let ((program (eglot-ensure-current-program)))
+    (when (executable-find (car program))
+      (eglot-ensure))))
+
+(add-hook 'c-mode-hook 'my-eglot-ensure)
+(add-hook 'python-mode-hook 'my-eglot-ensure)
+(add-hook 'sh-mode-hook 'my-eglot-ensure)
 
 ;; C source code
 (require 'my-c)
