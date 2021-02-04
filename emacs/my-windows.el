@@ -149,15 +149,14 @@
 ;; add custom icons
 (require 'all-the-icons)
 (defvar jm-icons
- '((jmail-mode                all-the-icons-octicon "mail"         :v-adjust 0.0)
-   (jmail-compose-mode        all-the-icons-octicon "pencil"       :v-adjust 0.0)
-   (jmail-search-mode         all-the-icons-octicon "mail"         :v-adjust 0.0)
-   (circe-channel-mode        all-the-icons-faicon  "commenting-o" :v-adjust 0.0)
-   (circe-query-mode          all-the-icons-faicon  "commenting-o" :v-adjust 0.0)
-   (slack-message-buffer-mode all-the-icons-faicon  "slack"        :v-adjust 0.0)
-   (acscope-buffer-mode       all-the-icons-octicon "tools"        :v-adjust 0.0)
-   (device-control-mode       all-the-icons-octicon "tools"        :v-adjust 0.0)
-   (lt-mode                   all-the-icons-octicon "tools"        :v-adjust 0.0)))
+ '((jmail-mode                all-the-icons-octicon  "mail"         :v-adjust 0.0)
+   (jmail-compose-mode        all-the-icons-octicon  "pencil"       :v-adjust 0.0)
+   (jmail-search-mode         all-the-icons-octicon  "mail"         :v-adjust 0.0)
+   (epurple-mode              all-the-icons-faicon   "commenting-o" :v-adjust 0.0)
+   (acscope-buffer-mode       all-the-icons-octicon  "tools"        :v-adjust 0.0)
+   (device-control-mode       all-the-icons-octicon  "tools"        :v-adjust 0.0)
+   (fb-vpn-mode               all-the-icons-material "network_wifi" :v-adjust 0.0)
+   (lt-mode                   all-the-icons-octicon  "tools"        :v-adjust 0.0)))
 (setq all-the-icons-mode-icon-alist (append all-the-icons-mode-icon-alist
 					    jm-icons))
 

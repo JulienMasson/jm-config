@@ -153,9 +153,6 @@
 (global-set-key (kbd "M-&") 'with-editor-async-shell-command)
 (global-set-key (kbd "M-!") 'with-editor-shell-command)
 
-;; translate at point
-(global-set-key (kbd "M-*") 'translate-at-point)
-
 ;; realgud
 (global-set-key (kbd "C-c r a") (lambda () (interactive) (realgud:cmdbuf-associate)))
 (global-set-key (kbd "C-c r f") 'realgud-current-frame)

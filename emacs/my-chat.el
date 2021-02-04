@@ -27,24 +27,11 @@
 (setq epurple-nick-name "Julien Masson")
 (setq epurple-auto-reconnect t)
 
-;; echat
-(require 'echat)
-
-;; slack
-(require 'slack)
-(setq slack-buffer-emojify t)
-(setq slack-log-level 'error)
-
 ;; alert
 (require 'alert)
 (setq alert-log-messages nil)
 (setq alert-hide-all-notifications t)
 (setq alert-default-style nil)
-
-;; circe
-(require 'circe)
-(setq circe-server-killed-confirmation nil)
-(setq circe-channel-killed-confirmation nil)
 
 ;; circe images
 (require 'circe-display-images)

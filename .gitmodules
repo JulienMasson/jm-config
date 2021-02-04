@@ -5,10 +5,6 @@
 	path = emacs/modules/dtrt-indent
 	url = https://github.com/jscheid/dtrt-indent
 	ignore = untracked
-[submodule "emacs/popup-el"]
-	path = emacs/modules/popup-el
-	url = https://github.com/auto-complete/popup-el
-	ignore = untracked
 [submodule "emacs/status"]
 	path = emacs/modules/status
 	url = https://github.com/JulienMasson/status
@@ -47,9 +43,6 @@
 [submodule "emacs/modules/emacs-which-key"]
 	path = emacs/modules/which-key/
 	url = https://github.com/justbur/emacs-which-key.git
-[submodule "emacs/modules/rich-minority"]
-	path = emacs/modules/rich-minority
-	url = https://github.com/Malabarba/rich-minority
 [submodule "emacs/modules/markdown-mode"]
 	path = emacs/modules/markdown-mode
 	url = https://github.com/jrblevin/markdown-mode.git
@@ -113,18 +106,12 @@
 [submodule "emacs/modules/org-bullets"]
 	path = emacs/modules/org-bullets
 	url = https://github.com/sabof/org-bullets.git
-[submodule "emacs/modules/company-anaconda"]
-	path = emacs/modules/company-anaconda
-	url = https://github.com/proofit404/company-anaconda.git
 [submodule "emacs/modules/pythonic"]
 	path = emacs/modules/pythonic
 	url = https://github.com/proofit404/pythonic.git
 [submodule "emacs/modules/f"]
 	path = emacs/modules/f
 	url = https://github.com/rejeep/f.el.git
-[submodule "emacs/modules/google-translate"]
-	path = emacs/modules/google-translate
-	url = https://github.com/atykhonov/google-translate.git
 [submodule "emacs/modules/bash-completion"]
 	path = emacs/modules/bash-completion
 	url = https://github.com/szermatt/emacs-bash-completion.git
@@ -137,9 +124,6 @@
 [submodule "emacs/modules/org-msg"]
 	path = emacs/modules/org-msg
 	url = https://github.com/JulienMasson/org-msg.git
-[submodule "emacs/modules/gnuplot-mode"]
-	path = emacs/modules/gnuplot-mode
-	url = https://github.com/bruceravel/gnuplot-mode.git
 [submodule "emacs/modules/hide-lines"]
 	path = emacs/modules/hide-lines
 	url = https://github.com/JulienMasson/hide-lines.git
@@ -209,9 +193,6 @@
 [submodule "emacs/modules/meson-mode"]
 	path = emacs/modules/meson-mode
 	url = https://github.com/wentasah/meson-mode.git
-[submodule "emacs/modules/eaf"]
-	path = emacs/modules/eaf
-	url = https://github.com/manateelazycat/emacs-application-framework.git
 [submodule "emacs/modules/purple"]
 	path = emacs/modules/purple
 	url = https://github.com/jeremy-compostella/purple.git
@@ -224,9 +205,6 @@
 [submodule "emacs/modules/circe"]
 	path = emacs/modules/circe
 	url = https://github.com/jorgenschaefer/circe.git
-[submodule "emacs/modules/slack"]
-	path = emacs/modules/slack
-	url = https://github.com/yuya373/emacs-slack.git
 [submodule "emacs/modules/emojify"]
 	path = emacs/modules/emojify
 	url = https://github.com/iqbalansari/emacs-emojify.git
@@ -245,9 +223,6 @@
 [submodule "emacs/modules/epurple"]
 	path = emacs/modules/epurple
 	url = https://github.com/JulienMasson/epurple.git
-[submodule "emacs/modules/company-box"]
-	path = emacs/modules/company-box
-	url = https://github.com/sebastiencs/company-box.git
 [submodule "emacs/modules/jmail"]
 	path = emacs/modules/jmail
 	url = https://github.com/JulienMasson/jmail.git
