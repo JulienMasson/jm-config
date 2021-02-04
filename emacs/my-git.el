@@ -24,7 +24,6 @@
 
 ;; magit
 (require 'magit)
-(require 'magit-blame)
 
 ;; don't use the system's trash
 (setq magit-delete-by-moving-to-trash nil)

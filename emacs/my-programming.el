@@ -42,7 +42,7 @@
   (let ((process (get-buffer-process buffer))
 	(new-buffer (format "%s<%d>" name count)))
     (if (and process (eq (process-status process) 'run))
-	(compilation--generate-new-buffer-name new-buffer name (incf count))
+	(compilation--generate-new-buffer-name new-buffer name (cl-incf count))
       buffer)))
 
 (defun compilation--new-buffer-name (name-of-mode)

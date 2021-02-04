@@ -53,9 +53,9 @@ which is up to 10gb.  Some files are larger than that.
   (if (or (not human-readable)
           (< file-size 1024))
       (format (if (floatp file-size) " %11.0f" " %11d") file-size)
-    (do ((file-size (/ file-size 1024.0) (/ file-size 1024.0))
-         ;; kilo, mega, giga, tera, peta, exa
-         (post-fixes (list "k" "M" "G" "T" "P" "E") (cdr post-fixes)))
+    (cl-do ((file-size (/ file-size 1024.0) (/ file-size 1024.0))
+            ;; kilo, mega, giga, tera, peta, exa
+            (post-fixes (list "k" "M" "G" "T" "P" "E") (cdr post-fixes)))
         ((< file-size 1024) (format " %10.0f%s"  file-size (car post-fixes))))))
 
 
