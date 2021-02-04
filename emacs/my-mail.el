@@ -83,12 +83,6 @@
 Julien Masson
 #+end_signature")
 
-;; open html with eaf
-(require 'eaf)
-(defun eaf-jmail-get-html ()
-  (plist-get jmail-view--data :body-html))
-(add-to-list 'eaf-mua-get-html (cons "^jmail-" 'eaf-jmail-get-html))
-
 ;; cached unread data
 (defvar jmail-unread-data-cached nil)
 

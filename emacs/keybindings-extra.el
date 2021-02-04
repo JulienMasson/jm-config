@@ -136,7 +136,6 @@
 ;; jmail
 (global-set-key (kbd "C-M-m") 'jmail)
 (global-set-key (kbd "C-x m") 'jmail-compose)
-(define-key jmail-view-mode-map "o" 'eaf-open-mail-as-html)
 
 ;; project manager
 (global-set-key (kbd "C-c i s") 'switch-project)
