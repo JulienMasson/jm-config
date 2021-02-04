@@ -38,12 +38,19 @@
     (error "Process not running")))
 
 ;; compilation buffer name
+(defun compilation--generate-new-buffer-name (buffer name count)
+  (let ((process (get-buffer-process buffer))
+	(new-buffer (format "%s<%d>" name count)))
+    (if (and process (eq (process-status process) 'run))
+	(compilation--generate-new-buffer-name new-buffer name (incf count))
+      buffer)))
+
 (defun compilation--new-buffer-name (name-of-mode)
   (let* ((buffer (format "*%s*" (downcase name-of-mode)))
 	 (process (get-buffer-process buffer)))
     (if (and process (eq (process-status process) 'run))
 	(if (yes-or-no-p "Use new buffer: ")
-	    (generate-new-buffer-name buffer)
+	    (compilation--generate-new-buffer-name buffer buffer 1)
 	  (current-buffer))
       buffer)))
 
