@@ -55,6 +55,9 @@
 (setq org-todo-keyword-faces '(("TODO"    . org-todo)
 			       ("ONGOING" . font-lock-warning-face)))
 
+;; fold overview
+(setq org-startup-folded t)
+
 ;; Hook after sorting entries
 (add-hook 'org-after-sorting-entries-or-items-hook #'org-set-startup-visibility)
 
