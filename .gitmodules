@@ -223,3 +223,6 @@
 [submodule "emacs/modules/eglot"]
 	path = emacs/modules/eglot
 	url = https://github.com/JulienMasson/eglot.git
+[submodule "emacs/modules/soong-mode"]
+	path = emacs/modules/soong-mode
+	url = https://github.com/makohoek/emacs-soong-mode.git

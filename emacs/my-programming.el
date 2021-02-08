@@ -212,6 +212,9 @@
 ;; meson mode
 (require 'meson-mode)
 
+;; soong mode
+(require 'soong-mode)
+
 ;; bitbake mode
 (require 'bb-mode)
 (setq auto-mode-alist (append '(("\\.bb\\'" . bb-mode)
