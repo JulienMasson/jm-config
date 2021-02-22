@@ -50,26 +50,31 @@
 ;; set msmtp config file
 (setq jmail-smtp-config-file (concat my-private-dotfiles-path ".msmtprc"))
 
+;; default query options
+(setq jmail-default-query-options '(:thread t :auto-fold-thread t :related t))
+
 ;; auto-fill queries from top maildir
-(setq jmail-queries (jmail-autofill-maildir-queries jmail-top-maildir))
+(apply #'jmail-autofill-queries-from-top-maildir jmail-default-query-options)
 
 ;; add custom queries
-(setq jmail-queries (jmail-maildir-add-query nil "Starred" "flag:flagged" jmail-queries))
+(jmail-add-query :name "Starred"
+		 :query "flag:flagged"
+		 :query-unread "flag:flagged and flag:unread"
+		 :thread t
+		 :auto-fold t
+		 :related t)
 
 ;; RSS news config
 (setq jmail-rss-config-file (concat my-private-dotfiles-path ".feed2exec.ini"))
 
-;; fetch RSS news every 30 mins
-(setq jmail-rss-fetch-every (* 30 60))
+;; fetch/refresh every 3 mins
+(setq jmail-fetch-refresh-every (* 3 60))
 
-;; refresh every 3 mins
-(setq jmail-update-buffer-every (* 3 60))
+;; fetch/refresh RSS news every 30 mins
+(setq jmail-rss-fetch-refresh-every (* 30 60))
 
 ;; enable org-msg for jmail
 (jmail-org-msg-enable)
-
-;; display html by default
-(setq jmail-view-html-default-view t)
 
 ;; org msg
 (require 'org-msg)
@@ -83,17 +88,30 @@
 Julien Masson
 #+end_signature")
 
+;; my unread functions
+(defun my-jmail-unread-at-point ()
+  (interactive)
+  (when-let* ((props (text-properties-at (point)))
+	      (query (plist-get props :query))
+	      (query-unread (format "(%s) and flag:unread" query)))
+    (jmail-search query-unread t nil nil)))
+
+(defun my-jmail-unread-all ()
+  (interactive)
+  (jmail-search "flag:unread" t nil nil))
+
 ;; cached unread data
 (defvar jmail-unread-data-cached nil)
 
-(defun jmail--cache-unread-data (query count)
-  (if (> count 0)
-      (if (assoc query jmail-unread-data-cached)
-	  (setcdr (assoc query jmail-unread-data-cached) count)
-	(add-to-list 'jmail-unread-data-cached (cons query count)))
-    (when (assoc query jmail-unread-data-cached)
-      (setq jmail-unread-data-cached
-	    (assoc-delete-all query jmail-unread-data-cached #'string=)))))
+(defun jmail--cache-unread-data (props count)
+  (when-let ((query (plist-get props :query)))
+    (if (> count 0)
+	(if (assoc query jmail-unread-data-cached)
+	    (setcdr (assoc query jmail-unread-data-cached) count)
+	  (add-to-list 'jmail-unread-data-cached (cons query count)))
+      (when (assoc query jmail-unread-data-cached)
+	(setq jmail-unread-data-cached
+	      (assoc-delete-all query jmail-unread-data-cached #'string=))))))
 
 (add-hook 'jmail-unread-count-hook #'jmail--cache-unread-data)
 

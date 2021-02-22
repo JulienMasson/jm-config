@@ -136,6 +136,8 @@
 ;; jmail
 (global-set-key (kbd "C-M-m") 'jmail)
 (global-set-key (kbd "C-x m") 'jmail-compose)
+(define-key jmail-mode-map "u" 'my-jmail-unread-at-point)
+(define-key jmail-mode-map "U" 'my-jmail-unread-all)
 
 ;; project manager
 (global-set-key (kbd "C-c i s") 'switch-project)
