@@ -34,6 +34,9 @@
 (let ((default-directory my-emacs-root-path))
   (normal-top-level-add-subdirs-to-load-path))
 
+;; emacs specific files
+(setq user-emacs-directory "~/.config/.emacs.d/")
+
 ;; windows config
 (require 'my-windows)
 
