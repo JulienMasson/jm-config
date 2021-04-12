@@ -36,8 +36,9 @@
   (comint-send-input))
 
 ;; bash completion
-(require 'bash-completion)
-(bash-completion-setup)
+(require 'native-complete)
+(with-eval-after-load 'shell
+  (native-complete-setup-bash))
 
 ;; multi term plus
 (require 'multi-term-plus)
