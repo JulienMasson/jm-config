@@ -26,6 +26,9 @@
 (require 'dired)
 (require 'dired-x)
 
+;; switches passed to ls
+(setq dired-listing-switches "-alh")
+
 ;; delete recursively without asking
 (setq dired-recursive-deletes 'always)
 
