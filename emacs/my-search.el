@@ -26,14 +26,16 @@
 (defun rg-executable () (executable-find "rg"))
 
 ;; search with rg
-(defun my-search (pattern)
-  (interactive "sSearch: ")
-  (rg-run pattern "everything" default-directory))
+(defun my-search (&optional arg)
+  (interactive "p")
+  (let ((files (if (> arg 1) (rg-read-files) "everything"))
+	(pattern (read-string "Search: ")))
+    (rg-run pattern files default-directory)))
 
 ;; search at point
 (require 'thingatpt)
 (defun my-search-at-point ()
   (interactive)
-  (my-search (thing-at-point 'symbol)))
+  (rg-run (thing-at-point 'symbol) "everything" default-directory))
 
 (provide 'my-search)
