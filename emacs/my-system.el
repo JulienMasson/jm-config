@@ -49,6 +49,9 @@
 ;; Avoid performance issues in files with very long lines.
 (global-so-long-mode)
 
+;; view large files
+(require 'vlf-setup)
+
 ;; find file as root
 (defun sudo-find-file (file)
   (interactive (list (read-file-name "Find file (as root): ")))

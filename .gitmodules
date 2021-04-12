@@ -226,3 +226,6 @@
 [submodule "emacs/modules/native-shell-complete"]
 	path = emacs/modules/native-shell-complete
 	url = https://github.com/CeleritasCelery/emacs-native-shell-complete.git
+[submodule "emacs/modules/vlfi"]
+	path = emacs/modules/vlfi
+	url = https://github.com/m00natic/vlfi.git
