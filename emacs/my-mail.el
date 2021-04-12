@@ -59,9 +59,8 @@
 ;; add custom queries
 (jmail-add-query :name "Starred"
 		 :query "flag:flagged"
-		 :query-unread "flag:flagged and flag:unread"
 		 :thread t
-		 :auto-fold t
+		 :auto-fold-thread t
 		 :related t)
 
 ;; RSS news config
