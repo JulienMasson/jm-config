@@ -49,9 +49,12 @@
   (let* ((buffer (format "*%s*" (downcase name-of-mode)))
 	 (process (get-buffer-process buffer)))
     (if (and process (eq (process-status process) 'run))
-	(if (yes-or-no-p "Use new buffer: ")
-	    (compilation--generate-new-buffer-name buffer buffer 1)
-	  (current-buffer))
+	(if (yes-or-no-p "Reuse current buffer: ")
+	    (when-let ((proc (get-buffer-process (current-buffer))))
+	      (interrupt-process proc)
+	      (sit-for 1)
+	      (current-buffer))
+	  (compilation--generate-new-buffer-name buffer buffer 1))
       buffer)))
 
 (setq compilation-buffer-name-function #'compilation--new-buffer-name)
@@ -59,9 +62,8 @@
 ;; ansi color on compilation buffer
 (require 'ansi-color)
 (defun colorize-compilation-buffer ()
-  (toggle-read-only)
-  (ansi-color-apply-on-region compilation-filter-start (point))
-  (toggle-read-only))
+  (let ((inhibit-read-only t))
+    (ansi-color-apply-on-region compilation-filter-start (point))))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 ;; visual regexp
@@ -153,8 +155,9 @@
 			    :test #'provided-mode-derived-p))))
 
 (defun my-eglot-ensure ()
-  (when-let ((program (eglot-ensure-current-program)))
-    (when (executable-find (car program))
+  (when-let* ((program (eglot-ensure-current-program))
+	      (executable (executable-find (car program))))
+    (unless (string= executable "")
       (eglot-ensure))))
 
 (add-hook 'c-mode-hook 'my-eglot-ensure)
