@@ -75,6 +75,11 @@
 ;; save backup files
 (setq backup-directory-alist `(("." . "~/.saves")))
 
+;; default indentation
+(setq c-default-style '((c-mode    . "linux")
+			(java-mode . "java")
+			(other     . "gnu")))
+
 ;; auto-detection indenting
 (require 'dtrt-indent)
 (dtrt-indent-mode t)
@@ -156,8 +161,32 @@
 (add-hook 'python-mode-hook 'my-eglot-ensure)
 (add-hook 'sh-mode-hook 'my-eglot-ensure)
 
-;; C source code
-(require 'my-c)
+;; acscope
+(require 'acscope)
+(require 'acscope-kernel)
+(setq acscope-find-auto-update nil)
+(setq acscope-database-fast-symbol t)
+(setq acscope-database-exclude-path (list ".ccls-cache"))
+(acscope-global-setup)
+
+;; checkpatch
+(defun checkpatch ()
+  (interactive)
+  (let ((default-directory (magit-toplevel))
+	(remote-head (magit-get-upstream-ref))
+	(cmd "./scripts/checkpatch.pl")
+	(cmd-options "--emacs"))
+    (compile (format "%s %s --git %s..HEAD"
+		     cmd cmd-options remote-head))))
+
+;; set gnu makefile mode when opening defconfig file
+(add-to-list 'auto-mode-alist '("_defconfig\\'" . makefile-gmake-mode))
+
+;; device tree mode
+(require 'dts-mode)
+
+;; kconfig mode
+(require 'kconfig-mode)
 
 ;; manual at point
 (defun man-get-index-list (pattern)
