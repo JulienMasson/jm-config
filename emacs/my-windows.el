@@ -120,35 +120,6 @@
 (doom-modeline-refresh-bars)
 (doom-modeline-set-modeline 'jm-modeline 'default)
 
-;; highlight focus
-(require 'face-remap)
-
-(defface highlight-focus-face '((t))
-  "Face used to highlight current focus window."
-  :group 'faces)
-
-(defvar highlight-focus-blacklist-modes nil)
-
-(defun highlight-focus-swap (prev next)
-  (when (and (buffer-live-p prev)
-	     (not (eq prev next)))
-    (with-current-buffer prev
-      (setq face-remapping-alist nil)
-      (force-mode-line-update)))
-  (when (buffer-live-p next)
-    (with-current-buffer next
-      (face-remap-add-relative 'default 'highlight-focus-face))))
-
-(defun highlight-focus-check (old-fn &rest args)
-  (let ((prev (current-buffer))
-	next)
-    (apply old-fn args)
-    (setq next (current-buffer))
-    (unless (apply #'derived-mode-p highlight-focus-blacklist-modes)
-      (highlight-focus-swap prev next))))
-
-(advice-add 'select-window :around #'highlight-focus-check)
-
 ;; add custom icons
 (require 'all-the-icons)
 (defvar jm-icons
