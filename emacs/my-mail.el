@@ -88,18 +88,6 @@
 Julien Masson
 #+end_signature")
 
-;; my unread functions
-(defun my-jmail-unread-at-point ()
-  (interactive)
-  (when-let* ((props (text-properties-at (point)))
-	      (query (plist-get props :query))
-	      (query-unread (format "(%s) and flag:unread" query)))
-    (jmail-search query-unread t nil nil)))
-
-(defun my-jmail-unread-all ()
-  (interactive)
-  (jmail-search "flag:unread" t nil nil))
-
 ;; cached unread data
 (defvar jmail-unread-data-cached nil)
 
