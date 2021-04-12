@@ -93,6 +93,8 @@
 
 ;; forge
 (define-key forge-topic-mode-map "g" 'forge-pull-current-topic)
+(define-key magit-diff-mode-map (kbd "C-M-n") 'forge-next-diff-post)
+(define-key magit-diff-mode-map (kbd "C-M-p") 'forge-previous-diff-post)
 
 ;; compilation
 (define-key compilation-mode-map "e" 'compilation-send-command)

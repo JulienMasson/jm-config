@@ -36,6 +36,48 @@
   (when-let ((topic (forge-current-topic)))
     (forge-pull-topic (oref topic number))))
 
+(defun forge-move-to-diff-post (next-p)
+  (let* ((direction (if next-p #'next-line #'previous-line))
+	 (limit (if next-p #'eobp #'bobp))
+	 (init-post (forge-post-at-point))
+	 (post init-post))
+    (while (and (not (funcall limit)) (or (not post) (eq init-post post)))
+      (funcall direction)
+      (setq post (forge-post-at-point)))))
+
+(defun forge-next-diff-post ()
+  (interactive)
+  (forge-move-to-diff-post t))
+
+(defun forge-previous-diff-post ()
+  (interactive)
+  (forge-move-to-diff-post nil))
+
+(defun forg-diff-build-versions (versions)
+  (let (assoc-versions (count 0))
+    (dolist (version versions)
+      (cl-incf count)
+      (add-to-list 'assoc-versions (cons (number-to-string count) version)))
+    assoc-versions))
+
+(defun forge-diff-between-versions ()
+  (interactive)
+  (if-let* ((pullreq (forge-current-pullreq))
+	    (versions (oref pullreq versions))
+	    (versions (forg-diff-build-versions versions))
+	    (numbers (mapcar #'car versions))
+	    (from (completing-read "Diff versions from: " numbers))
+	    (from-head (oref (assoc-default from versions) head-ref))
+	    (to (completing-read (format "Diff versions from %s to : " from)
+				 (remove from numbers)))
+	    (to-head (oref (assoc-default to versions) head-ref)))
+      (magit-diff-setup-buffer (format "%s..%s" from-head to-head)
+			       nil (magit-diff-arguments) nil)
+    (error "There is no current pullreq")))
+
+(transient-append-suffix 'magit-diff "w"
+  '("v" "Diff between versions" forge-diff-between-versions))
+
 ;; display only open topic
 (setq forge-topic-list-limit '(60 . 0))
 
