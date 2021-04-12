@@ -261,8 +261,7 @@ search modes defined in the new `dired-sort-toggle'.
 	(let ((inhibit-read-only t))
 	  (save-excursion
 	    (goto-char (point-max))
-	    (dolist (line (split-string str "\n"))
-	      (insert (format "  %s\n" line)))))))))
+	    (insert str)))))))
 
 (defun fd-find-dired--process-sentinel (process status)
   (when (eq (process-exit-status process) 0)
@@ -272,9 +271,9 @@ search modes defined in the new `dired-sort-toggle'.
 	     (time-str (format-time-string "%s.%3N" time-elapsed)))
 	(save-excursion
 	  (goto-char (point-max))
-	  (insert (format "  Search took: %s seconds" time-str)))))))
+	  (insert (format "\n  Search took: %s seconds" time-str)))))))
 
-(defun fd-find-setup-buffer (dir pattern cmd)
+(defun fd-find-setup-buffer (dir pattern pattern)
   (with-current-buffer (get-buffer-create fd-find-buffer)
     (widen)
     (kill-all-local-variables)
@@ -282,7 +281,7 @@ search modes defined in the new `dired-sort-toggle'.
     (let ((inhibit-read-only t))
       (erase-buffer)
       (insert (format "  %s:\n\n" default-directory))
-      (insert (format "  %s\n\n" cmd)))
+      (insert (format "  Search pattern: %s\n\n" pattern)))
     (dired-mode default-directory "-dilsb")
     (setq fd-find--start (current-time))
     (setq dired-buffers (cl-remove (current-buffer) dired-buffers
@@ -307,8 +306,8 @@ search modes defined in the new `dired-sort-toggle'.
   ;; start process
   (let* ((fd-cmd (format "fd -I -0 -c never \"%s\"" pattern))
 	 (fd-ls "xargs -0 ls -ld --quoting-style=literal")
-	 (cmd (format "%s | %s" fd-cmd fd-ls))
-	 (buffer (fd-find-setup-buffer default-directory pattern cmd))
+	 (cmd (format "%s | %s | sed 's/^/  /'" fd-cmd fd-ls))
+	 (buffer (fd-find-setup-buffer default-directory pattern pattern))
 	 (process (start-file-process "fd" buffer "bash" "-c" cmd)))
     (set-process-filter process 'fd-find-dired--process-filter)
     (set-process-sentinel process 'fd-find-dired--process-sentinel)
