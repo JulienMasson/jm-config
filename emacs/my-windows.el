@@ -127,6 +127,8 @@
   "Face used to highlight current focus window."
   :group 'faces)
 
+(defvar highlight-focus-blacklist-modes nil)
+
 (defun highlight-focus-swap (prev next)
   (when (and (buffer-live-p prev)
 	     (not (eq prev next)))
@@ -142,7 +144,8 @@
 	next)
     (apply old-fn args)
     (setq next (current-buffer))
-    (highlight-focus-swap prev next)))
+    (unless (apply #'derived-mode-p highlight-focus-blacklist-modes)
+      (highlight-focus-swap prev next))))
 
 (advice-add 'select-window :around #'highlight-focus-check)
 
