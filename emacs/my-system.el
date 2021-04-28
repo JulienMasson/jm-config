@@ -134,18 +134,12 @@
 (register-project
  (make-project :name "Home"
 	       :pm-backend "emacslisp"
-	       :root-path "~"
-	       :subprojects `(("private" . ,(replace-regexp-in-string
-					     (expand-file-name "~") ""
-					     (concat my-emacs-root-path "modules/jm-private")))
-			      ("modules" . ,(replace-regexp-in-string
-					     (expand-file-name "~") ""
-					     (concat my-emacs-root-path "modules")))
-			      ("emacs"   . ,(replace-regexp-in-string
-					     (expand-file-name "~") ""
-					     my-emacs-root-path))
-			      ("docs"    . "/Documents/Docs")
-			      ("gdrive"  . "/Documents/gdrive"))))
+	       :root-path "~/"
+	       :subprojects `(("private" . ,(concat my-emacs-root-path "modules/jm-private"))
+			      ("modules" . ,(concat my-emacs-root-path "modules"))
+			      ("emacs"   . ,my-emacs-root-path)
+			      ("docs"    . "Documents/Docs")
+			      ("gdrive"  . "Documents/gdrive"))))
 (switch-project "Home")
 
 ;; Status
