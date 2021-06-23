@@ -43,7 +43,7 @@
 (require 'emojify)
 (add-hook 'lui-mode-hook #'emojify-mode)
 
-(defvar jm-emojify-candidates '("🙂" "😛" "😂" "😑" "😕" "🙁" "😤" "👍"))
+(defvar jm-emojify-candidates '("😛" "😬" "😅" "🙂" "👍" "👌" "🤙" "😂" "😑" "😕""😤" "🙏" "💪" "💩"))
 
 (defun jm-emojify-insert-emoji ()
   (interactive)
