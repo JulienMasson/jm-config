@@ -25,6 +25,16 @@
 ;; set default shell
 (setq explicit-shell-file-name "/bin/bash")
 
+;; bash as default over tramp
+(setq tramp-connection-local-default-shell-variables
+      '((shell-file-name . "/bin/bash")
+        (shell-command-switch . "-c")))
+
+(tramp-compat-funcall
+ 'connection-local-set-profile-variables
+ 'tramp-connection-local-default-shell-profile
+ tramp-connection-local-default-shell-variables)
+
 ;; use emacsclient as the $EDITOR
 (require 'with-editor)
 (add-hook 'shell-mode-hook 'with-editor-export-editor)
