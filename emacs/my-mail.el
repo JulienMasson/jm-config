@@ -72,6 +72,9 @@
 ;; fetch/refresh RSS news every 30 mins
 (setq jmail-rss-fetch-refresh-every (* 30 60))
 
+;; display html by default
+(setq jmail-view-html-default-view t)
+
 ;; enable org-msg for jmail
 (jmail-org-msg-enable)
 
