@@ -167,6 +167,9 @@
 (require 'status-jmail)
 (status-add-to-right 'status-jmail)
 
+(require 'status-org-gcal)
+(status-add-to-right 'status-org-gcal)
+
 (turn-on-status)
 
 ;; never request confirmation when opening large file
