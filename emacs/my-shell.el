@@ -55,6 +55,11 @@
 (setq multi-term-program explicit-shell-file-name)
 (defalias 'term 'multi-term)
 
+(defun term-set-local-key (&rest _args)
+  (define-key term-raw-map (kbd "C-c C-j") 'term-line-mode)
+  (define-key term-raw-map (kbd "C-c C-k") 'term-char-mode))
+(advice-add #'multi-term :after #'term-set-local-key)
+
 ;; shell enter
 (defun shell-press-ret ()
   (interactive)
