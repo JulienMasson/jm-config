@@ -229,3 +229,9 @@
 [submodule "emacs/modules/vlfi"]
 	path = emacs/modules/vlfi
 	url = https://github.com/m00natic/vlfi.git
+[submodule "emacs/modules/org-jira"]
+	path = emacs/modules/org-jira
+	url = https://github.com/ahungry/org-jira.git
+[submodule "emacs/modules/language-detection"]
+	path = emacs/modules/language-detection
+	url = https://github.com/andreasjansson/language-detection.el.git
