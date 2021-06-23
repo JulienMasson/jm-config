@@ -37,6 +37,9 @@
 ;; emacs specific files
 (setq user-emacs-directory "~/.config/.emacs.d/")
 
+;; silent warning
+(setq warning-suppress-types '((comp)))
+
 ;; windows config
 (require 'my-windows)
 
