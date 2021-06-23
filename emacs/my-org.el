@@ -202,4 +202,21 @@
       (org-agenda-finalize)
       (setq buffer-read-only t))))
 
+;; heading done when all checkboxes checked
+(require 'org-list)
+(defun org-checkbox-list-complete ()
+  (save-excursion
+    (org-back-to-heading t)
+    (let ((regexp "\\[\\([0-9]+\\)/\\([0-9]+\\)\\]")
+      (end (line-end-position))
+      next-todo-state)
+      (when (re-search-forward regexp end t)
+        (if (string= (match-string 1) (match-string 2))
+        (setq next-todo-state "DONE")
+      (setq next-todo-state "TODO"))
+    (unless (string= next-todo-state (org-get-todo-state))
+      (org-todo next-todo-state))))))
+
+(add-hook 'org-checkbox-statistics-hook #'org-checkbox-list-complete)
+
 (provide 'my-org)
