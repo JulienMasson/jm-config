@@ -125,6 +125,8 @@ Julien Masson
 	(jmail-compose-mode)
 	(jmail-company-setup)
 	(jmail-compose-setup-send-mail)
+        (setq-local mail-host-address (replace-regexp-in-string
+                                       ".+@" "" email))
 	(jmail-compose-set-extra-arguments (car account) email)))))
 
 (add-hook 'send-patch-compose-hook 'send-patch-setup-jmail-env)
