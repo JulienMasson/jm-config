@@ -154,6 +154,21 @@
 	  (goto-char (point-min))))
       (pop-to-buffer buf-name))))
 
+(defun eglot-help (hint)
+  (interactive "sHelp: ")
+  (eglot--dbind ((Hover) contents range)
+      (jsonrpc-request (eglot--current-server-or-lose) :textDocument/hover
+                       (eglot--TextDocumentPositionParams))
+    (when-let ((blurb (and (not (seq-empty-p contents))
+			   (eglot--hover-info contents range)))
+	       (buf-name (format "*eglot-help %s*" hint)))
+      (unless (get-buffer buf-name)
+	(with-current-buffer (get-buffer-create buf-name)
+	  (insert blurb)
+	  (help-mode)
+	  (goto-char (point-min))))
+      (pop-to-buffer buf-name))))
+
 ;; enable eglot
 (defun eglot-ensure-current-program ()
   (assoc-default major-mode eglot-server-programs
