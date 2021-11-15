@@ -160,7 +160,7 @@
 
 (defun my-eglot-ensure ()
   (when-let* ((program (eglot-ensure-current-program))
-	      (executable (executable-find (car program))))
+              (executable (executable-find (car program))))
     (unless (string= executable "")
       (eglot-ensure))))
 

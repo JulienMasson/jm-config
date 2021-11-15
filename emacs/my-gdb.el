@@ -66,10 +66,8 @@
 ;; gdb attach
 (defun gdb-attach (process)
   (interactive "sProcess Name: ")
-  (let ((pid (gdb-get-pid process)))
-    (when pid
-      (realgud:gdb (format "%s -p %s" gdb-default-cmd
-			   (string-to-number pid))))))
+  (when-let ((pid (gdb-get-pid process)))
+    (realgud:gdb (format "%s -p %s" gdb-default-cmd (string-to-number pid)))))
 
 ;; gdbserver
 (defvar gdbserver-default-port 2345)
