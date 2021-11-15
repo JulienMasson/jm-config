@@ -82,6 +82,9 @@
 			(java-mode . "java")
 			(other     . "gnu")))
 
+;; spaces as default tabs
+(setq-default indent-tabs-mode nil)
+
 ;; auto-detection indenting
 (require 'dtrt-indent)
 (dtrt-indent-mode t)
