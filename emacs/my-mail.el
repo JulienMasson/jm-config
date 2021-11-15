@@ -177,6 +177,6 @@ Julien Masson
     (list to cc)))
 
 (add-to-list 'send-patch-get-recipients-funcs
-	     (cons "U-Boot" 'send-patch-get-recipients-kernel) t)
+	     (cons "U-Boot" 'send-patch-get-recipients-uboot) t)
 
 (provide 'my-mail)
