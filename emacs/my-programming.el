@@ -233,28 +233,19 @@
   (interactive)
   (cond
    ;; C mode
-   ((string= major-mode "c-mode")
-    (let* ((pattern (thing-at-point 'symbol))
-	   (search-list '(2 3))
-	   (index (man-search-index pattern search-list)))
-      (when index
-	(man (format "%s (%d)" pattern index)))))
-   ;; Shell mode
-   ((string= major-mode "sh-mode")
-    (let* ((pattern (thing-at-point 'symbol))
-	   (search-list '(1 8))
-	   (index (man-search-index pattern search-list)))
-      (when index
-	(man (format "%s (%d)" pattern index)))))
+   ((derived-mode-p 'c-mode)
+    (when-let* ((pattern (thing-at-point 'symbol))
+	        (search-list '(2 3))
+	        (index (man-search-index pattern search-list)))
+      (man (format "%s (%d)" pattern index))))
    ;; Perl mode
-   ((string= major-mode "cperl-mode")
+   ((derived-mode-p 'cperl-mode)
     (cperl-perldoc-at-point))
-   ;; Python mode
-   ((string= major-mode "python-mode")
+   ;; Python/Rust/Shell mode
+   ((derived-mode-p 'python-mode 'rust-mode 'sh-mode)
     (eglot-help-at-point))
    ;; Emacs lisp mode
-   ((or (string= major-mode "emacs-lisp-mode")
-	(string= major-mode "lisp-interaction-mode"))
+   ((derived-mode-p 'emacs-lisp-mode 'lisp-interaction-mode)
     (let* ((string (thing-at-point 'symbol))
 	   (symbol (intern-soft string)))
       (when symbol
