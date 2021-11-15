@@ -116,6 +116,10 @@
 ;; gdb
 (require 'my-gdb)
 
+;; rust
+(require 'rust-mode)
+(add-hook 'rust-mode-hook (lambda () (setq indent-tabs-mode nil)))
+
 ;; eglot
 (require 'eglot)
 (setq eglot-no-message t)

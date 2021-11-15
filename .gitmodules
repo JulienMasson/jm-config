@@ -235,3 +235,6 @@
 [submodule "emacs/modules/language-detection"]
 	path = emacs/modules/language-detection
 	url = https://github.com/andreasjansson/language-detection.el.git
+[submodule "emacs/modules/rust-mode"]
+	path = emacs/modules/rust-mode
+	url = https://github.com/rust-lang/rust-mode.git
