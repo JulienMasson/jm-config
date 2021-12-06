@@ -136,9 +136,6 @@
 [submodule "emacs/modules/treepy"]
 	path = emacs/modules/treepy
 	url = https://github.com/volrath/treepy.el.git
-[submodule "emacs/modules/forge"]
-	path = emacs/modules/forge
-	url = https://github.com/magit/forge.git
 [submodule "emacs/modules/closql"]
 	path = emacs/modules/closql
 	url = https://github.com/emacscollective/closql.git
@@ -244,3 +241,6 @@
 [submodule "emacs/modules/yaml"]
 	path = emacs/modules/yaml
 	url = https://github.com/zkry/yaml.el.git
+[submodule "emacs/modules/forge"]
+	path = emacs/modules/forge
+	url = https://github.com/JulienMasson/forge.git
