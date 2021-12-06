@@ -238,3 +238,6 @@
 [submodule "emacs/modules/rust-mode"]
 	path = emacs/modules/rust-mode
 	url = https://github.com/rust-lang/rust-mode.git
+[submodule "emacs/modules/echat"]
+	path = emacs/modules/echat
+	url = git@github.com:JulienMasson/echat.git

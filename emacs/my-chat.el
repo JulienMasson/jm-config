@@ -23,9 +23,8 @@
 ;;; Code:
 
 ;; epurple
-(require 'epurple)
-(setq epurple-nick-name "Julien Masson")
-(setq epurple-auto-reconnect t)
+(require 'echat)
+(setq echat-nick-name "Julien Masson")
 
 ;; alert
 (require 'alert)

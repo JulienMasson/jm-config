@@ -104,19 +104,16 @@
 (global-set-key (kbd "C-c C-u") (lambda () (interactive) (run-at-time 1 status-refresh-timer-delay 'status-update)))
 
 ;; epurple
-(global-set-key (kbd "C-c e c") 'epurple-chat)
-(global-set-key (kbd "C-c e r") 'epurple-init)
-(global-set-key (kbd "C-c e q") 'epurple-exit)
-(global-set-key (kbd "C-c e j") 'epurple-jump)
-(global-set-key (kbd "C-c e i") 'epurple-im)
-(global-set-key (kbd "C-c e m") 'epurple-mute-toggle)
-(global-set-key (kbd "C-c e u") 'epurple-unread)
-(global-set-key (kbd "C-c e C") 'epurple-connect)
-(global-set-key (kbd "C-c e D") 'epurple-disconnect)
-(global-set-key (kbd "C-c e R") 'epurple-restart)
-(global-set-key (kbd "C-c e U") 'epurple-update-restart)
-(define-key lui-mode-map (kbd "C-M-u") 'epurple-buffer-goto-unread-messages)
-
+(global-set-key (kbd "C-c e r") 'echat-init)
+(global-set-key (kbd "C-c e q") 'echat-exit)
+(global-set-key (kbd "C-c e C") 'echat-connect)
+(global-set-key (kbd "C-c e D") 'echat-disconnect)
+(global-set-key (kbd "C-c e i") 'echat-im)
+(global-set-key (kbd "C-c e c") 'echat-channel)
+(global-set-key (kbd "C-c e j") 'echat-jump)
+(global-set-key (kbd "C-c e m") 'echat-mute-toggle)
+(global-set-key (kbd "C-c e u") 'echat-unread)
+(define-key lui-mode-map (kbd "C-M-u") 'echat-buffer-goto-unread-messages)
 
 ;; lui
 (define-key lui-mode-map (kbd "C-c C-e") 'jm-emojify-insert-emoji)

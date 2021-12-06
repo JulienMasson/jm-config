@@ -161,8 +161,8 @@
 (require 'status-date)
 (status-add-to-right 'status-date)
 
-(require 'status-epurple)
-(status-add-to-right 'status-epurple)
+(require 'status-echat)
+(status-add-to-right 'status-echat)
 
 (require 'status-jmail)
 (status-add-to-right 'status-jmail)
