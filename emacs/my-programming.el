@@ -170,22 +170,10 @@
 	  (goto-char (point-min))))
       (pop-to-buffer buf-name))))
 
-;; enable eglot
-(defun eglot-ensure-current-program ()
-  (assoc-default major-mode eglot-server-programs
-		 (lambda (m1 m2)
-		   (cl-find m2 (if (listp m1) m1 (list m1))
-			    :test #'provided-mode-derived-p))))
-
-(defun my-eglot-ensure ()
-  (when-let* ((program (eglot-ensure-current-program))
-              (executable (executable-find (car program))))
-    (unless (string= executable "")
-      (eglot-ensure))))
-
-(add-hook 'c-mode-hook 'my-eglot-ensure)
-(add-hook 'python-mode-hook 'my-eglot-ensure)
-(add-hook 'sh-mode-hook 'my-eglot-ensure)
+;; eglot modes
+(dolist (mode-hook (list 'c-mode-hook 'c++-mode-hook 'python-mode-hook
+                         'sh-mode-hook 'rust-mode-hook))
+  (add-hook mode-hook 'eglot-ensure))
 
 ;; acscope
 (require 'acscope)
