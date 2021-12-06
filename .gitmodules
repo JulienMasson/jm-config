@@ -241,3 +241,6 @@
 [submodule "emacs/modules/echat"]
 	path = emacs/modules/echat
 	url = git@github.com:JulienMasson/echat.git
+[submodule "emacs/modules/yaml"]
+	path = emacs/modules/yaml
+	url = https://github.com/zkry/yaml.el.git
