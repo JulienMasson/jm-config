@@ -78,6 +78,15 @@
 (transient-append-suffix 'magit-diff "w"
   '("v" "Diff between versions" forge-diff-between-versions))
 
+;; show commit
+(defun my-magit-show-commit (rev)
+  (interactive (list (magit-read-branch-or-commit "Show commit")))
+  (pcase-let ((`(,args ,files) (magit-show-commit--arguments)))
+    (magit-with-toplevel
+      (unless (magit-commit-p rev)
+        (user-error "%s is not a commit" rev))
+      (magit-revision-setup-buffer rev args files))))
+
 ;; display only open topic
 (setq forge-topic-list-limit '(60 . 0))
 
