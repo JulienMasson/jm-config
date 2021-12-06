@@ -34,7 +34,7 @@
 (defun forge-pull-current-topic ()
   (interactive)
   (when-let ((topic (forge-current-topic)))
-    (forge-pull-topic (oref topic number))))
+    (forge-pull-topic topic)))
 
 (defun forge-move-to-diff-post (next-p)
   (let* ((direction (if next-p #'next-line #'previous-line))
