@@ -68,7 +68,7 @@
     (shell (current-buffer))))
 
 ;; export PS1
-(defconst ps1-config "\\[\\e[1;34m\\]\\u  \\w${text}\\[\\e[m\\]\n\\[\\e[1;32m\\]\\t\\[\\e[m\\] ")
+(defconst ps1-config "\\[\\033[01;38;5;33m\\]\\u  \\w${text}\n\\[\\033[01;38;5;42m\\]\\t \\033[0m")
 (defun export-ps1 ()
   (when shell--start-prog
     (when-let ((process (get-buffer-process (current-buffer)))
