@@ -130,6 +130,7 @@
 (setq eglot-eldoc-enable nil)
 (setq eglot-sync-connect nil)
 (setq eglot-autoshutdown t)
+(setq eglot-stay-out-of '(flymake eldoc))
 
 (defun eglot-shutdown-all ()
   (interactive)
