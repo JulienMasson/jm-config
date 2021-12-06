@@ -175,9 +175,5 @@ This does not remove any saved value of SYMBOL."
   "Save all persistant symbols."
   (mapc 'persist-save persist--symbols))
 
-;; Save on kill-emacs-hook anyway
-(add-hook 'kill-emacs-hook
-          'persist--save-all)
-
 (provide 'persist)
 ;;; persist.el ends here
