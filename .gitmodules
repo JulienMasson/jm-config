@@ -118,9 +118,6 @@
 [submodule "emacs/modules/hide-lines"]
 	path = emacs/modules/hide-lines
 	url = https://github.com/JulienMasson/hide-lines.git
-[submodule "emacs/modules/pdfgrep"]
-	path = emacs/modules/pdfgrep
-	url = https://github.com/JulienMasson/pdfgrep.git
 [submodule "emacs/modules/move-lines"]
 	path = emacs/modules/move-lines
 	url = https://github.com/targzeta/move-lines.git
@@ -241,3 +238,6 @@
 [submodule "emacs/modules/forge"]
 	path = emacs/modules/forge
 	url = https://github.com/JulienMasson/forge.git
+[submodule "emacs/modules/pdfgrep"]
+	path = emacs/modules/pdfgrep
+	url = https://github.com/jeremy-compostella/pdfgrep.git

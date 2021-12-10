@@ -111,7 +111,8 @@
 (if (not (executable-find "pdfgrep"))
     (message "Please install pdfgrep")
   (require 'pdfgrep)
-  (pdfgrep-mode))
+  (pdfgrep-mode)
+  (setq pdfgrep-options " --color=always -nrH "))
 
 ;; set default web browser
 (setq browse-url-browser-function 'browse-url-firefox
