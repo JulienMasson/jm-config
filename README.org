@@ -3,7 +3,6 @@
 This is my personnal config which contains:
 - Emacs configurations
 - Emacs modules
-- Dotfiles (X files, emacs, bash ...)
 - Tools (utils scripts)
 
 Install *jm-config* in your system:
