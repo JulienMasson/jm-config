@@ -112,9 +112,6 @@
 [submodule "emacs/modules/htmlize"]
 	path = emacs/modules/htmlize
 	url = https://github.com/hniksic/emacs-htmlize.git
-[submodule "emacs/modules/org-msg"]
-	path = emacs/modules/org-msg
-	url = https://github.com/JulienMasson/org-msg.git
 [submodule "emacs/modules/hide-lines"]
 	path = emacs/modules/hide-lines
 	url = https://github.com/JulienMasson/hide-lines.git
@@ -238,6 +235,9 @@
 [submodule "emacs/modules/forge"]
 	path = emacs/modules/forge
 	url = https://github.com/JulienMasson/forge.git
+[submodule "emacs/modules/org-msg"]
+	path = emacs/modules/org-msg
+	url = https://github.com/jeremy-compostella/org-msg.git
 [submodule "emacs/modules/pdfgrep"]
 	path = emacs/modules/pdfgrep
 	url = https://github.com/jeremy-compostella/pdfgrep.git
