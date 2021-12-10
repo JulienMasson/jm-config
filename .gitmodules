@@ -5,26 +5,6 @@
 	path = emacs/modules/dtrt-indent
 	url = https://github.com/jscheid/dtrt-indent
 	ignore = untracked
-[submodule "emacs/status"]
-	path = emacs/modules/status
-	url = https://github.com/JulienMasson/status
-	ignore = untracked
-	branch = master
-[submodule "emacs/modules/log-tools"]
-	path = emacs/modules/log-tools
-	url = https://github.com/JulienMasson/log-tools.git
-	ignore = untracked
-	branch = master
-[submodule "emacs/modules/project-manager"]
-	path = emacs/modules/project-manager
-	url = https://github.com/JulienMasson/project-manager.git
-	ignore = untracked
-	branch = master
-[submodule "emacs/modules/device-control"]
-	path = emacs/modules/device-control
-	url = https://github.com/JulienMasson/device-control.git
-	ignore = untracked
-	branch = master
 [submodule "emacs/modules/dash"]
 	path = emacs/modules/dash
 	url = https://github.com/magnars/dash.el.git
@@ -70,9 +50,6 @@
 [submodule "emacs/modules/loc-changes"]
 	path = emacs/modules/loc-changes
 	url = https://github.com/rocky/emacs-loc-changes.git
-[submodule "emacs/modules/realgud"]
-	path = emacs/modules/realgud
-	url = https://github.com/JulienMasson/realgud.git
 [submodule "emacs/modules/ido-completing-read-plus"]
 	path = emacs/modules/ido-completing-read-plus
 	url = https://github.com/DarwinAwardWinner/ido-completing-read-plus.git
@@ -106,15 +83,9 @@
 [submodule "emacs/modules/f"]
 	path = emacs/modules/f
 	url = https://github.com/rejeep/f.el.git
-[submodule "emacs/modules/org-gtasks"]
-	path = emacs/modules/org-gtasks
-	url = https://github.com/JulienMasson/org-gtasks.git
 [submodule "emacs/modules/htmlize"]
 	path = emacs/modules/htmlize
 	url = https://github.com/hniksic/emacs-htmlize.git
-[submodule "emacs/modules/hide-lines"]
-	path = emacs/modules/hide-lines
-	url = https://github.com/JulienMasson/hide-lines.git
 [submodule "emacs/modules/move-lines"]
 	path = emacs/modules/move-lines
 	url = https://github.com/targzeta/move-lines.git
@@ -157,9 +128,6 @@
 [submodule "emacs/modules/surround"]
 	path = emacs/modules/surround
 	url = https://github.com/ganmacs/emacs-surround.git
-[submodule "emacs/modules/acscope"]
-	path = emacs/modules/acscope
-	url = https://github.com/JulienMasson/acscope.git
 [submodule "emacs/modules/libegit2"]
 	path = emacs/modules/libegit2
 	url = https://github.com/magit/libegit2.git
@@ -196,15 +164,9 @@
 [submodule "emacs/modules/all-the-icons-ibuffer"]
 	path = emacs/modules/all-the-icons-ibuffer
 	url = https://github.com/seagle0128/all-the-icons-ibuffer.git
-[submodule "emacs/modules/jmail"]
-	path = emacs/modules/jmail
-	url = https://github.com/JulienMasson/jmail.git
 [submodule "emacs/modules/bb-mode"]
 	path = emacs/modules/bb-mode
 	url = https://github.com/mferland/bb-mode.git
-[submodule "emacs/modules/eglot"]
-	path = emacs/modules/eglot
-	url = https://github.com/JulienMasson/eglot.git
 [submodule "emacs/modules/soong-mode"]
 	path = emacs/modules/soong-mode
 	url = https://github.com/makohoek/emacs-soong-mode.git
@@ -229,12 +191,42 @@
 [submodule "emacs/modules/yaml"]
 	path = emacs/modules/yaml
 	url = https://github.com/zkry/yaml.el.git
-[submodule "emacs/modules/forge"]
-	path = emacs/modules/forge
-	url = https://github.com/JulienMasson/forge.git
 [submodule "emacs/modules/org-msg"]
 	path = emacs/modules/org-msg
 	url = https://github.com/jeremy-compostella/org-msg.git
 [submodule "emacs/modules/pdfgrep"]
 	path = emacs/modules/pdfgrep
 	url = https://github.com/jeremy-compostella/pdfgrep.git
+[submodule "emacs/modules/status"]
+	path = emacs/modules/status
+	url = git@github.com:JulienMasson/status.git
+[submodule "emacs/modules/log-tools"]
+	path = emacs/modules/log-tools
+	url = git@github.com:JulienMasson/log-tools.git
+[submodule "emacs/modules/project-manager"]
+	path = emacs/modules/project-manager
+	url = git@github.com:JulienMasson/project-manager.git
+[submodule "emacs/modules/device-control"]
+	path = emacs/modules/device-control
+	url = git@github.com:JulienMasson/device-control.git
+[submodule "emacs/modules/realgud"]
+	path = emacs/modules/realgud
+	url = git@github.com:JulienMasson/realgud.git
+[submodule "emacs/modules/org-gtasks"]
+	path = emacs/modules/org-gtasks
+	url = git@github.com:JulienMasson/org-gtasks.git
+[submodule "emacs/modules/hide-lines"]
+	path = emacs/modules/hide-lines
+	url = git@github.com:JulienMasson/hide-lines.git
+[submodule "emacs/modules/acscope"]
+	path = emacs/modules/acscope
+	url = git@github.com:JulienMasson/acscope.git
+[submodule "emacs/modules/jmail"]
+	path = emacs/modules/jmail
+	url = git@github.com:JulienMasson/jmail.git
+[submodule "emacs/modules/eglot"]
+	path = emacs/modules/eglot
+	url = git@github.com:JulienMasson/eglot.git
+[submodule "emacs/modules/forge"]
+	path = emacs/modules/forge
+	url = git@github.com:JulienMasson/forge.git
