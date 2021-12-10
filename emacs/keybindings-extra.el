@@ -103,7 +103,7 @@
 ;; refresh status
 (global-set-key (kbd "C-c C-u") (lambda () (interactive) (run-at-time 1 status-refresh-timer-delay 'status-update)))
 
-;; epurple
+;; echat
 (global-set-key (kbd "C-c e r") 'echat-init)
 (global-set-key (kbd "C-c e q") 'echat-exit)
 (global-set-key (kbd "C-c e C") 'echat-connect)

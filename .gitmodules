@@ -205,9 +205,6 @@
 [submodule "emacs/modules/all-the-icons-ibuffer"]
 	path = emacs/modules/all-the-icons-ibuffer
 	url = https://github.com/seagle0128/all-the-icons-ibuffer.git
-[submodule "emacs/modules/epurple"]
-	path = emacs/modules/epurple
-	url = https://github.com/JulienMasson/epurple.git
 [submodule "emacs/modules/jmail"]
 	path = emacs/modules/jmail
 	url = https://github.com/JulienMasson/jmail.git
