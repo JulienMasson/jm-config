@@ -39,9 +39,6 @@
 (assoc-delete-all "\\.pdf\\'" dired-guess-shell-alist-default)
 (add-to-list 'dired-guess-shell-alist-default (list "\\.pdf\\'" "evince"))
 
-;; locate dired
-(require 'locate-dired)
-
 ;; async dired
 (require 'async-dired)
 (async-dired-setup)

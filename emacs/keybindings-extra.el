@@ -45,7 +45,6 @@
 (define-key dired-mode-map "=" 'dired-diff-files)
 (define-key dired-mode-map "r" 'dired-diff-directories)
 (define-key dired-mode-map "h" 'dired-do-hexl-find-file)
-(define-key dired-mode-map "L" 'locate-dired)
 (define-key dired-mode-map "U" 'unmark-all-dired-buffer)
 (define-key dired-mode-map "K" 'kill-all-dired-buffer)
 (define-key dired-mode-map "S" 'dired-sudo)
