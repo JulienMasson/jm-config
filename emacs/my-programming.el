@@ -170,6 +170,9 @@
 	  (goto-char (point-min))))
       (pop-to-buffer buf-name))))
 
+;; force ccls
+(setcdr (assoc '(c++-mode c-mode) eglot-server-programs) '("ccls"))
+
 ;; eglot modes
 (dolist (mode-hook (list 'c-mode-hook 'c++-mode-hook 'python-mode-hook
                          'sh-mode-hook 'rust-mode-hook))
