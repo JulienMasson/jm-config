@@ -53,16 +53,6 @@
 ;; default query options
 (setq jmail-default-query-options '(:thread t :auto-fold-thread t :related t))
 
-;; auto-fill queries from top maildir
-(apply #'jmail-autofill-queries-from-top-maildir jmail-default-query-options)
-
-;; add custom queries
-(jmail-add-query :name "Starred"
-		 :query "flag:flagged"
-		 :thread t
-		 :auto-fold-thread t
-		 :related t)
-
 ;; RSS news config
 (setq jmail-rss-config-file (concat my-private-dotfiles-path ".feed2exec.ini"))
 
