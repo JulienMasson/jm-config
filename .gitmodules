@@ -230,3 +230,6 @@
 [submodule "emacs/modules/forge"]
 	path = emacs/modules/forge
 	url = git@github.com:JulienMasson/forge.git
+[submodule "emacs/modules/docker-tramp"]
+	path = emacs/modules/docker-tramp
+	url = https://github.com/emacs-pe/docker-tramp.el.git

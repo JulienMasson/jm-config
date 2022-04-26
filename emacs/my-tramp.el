@@ -56,5 +56,7 @@
       (tramp-file-name-localname (tramp-dissect-file-name path))
     path))
 
+;; docker backend
+(require 'docker-tramp)
 
 (provide 'my-tramp)
