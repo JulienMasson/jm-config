@@ -34,6 +34,7 @@
 (global-set-key (kbd "C-c <right>") 'windmove-right)
 (global-set-key (kbd "C-c <up>")    'windmove-up)
 (global-set-key (kbd "C-c <down>")  'windmove-down)
+(global-set-key (kbd "C-x C-<tab>") 'swap-last-buffers)
 
 ;; movement right/left
 (global-set-key (kbd "C-<right>") 'right-word)

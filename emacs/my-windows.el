@@ -200,4 +200,11 @@
 (require 'move-lines)
 (move-lines-binding)
 
+;; swap last buffers
+(defun swap-last-buffers ()
+  (interactive)
+  (let ((current (get-buffer-window (current-buffer)))
+        (last (get-buffer-window (nth 1 (buffer-list)))))
+    (window-swap-states current last)))
+
 (provide 'my-windows)
