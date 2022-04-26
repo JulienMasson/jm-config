@@ -129,6 +129,7 @@
 				       (mapcar 'car org-gcal-actions)))
 	      (func (assoc-default action org-gcal-actions)))
     (org-gcal-set-env account)
+    (setq status-org-gcal-all-events nil)
     (funcall func)))
 
 ;; disable separator
