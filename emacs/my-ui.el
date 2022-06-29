@@ -102,6 +102,14 @@
    (lt-mode                   all-the-icons-octicon  "tools"        :v-adjust 0.0)))
 (setq all-the-icons-mode-icon-alist (append all-the-icons-mode-icon-alist jm-icons))
 
+;; icons completion
+(require 'all-the-icons-completion)
+(all-the-icons-completion-mode)
+
+;; icons dired
+(require 'all-the-icons-dired)
+(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+
 ;; icons ibuffer
 (require 'all-the-icons-ibuffer)
 (all-the-icons-ibuffer-mode 1)
@@ -110,29 +118,26 @@
 (require 'hl-line)
 (global-hl-line-mode 1)
 
-;; vertico
-(require 'vertico)
-(require 'vertico-directory)
-(vertico-mode)
-
 ;; orderless
 (require 'orderless)
 (setq completion-styles '(orderless basic))
 (setq completion-category-defaults nil)
 (setq completion-category-overrides '((file (styles partial-completion))))
 
+;; vertico
+(require 'vertico)
+(require 'vertico-directory)
+(setq vertico-count-format nil)
+(vertico-mode)
+
+;; vertico flat
+(require 'vertico-flat)
+(vertico-flat-mode)
+
 ;; marginalia
 (require 'marginalia)
 (marginalia-mode)
-
-;; icons completion
-(require 'all-the-icons-completion)
-(all-the-icons-completion-mode)
 (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup)
-
-;; icons dired
-(require 'all-the-icons-dired)
-(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
 
 ;; corfu
 (require 'corfu)

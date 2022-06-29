@@ -104,6 +104,7 @@
 (define-key vertico-map (kbd "C-d") 'vertico-exit-input)
 (define-key vertico-map (kbd "RET") 'vertico-directory-enter)
 (define-key vertico-map (kbd "DEL") 'vertico-directory-delete-char)
+(define-key vertico-map (kbd "TAB") 'vertico-flat-mode)
 
 ;; help-mode
 (require 'help-mode)
