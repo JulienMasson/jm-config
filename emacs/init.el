@@ -34,24 +34,17 @@
 (let ((default-directory my-emacs-root-path))
   (normal-top-level-add-subdirs-to-load-path))
 
-;; emacs specific files
-(setq user-emacs-directory "~/.config/.emacs.d/")
-
-;; silent warning
-(setq warning-suppress-types '((comp)))
-
-;; windows config
-(require 'my-windows)
-
-;; system config
+;; minimum config
+(require 'my-ui)
 (require 'my-system)
-
-;; keybindings config
+(require 'my-commands)
+(require 'my-tramp)
+(require 'my-dired)
+(require 'my-grep)
+(require 'my-search)
 (require 'keybindings-base)
+
+;; full config
+(require 'my-modules)
 (require 'keybindings-extra)
-
-;; jm private
 (require 'jm-private)
-
-;; clear echo area
-(message nil)

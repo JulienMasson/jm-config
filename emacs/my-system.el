@@ -22,6 +22,21 @@
 
 ;;; Code:
 
+;; emacs specific files
+(setq user-emacs-directory "~/.config/.emacs.d/")
+
+;; silent warning
+(setq warning-suppress-types '((comp)))
+
+;; shifted motion keys activate the mark momentarily
+(setq shift-select-mode t)
+
+;; prevent automatic splitting
+(set-frame-parameter nil 'unsplittable t)
+
+;; movement off the edge of the frame wraps around.
+(setq windmove-wrap-around t)
+
 ;; enable upcase/dowcase commands
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
@@ -46,153 +61,13 @@
 ;; save password
 (setq password-cache-expiry nil)
 
-;; Avoid performance issues in files with very long lines.
+;; performance mitigations for files with long lines
 (global-so-long-mode)
-
-;; view large files
-(require 'vlf-setup)
-
-;; find file as root
-(defun sudo-find-file (file)
-  (interactive (list (read-file-name "Find file (as root): ")))
-  (if (tramp-tramp-file-p file)
-      (let* ((dissect (tramp-dissect-file-name file))
-	     (host (tramp-file-name-host dissect))
-	     (local-file (tramp-file-name-localname dissect))
-	     (tramp (replace-regexp-in-string local-dir "" dir)))
-	(find-alternate-file (format "%s|sudo:root@%s:%s"
-				     tramp host local-file)))
-    (find-alternate-file (concat "/sudo:root@localhost:" file))))
-
-;; persistent scratch
-(require 'persistent-scratch)
-(persistent-scratch-setup-default)
-
-;; browse kill ring
-(require 'browse-kill-ring)
-
-;; define key in help mode
-(require 'help-mode)
-
-;; tramp config
-(require 'my-tramp)
-
-;; org config
-(require 'my-org)
-
-;; dired config
-(require 'my-dired)
-
-;; chat config
-(require 'my-chat)
-
-;; programming config
-(require 'my-programming)
-
-;; shell config
-(require 'my-shell)
-
-;; git config
-(require 'my-git)
-
-;; pdf tools
-(if (not (executable-find "epdfinfo"))
-    (message "Please compile pdf-tools")
-  (require 'pdf-tools)
-  (require 'pdf-occur)
-  (require 'pdf-history)
-  (require 'pdf-links)
-  (require 'pdf-outline)
-  (require 'pdf-annot)
-  (require 'pdf-sync)
-  (pdf-tools-install))
-
-;; pdfgrep
-(if (not (executable-find "pdfgrep"))
-    (message "Please install pdfgrep")
-  (require 'pdfgrep)
-  (pdfgrep-mode)
-  (setq pdfgrep-options " --color=always -nrH "))
-
-;; set default web browser
-(setq browse-url-browser-function 'browse-url-firefox
-      browse-url-new-window-flag  t
-      browse-url-firefox-new-window-is-tab t)
-
-;; mail config
-(require 'my-mail)
-
-;; utils
-(require 'utils)
-(require 'tail)
-(require 'nmcli)
-(require 'dmesg)
-(require 'process)
-
-;; Project manager
-(require 'project-manager)
-(require 'pm-emacslisp)
-(register-project
- (make-project :name "Home"
-	       :pm-backend "emacslisp"
-	       :root-path "~/"
-	       :subprojects `(("private" . ,(concat my-emacs-root-path "modules/jm-private"))
-			      ("modules" . ,(concat my-emacs-root-path "modules"))
-			      ("emacs"   . ,my-emacs-root-path)
-			      ("docs"    . "Documents/Docs")
-			      ("gdrive"  . "Documents/gdrive"))))
-(switch-project "Home")
-
-;; Status
-(require 'status)
-(setq status-separator " | ")
-
-(require 'status-compilation)
-(status-add-to-left 'status-compilation)
-
-(require 'status-acscope)
-(status-add-to-left 'status-acscope)
-
-(require 'status-project-manager)
-(status-add-to-left 'status-project-manager)
-
-(require 'status-tab-bar)
-(status-add-to-left 'status-tab-bar)
-
-(require 'status-date)
-(status-add-to-right 'status-date)
-
-(require 'status-echat)
-(status-add-to-right 'status-echat)
-
-(require 'status-jmail)
-(status-add-to-right 'status-jmail)
-
-(require 'status-org-gcal)
-(status-add-to-right 'status-org-gcal)
-
-(turn-on-status)
 
 ;; never request confirmation when opening large file
 (setq large-file-warning-threshold nil)
 
-;; silent url status
-(require 'url-vars)
-(setq url-show-status nil)
-
-;; add to list of directories to search for Info documentation files.
-(add-to-list 'Info-default-directory-list "~/info")
-
-;; default browser
-(setq browse-url-browser-function 'browse-url-chrome)
-
-;; interactive-align
-(require 'ialign)
-
-;; edition
-(require 'my-edit)
-
-;; surround
-(require 'emacs-surround)
+;; save backup files
+(setq backup-directory-alist `(("." . "~/.saves")))
 
 (provide 'my-system)

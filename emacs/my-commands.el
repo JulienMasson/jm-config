@@ -1,4 +1,4 @@
-;;; my-edit.el --- Edition Configuration
+;;; my-edit.el --- Commands Configuration
 
 ;; Copyright (C) 2020 Julien Masson
 
@@ -130,4 +130,35 @@
   (interactive)
   (occur (thing-at-point 'symbol)))
 
-(provide 'my-edit)
+;; window dedicated
+(defun toggle-window-dedicated ()
+  (interactive)
+  (let (window (get-buffer-window (current-buffer)))
+    (set-window-dedicated-p window (not (window-dedicated-p window)))))
+
+;; toggle window split
+(defun toggle-window-split ()
+  (interactive)
+  (let ((split (frame-parameter nil 'unsplittable)))
+    (set-frame-parameter nil 'unsplittable (not split))))
+
+;; swap last buffers
+(defun swap-last-buffers ()
+  (interactive)
+  (let ((current (get-buffer-window (current-buffer)))
+        (last (get-buffer-window (nth 1 (buffer-list)))))
+    (window-swap-states current last)))
+
+;; find file as root
+(defun sudo-find-file (file)
+  (interactive (list (read-file-name "Find file (as root): ")))
+  (if (tramp-tramp-file-p file)
+      (let* ((dissect (tramp-dissect-file-name file))
+	     (host (tramp-file-name-host dissect))
+	     (local-file (tramp-file-name-localname dissect))
+	     (tramp (replace-regexp-in-string local-dir "" dir)))
+	(find-alternate-file (format "%s|sudo:root@%s:%s"
+				     tramp host local-file)))
+    (find-alternate-file (concat "/sudo:root@localhost:" file))))
+
+(provide 'my-commands)

@@ -66,16 +66,10 @@
     (ansi-color-apply-on-region compilation-filter-start (point))))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
-;; visual regexp
-(require 'visual-regexp)
-
 ;; markdown mode
 (require 'markdown-mode)
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-
-;; save backup files
-(setq backup-directory-alist `(("." . "~/.saves")))
 
 ;; default indentation
 (setq c-default-style '((c-mode    . "linux")
@@ -85,43 +79,27 @@
 ;; spaces as default tabs
 (setq-default indent-tabs-mode nil)
 
+(defvar projects-indent-tab nil)
+
+(defun project-set-indent-tab ()
+  (let ((cur-dir (file-name-directory (buffer-file-name))))
+    (catch 'found
+      (dolist (project projects-indent-tab)
+        (when (string-prefix-p project cur-dir)
+          (setq indent-tabs-mode t)
+          (throw 'found t))))))
+
+(add-hook 'c-mode-hook #'project-set-indent-tab)
+
 ;; auto-detection indenting
 (require 'dtrt-indent)
 (dtrt-indent-mode t)
 
-;; grep config
-(require 'my-grep)
-
-;; search config
-(require 'my-search)
-
-;; company mode
-(require 'company)
-(setq company-backends nil)
-(setq company-tooltip-align-annotations t)
-(setq company-tooltip-minimum-width 40)
-(global-company-mode)
-
-;; don't message in echo area
-(defun company-echo-show (&optional getter))
-
-;; completion at point company
-(require 'company-capf)
-(add-to-list 'company-backends 'company-capf)
-
-;; files company
-(require 'company-files)
-(add-to-list 'company-backends 'company-files)
-
 ;; yaml
 (require 'yaml-mode)
 
-;; gdb
-(require 'my-gdb)
-
 ;; rust
 (require 'rust-mode)
-(add-hook 'rust-mode-hook (lambda () (setq indent-tabs-mode nil)))
 
 ;; eglot
 (require 'eglot)
@@ -286,5 +264,8 @@
 			   (format "%-8s %s" prefix (string-trim summary)))))
 		      (insert "\n")))))
 (advice-add 'xref--insert-xrefs :override #'jm-xref--insert-xrefs)
+
+;; gdb
+;; (require 'my-gdb)
 
 (provide 'my-programming)

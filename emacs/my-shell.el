@@ -22,6 +22,10 @@
 
 ;;; Code:
 
+;; ansi color
+(require 'ansi-color)
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+
 ;; set default shell
 (setq explicit-shell-file-name "/bin/bash")
 
@@ -35,6 +39,9 @@
  'tramp-connection-local-default-shell-profile
  tramp-connection-local-default-shell-variables)
 
+;; shell command completion
+(require 'pcmpl-args)
+
 ;; use emacsclient as the $EDITOR
 (require 'with-editor)
 (add-hook 'shell-mode-hook 'with-editor-export-editor)
@@ -44,21 +51,6 @@
   (interactive)
   (erase-buffer)
   (comint-send-input))
-
-;; bash completion
-(require 'native-complete)
-(with-eval-after-load 'shell
-  (native-complete-setup-bash))
-
-;; multi term plus
-(require 'multi-term-plus)
-(setq multi-term-program explicit-shell-file-name)
-(defalias 'term 'multi-term)
-
-(defun term-set-local-key (&rest _args)
-  (define-key term-raw-map (kbd "C-c C-j") 'term-line-mode)
-  (define-key term-raw-map (kbd "C-c C-k") 'term-char-mode))
-(advice-add #'multi-term :after #'term-set-local-key)
 
 ;; shell enter
 (defun shell-press-ret ()

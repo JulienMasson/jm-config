@@ -29,9 +29,6 @@
 [submodule "emacs/modules/pdf-tools"]
 	path = emacs/modules/pdf-tools
 	url = https://github.com/politza/pdf-tools.git
-[submodule "emacs/modules/company-mode"]
-	path = emacs/modules/company-mode
-	url = https://github.com/company-mode/company-mode.git
 [submodule "emacs/modules/rg"]
 	path = emacs/modules/rg
 	url = https://github.com/dajva/rg.el.git
@@ -113,9 +110,6 @@
 [submodule "emacs/modules/hide-region"]
 	path = emacs/modules/hide-region
 	url = https://github.com/emacsmirror/hide-region.git
-[submodule "emacs/modules/multi-term-plus"]
-	path = emacs/modules/multi-term-plus
-	url = https://github.com/aborn/multi-term-plus.git
 [submodule "emacs/modules/dts-mode"]
 	path = emacs/modules/dts-mode
 	url = https://github.com/bgamari/dts-mode.git
@@ -170,15 +164,9 @@
 [submodule "emacs/modules/soong-mode"]
 	path = emacs/modules/soong-mode
 	url = https://github.com/makohoek/emacs-soong-mode.git
-[submodule "emacs/modules/native-shell-complete"]
-	path = emacs/modules/native-shell-complete
-	url = https://github.com/CeleritasCelery/emacs-native-shell-complete.git
 [submodule "emacs/modules/vlfi"]
 	path = emacs/modules/vlfi
 	url = https://github.com/m00natic/vlfi.git
-[submodule "emacs/modules/org-jira"]
-	path = emacs/modules/org-jira
-	url = https://github.com/ahungry/org-jira.git
 [submodule "emacs/modules/language-detection"]
 	path = emacs/modules/language-detection
 	url = https://github.com/andreasjansson/language-detection.el.git
@@ -233,3 +221,27 @@
 [submodule "emacs/modules/docker-tramp"]
 	path = emacs/modules/docker-tramp
 	url = https://github.com/emacs-pe/docker-tramp.el.git
+[submodule "emacs/modules/all-the-icons-completion"]
+	path = emacs/modules/all-the-icons-completion
+	url = https://github.com/iyefrat/all-the-icons-completion.git
+[submodule "emacs/modules/all-the-icons-dired"]
+	path = emacs/modules/all-the-icons-dired
+	url = https://github.com/jtbm37/all-the-icons-dired.git
+[submodule "emacs/modules/corfu"]
+	path = emacs/modules/corfu
+	url = https://github.com/minad/corfu.git
+[submodule "emacs/modules/kind-icon"]
+	path = emacs/modules/kind-icon
+	url = https://github.com/jdtsmith/kind-icon.git
+[submodule "emacs/modules/marginalia"]
+	path = emacs/modules/marginalia
+	url = https://github.com/minad/marginalia.git
+[submodule "emacs/modules/orderless"]
+	path = emacs/modules/orderless
+	url = https://github.com/oantolin/orderless.git
+[submodule "emacs/modules/pcmpl-args"]
+	path = emacs/modules/pcmpl-args
+	url = https://github.com/minad/pcmpl-args.el.git
+[submodule "emacs/modules/vertico"]
+	path = emacs/modules/vertico
+	url = https://github.com/minad/vertico.git

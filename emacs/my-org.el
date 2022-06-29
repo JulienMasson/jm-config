@@ -39,6 +39,9 @@
 ;; don't archive gcal old events
 (setq org-gcal-auto-archive nil)
 
+;; always remove without prompting
+(setq org-gcal-remove-api-cancelled-events t)
+
 ;; Add a time stamp when a task moves to the DONE state.
 (setq org-log-done t)
 
@@ -57,6 +60,9 @@
 
 ;; fold overview
 (setq org-startup-folded t)
+
+;; no code evaluated on export
+(setq org-export-use-babel nil)
 
 ;; Hook after sorting entries
 (add-hook 'org-after-sorting-entries-or-items-hook #'org-set-startup-visibility)

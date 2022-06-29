@@ -100,9 +100,39 @@
 (define-key dired-mode-map (kbd "^")
   (lambda () (interactive) (find-alternate-file "..")))
 
+;; vertico
+(define-key vertico-map (kbd "C-d") 'vertico-exit-input)
+(define-key vertico-map (kbd "RET") 'vertico-directory-enter)
+(define-key vertico-map (kbd "DEL") 'vertico-directory-delete-char)
+
 ;; help-mode
 (require 'help-mode)
 (define-key help-mode-map "n" 'help-go-forward)
 (define-key help-mode-map "p" 'help-go-back)
+
+;; occur
+(global-set-key (kbd "C-M-o") 'occur-at-point)
+
+;; search
+(global-set-key (kbd "C-c M-s") 'my-search)
+(global-set-key (kbd "C-M-s") 'my-search-at-point)
+
+;; grep
+(global-set-key (kbd "C-M-g") 'grep-at-point)
+(define-key grep-mode-map "s" 'grep-save-buffer)
+(define-key grep-mode-map (kbd "TAB") #'my-grep-context)
+(define-key grep-mode-map "N" 'grep-command-next)
+(define-key grep-mode-map "P" 'grep-command-previous)
+(define-key grep-mode-map "e" 'grep-command-edit)
+(define-key grep-mode-map "d" 'grep-command-change-directory)
+
+;; dired
+(global-set-key (kbd "C-c M-f") 'fd-find-name-dired)
+(define-key dired-mode-map "=" 'dired-diff-files)
+(define-key dired-mode-map "r" 'dired-diff-directories)
+(define-key dired-mode-map "h" 'dired-do-hexl-find-file)
+(define-key dired-mode-map "U" 'unmark-all-dired-buffer)
+(define-key dired-mode-map "K" 'kill-all-dired-buffer)
+(define-key dired-mode-map "S" 'dired-sudo)
 
 (provide 'keybindings-base)

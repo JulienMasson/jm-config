@@ -1,4 +1,4 @@
-;;; my-windows.el --- Windows Configuration
+;;; my-ui.el --- UI Configuration
 
 ;; Copyright (C) 2019 Julien Masson
 
@@ -25,15 +25,6 @@
 ;; no windows decorations
 (set-frame-parameter nil 'undecorated t)
 
-;; prevent automatic splitting
-(set-frame-parameter nil 'unsplittable t)
-
-;; movement off the edge of the frame wraps around.
-(setq windmove-wrap-around t)
-
-;; shifted motion keys activate the mark momentarily
-(setq shift-select-mode t)
-
 ;; enable column number mode
 (setq column-number-mode t)
 
@@ -52,35 +43,14 @@
 ;; set font size
 (set-face-attribute 'default nil :height 100)
 
-;; enable ido-mode
-(require 'ido)
-(setq ido-ignore-files '("\\`\\.\\./" "\\`\\./"))
-(ido-mode 1)
-(ido-everywhere)
-
-;; disable automatic file search in ido mode
-(setq ido-auto-merge-work-directories-length -1)
-
-;; ido-completing-read+
-(require 'ido-completing-read+)
-(ido-ubiquitous-mode 1)
-
-;; ido on yes-or-no
-(defun ido-yes-or-no-p (prompt)
-  (let* ((yes-or-no-prompt (concat prompt " "))
-         (choices '("YES" "NO"))
-         (answer (ido-completing-read yes-or-no-prompt choices
-				      nil t nil nil)))
-    (string= answer "YES")))
-
-(defadvice yes-or-no-p (around use-ido activate)
-  (setq ad-return-value (ido-yes-or-no-p prompt)))
-
 ;; hide welcome screen
 (setq inhibit-startup-message t)
 
 ;; show parenthese
 (show-paren-mode 1)
+
+;; no message when auto-saving
+(setq auto-save-no-message t)
 
 ;; load jm faces
 (require 'jm-faces)
@@ -120,7 +90,7 @@
 (doom-modeline-refresh-bars)
 (doom-modeline-set-modeline 'jm-modeline 'default)
 
-;; add custom icons
+;; all the icons
 (require 'all-the-icons)
 (defvar jm-icons
  '((jmail-mode                all-the-icons-octicon  "mail"         :v-adjust 0.0)
@@ -130,81 +100,48 @@
    (device-control-mode       all-the-icons-octicon  "tools"        :v-adjust 0.0)
    (fb-vpn-mode               all-the-icons-material "network_wifi" :v-adjust 0.0)
    (lt-mode                   all-the-icons-octicon  "tools"        :v-adjust 0.0)))
-(setq all-the-icons-mode-icon-alist (append all-the-icons-mode-icon-alist
-					    jm-icons))
+(setq all-the-icons-mode-icon-alist (append all-the-icons-mode-icon-alist jm-icons))
 
 ;; icons ibuffer
 (require 'all-the-icons-ibuffer)
 (all-the-icons-ibuffer-mode 1)
 
-;; line highlighting in all buffers
+;; highlight line
 (require 'hl-line)
 (global-hl-line-mode 1)
 
-;; ansi color
-(require 'comint)
-(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on t)
-(set-face-attribute 'comint-highlight-prompt nil
-                    :inherit nil)
+;; vertico
+(require 'vertico)
+(require 'vertico-directory)
+(vertico-mode)
 
-;; no message when auto-saving
-(setq auto-save-no-message t)
+;; orderless
+(require 'orderless)
+(setq completion-styles '(orderless basic))
+(setq completion-category-defaults nil)
+(setq completion-category-overrides '((file (styles partial-completion))))
 
-;; silent some message in echo area
-(defun suppress-messages (old-fun &rest args)
-  (cl-flet ((silence (&rest args1) (ignore)))
-    (advice-add 'message :around #'silence)
-    (unwind-protect
-         (apply old-fun args)
-      (advice-remove 'message #'silence))))
+;; marginalia
+(require 'marginalia)
+(marginalia-mode)
 
-(dolist (func '(isearch-done
-		undo
-		basic-save-buffer
-		push-mark))
-  (if (functionp func)
-      (advice-add func :around #'suppress-messages)))
+;; icons completion
+(require 'all-the-icons-completion)
+(all-the-icons-completion-mode)
+(add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup)
 
-(defun my-command-error-function (data context caller)
-  (when (not (memq (car data) '(do-auto-save
-				buffer-read-only
-                                beginning-of-buffer
-                                end-of-buffer)))
-    (command-error-default-function data context caller)))
+;; icons dired
+(require 'all-the-icons-dired)
+(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
 
-(setq command-error-function #'my-command-error-function)
+;; corfu
+(require 'corfu)
+(setq corfu-auto t)
+(global-corfu-mode)
 
-;; ansi color buffer
-(defun ansi-color-buffer ()
-  (interactive)
-  (ansi-color-apply-on-region (point-min) (point-max)))
+;; kind icon
+(require 'kind-icon)
+(setq kind-icon-default-face 'corfu-default)
+(add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)
 
-;; window dedicated
-(defun toggle-window-dedicated ()
-  (interactive)
-  (let (window (get-buffer-window (current-buffer)))
-    (set-window-dedicated-p window (not (window-dedicated-p window)))))
-
-;; toggle window split
-(defun toggle-window-split ()
-  (interactive)
-  (let ((split (frame-parameter nil 'unsplittable)))
-    (set-frame-parameter nil 'unsplittable (not split))))
-
-;; hide lines/region
-(require 'hide-lines)
-(require 'hide-region)
-
-;; move lines
-(require 'move-lines)
-(move-lines-binding)
-
-;; swap last buffers
-(defun swap-last-buffers ()
-  (interactive)
-  (let ((current (get-buffer-window (current-buffer)))
-        (last (get-buffer-window (nth 1 (buffer-list)))))
-    (window-swap-states current last)))
-
-(provide 'my-windows)
+(provide 'my-ui)

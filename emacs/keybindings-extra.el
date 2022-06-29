@@ -24,42 +24,14 @@
 
 (require 'sgml-mode)
 
-;; occur
-(global-set-key (kbd "C-M-o") 'occur-at-point)
-
-;; search
-(global-set-key (kbd "C-c M-s") 'my-search)
-(global-set-key (kbd "C-M-s") 'my-search-at-point)
-
-;; grep
-(global-set-key (kbd "C-M-g") 'grep-at-point)
-(define-key grep-mode-map "s" 'grep-save-buffer)
-(define-key grep-mode-map (kbd "TAB") #'my-grep-context)
-(define-key grep-mode-map "N" 'grep-command-next)
-(define-key grep-mode-map "P" 'grep-command-previous)
-(define-key grep-mode-map "e" 'grep-command-edit)
-(define-key grep-mode-map "d" 'grep-command-change-directory)
-
-;; dired
-(global-set-key (kbd "C-c M-f") 'fd-find-name-dired)
-(define-key dired-mode-map "=" 'dired-diff-files)
-(define-key dired-mode-map "r" 'dired-diff-directories)
-(define-key dired-mode-map "h" 'dired-do-hexl-find-file)
-(define-key dired-mode-map "U" 'unmark-all-dired-buffer)
-(define-key dired-mode-map "K" 'kill-all-dired-buffer)
-(define-key dired-mode-map "S" 'dired-sudo)
-
-;; surround
-(global-set-key (kbd "C-;") 'emacs-surround)
+;; open browser
+(global-set-key (kbd "C-c C-o") 'browse-url)
 
 ;; browse kill ring
 (global-set-key (kbd "C-M-y") 'browse-kill-ring)
 
-;; markdown
-(define-key markdown-mode-map (kbd "C-c <left>")  nil)
-(define-key markdown-mode-map (kbd "C-c <right>") nil)
-(define-key markdown-mode-map (kbd "C-c <up>")    nil)
-(define-key markdown-mode-map (kbd "C-c <down>")  nil)
+;; hide lines
+(global-set-key (kbd "C-c h") 'hide-lines)
 
 ;; visual-regexp
 (global-set-key (kbd "C-\\") 'vr/query-replace)
@@ -68,15 +40,22 @@
 (global-set-key (kbd "C-.") 'align)
 (global-set-key (kbd "C-'") 'ialign)
 
-;; org
-(global-set-key (kbd "C-c o a") 'jm-org-agenda)
-(define-key org-agenda-mode-map "N" 'org-agenda-next-view)
-(define-key org-agenda-mode-map "P" 'org-agenda-previous-view)
-(define-key org-mode-map (kbd "C-c p") 'org-gtasks-push-current)
-(define-key org-mode-map (kbd "C-c P") 'org-gtasks-pull-current)
+;; surround
+(global-set-key (kbd "C-;") 'emacs-surround)
 
-;; open browser
-(global-set-key (kbd "C-c C-o") 'browse-url)
+;; shell mode
+(define-key shell-mode-map (kbd "RET") #'shell-press-ret)
+(define-key shell-mode-map (kbd "C-c l") 'shell-clear)
+(define-key shell-mode-map (kbd "C-M-m") nil)
+(define-key shell-mode-map (kbd "C-c SPC") nil)
+
+;; shell command with editor
+(global-set-key (kbd "M-&") 'with-editor-async-shell-command)
+(global-set-key (kbd "M-!") 'with-editor-shell-command)
+
+;; term
+(define-key term-raw-map (kbd "C-c C-j") 'term-line-mode)
+(define-key term-raw-map (kbd "C-c C-k") 'term-char-mode)
 
 ;; magit
 (global-set-key (kbd "C-c g b") 'magit-blame-addition)
@@ -98,43 +77,44 @@
 
 ;; compilation
 (define-key compilation-mode-map "e" 'compilation-send-command)
-(global-set-key (kbd "C-c SPC") (lambda () (interactive) (with-current-buffer "*compilation*" (recompile))))
-
-;; refresh status
-(global-set-key (kbd "C-c C-u") (lambda () (interactive) (run-at-time 1 status-refresh-timer-delay 'status-update)))
-
-;; echat
-(global-set-key (kbd "C-c e r") 'echat-init)
-(global-set-key (kbd "C-c e q") 'echat-exit)
-(global-set-key (kbd "C-c e C") 'echat-connect)
-(global-set-key (kbd "C-c e D") 'echat-disconnect)
-(global-set-key (kbd "C-c e i") 'echat-im)
-(global-set-key (kbd "C-c e c") 'echat-channel)
-(global-set-key (kbd "C-c e j") 'echat-jump)
-(global-set-key (kbd "C-c e m") 'echat-mute-toggle)
-(global-set-key (kbd "C-c e u") 'echat-unread)
-(define-key lui-mode-map (kbd "C-M-u") 'echat-buffer-goto-unread-messages)
-
-;; lui
-(define-key lui-mode-map (kbd "C-c C-e") 'jm-emojify-insert-emoji)
-
-;; acscope
-(define-key acscope-mode-map (kbd "C-c s k") 'acscope-database-add-kernel)
-
-;; shell mode
-(define-key shell-mode-map (kbd "TAB") #'company-manual-begin)
-(define-key shell-mode-map (kbd "RET") #'shell-press-ret)
-
-;; term
-(define-key term-raw-map (kbd "C-c C-j") 'term-line-mode)
-(define-key term-raw-map (kbd "C-c C-k") 'term-char-mode)
+(global-set-key (kbd "C-c SPC") 'recompile)
 
 ;; manual at point
 (global-set-key (kbd "M-h") 'manual-at-point)
 
+;; acscope
+(define-key acscope-mode-map (kbd "C-c s k") 'acscope-database-add-kernel)
+
+;; realgud
+(global-set-key (kbd "C-c r a") (lambda () (interactive) (realgud:cmdbuf-associate)))
+(global-set-key (kbd "C-c r f") 'realgud-current-frame)
+(global-set-key (kbd "C-c r c") 'realgud-calling-frame)
+
 ;; jmail
 (global-set-key (kbd "C-M-m") 'jmail)
 (global-set-key (kbd "C-x m") 'jmail-compose)
+
+;; org
+(global-set-key (kbd "C-c o a") 'jm-org-agenda)
+(define-key org-agenda-mode-map "N" 'org-agenda-next-view)
+(define-key org-agenda-mode-map "P" 'org-agenda-previous-view)
+(define-key org-mode-map (kbd "C-c p") 'org-gtasks-push-current)
+(define-key org-mode-map (kbd "C-c P") 'org-gtasks-pull-current)
+
+;; ;; echat
+;; (global-set-key (kbd "C-c e r") 'echat-init)
+;; (global-set-key (kbd "C-c e q") 'echat-exit)
+;; (global-set-key (kbd "C-c e C") 'echat-connect)
+;; (global-set-key (kbd "C-c e D") 'echat-disconnect)
+;; (global-set-key (kbd "C-c e i") 'echat-im)
+;; (global-set-key (kbd "C-c e c") 'echat-channel)
+;; (global-set-key (kbd "C-c e j") 'echat-jump)
+;; (global-set-key (kbd "C-c e m") 'echat-mute-toggle)
+;; (global-set-key (kbd "C-c e u") 'echat-unread)
+;; (define-key lui-mode-map (kbd "C-M-u") 'echat-buffer-goto-unread-messages)
+
+;; ;; lui
+;; (define-key lui-mode-map (kbd "C-c C-e") 'jm-emojify-insert-emoji)
 
 ;; project manager
 (global-set-key (kbd "C-c i s") 'switch-project)
@@ -144,28 +124,18 @@
 (global-set-key (kbd "C-c i e") 'project-exec)
 (global-set-key (kbd "C-c f") 'project-find-file)
 
-;; hide lines
-(global-set-key (kbd "C-c h") 'hide-lines)
-
-;; shell command with editor
-(global-set-key (kbd "M-&") 'with-editor-async-shell-command)
-(global-set-key (kbd "M-!") 'with-editor-shell-command)
-
-;; realgud
-(global-set-key (kbd "C-c r a") (lambda () (interactive) (realgud:cmdbuf-associate)))
-(global-set-key (kbd "C-c r f") 'realgud-current-frame)
-(global-set-key (kbd "C-c r c") 'realgud-calling-frame)
-
-;; shell
-(define-key shell-mode-map (kbd "C-c l") 'shell-clear)
-(define-key shell-mode-map (kbd "C-M-m") nil)
-(define-key shell-mode-map (kbd "C-c SPC") nil)
-
-;; eaf
-(global-set-key (kbd "C-M-w") 'eaf-open-browser)
-
 ;; html
 (define-key html-mode-map (kbd "C-c <left>") nil)
 (define-key html-mode-map (kbd "C-c <right>") nil)
+
+;; conf
+;; (provide 'conf-mode)
+;; (define-key conf-mode-map [remap conf-space-keywords] 'recompile)
+
+;; markdown
+(define-key markdown-mode-map (kbd "C-c <left>")  nil)
+(define-key markdown-mode-map (kbd "C-c <right>") nil)
+(define-key markdown-mode-map (kbd "C-c <up>")    nil)
+(define-key markdown-mode-map (kbd "C-c <down>")  nil)
 
 (provide 'keybindings-extra)
