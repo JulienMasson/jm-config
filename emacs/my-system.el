@@ -70,4 +70,13 @@
 ;; save backup files
 (setq backup-directory-alist `(("." . "~/.saves")))
 
+;; delete duplicates in history
+(setq history-delete-duplicates t)
+
+;; yes-or-no
+(defun completing-read-yes-or-no-p (prompt)
+  (let ((answer (completing-read prompt '("YES" "NO") nil t)))
+    (string= answer "YES")))
+(advice-add 'yes-or-no-p :override #'completing-read-yes-or-no-p)
+
 (provide 'my-system)
