@@ -127,6 +127,7 @@
 ;; vertico
 (require 'vertico)
 (require 'vertico-directory)
+(setq vertico-cycle t)
 (setq vertico-count-format nil)
 (vertico-mode)
 
@@ -136,8 +137,8 @@
 
 ;; marginalia
 (require 'marginalia)
-(marginalia-mode)
 (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup)
+(marginalia-mode)
 
 ;; corfu
 (require 'corfu)
