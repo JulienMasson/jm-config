@@ -53,7 +53,6 @@
 
 ;; kill commands
 (global-set-key (kbd "C-w") 'kill-word-or-region)
-(global-set-key (kbd "C-M-w") 'kill-sexp)
 (global-set-key (kbd "C-k") 'kill-line)
 (global-set-key (kbd "C-c k") 'kill-buffer-and-window)
 
@@ -66,6 +65,7 @@
 
 ;; copy commands
 (global-set-key (kbd "M-w") 'kill-ring-save-or-copy-line)
+(global-set-key (kbd "C-M-w") 'copy-word)
 (global-set-key (kbd "C-c M-w") 'show-and-copy-buffer-filename)
 
 ;; isearch

@@ -86,6 +86,11 @@
   (interactive)
   (kill-ring-save (line-beginning-position) (line-end-position)))
 
+(defun copy-word ()
+  (interactive)
+  (kill-ring-save (save-excursion (left-symbol) (point))
+                  (save-excursion (right-symbol) (point))))
+
 (defun kill-ring-save-or-copy-line ()
   (interactive)
   (if (region-active-p)
