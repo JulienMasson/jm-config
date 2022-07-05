@@ -129,8 +129,8 @@
 (define-key html-mode-map (kbd "C-c <right>") nil)
 
 ;; conf
-;; (provide 'conf-mode)
-;; (define-key conf-mode-map [remap conf-space-keywords] 'recompile)
+(require 'conf-mode)
+(define-key conf-mode-map [remap conf-space-keywords] 'recompile)
 
 ;; markdown
 (define-key markdown-mode-map (kbd "C-c <left>")  nil)
