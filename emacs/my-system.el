@@ -79,4 +79,10 @@
     (string= answer "YES")))
 (advice-add 'yes-or-no-p :override #'completing-read-yes-or-no-p)
 
+;; silent push-mark
+(defun silent-push-mark (func &rest args)
+  (pcase-let ((`(,location ,_ ,activate) args))
+    (funcall func location t activate)))
+(advice-add 'push-mark :around #'silent-push-mark)
+
 (provide 'my-system)
