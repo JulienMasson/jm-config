@@ -265,6 +265,12 @@
 		      (insert "\n")))))
 (advice-add 'xref--insert-xrefs :override #'jm-xref--insert-xrefs)
 
+;; generate compile_commands.json
+(defun generate-compile-commands ()
+  (interactive)
+  (let ((default-directory (magit-toplevel)))
+    (async-shell-command "gen_compile_commands.py")))
+
 ;; gdb
 ;; (require 'my-gdb)
 
