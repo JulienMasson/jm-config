@@ -22,27 +22,6 @@
 
 ;;; Code:
 
-;; realgud
-(require 'load-relative)
-(require 'loc-changes)
-(require 'realgud)
-(setq realgud-safe-mode nil)
-
-;; current/calling frame
-(defun realgud-current-frame ()
-  (interactive)
-  (realgud:cmd-frame 0))
-
-(defun realgud-calling-frame ()
-  (interactive)
-  (realgud:cmd-frame 1))
-
-;; define own realgud file-find function
-(defun my-realgud-file-find-function (marker filename directory &rest formats)
-  (concat (f-root) filename))
-
-(setq realgud-file-find-function 'my-realgud-file-find-function)
-
 ;; gdb get pid
 (defun gdb-get-pid (process-name)
   (let* ((cmd (format "ps -C %s -o pid=" process-name))
@@ -56,18 +35,13 @@
   (interactive (list (ido-read-file-name "gdb on: ")))
   (let ((gdb-cmd (concat gdb-default-cmd " --args "))
 	(gdb-args (delq nil (list (untramp-path file) args))))
-    (realgud:gdb (concat gdb-cmd (mapconcat 'identity gdb-args " ")))
-    (realgud-command "set print pretty on")
-    (when env
-      (mapc (lambda (var)
-	      (realgud-command (concat "set environment " var)))
-	    env))))
+    (gdb (concat gdb-cmd (string-join gdb-args)))))
 
 ;; gdb attach
 (defun gdb-attach (process)
   (interactive "sProcess Name: ")
   (when-let ((pid (gdb-get-pid process)))
-    (realgud:gdb (format "%s -p %s" gdb-default-cmd (string-to-number pid)))))
+    (gdb (format "%s -p %s" gdb-default-cmd (string-to-number pid)))))
 
 ;; gdbserver
 (defvar gdbserver-default-port 2345)
@@ -106,7 +80,7 @@
 			   ip-address gdbserver-default-port)))
     (gdbserver-send-command-async host final-cmd)
     (sleep-for 1)
-    (realgud:gdb (format "%s %s" gdb-default-cmd gdb-args))))
+    (gdb (format "%s %s" gdb-default-cmd gdb-args))))
 
 (defun gdbserver-attach (host process)
   (interactive (list (completing-read "Host: " (gdb-get-host-ssh-config))
@@ -123,7 +97,7 @@
 			   ip-address gdbserver-default-port)))
     (gdbserver-send-command-async host final-cmd)
     (sleep-for 1)
-    (realgud:gdb (format "%s %s" gdb-default-cmd gdb-args))))
+    (gdb (format "%s %s" gdb-default-cmd gdb-args))))
 
 ;; kgdb
 (defvar kgdb-default-port "ttyUSB0")
@@ -152,8 +126,6 @@
 	(kgdb-send-command serial-process kgdb-default-root-cmd)
 	(kgdb-send-command serial-process "echo g > /proc/sysrq-trigger")
 	(delete-process serial-process)))
-    (realgud:gdb (format "%s %s %s"
-			 gdb-default-cmd
-			 kgdb-args vmlinux))))
+    (gdb (format "%s %s %s" gdb-default-cmd kgdb-args vmlinux))))
 
 (provide 'my-gdb)

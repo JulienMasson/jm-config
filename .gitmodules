@@ -41,12 +41,6 @@
 [submodule "emacs/modules/ht"]
 	path = emacs/modules/ht
 	url = https://github.com/Wilfred/ht.el.git
-[submodule "emacs/modules/load-relative"]
-	path = emacs/modules/load-relative
-	url = https://github.com/rocky/emacs-load-relative.git
-[submodule "emacs/modules/loc-changes"]
-	path = emacs/modules/loc-changes
-	url = https://github.com/rocky/emacs-loc-changes.git
 [submodule "emacs/modules/ido-completing-read-plus"]
 	path = emacs/modules/ido-completing-read-plus
 	url = https://github.com/DarwinAwardWinner/ido-completing-read-plus.git
@@ -197,9 +191,6 @@
 [submodule "emacs/modules/device-control"]
 	path = emacs/modules/device-control
 	url = git@github.com:JulienMasson/device-control.git
-[submodule "emacs/modules/realgud"]
-	path = emacs/modules/realgud
-	url = git@github.com:JulienMasson/realgud.git
 [submodule "emacs/modules/org-gtasks"]
 	path = emacs/modules/org-gtasks
 	url = git@github.com:JulienMasson/org-gtasks.git

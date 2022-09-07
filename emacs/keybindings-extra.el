@@ -85,11 +85,6 @@
 ;; acscope
 (define-key acscope-mode-map (kbd "C-c s k") 'acscope-database-add-kernel)
 
-;; realgud
-(global-set-key (kbd "C-c r a") (lambda () (interactive) (realgud:cmdbuf-associate)))
-(global-set-key (kbd "C-c r f") 'realgud-current-frame)
-(global-set-key (kbd "C-c r c") 'realgud-calling-frame)
-
 ;; jmail
 (global-set-key (kbd "C-M-m") 'jmail)
 (global-set-key (kbd "C-x m") 'jmail-compose)
