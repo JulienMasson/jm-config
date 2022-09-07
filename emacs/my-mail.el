@@ -113,7 +113,7 @@ Julien Masson
 				      (string= email (cddr elem)))
 				    accounts)))
 	(jmail-compose-mode)
-	(jmail-company-setup)
+        (jmail-capf-setup)
 	(jmail-compose-setup-send-mail)
         (setq-local mail-host-address (replace-regexp-in-string
                                        ".+@" "" email))
@@ -154,8 +154,7 @@ Julien Masson
 (defun send-patch-get-recipients-uboot (patchs)
   (let* ((files-str (mapconcat 'identity patchs " "))
 	 (cmd (concat "./scripts/get_maintainer.pl " files-str))
-	 (receivers (split-string
-		     (shell-command-to-string cmd) "\n"))
+	 (receivers (split-string (shell-command-to-string cmd) "\n"))
 	 (to '("u-boot@lists.denx.de"))
 	 cc)
     (mapc (lambda (user)
