@@ -134,10 +134,10 @@
     ;; insert To and Cc header
     (message-position-on "To" "From")
     (when to
-      (insert (mapconcat 'identity to ", ")))
+      (insert (string-join to ", ")))
     (message-position-on "Cc" "To")
     (when cc
-      (insert (mapconcat 'identity cc ", ")))
+      (insert (string-join cc ", ")))
 
     ;; apply message mode
     (goto-char (point-min))
@@ -159,39 +159,38 @@
       'send-patch-all)))
 
 (defun generate-patch-mails (patchs to cc)
-  (mapcar (lambda (patch)
-	    (let ((mail-buf (get-buffer-create
-			     (format "<mail-%s>" patch))))
-	      (send-patch-compose-mail mail-buf patch to cc)
-	      mail-buf))
-	  patchs))
+  (let (mail-buffers)
+    (dolist (patch patchs)
+      (let ((mail-buf (get-buffer-create (format "<mail-%s>" patch))))
+        (send-patch-compose-mail mail-buf patch to cc)
+        (push mail-buf mail-buffers)))
+    mail-buffers))
 
 (defun process-patch-mails ()
-  (let ((mail-buffer (pop patch-mail-buffers)))
-    (if mail-buffer
-	(with-current-buffer mail-buffer
-	  (setq buffer-read-only nil)
+  (if-let ((mail-buffer (pop patch-mail-buffers)))
+      (with-current-buffer mail-buffer
+	(setq buffer-read-only nil)
 
-	  ;; set date to current time
-	  (message-position-on "Date" "Cc")
-	  (message-beginning-of-line)
-	  (delete-region (point) (line-end-position))
-	  (insert (format-time-string
-		   "%a, %e %b %Y %T %z" (current-time)))
+	;; set date to current time
+	(message-position-on "Date" "Cc")
+	(message-beginning-of-line)
+	(delete-region (point) (line-end-position))
+	(insert (format-time-string
+		 "%a, %e %b %Y %T %z" (current-time)))
 
-	  ;; add In-Reply-To and References header
-	  ;; if we have a cover letter
-	  (when cover-letter-message-id
-	    (message-position-on "In-Reply-To" "Subject")
-	    (insert cover-letter-message-id)
-	    (message-position-on "References" "In-Reply-To")
-	    (insert cover-letter-message-id))
+	;; add In-Reply-To and References header
+	;; if we have a cover letter
+	(when cover-letter-message-id
+	  (message-position-on "In-Reply-To" "Subject")
+	  (insert cover-letter-message-id)
+	  (message-position-on "References" "In-Reply-To")
+	  (insert cover-letter-message-id))
 
-	  (set-buffer-modified-p nil)
-	  (if auto-send-patch
-	      (message-send-and-exit)
-	    (switch-to-buffer mail-buffer)))
-      (send-patch-cleanup-env))))
+	(set-buffer-modified-p nil)
+	(if auto-send-patch
+	    (message-send-and-exit)
+	  (switch-to-buffer mail-buffer)))
+    (send-patch-cleanup-env)))
 
 (defun get-cover-letter-message-id ()
   (let ((message-id (message-fetch-field "Message-ID")))
