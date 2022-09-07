@@ -129,6 +129,7 @@
 (require 'vertico-directory)
 (setq vertico-cycle t)
 (setq vertico-count-format nil)
+(setq vertico-sort-function nil)
 (vertico-mode)
 
 ;; vertico flat
