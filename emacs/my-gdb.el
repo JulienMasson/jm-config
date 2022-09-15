@@ -32,7 +32,7 @@
 (defvar gdb-default-cmd "gdb")
 
 (defun gdb (file &optional args env)
-  (interactive (list (ido-read-file-name "gdb on: ")))
+  (interactive (list (read-file-name "gdb on: ")))
   (let ((gdb-cmd (concat gdb-default-cmd " --args "))
 	(gdb-args (delq nil (list (untramp-path file) args))))
     (gdb (concat gdb-cmd (string-join gdb-args)))))

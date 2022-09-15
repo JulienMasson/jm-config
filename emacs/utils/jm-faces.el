@@ -168,12 +168,6 @@
     `(hl-line ((((class color) (background light)) :background ,gray-light2 :extend t)
 	       (((class color) (background dark)) :background ,gray-dark :extend t)))
 
-;;;; ido-mode
-    `(ido-first-match ((t (:inherit font-lock-variable-name-face :weight bold))))
-    `(ido-incomplete-regex ((t (:inherit error))))
-    `(ido-only-match ((t (:inherit success :weight bold))))
-    `(ido-subdir ((t (:inherit font-lock-type-face))))
-
 ;;;; show-paren
     `(show-paren-match ((t (:inherit font-lock-type-face :weight bold))))
     `(show-paren-mismatch ((t (:inherit error))))

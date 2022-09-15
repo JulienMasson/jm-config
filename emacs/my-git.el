@@ -164,9 +164,6 @@
 ;; don’t show any indicators
 (setq magit-section-visibility-indicator nil)
 
-;; ido on magit
-(setq magit-completing-read-function 'magit-ido-completing-read)
-
 ;; revert this change: `magit-visit-ref' behaves just like `magit-show-commit'
 (setq magit-visit-ref-behavior '(checkout-any focus-on-ref))
 
