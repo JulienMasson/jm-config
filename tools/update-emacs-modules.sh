@@ -30,14 +30,21 @@ function main {
             continue
         fi
 
-        # update master branch
-        echo "Update master branch"
-        git fetch --quiet origin
-        if git show-ref --quiet master; then
-            git checkout --quiet --detach
-            git branch --quiet -D master
+        # update branch
+        found=$(git ls-remote --heads origin master)
+        if [ -n "${found}" ]; then
+            branch="master"
+        else
+            branch="main"
         fi
-        git checkout --quiet origin/master -b master
+
+        echo "Update ${branch} branch"
+        git fetch --quiet origin
+        if git show-ref --quiet "${branch}"; then
+            git checkout --quiet --detach
+            git branch --quiet -D "${branch}"
+        fi
+        git checkout --quiet "origin/${branch}" -b "${branch}"
 
         popd
     done
