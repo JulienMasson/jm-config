@@ -104,8 +104,6 @@
 ;; eglot
 (require 'eglot)
 (setq eglot-no-message t)
-(setq eglot-flymake-enable nil)
-(setq eglot-eldoc-enable nil)
 (setq eglot-sync-connect nil)
 (setq eglot-autoshutdown t)
 (setq eglot-stay-out-of '(flymake eldoc))
