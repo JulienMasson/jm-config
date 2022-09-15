@@ -36,6 +36,7 @@
 (put 'dired-find-alternate-file 'disabled nil)
 
 ;; open pdf with evince
+(require 'dired-aux)
 (assoc-delete-all "\\.pdf\\'" dired-guess-shell-alist-default)
 (add-to-list 'dired-guess-shell-alist-default (list "\\.pdf\\'" "evince"))
 

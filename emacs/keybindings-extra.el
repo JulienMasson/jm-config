@@ -22,8 +22,6 @@
 
 ;;; Code:
 
-(require 'sgml-mode)
-
 ;; open browser
 (global-set-key (kbd "C-c C-o") 'browse-url)
 
@@ -54,6 +52,7 @@
 (global-set-key (kbd "M-!") 'with-editor-shell-command)
 
 ;; term
+(require 'term)
 (define-key term-raw-map (kbd "C-c C-j") 'term-line-mode)
 (define-key term-raw-map (kbd "C-c C-k") 'term-char-mode)
 
@@ -96,21 +95,6 @@
 (define-key org-mode-map (kbd "C-c p") 'org-gtasks-push-current)
 (define-key org-mode-map (kbd "C-c P") 'org-gtasks-pull-current)
 
-;; ;; echat
-;; (global-set-key (kbd "C-c e r") 'echat-init)
-;; (global-set-key (kbd "C-c e q") 'echat-exit)
-;; (global-set-key (kbd "C-c e C") 'echat-connect)
-;; (global-set-key (kbd "C-c e D") 'echat-disconnect)
-;; (global-set-key (kbd "C-c e i") 'echat-im)
-;; (global-set-key (kbd "C-c e c") 'echat-channel)
-;; (global-set-key (kbd "C-c e j") 'echat-jump)
-;; (global-set-key (kbd "C-c e m") 'echat-mute-toggle)
-;; (global-set-key (kbd "C-c e u") 'echat-unread)
-;; (define-key lui-mode-map (kbd "C-M-u") 'echat-buffer-goto-unread-messages)
-
-;; ;; lui
-;; (define-key lui-mode-map (kbd "C-c C-e") 'jm-emojify-insert-emoji)
-
 ;; project manager
 (global-set-key (kbd "C-c i s") 'switch-project)
 (global-set-key (kbd "C-c i p") 'project-compile)
@@ -120,6 +104,7 @@
 (global-set-key (kbd "C-c f") 'project-find-file)
 
 ;; html
+(require 'sgml-mode)
 (define-key html-mode-map (kbd "C-c <left>") nil)
 (define-key html-mode-map (kbd "C-c <right>") nil)
 
