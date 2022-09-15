@@ -41,9 +41,6 @@
 [submodule "emacs/modules/ht"]
 	path = emacs/modules/ht
 	url = https://github.com/Wilfred/ht.el.git
-[submodule "emacs/modules/ido-completing-read-plus"]
-	path = emacs/modules/ido-completing-read-plus
-	url = https://github.com/DarwinAwardWinner/ido-completing-read-plus.git
 [submodule "emacs/modules/memoize"]
 	path = emacs/modules/memoize
 	url = https://github.com/skeeto/emacs-memoize.git
@@ -236,3 +233,6 @@
 [submodule "emacs/modules/vertico"]
 	path = emacs/modules/vertico
 	url = https://github.com/minad/vertico.git
+[submodule "emacs/modules/compat"]
+	path = emacs/modules/compat
+	url = https://git.sr.ht/~pkal/compat
