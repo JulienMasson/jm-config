@@ -242,4 +242,13 @@
   (interactive)
   (magit-reset-hard "HEAD"))
 
+;; fetch Merge-Request
+(defun forge-fetch-mr ()
+  (interactive)
+  (when-let* ((remote (forge--get-remote))
+              (pullreq (forge-current-pullreq))
+              (mr (oref pullreq number))
+              (cmd (format "git fetch %s merge-requests/%d/head" remote mr)))
+    (magit--shell-command cmd (magit-toplevel))))
+
 (provide 'my-git)
