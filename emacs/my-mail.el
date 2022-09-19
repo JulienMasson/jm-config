@@ -107,11 +107,8 @@ Julien Masson
 (defun send-patch-setup-jmail-env ()
   (when-let ((accounts (jmail-get-accounts jmail-smtp-config-file))
 	     (from (message-fetch-field "From")))
-    (cl-multiple-value-bind (name email)
-	(gnus-extract-address-components from)
-      (when-let ((account (seq-find (lambda (elem)
-				      (string= email (cddr elem)))
-				    accounts)))
+    (pcase-let ((`(,name ,email) (gnus-extract-address-components from)))
+      (when-let ((account (seq-find (lambda (e) (string= email (cddr e))) accounts)))
 	(jmail-compose-mode)
         (jmail-capf-setup)
 	(jmail-compose-setup-send-mail)
@@ -130,41 +127,34 @@ Julien Masson
     (buffer-substring (point) (line-end-position))))
 
 (defun send-patch-get-recipients-kernel (patchs)
-  (let* ((files-str (mapconcat 'identity patchs " "))
-	 (cmd (concat "./scripts/get_maintainer.pl " files-str))
-	 (receivers (split-string
-		     (shell-command-to-string cmd) "\n"))
+  (let* ((cmd (concat "./scripts/get_maintainer.pl " patch))
+	 (receivers (split-string (shell-command-to-string cmd) "\n"))
 	 (user (patch-get-from-field (car patchs)))
 	 (cc `("linux-kernel@vger.kernel.org" ,(if user user)))
 	 to)
-    (mapc (lambda (user)
-	    (save-match-data
-	      (when (string-match "\\(.*\\) \(\\(.*\\):.*" user)
-		(if (string-equal (match-string 2 user)
-				  "maintainer")
-		    (add-to-list 'to (match-string 1 user))
-		  (add-to-list 'cc (match-string 1 user))))))
-	  receivers)
+    (dolist (user receivers)
+      (save-match-data
+	(when (string-match "\\(.*\\) \(\\(.*\\):.*" user)
+	  (if (string-equal (match-string 2 user) "maintainer")
+	      (add-to-list 'to (match-string 1 user))
+	    (add-to-list 'cc (match-string 1 user))))))
     (list to cc)))
 
 (add-to-list 'send-patch-get-recipients-funcs
 	     (cons "Kernel" 'send-patch-get-recipients-kernel) t)
 
 ;; add uboot recipients function
-(defun send-patch-get-recipients-uboot (patchs)
-  (let* ((files-str (mapconcat 'identity patchs " "))
-	 (cmd (concat "./scripts/get_maintainer.pl " files-str))
+(defun send-patch-get-recipients-uboot (patch)
+  (let* ((cmd (concat "./scripts/get_maintainer.pl " patch))
 	 (receivers (split-string (shell-command-to-string cmd) "\n"))
 	 (to '("u-boot@lists.denx.de"))
 	 cc)
-    (mapc (lambda (user)
-	    (save-match-data
-	      (when (string-match "\\(.*\\) \(\\(.*\\):.*" user)
-		(if (string-equal (match-string 2 user)
-				  "maintainer")
-		    (add-to-list 'cc (match-string 1 user))
-		  (add-to-list 'to (match-string 1 user))))))
-	  receivers)
+    (dolist (user receivers)
+      (save-match-data
+	(when (string-match "\\(.*\\) \(\\(.*\\):.*" user)
+	  (if (string-equal (match-string 2 user) "maintainer")
+	      (add-to-list 'cc (match-string 1 user))
+	    (add-to-list 'to (match-string 1 user))))))
     (list to cc)))
 
 (add-to-list 'send-patch-get-recipients-funcs
