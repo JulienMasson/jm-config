@@ -111,6 +111,17 @@
     (goto-char (point-max))
     (re-search-backward separator nil t)))
 
+(defun send-patch-enable-read-only ()
+  (save-excursion
+    (when (send-patch-goto-begin)
+      (add-text-properties (1- (point)) (point-max) '(read-only t)))))
+
+(defun send-patch-disable-read-only ()
+  (save-excursion
+    (when (send-patch-goto-begin)
+      (let ((inhibit-read-only t))
+        (add-text-properties (1- (point)) (point-max) '(read-only nil))))))
+
 (defun send-patch-toggle-read-only ()
   (interactive)
   (save-excursion
@@ -172,9 +183,7 @@
 
 (defun generate-patch (patch to cc)
   (with-current-buffer (send-patch-compose-mail patch to cc)
-    (save-excursion
-      (when (send-patch-goto-begin)
-        (add-text-properties (1- (point)) (point-max) '(read-only t))))
+    (send-patch-enable-read-only)
     (set-buffer-modified-p nil)
     (current-buffer)))
 
@@ -182,6 +191,8 @@
   (interactive)
   (if-let ((buffer (pop patch-mail-buffers)))
       (with-current-buffer buffer
+        (send-patch-disable-read-only)
+
 	;; set date to current time
 	(message-position-on "Date" "Cc")
 	(message-beginning-of-line)
