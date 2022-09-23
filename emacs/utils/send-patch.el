@@ -162,6 +162,7 @@
     (remove-hook 'after-change-functions #'message-strip-forbidden-properties t)
 
     ;; custom keybindings
+    (use-local-map (copy-keymap message-mode-map))
     (local-set-key (kbd "C-c C-c") 'send-patch-all)
     (local-set-key (kbd "C-c C-k") 'send-patch-cancel)
     (local-set-key (kbd "C-c C-r") 'send-patch-update-fields)
