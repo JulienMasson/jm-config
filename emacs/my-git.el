@@ -251,4 +251,7 @@
               (cmd (format "git fetch %s merge-requests/%d/head" remote mr)))
     (magit--shell-command cmd (magit-toplevel))))
 
+;; send-patch
+(transient-append-suffix 'magit-push "t" '("P" "send-patch" send-patch))
+
 (provide 'my-git)
