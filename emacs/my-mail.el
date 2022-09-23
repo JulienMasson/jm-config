@@ -107,13 +107,13 @@ Julien Masson
 (defun send-patch-setup-jmail-env ()
   (when-let ((accounts (jmail-get-accounts jmail-smtp-config-file))
 	     (from (message-fetch-field "From")))
-    (pcase-let ((`(,name ,email) (gnus-extract-address-components from)))
-      (when-let ((account (seq-find (lambda (e) (string= email (cddr e))) accounts)))
+    (pcase-let ((`(,_ ,email) (gnus-extract-address-components from)))
+      (when-let ((account (cl-find-if (lambda (e) (string= email (plist-get (cdr e) :email)))
+                                      accounts)))
 	(jmail-compose-mode)
         (jmail-capf-setup)
 	(jmail-compose-setup-send-mail)
-        (setq-local mail-host-address (replace-regexp-in-string
-                                       ".+@" "" email))
+        (setq-local mail-host-address (replace-regexp-in-string ".+@" "" email))
 	(jmail-compose-set-extra-arguments (car account) email)))))
 
 (add-hook 'send-patch-compose-hook 'send-patch-setup-jmail-env)
