@@ -53,14 +53,8 @@
 ;; default query options
 (setq jmail-default-query-options '(:thread t :auto-fold-thread t :related t))
 
-;; RSS news config
-(setq jmail-rss-config-file (concat my-private-dotfiles-path ".feed2exec.ini"))
-
 ;; fetch/refresh every 3 mins
 (setq jmail-fetch-refresh-every (* 3 60))
-
-;; fetch/refresh RSS news every 30 mins
-(setq jmail-rss-fetch-refresh-every (* 30 60))
 
 ;; display html by default
 (setq jmail-view-html-default-view t)
