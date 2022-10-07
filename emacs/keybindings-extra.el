@@ -55,6 +55,10 @@
 (require 'term)
 (define-key term-raw-map (kbd "C-c C-j") 'term-line-mode)
 (define-key term-raw-map (kbd "C-c C-k") 'term-char-mode)
+(define-key term-raw-map (kbd "C-c <left>") 'windmove-left)
+(define-key term-raw-map (kbd "C-c <right>") 'windmove-right)
+(define-key term-raw-map (kbd "C-c <up>") 'windmove-up)
+(define-key term-raw-map (kbd "C-c <down>") 'windmove-down)
 
 ;; magit
 (global-set-key (kbd "C-c g b") 'magit-blame-addition)
