@@ -200,9 +200,6 @@
 [submodule "emacs/modules/jmail"]
 	path = emacs/modules/jmail
 	url = git@github.com:JulienMasson/jmail.git
-[submodule "emacs/modules/eglot"]
-	path = emacs/modules/eglot
-	url = git@github.com:JulienMasson/eglot.git
 [submodule "emacs/modules/forge"]
 	path = emacs/modules/forge
 	url = git@github.com:JulienMasson/forge.git
@@ -236,3 +233,6 @@
 [submodule "emacs/modules/compat"]
 	path = emacs/modules/compat
 	url = https://git.sr.ht/~pkal/compat
+[submodule "emacs/modules/eglot"]
+	path = emacs/modules/eglot
+	url = https://github.com/joaotavora/eglot.git
