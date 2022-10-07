@@ -200,9 +200,6 @@
 [submodule "emacs/modules/jmail"]
 	path = emacs/modules/jmail
 	url = git@github.com:JulienMasson/jmail.git
-[submodule "emacs/modules/forge"]
-	path = emacs/modules/forge
-	url = git@github.com:JulienMasson/forge.git
 [submodule "emacs/modules/docker-tramp"]
 	path = emacs/modules/docker-tramp
 	url = https://github.com/emacs-pe/docker-tramp.el.git
@@ -236,3 +233,6 @@
 [submodule "emacs/modules/eglot"]
 	path = emacs/modules/eglot
 	url = https://github.com/joaotavora/eglot.git
+[submodule "emacs/modules/forge"]
+	path = emacs/modules/forge
+	url = https://github.com/magit/forge.git
