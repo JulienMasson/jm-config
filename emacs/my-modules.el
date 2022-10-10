@@ -64,17 +64,15 @@
 ;; (require 'my-chat)
 
 ;; Project manager
-(require 'project-manager)
-(require 'pm-emacslisp)
+(require 'pm-simple)
 (register-project
  (make-project :name "Home"
-	       :pm-backend "emacslisp"
+	       :pm-backend "simple"
 	       :root-path "~/"
-	       :subprojects `(("private" . ,(concat my-emacs-root-path "modules/jm-private"))
-			      ("modules" . ,(concat my-emacs-root-path "modules"))
-			      ("emacs"   . ,my-emacs-root-path)
-			      ("docs"    . "Documents/Docs")
-			      ("gdrive"  . "Documents/gdrive"))))
+	       :subprojects '(("private" . (concat my-emacs-root-path "modules/jm-private/"))
+			      ("modules" . (concat my-emacs-root-path "modules/"))
+			      ("emacs"   . my-emacs-root-path)
+			      ("gdrive"  . "Documents/gdrive/"))))
 (switch-project "Home")
 
 ;; Status
