@@ -107,9 +107,6 @@
 [submodule "emacs/modules/kconfig-mode"]
 	path = emacs/modules/kconfig-mode
 	url = https://github.com/delaanthonio/kconfig-mode.git
-[submodule "emacs/modules/transient"]
-	path = emacs/modules/transient
-	url = https://github.com/magit/transient.git
 [submodule "emacs/modules/surround"]
 	path = emacs/modules/surround
 	url = https://github.com/ganmacs/emacs-surround.git
