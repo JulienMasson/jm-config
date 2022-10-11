@@ -59,6 +59,7 @@
 ;; doom modeline
 (require 'doom-modeline)
 (setq doom-modeline-height (frame-char-height))
+(setq doom-modeline-buffer-file-name-style 'relative-from-project)
 
 (doom-modeline-def-segment spaces
   "Spaces."
