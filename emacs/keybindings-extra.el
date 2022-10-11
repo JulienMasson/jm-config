@@ -102,7 +102,7 @@
 ;; project manager
 (global-set-key (kbd "C-c i s") 'switch-project)
 (global-set-key (kbd "C-c i p") 'project-compile)
-(global-set-key (kbd "C-c i m") 'project-search)
+(global-set-key (kbd "C-c i S") 'project-shell)
 (global-set-key (kbd "C-c i d") 'project-debug)
 (global-set-key (kbd "C-c i e") 'project-exec)
 (global-set-key (kbd "C-c f") 'project-find-file)
