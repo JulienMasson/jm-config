@@ -53,8 +53,8 @@
 ;; default query options
 (setq jmail-default-query-options '(:thread t :auto-fold-thread t :related t))
 
-;; fetch/refresh every 3 mins
-(setq jmail-fetch-refresh-every (* 3 60))
+;; sync/refresh every 3 mins
+(setq jmail-sync-refresh-every (* 3 60))
 
 ;; display html by default
 (setq jmail-view-html-default-view t)
