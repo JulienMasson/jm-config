@@ -71,4 +71,20 @@
       (shell-clear))))
 (setq shell-mode-hook (append shell-mode-hook (list 'export-ps1)))
 
+;; completion history
+(defun capf-comint-history ()
+  (interactive)
+  (unless (ring-empty-p comint-input-ring)
+    (let ((target (field-string))
+          candidates)
+      (dotimes (index (ring-length comint-input-ring))
+        (let ((entry (ring-ref comint-input-ring index)))
+          (when (string-match target entry)
+            (push entry candidates))))
+      (completion-in-region (comint-line-beginning-position) (point)
+                            `(lambda (string pred action)
+                               (pcase action
+                                 ('nil (try-completion string ,candidates))
+                                 ('t (all-completions "" ',candidates pred))))))))
+
 (provide 'my-shell)

@@ -44,6 +44,7 @@
 ;; shell mode
 (define-key shell-mode-map (kbd "RET") #'shell-press-ret)
 (define-key shell-mode-map (kbd "C-c l") 'shell-clear)
+(define-key shell-mode-map (kbd "M-r") 'capf-comint-history)
 (define-key shell-mode-map (kbd "C-M-m") nil)
 (define-key shell-mode-map (kbd "C-c SPC") nil)
 
