@@ -28,102 +28,82 @@
 
 (defconst async-dired--rsync-program "rsync")
 
-(defconst async-dired--du-program "du")
-
-(defvar async-dired--ongoing-actions nil)
-
-(defvar-local async-dired--files nil)
-
-(defvar-local async-dired--count nil)
-
-(defvar-local async-dired--total nil)
-
-(defvar-local async-dired--revert-path nil)
-
-(defvar-local async-dired--done-cb nil)
-
 ;;; Internal Functions
-
-(defmacro with-async-dired-buffer (process &rest body)
-  (declare (indent 2))
-  `(when-let (buffer (assoc-default ,process async-dired--ongoing-actions))
-     (when (buffer-live-p buffer)
-       (with-current-buffer buffer
-	 ,@body
-	 (force-mode-line-update)))))
-
-(defun async-dired--remove-action (process)
-  (setq async-dired--ongoing-actions
-	(assoc-delete-all process async-dired--ongoing-actions)))
-
-(defun async-dired--update-modeline (process progress)
-  (with-async-dired-buffer process
-    (setq mode-name (format "Async Dired: %s%%" progress))))
-
-(defun async-dired--reset-modeline (process)
-  (with-async-dired-buffer process
-    (dired-sort-set-modeline)))
 
 (defun async-dired--create-buffer (action)
   (let* ((name (format "*async-dired-%s*" action))
 	 (buffer (generate-new-buffer-name name)))
     (get-buffer-create buffer)))
 
-(defun async-dired--assoc-dired-buffers ()
-  (delq nil (mapcar (lambda (buffer)
-		      (with-current-buffer buffer
-			(when (string= major-mode "dired-mode")
-			  (cons (expand-file-name default-directory)
-				buffer))))
-		    (buffer-list))))
+(defun async-dired--find-buffer (dest)
+  (let ((dest (file-name-directory (expand-file-name dest))))
+    (cl-find-if (lambda (buffer)
+                  (with-current-buffer buffer
+                    (and (string= major-mode "dired-mode")
+                         (string= dest (expand-file-name default-directory)))))
+                (buffer-list))))
 
-(defun async-dired--revert-buffers ()
-  (let ((dired-buffers (async-dired--assoc-dired-buffers)))
-    (mapc (lambda (path)
-	    (when-let* ((expand-path (expand-file-name path))
-			(buffer (assoc-default expand-path dired-buffers)))
-	      (with-current-buffer buffer
-		(revert-buffer))))
-	  async-dired--revert-path)))
-
-(defun async-dired--process-sentinel (process status)
-  (async-dired--reset-modeline process)
-  (async-dired--remove-action process)
+(defun async-dired--process-filter (process str)
   (when-let ((buffer (process-buffer process)))
-    (when (buffer-live-p buffer)
-      (if (zerop (process-exit-status process))
-	  (with-current-buffer buffer
-	    (when async-dired--done-cb
-	      (funcall async-dired--done-cb))
-	    (async-dired--revert-buffers)
-	    (kill-buffer))
-	(switch-to-buffer-other-window buffer)))))
+    (when (buffer-live-p (process-buffer process))
+      (with-current-buffer buffer
+        (goto-char (point-max))
+        (insert (string-join (split-string str "") "\n"))))))
+
+(defun async-dired--process-sentinel (from dest done-cb process status)
+  (let ((buffer (process-buffer process)))
+    (with-current-buffer from
+      (dired-sort-set-modeline)
+      (when done-cb
+        (funcall done-cb)))
+    (if (zerop (process-exit-status process))
+        (progn
+          (kill-buffer buffer)
+          (when dest
+            (with-current-buffer dest
+              (revert-buffer))))
+      (switch-to-buffer-other-window buffer))))
+
+;; delete
+(defun dired-get-delete-files ()
+  (let* ((dired-marker-char dired-del-marker)
+	 (regexp (dired-marker-regexp))
+         files)
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward regexp nil t)
+        (push (dired-get-filename) files)))
+    (unless files
+      (setq files (list (dired-get-filename))))
+    files))
+
+(defun async-dired--delete (marks)
+  (when-let* ((files (mapcar #'untramp-path marks))
+	      (args (append (list "-rf") files))
+	      (buffer (async-dired--create-buffer "delete"))
+	      (process (apply 'start-file-process (buffer-name buffer)
+			      buffer "rm" args)))
+    (setq mode-name "Dired remove")
+    (force-mode-line-update)
+    (with-current-buffer buffer
+      (erase-buffer)
+      (insert (format "Execute command: rm %s\n" (string-join args " "))))
+    (set-process-filter process 'async-dired--process-filter)
+    (set-process-sentinel process (apply-partially #'async-dired--process-sentinel
+                                                   (current-buffer) (current-buffer) nil))))
+
+(defun async-dired--do-delete (&optional arg)
+  (async-dired--delete (dired-get-delete-files)))
 
 ;; rsync
-(defun async-dired--rsync-get-progress (output)
-  (when-let* ((lines (split-string output "\n"))
-	      (line (last lines))
-	      (regexp " \\([0-9]+\\)%"))
-    (when (string-match regexp str)
-      (match-string 1 str))))
-
-(defun async-dired--process-filter-rsync (process str)
-  (let* ((output (replace-regexp-in-string "" "\n" str))
-	 (progress (async-dired--rsync-get-progress output)))
-    (with-current-buffer (process-buffer process)
-      (save-excursion
-	(goto-char (point-max))
-	(insert output)
-	(when progress
-	  (async-dired--update-modeline process progress))))))
-
 (defun async-dired--rsync-prompt (marks)
   (let* ((nbr (length marks))
 	 (msg (propertize (if (> nbr 1)
 			      (format "* [ %d files ]" nbr)
 			    (file-name-nondirectory (car marks)))
-			 'face 'warning)))
-    (expand-file-name (read-directory-name (format "Rsync %s to: " msg)))))
+			  'face 'warning))
+         (dir (read-directory-name (format "Rsync %s to: " msg))))
+    (expand-file-name dir)))
 
 (defun async-dired--rsync-get-args (marks dest &optional extra-args)
   (let ((default-args (list "--archive" "--info=progress2"))
@@ -149,145 +129,49 @@
 	dest
       (getenv "HOME"))))
 
-(defun async-dired--rsync (name &optional extra-args done-cb)
-  (when-let* ((current-dir default-directory)
-	      (marks (dired-get-marked-files))
-	      (files (mapcar #'untramp-path marks))
-	      (dest (async-dired--rsync-prompt marks))
-	      (default-directory (async-dired--rsync-default-directory marks dest))
-	      (program (executable-find async-dired--rsync-program))
-	      (args (async-dired--rsync-get-args marks dest extra-args))
-	      (buffer (async-dired--create-buffer name))
-	      (process (apply 'start-file-process (buffer-name buffer)
-			      buffer program args)))
-    (add-to-list 'async-dired--ongoing-actions (cons process (current-buffer)))
-    (async-dired--update-modeline process "0")
+(defun async-dired--rsync (name marks dest &optional extra-args done-cb)
+  (let* ((dest-buffer (async-dired--find-buffer dest))
+	 (default-directory (async-dired--rsync-default-directory marks dest))
+	 (program (executable-find async-dired--rsync-program))
+	 (args (async-dired--rsync-get-args marks dest extra-args))
+	 (buffer (async-dired--create-buffer name))
+	 (process (apply 'start-file-process (buffer-name buffer)
+			 buffer program args)))
+    (setq mode-name (concat "Dired " name))
+    (force-mode-line-update)
     (with-current-buffer buffer
-      (setq async-dired--files files)
-      (setq async-dired--revert-path (list dest current-dir))
-      (setq async-dired--done-cb done-cb)
       (erase-buffer)
-      (insert (format "Execute command: rsync %s\n" (mapconcat 'identity args " "))))
-    (set-process-filter process 'async-dired--process-filter-rsync)
-    (set-process-sentinel process 'async-dired--process-sentinel)))
+      (insert (format "Execute command: rsync %s\n" (string-join args " "))))
+    (set-process-filter process 'async-dired--process-filter)
+    (set-process-sentinel process (apply-partially #'async-dired--process-sentinel
+                                                   (current-buffer) dest-buffer done-cb))))
 
 ;; copy
 (defun async-dired--do-copy (old-fn &rest args)
   (if (executable-find async-dired--rsync-program)
-      (async-dired--rsync "copy")
+      (when-let* ((marks (dired-get-marked-files))
+                  (dest (async-dired--rsync-prompt marks)))
+        (async-dired--rsync "copy" marks dest))
     (apply old-fn args)))
 
 ;; rename
-(defun async-dired--delete-directories ()
-  (mapc (lambda (file)
-	  (when (file-directory-p file)
-	    (delete-directory file t)))
-	async-dired--files))
-
 (defun async-dired--do-rename (old-fn &rest args)
   (if (executable-find async-dired--rsync-program)
-      (async-dired--rsync "rename" (list "--remove-source-files")
-			  #'async-dired--delete-directories)
-    (apply old-fn args)))
-
-;; delete
-(defun async-dired--process-filter-delete (process str)
-  (with-current-buffer (process-buffer process)
-    (save-excursion
-      (goto-char (point-max))
-      (let ((beg (point))
-	    lines progress)
-	(insert str)
-	(setq async-dired--count
-	      (+ (count-lines beg (point-max))
-		 async-dired--count))
-	(setq progress (/ (* async-dired--count 100)
-			  async-dired--total))
-	(async-dired--update-modeline process progress)))))
-
-(defun async-dired--delete-get-args (marks)
-  (append (list "--force" "--recursive" "--verbose") marks))
-
-(defun async-dired--delete (process)
-  (let* ((program "rm")
-	 (args (async-dired--delete-get-args async-dired--files))
-	 (previous-process process)
-	 (buffer (process-buffer previous-process))
-	 (process (apply 'start-file-process (buffer-name buffer)
-			 buffer program args)))
-    (setcar (assoc previous-process async-dired--ongoing-actions) process)
-    (with-current-buffer buffer
-      (erase-buffer)
-      (insert (format "Total files found: %s\n" async-dired--count))
-      (insert (format "Execute command: rm %s\n"
-		      (mapconcat 'identity args " "))))
-    (set-process-filter process 'async-dired--process-filter-delete)
-    (set-process-sentinel process 'async-dired--process-sentinel)))
-
-(defun async-dired--get-total ()
-  (string-to-number (buffer-substring (line-beginning-position)
-				      (line-end-position))))
-
-(defun async-dired--process-filter-count (process str)
-  (with-current-buffer (process-buffer process)
-    (save-excursion
-      (goto-char (point-max))
-      (insert str))))
-
-(defun async-dired--process-sentinel-count (process status)
-  (let ((buffer (process-buffer process)))
-    (if (zerop (process-exit-status process))
-	(with-current-buffer buffer
-	  (setq async-dired--total (async-dired--get-total))
-	  (async-dired--delete process))
-      (when (buffer-live-p buffer)
-	(switch-to-buffer-other-window buffer))
-      (async-dired--remove-action process))))
-
-(defun async-dired--count-command (files)
-  (format "ls -fR %s | wc -l"
-	  (mapconcat 'shell-quote-argument files " ")))
-
-(defun async-dired--count-files (marks)
-  (when-let* ((dired-buffer (current-buffer))
-	      (files (mapcar #'untramp-path marks))
-	      (command (async-dired--count-command files))
-	      (buffer (async-dired--create-buffer "delete"))
-	      (process (start-file-process-shell-command
-			(buffer-name buffer) buffer command)))
-    (add-to-list 'async-dired--ongoing-actions (cons process (current-buffer)))
-    (async-dired--update-modeline process "0")
-    (with-current-buffer buffer
-      (setq async-dired--files files)
-      (setq async-dired--count 0)
-      (setq async-dired--total 0)
-      (setq async-dired--revert-path (list default-directory))
-      (erase-buffer)
-      (insert (format "Execute command: du %s\n" command)))
-    (set-process-filter process 'async-dired--process-filter-count)
-    (set-process-sentinel process 'async-dired--process-sentinel-count)))
-
-(defun async-dired--do-delete (old-fn &rest args)
-  (if (executable-find async-dired--du-program)
-      (async-dired--count-files (dired-get-marked-files))
-    (apply old-fn args)))
-
-(defun async-dired--do-flagged-delete (old-fn &rest args)
-  (if (executable-find async-dired--du-program)
-      (let* ((dired-marker-char dired-del-marker)
-	     (regexp (dired-marker-regexp)))
-	(when (save-excursion (goto-char (point-min))
-			      (re-search-forward regexp nil t))
-	  (async-dired--count-files (dired-map-over-marks
-				     (dired-get-filename) nil))))
+      (when-let* ((marks (dired-get-marked-files))
+                  (dest (async-dired--rsync-prompt marks)))
+        (unless (string-suffix-p "/" dest)
+          (setq marks (mapcar #'file-name-as-directory marks)))
+        (async-dired--rsync "rename" marks dest
+                            (list "--remove-source-files")
+                            `(lambda () (async-dired--delete (list ,@marks)))))
     (apply old-fn args)))
 
 ;;; External Functions
 
 (defun async-dired-setup ()
   (advice-add 'dired-do-copy :around #'async-dired--do-copy)
-  (advice-add 'dired-do-rename :around #'async-dired--do-rename)
-  (advice-add 'dired-do-delete :around #'async-dired--do-delete)
-  (advice-add 'dired-do-flagged-delete :around #'async-dired--do-flagged-delete))
+  (advice-add 'dired-do-rename :override #'async-dired--do-rename)
+  (advice-add 'dired-do-delete :override #'async-dired--do-delete)
+  (advice-add 'dired-do-flagged-delete :override #'async-dired--do-delete))
 
 (provide 'async-dired)
