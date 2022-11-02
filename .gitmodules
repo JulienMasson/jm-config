@@ -197,9 +197,6 @@
 [submodule "emacs/modules/jmail"]
 	path = emacs/modules/jmail
 	url = git@github.com:JulienMasson/jmail.git
-[submodule "emacs/modules/docker-tramp"]
-	path = emacs/modules/docker-tramp
-	url = https://github.com/emacs-pe/docker-tramp.el.git
 [submodule "emacs/modules/all-the-icons-completion"]
 	path = emacs/modules/all-the-icons-completion
 	url = https://github.com/iyefrat/all-the-icons-completion.git
@@ -227,9 +224,6 @@
 [submodule "emacs/modules/compat"]
 	path = emacs/modules/compat
 	url = https://git.sr.ht/~pkal/compat
-[submodule "emacs/modules/eglot"]
-	path = emacs/modules/eglot
-	url = https://github.com/joaotavora/eglot.git
 [submodule "emacs/modules/forge"]
 	path = emacs/modules/forge
 	url = https://github.com/magit/forge.git
