@@ -64,6 +64,17 @@
               (revert-buffer))))
       (switch-to-buffer-other-window buffer))))
 
+(defun async-dired--get-marks-dest ()
+  (when-let* ((marks (dired-get-marked-files))
+              (dest (async-dired--rsync-prompt marks)))
+    (unless (string-suffix-p "/" dest)
+      (setq marks (mapcar (lambda (mark)
+                            (if (file-directory-p mark)
+                                (file-name-as-directory mark)
+                              mark))
+                          marks)))
+    (list marks dest)))
+
 ;; delete
 (defun dired-get-delete-files ()
   (let* ((dired-marker-char dired-del-marker)
@@ -149,18 +160,14 @@
 ;; copy
 (defun async-dired--do-copy (old-fn &rest args)
   (if (executable-find async-dired--rsync-program)
-      (when-let* ((marks (dired-get-marked-files))
-                  (dest (async-dired--rsync-prompt marks)))
+      (pcase-let ((`(,marks ,dest) (async-dired--get-marks-dest)))
         (async-dired--rsync "copy" marks dest))
     (apply old-fn args)))
 
 ;; rename
 (defun async-dired--do-rename (old-fn &rest args)
   (if (executable-find async-dired--rsync-program)
-      (when-let* ((marks (dired-get-marked-files))
-                  (dest (async-dired--rsync-prompt marks)))
-        (unless (string-suffix-p "/" dest)
-          (setq marks (mapcar #'file-name-as-directory marks)))
+      (pcase-let ((`(,marks ,dest) (async-dired--get-marks-dest)))
         (async-dired--rsync "rename" marks dest
                             (list "--remove-source-files")
                             `(lambda () (async-dired--delete (list ,@marks)))))
