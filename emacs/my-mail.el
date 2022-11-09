@@ -74,6 +74,9 @@
 Julien Masson
 #+end_signature")
 
+;; do not improve reply header
+(defun org-msg-improve-reply-header (xml css))
+
 ;; cached unread data
 (defvar jmail-unread-data-cached nil)
 
