@@ -31,9 +31,6 @@
 ;; shifted motion keys activate the mark momentarily
 (setq shift-select-mode t)
 
-;; prevent automatic splitting
-(set-frame-parameter nil 'unsplittable t)
-
 ;; movement off the edge of the frame wraps around.
 (setq windmove-wrap-around t)
 
