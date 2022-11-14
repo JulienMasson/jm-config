@@ -33,6 +33,9 @@
 (require 'ob-shell)
 (require 'ob-plantuml)
 
+;; no space when indent source block
+(setq org-edit-src-content-indentation 0)
+
 ;; set path to plantuml jar
 (setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
 
