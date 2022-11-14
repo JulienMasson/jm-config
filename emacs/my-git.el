@@ -101,65 +101,9 @@
   (interactive (list (magit-file-at-point t t)))
   (magit-diff-visit-file--internal file nil #'switch-to-buffer-other-window))
 
-;; WORKAROUND: transient reduce only the current magit window
-(defvar my-window-sibling nil)
-
-(defun my-window-resize (window delta &optional horizontal ignore pixelwise)
-  (setq window (window-normalize-window window))
-  (let* ((frame (window-frame window))
-	 sibling)
-    (setq delta (window--size-to-pixel
-		 window delta horizontal pixelwise t))
-    (cond
-     ((or (window--resizable-p
-	   window delta horizontal ignore nil nil nil t)
-	  (and (not ignore)
-	       (setq ignore 'preserved)
-	       (window--resizable-p
-		window delta horizontal ignore nil nil nil t)))
-      (window--resize-reset frame horizontal)
-      (window--resize-this-window window delta horizontal ignore t)
-      (if (and (not (eq window-combination-resize t))
-	       (window-combined-p window horizontal)
-               (setq sibling my-window-sibling)
-	       (window-sizable-p
-		sibling (- delta) horizontal ignore t))
-	  ;; If window-combination-resize is nil, WINDOW is part of an
-	  ;; iso-combination, and WINDOW's neighboring right or left
-	  ;; sibling can be resized as requested, resize that sibling.
-	  (let ((normal-delta
-		 (/ (float delta)
-		    (window-size (window-parent window) horizontal t))))
-	    (window--resize-this-window sibling (- delta) horizontal nil t)
-	    (set-window-new-normal
-	     window (+ (window-normal-size window horizontal)
-		       normal-delta))
-	    (set-window-new-normal
-	     sibling (- (window-normal-size sibling horizontal)
-			normal-delta)))
-	;; Otherwise, resize all other windows in the same combination.
-	(window--resize-siblings window delta horizontal ignore))
-      (when (window--resize-apply-p frame horizontal)
-	(if (window-resize-apply frame horizontal)
-	    (progn
-	      (window--pixel-to-total frame horizontal)
-	      (run-window-configuration-change-hook frame))
-	  (error "Failed to apply resizing %s" window))))
-     (t
-      (error "Cannot resize window %s" window)))))
-
-(defun transient--show-with-my-window-resize (old-fn &rest args)
-  (setq my-window-sibling (selected-window))
-  (let ((split-saved (frame-parameter nil 'unsplittable)))
-    (when split-saved
-      (set-frame-parameter nil 'unsplittable nil))
-    (flet ((window-resize (window delta &optional horizontal ignore pixelwise)
-			  (my-window-resize window delta horizontal ignore pixelwise)))
-      (apply old-fn args))
-    (when split-saved
-      (set-frame-parameter nil 'unsplittable t))))
-
-(advice-add 'transient--show :around #'transient--show-with-my-window-resize)
+;; display buffer below selected window
+(setq transient-display-buffer-action '(display-buffer-below-selected))
+(setq window-combination-limit #'display-buffer)
 
 ;; don’t show any indicators
 (setq magit-section-visibility-indicator nil)
