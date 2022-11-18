@@ -25,6 +25,9 @@
 ;; magit
 (require 'magit)
 
+;; show word-granularity differences within diff hunks
+(setq magit-diff-refine-hunk 'all)
+
 ;; don't use the system's trash
 (setq magit-delete-by-moving-to-trash nil)
 
