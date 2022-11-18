@@ -221,10 +221,8 @@
 		   (((class color) (background dark)) :background ,black)))
     `(diff-removed ((t (:background nil :foreground ,red))))
     `(diff-indicator-removed ((t :inherit diff-removed)))
-    `(diff-refine-added ((t :inherit default :weight bold
-			    :box (:line-width 1 :color ,forest))))
-    `(diff-refine-removed ((t :inherit default :weight bold
-			      :box (:line-width 1 :color ,red))))
+    `(diff-refine-added ((t :inherit diff-added :weight bold)))
+    `(diff-refine-removed ((t :inherit diff-removed :weight bold)))
 
 ;;;; magit
     `(magit-diff-added ((t :inherit diff-added)))
